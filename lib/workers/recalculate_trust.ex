@@ -2,7 +2,7 @@ defmodule Democracy.RecalculateTrust do
     use GenServer
 
     alias Democracy.Repo
-    alias Democracy.User
+    alias Democracy.Identity
     alias Democracy.Delegation
 
     import Ecto.Query, only: [from: 2]

@@ -24,12 +24,15 @@ defmodule Democracy.Router do
     pipe_through :api
 
     get "/", PageController, :index
-    resources "/session", SessionController, only: [:create, :delete]
-    resources "/users", UserController, except: [:new, :edit, :index] do
+    resources "/login", LoginController, only: [:create, :delete]
+    resources "/identities", IdentityController, except: [:update, :delete, :new, :edit] do
         resources "/delegations", DelegationController, except: [:new, :edit]
     end
 
-    get "/votes/cast", VoteController, :index
+    resources "/polls", PollController do
+      resources "/votes", VoteController
+      get "/results", PollController, :results
+    end
   end
 
   # Other scopes may use custom stacks.

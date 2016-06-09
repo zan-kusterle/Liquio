@@ -1,12 +1,12 @@
 defmodule Democracy.GuardianSerializer do
-  @behaviour Guardian.Serializer
+	@behaviour Guardian.Serializer
 
-  alias Democracy.Repo
-  alias Democracy.User
+	alias Democracy.Repo
+	alias Democracy.Identity
 
-  def for_token(user = %User{}), do: { :ok, "User:#{user.username}" }
-  def for_token(_), do: { :error, "Unknown resource type" }
+	def for_token(identity = %Identity{}), do: { :ok, "Identity:#{identity.username}" }
+	def for_token(_), do: { :error, "Unknown resource type" }
 
-  def from_token("User:" <> id), do: { :ok, Repo.get_by(User, username: id) }
-  def from_token(_), do: { :error, "Unknown resource type" }
+	def from_token("Identity:" <> id), do: { :ok, Repo.get_by(Identity, username: id) }
+	def from_token(_), do: { :error, "Unknown resource type" }
 end
