@@ -44,6 +44,7 @@ defmodule Democracy.PollController do
 				:contributions_by_identities => contributions_by_identities
 			}
 		end)
+		
 		render(conn, "results.json", results: results)
 	end
 end
