@@ -26,21 +26,18 @@ defmodule Democracy.Identity do
 	end
 
 	def create(changeset) do
-		{:ok, identity} = Repo.transaction fn ->
-			trust_metric_poll = Repo.insert!(%Democracy.Poll{
-				:kind => "is_human",
-				:title => nil,
-				:choices => ["true"],
-				:topics => nil,
-				:is_direct => true
-			})
+		trust_metric_poll = Repo.insert!(%Democracy.Poll{
+			:kind => "is_human",
+			:title => nil,
+			:choices => ["true"],
+			:topics => nil,
+			:is_direct => true
+		})
 
-			changeset = changeset
-			|> put_change(:token, generate_token())
-			|> put_change(:trust_metric_poll_id, trust_metric_poll.id)
-			Repo.insert!(changeset)
-		end
-		identity
+		changeset = changeset
+		|> put_change(:token, generate_token())
+		|> put_change(:trust_metric_poll_id, trust_metric_poll.id)
+		Repo.insert(changeset)
 	end
 
 	defp generate_token() do

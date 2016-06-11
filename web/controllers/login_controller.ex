@@ -7,7 +7,7 @@ defmodule Democracy.LoginController do
 
 	def create(conn, %{"identity" => %{"username" => username, "password" => password}}) do
 		identity = Repo.get_by(Identity, username: username)
-		if identity and identity.token == password do
+		if identity != nil and identity.token == password do
 			conn = Guardian.Plug.sign_in(conn, identity)
 			
 			access_token = Guardian.Plug.current_token(conn)

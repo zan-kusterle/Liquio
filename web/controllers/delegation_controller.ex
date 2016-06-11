@@ -7,38 +7,40 @@ defmodule Democracy.DelegationController do
 	alias Democracy.Identity
 	alias Democracy.Delegation
 
-	plug :scrub_params, "delegation" when action in [:create, :update]
+	plug :scrub_params, "delegation" when action in [:create]
 
-	def index(conn, %{"identity_username" => from_identity_username}) do
-		from_identity = Repo.get_by!(Identity, username: from_identity_username)
+	def index(conn, %{"identity_id" => from_identity_id}, _, _) do
+		from_identity = Repo.get(Identity, from_identity_id)
 
-		query = from d in Delegation,
-			where: d.from_identity_id == ^from_identity.id,
-			select: d
-		delegations = Repo.all(query) |> Repo.preload([:from_identity, :to_identity])
+		if from_identity do
+			query = from d in Delegation,
+				where: d.from_identity_id == ^from_identity.id,
+				select: d
+			delegations = Repo.all(query) |> Repo.preload([:from_identity, :to_identity])
 
-		render(conn, "index.json", delegations: delegations)
+			conn
+			|> render("index.json", delegations: delegations)
+		else
+			conn
+			|> put_status(:not_found)
+			|> render(Democracy.ErrorView, "error.json", message: "Identity does not exist")
+		end
 	end
 
-	def create(conn, %{"identity_username" => from_identity_username, "delegation" => %{"to_identity_id" => to_identity_username, "weight" => weight, "topics" => topics}}, user, claims) do
-		from_identity = Repo.get_by!(Identity, username: from_identity_username)
-		to_identity = Repo.get_by!(Identity, username: to_identity_username)
-
-		if user.id == from_identity.id do
-			changeset = Delegation.changeset(%Delegation{
-				from_identity_id: from_identity.id,
-				to_identity_id: to_identity.id,
-				weight: weight * 1.0,
-				topics: topics
-			}, %{})
-
-			case Repo.insert(changeset) do
+	def create(conn, %{"identity_id" => from_identity_id, "delegation" => params}, user, claims) do
+		if from_identity_id == "me" do
+			from_identity_id = user.id
+		end
+		if user != nil and to_string(user.id) == from_identity_id do
+			params = Map.put(params, "from_identity_id", from_identity_id)
+			existing_delegation = Repo.get_by(Delegation, from_identity_id: params["from_identity_id"], to_identity_id: params["to_identity_id"])
+			changeset = Delegation.changeset(existing_delegation || %Delegation{}, params)
+			case Repo.insert_or_update(changeset) do
 				{:ok, delegation} ->
-					delegation = Repo.preload delegation, :from_identity
-					delegation = Repo.preload delegation, :to_identity
+					delegation = Repo.preload delegation, [:from_identity, :to_identity]
 					conn
 					|> put_status(:created)
-					|> put_resp_header("location", identity_delegation_path(conn, :show, from_identity, delegation))
+					|> put_resp_header("location", identity_delegation_path(conn, :show, from_identity_id, delegation))
 					|> render("show.json", delegation: delegation)
 				{:error, changeset} ->
 					conn
@@ -46,38 +48,65 @@ defmodule Democracy.DelegationController do
 					|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
 			end
 		else
-			send_resp(conn, :unauthorized, "Current user should be from user")
+			send_resp(conn, :unauthorized, "Can only create delegations for yourself")
 		end
 	end
 
-	def show(conn, %{"identity_username" => from_user_username, "id" => to_user_username}, user, claims) do
-		from_user = Repo.get_by!(User, username: from_user_username)
-		to_user = Repo.get_by!(User, username: to_user_username)
+	def show(conn, %{"identity_id" => from_identity_id, "id" => to_identity_id}, _, _) do
+		from_identity = Repo.get(Identity, from_identity_id)
+		to_identity = Repo.get(Identity, to_identity_id)
+		delegation = Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id})
 
-		query = from d in Delegation,
-			where: d.from_user == ^from_user and d.to_user == ^to_user,
-			select: d
-
-		delegation = Repo.get!(query)
-
-		render(conn, "show.json", delegation: delegation)
+		cond do
+			from_identity && to_identity && delegation ->
+				delegation = Repo.preload delegation, [:from_identity, :to_identity]
+				conn
+				|> render("show.json", delegation: delegation)
+			not from_identity ->
+				conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: "From identity does not exist")
+			not to_identity ->
+				conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: "To identity does not exist")
+			not delegation ->
+				conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: "Delegation does not exist")
+		end
 	end
 
-	def delete(conn, %{"identity_username" => from_user_username, "id" => to_user_username}, user, claims) do
-		from_user = Repo.get_by!(User, username: from_user_username)
-		to_user = Repo.get_by!(User, username: to_user_username)
+	def delete(conn, %{"identity_id" => from_identity_id, "id" => to_identity_id}, user, claims) do
+		if from_identity_id == "me" do
+			from_identity_id = user.id
+		end
+		if user != nil and to_string(user.id) == from_identity_id do
+			from_identity = Repo.get(Identity, from_identity_id)
+			to_identity = Repo.get(Identity, to_identity_id)
+			delegation = Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id})
 
-		if conn.user == from_user do
-			query = from d in Delegation,
-				where: d.from_user == ^from_user and d.to_user == ^to_user,
-				select: d
-			delegation = Repo.get!(query)
+			cond do
+				from_identity && to_identity && delegation ->
+					Repo.delete!(delegation)
 
-			Repo.delete!(delegation)
-
-			send_resp(conn, :no_content, "")
+					conn
+					|> send_resp(:no_content, "")
+				not from_identity ->
+					conn
+					|> put_status(:not_found)
+					|> render(Democracy.ErrorView, "error.json", message: "From identity does not exist")
+				not to_identity ->
+					conn
+					|> put_status(:not_found)
+					|> render(Democracy.ErrorView, "error.json", message: "To identity does not exist")
+				not delegation ->
+					conn
+					|> put_status(:not_found)
+					|> render(Democracy.ErrorView, "error.json", message: "Delegation does not exist")
+			end
 		else
 			send_resp(conn, :unauthorized, "Current user should be from user")
-		end
+		end	
 	end
 end

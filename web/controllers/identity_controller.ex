@@ -12,21 +12,21 @@ defmodule Democracy.IdentityController do
 
 	def create(conn, %{"identity" => params}) do
 		changeset = Identity.changeset(%Identity{}, params)
-		if changeset.valid? do
-			identity = Identity.create(changeset)
-			conn
-			|> put_status(:created)
-			|> put_resp_header("location", identity_path(conn, :show, Map.put(identity, :id, identity.username)))
-			|> render("show.json", identity: Map.put(identity, :insecure_token, identity.token))
-		else
-			conn
-			|> put_status(:unprocessable_entity)
-			|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
+		case Identity.create(changeset) do
+			{:ok, identity} ->
+				conn
+				|> put_status(:created)
+				|> put_resp_header("location", identity_path(conn, :show, identity))
+				|> render("show.json", identity: Map.put(identity, :insecure_token, identity.token))
+			{:error, changeset} ->
+				conn
+				|> put_status(:unprocessable_entity)
+				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
 		end
 	end
 
-	def show(conn, %{"username" => username}) do
-		identity = Repo.get_by(Identity, username: username)
+	def show(conn, %{"id" => id}) do
+		identity = Repo.get(Identity, id)
 		if identity do
 			render(conn, "show.json", identity: identity)
 		else

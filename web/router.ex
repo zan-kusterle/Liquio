@@ -14,7 +14,7 @@ defmodule Democracy.Router do
 
 		resources "/login", LoginController, only: [:create, :delete]
 
-		resources "/identities", IdentityController, param: "username", only: [:index, :create, :show] do
+		resources "/identities", IdentityController, only: [:index, :create, :show] do
 			resources "/delegations", DelegationController, only: [:index, :create, :show, :delete]
 		end
 
