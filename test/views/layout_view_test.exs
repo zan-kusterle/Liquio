@@ -1,3 +1,3 @@
 defmodule Democracy.LayoutViewTest do
-  use Democracy.ConnCase, async: true
+	use Democracy.ConnCase, async: true
 end

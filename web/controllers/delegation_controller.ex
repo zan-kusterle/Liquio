@@ -9,7 +9,7 @@ defmodule Democracy.DelegationController do
 
 	plug :scrub_params, "delegation" when action in [:create, :update]
 
-	def index(conn, %{"identity_id" => from_identity_username}) do
+	def index(conn, %{"identity_username" => from_identity_username}) do
 		from_identity = Repo.get_by!(Identity, username: from_identity_username)
 
 		query = from d in Delegation,
@@ -20,7 +20,7 @@ defmodule Democracy.DelegationController do
 		render(conn, "index.json", delegations: delegations)
 	end
 
-	def create(conn, %{"identity_id" => from_identity_username, "delegation" => %{"to_identity_id" => to_identity_username, "weight" => weight, "topics" => topics}}, user, claims) do
+	def create(conn, %{"identity_username" => from_identity_username, "delegation" => %{"to_identity_id" => to_identity_username, "weight" => weight, "topics" => topics}}, user, claims) do
 		from_identity = Repo.get_by!(Identity, username: from_identity_username)
 		to_identity = Repo.get_by!(Identity, username: to_identity_username)
 
@@ -50,7 +50,7 @@ defmodule Democracy.DelegationController do
 		end
 	end
 
-	def show(conn, %{"user_id" => from_user_username, "id" => to_user_username}, user, claims) do
+	def show(conn, %{"identity_username" => from_user_username, "id" => to_user_username}, user, claims) do
 		from_user = Repo.get_by!(User, username: from_user_username)
 		to_user = Repo.get_by!(User, username: to_user_username)
 
@@ -63,7 +63,7 @@ defmodule Democracy.DelegationController do
 		render(conn, "show.json", delegation: delegation)
 	end
 
-	def delete(conn, %{"user_id" => from_user_username, "id" => to_user_username}, user, claims) do
+	def delete(conn, %{"identity_username" => from_user_username, "id" => to_user_username}, user, claims) do
 		from_user = Repo.get_by!(User, username: from_user_username)
 		to_user = Repo.get_by!(User, username: to_user_username)
 

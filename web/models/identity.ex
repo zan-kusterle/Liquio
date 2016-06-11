@@ -1,6 +1,8 @@
 defmodule Democracy.Identity do
 	use Democracy.Web, :model
 
+	alias Democracy.Repo
+
 	schema "identities" do
 		field :username, :string
 		field :token, :string # TODO: Hash and salt tokens
@@ -14,28 +16,37 @@ defmodule Democracy.Identity do
 
 		timestamps
 	end
-
-	@required_fields ~w(username name)
-	@optional_fields ~w()
-
+	
 	def changeset(model, params \\ :empty) do
 		model
-		|> cast(params, @required_fields, @optional_fields)
+		|> cast(params, ["username", "name"], [])
 		|> unique_constraint(:username)
+		|> validate_length(:username, min: 3, max: 20)
+		|> validate_length(:name, min: 3, max: 1000)
 	end
 
-	def new(params, trust_metric_poll) do
-		changeset(%Democracy.Identity{
-			:token => generate_token(),
-			:trust_metric_poll_id => trust_metric_poll.id
-		}, params)
+	def create(changeset) do
+		{:ok, identity} = Repo.transaction fn ->
+			trust_metric_poll = Repo.insert!(%Democracy.Poll{
+				:title => "is_human",
+				:choices => ["true"],
+				:topics => nil,
+				:is_direct => true
+			})
+
+			changeset = changeset
+			|> put_change(:token, generate_token())
+			|> put_change(:trust_metric_poll_id, trust_metric_poll.id)
+			Repo.insert!(changeset)
+		end
+		identity
 	end
 
-	def generate_token() do
+	defp generate_token() do
 		random_string(16)
 	end
 
-	def random_string(length) do
+	defp random_string(length) do
 		:crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
 	end
 end
