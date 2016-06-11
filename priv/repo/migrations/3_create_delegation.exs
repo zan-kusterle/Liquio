@@ -3,10 +3,10 @@ defmodule Democracy.Repo.Migrations.CreateDelegation do
 
 	def change do
 		create table(:delegations) do
-			add :from_identity_id, references(:identities, on_delete: :nothing)
-			add :to_identity_id, references(:identities, on_delete: :nothing)
+			add :from_identity_id, references(:identities, on_delete: :nothing), null: false
+			add :to_identity_id, references(:identities, on_delete: :nothing), null: false
 
-			add :weight, :float
+			add :weight, :float, null: false, default: 1.0
 			add :topics, {:array, :string}
 
 			timestamps

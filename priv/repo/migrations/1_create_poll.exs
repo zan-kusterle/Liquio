@@ -3,10 +3,11 @@ defmodule Democracy.Repo.Migrations.CreatePoll do
 
 	def change do
 		create table(:polls) do
+			add :kind, :string, null: false
 			add :title, :string
-			add :choices, {:array, :string}
+			add :choices, {:array, :string}, null: false
 			add :topics, {:array, :string}
-			add :is_direct, :boolean
+			add :is_direct, :boolean, default: false
 
 			timestamps
 		end

@@ -2,6 +2,7 @@ defmodule Democracy.Poll do
 	use Democracy.Web, :model
 
 	schema "polls" do
+		field :kind, :string
 		field :title, :string
 		field :choices, {:array, :string}
 		field :topics, {:array, :string}
@@ -9,16 +10,11 @@ defmodule Democracy.Poll do
 
 		timestamps
 	end
-
-	@required_fields ~w(title choices)
-	@optional_fields ~w(topics is_direct)
 	
 	def changeset(model, params \\ :empty) do
 		model
-		|> cast(params, @required_fields, @optional_fields)
-	end
-
-	def new(params) do
-		changeset(%Democracy.Poll{}, params)
+		|> cast(params, ["title", "choices"], ["topics"])
+		|> put_change(:kind, "custom")
+		|> put_change(:is_direct, false)
 	end
 end

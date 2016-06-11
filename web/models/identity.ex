@@ -22,13 +22,14 @@ defmodule Democracy.Identity do
 		|> cast(params, ["username", "name"], [])
 		|> unique_constraint(:username)
 		|> validate_length(:username, min: 3, max: 20)
-		|> validate_length(:name, min: 3, max: 1000)
+		|> validate_length(:name, min: 3, max: 255)
 	end
 
 	def create(changeset) do
 		{:ok, identity} = Repo.transaction fn ->
 			trust_metric_poll = Repo.insert!(%Democracy.Poll{
-				:title => "is_human",
+				:kind => "is_human",
+				:title => nil,
 				:choices => ["true"],
 				:topics => nil,
 				:is_direct => true

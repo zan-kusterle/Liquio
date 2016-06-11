@@ -3,12 +3,12 @@ defmodule Democracy.Repo.Migrations.CreateIdentity do
 
 	def change do
 		create table(:identities) do
-			add :username, :string
-			add :token, :string
+			add :username, :string, null: false, size: 20
+			add :token, :string, null: false
 
-			add :name, :string
+			add :name, :string, null: false
 
-			add :trust_metric_poll_id, references(:polls, on_delete: :nothing)
+			add :trust_metric_poll_id, references(:polls, on_delete: :nothing), null: false
 
 			timestamps
 		end

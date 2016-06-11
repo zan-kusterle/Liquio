@@ -3,11 +3,10 @@ defmodule Democracy.IdentityController do
 
 	alias Democracy.Identity
 
-	plug :scrub_params, "identity" when action in [:create, :update]
+	plug :scrub_params, "identity" when action in [:create]
 
 	def index(conn, %{}) do
 		identities = Repo.all(Identity)
-
 		render(conn, "index.json", identities: identities)
 	end
 
