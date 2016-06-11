@@ -13,10 +13,9 @@ defmodule Democracy.DelegationController do
 		from_identity = Repo.get(Identity, from_identity_id)
 
 		if from_identity do
-			query = from d in Delegation,
-				where: d.from_identity_id == ^from_identity.id,
-				select: d
-			delegations = Repo.all(query) |> Repo.preload([:from_identity, :to_identity])
+			delegations = from(d in Delegation, where: d.from_identity_id == ^from_identity.id)
+			|> Repo.all
+			|> Repo.preload([:from_identity, :to_identity])
 
 			conn
 			|> render("index.json", delegations: delegations)
@@ -27,7 +26,7 @@ defmodule Democracy.DelegationController do
 		end
 	end
 
-	def create(conn, %{"identity_id" => from_identity_id, "delegation" => params}, user, claims) do
+	def create(conn, %{"identity_id" => from_identity_id, "delegation" => params}, user, _) do
 		if from_identity_id == "me" do
 			from_identity_id = user.id
 		end
@@ -77,7 +76,7 @@ defmodule Democracy.DelegationController do
 		end
 	end
 
-	def delete(conn, %{"identity_id" => from_identity_id, "id" => to_identity_id}, user, claims) do
+	def delete(conn, %{"identity_id" => from_identity_id, "id" => to_identity_id}, user, _) do
 		if from_identity_id == "me" do
 			from_identity_id = user.id
 		end
@@ -107,6 +106,6 @@ defmodule Democracy.DelegationController do
 			end
 		else
 			send_resp(conn, :unauthorized, "Current user should be from user")
-		end	
+		end
 	end
 end
