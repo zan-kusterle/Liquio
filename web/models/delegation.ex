@@ -43,7 +43,6 @@ defmodule Democracy.Delegation do
 	end
 
 	def set(changeset) do
-		IO.inspect changeset
 		remove_current_last(changeset.params["from_identity_id"], changeset.params["to_identity_id"])
 		changeset = changeset
 		|> put_change(:is_last, true)

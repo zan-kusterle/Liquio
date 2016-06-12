@@ -8,13 +8,14 @@ defmodule Democracy.VoteData do
 	def changeset(model, params \\ :empty) do
 		model
 		|> cast(params, ["score_by_choices"], [])
-		|> validate_number(:score, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
 	end
 end
 
 defmodule Democracy.Vote do
 	use Democracy.Web, :model
 
+	alias Democracy.Repo
+	alias Democracy.Vote
 	alias Democracy.VoteData
 
 	schema "votes" do
@@ -28,14 +29,25 @@ defmodule Democracy.Vote do
 	end
 
 	def changeset(model, params \\ :empty) do
-		if is_integer(params["score"]) do
-			params = Map.put(params, "score", params["score"] * 1.0)
-		end
-
 		model
 		|> cast(params, ["poll_id", "identity_id"], [])
 		|> assoc_constraint(:poll)
 		|> assoc_constraint(:identity)
 		|> put_change(:data, VoteData.changeset(%VoteData{}, params))
+	end
+
+	def set(changeset) do
+		remove_current_last(changeset.params["poll_id"], changeset.params["identity_id"])
+		changeset = changeset
+		|> put_change(:is_last, true)
+		Repo.insert(changeset)
+	end
+
+	def remove_current_last(poll_id, identity_id) do
+		current_last = Repo.get_by(Vote,
+			poll_id: poll_id, identity_id: identity_id, is_last: true)
+		if current_last do
+			Repo.update! Ecto.Changeset.change current_last, is_last: false
+		end
 	end
 end

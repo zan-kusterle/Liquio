@@ -10,12 +10,10 @@ defmodule Democracy.VoteView do
 	end
 
 	def render("vote.json", %{vote: vote}) do
-		v = %{
+		%{
 			identity_id: vote.identity_id,
 			poll_id: vote.poll_id,
-			choice: vote.choice,
-			score: vote.score
+			score_by_choices: vote.data.score_by_choices
 		}
-		v
 	end
 end

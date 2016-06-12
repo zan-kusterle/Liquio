@@ -10,7 +10,7 @@ defmodule Democracy.VoteController do
 	def index(conn, %{"poll_id" => poll_id}, _, _) do
 		poll = Repo.get(Poll, poll_id)
 		if poll do
-			votes = from(v in Vote, where: v.poll_id == ^poll.id)
+			votes = from(v in Vote, where: v.poll_id == ^poll.id and v.is_last)
 			|> Repo.all
 			render(conn, "index.json", votes: votes)
 		else
@@ -24,15 +24,13 @@ defmodule Democracy.VoteController do
 		poll = Repo.get(Poll, poll_id)
 		if poll do
 			if user do
-				params = params |> Map.put("poll_id", poll.id) |> Map.put("user_id", user.id)
-				changeset = Vote.changeset(params)
-				case Repo.insert(params) do
-					{:ok, vote} ->
-						spawn_link(Result.on_vote_cast(vote))
-						
+				params = params |> Map.put("poll_id", poll.id) |> Map.put("identity_id", user.id)
+				changeset = Vote.changeset(%Vote{}, params)
+				case Vote.set(changeset) do
+					{:ok, vote} ->						
 						conn
 						|> put_status(:created)
-						|> put_resp_header("location", poll_vote_path(conn, :show, poll, vote))
+						|> put_resp_header("location", poll_vote_path(conn, :index, poll))
 						|> render("show.json", vote: vote)
 					{:error, changeset} ->
 						conn
