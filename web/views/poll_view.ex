@@ -11,6 +11,7 @@ defmodule Democracy.PollView do
 
 	def render("poll.json", %{poll: poll}) do
 		v = %{
+			id: poll.id,
 			kind: poll.kind,
 			title: poll.title,
 			choices: poll.choices,

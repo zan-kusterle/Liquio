@@ -11,8 +11,8 @@ defmodule Democracy.DelegationView do
 
 	def render("delegation.json", %{delegation: delegation}) do
 		%{
-			from_username: delegation.from_identity.username,
-			to_username: delegation.to_identity.username,
+			from_identity: Democracy.IdentityView.render("identity.json", identity: delegation.from_identity),
+			to_identity: Democracy.IdentityView.render("identity.json", identity: delegation.to_identity),
 			weight: delegation.data.weight,
 			topics: delegation.data.topics
 		}

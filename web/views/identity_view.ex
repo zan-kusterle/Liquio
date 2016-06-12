@@ -11,6 +11,7 @@ defmodule Democracy.IdentityView do
 
 	def render("identity.json", %{identity: identity}) do
 		v = %{
+			id: identity.id,
 			username: identity.username,
 			name: identity.name,
 			trust_metric_poll_id: identity.trust_metric_poll_id

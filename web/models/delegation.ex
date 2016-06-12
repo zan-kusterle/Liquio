@@ -38,7 +38,7 @@ defmodule Democracy.Delegation do
 		|> cast(params, ["from_identity_id", "to_identity_id"], [])
 		|> assoc_constraint(:from_identity)
 		|> assoc_constraint(:to_identity)
-		|> put_change(:data, DelegationData.changeset(%DelegationData{}, params))
+		|> put_embed(:data, DelegationData.changeset(%DelegationData{}, params))
 		# TODO: Validate cycles
 	end
 

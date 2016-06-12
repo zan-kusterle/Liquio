@@ -13,7 +13,7 @@ defmodule Democracy.PollControllerTest do
 		conn = post(conn, poll_path(conn, :create), poll: @valid_attrs)
 		[location | _] = get_resp_header(conn, "location")
 		conn = get conn, location
-		assert json_response(conn, 200)["data"] == %{
+		assert json_response(conn, 200)["data"] |> Map.drop(["id"]) == %{
 			"title" => @valid_attrs.title,
 			"choices" => @valid_attrs.choices,
 			"topics" => @valid_attrs.topics,

@@ -8,6 +8,7 @@ defmodule Democracy.VoteData do
 	def changeset(model, params \\ :empty) do
 		model
 		|> cast(params, ["score_by_choices"], [])
+		# TODO: Validate structure of scores_by_choice
 	end
 end
 
@@ -33,7 +34,7 @@ defmodule Democracy.Vote do
 		|> cast(params, ["poll_id", "identity_id"], [])
 		|> assoc_constraint(:poll)
 		|> assoc_constraint(:identity)
-		|> put_change(:data, VoteData.changeset(%VoteData{}, params))
+		|> put_embed(:data, VoteData.changeset(%VoteData{}, params))
 	end
 
 	def set(changeset) do
