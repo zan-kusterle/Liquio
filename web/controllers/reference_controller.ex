@@ -23,18 +23,25 @@ defmodule Democracy.ReferenceController do
 	end
 
 	def create(conn, %{"poll_id" => poll_id, "reference" => params}) do
-		params = Map.put(params, "poll_id", poll_id)
-		changeset = Reference.changeset(%Reference{}, params)
-		case Reference.create(changeset) do
-			{:ok, reference} ->
-				conn
-				|> put_status(:created)
-				|> put_resp_header("location", poll_reference_path(conn, :show, reference))
-				|> render("show.json", reference: reference)
-			{:error, changeset} ->
-				conn
-				|> put_status(:unprocessable_entity)
-				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
+		poll = Repo.get(Poll, poll_id)
+		if poll do
+			params = Map.put(params, "poll_id", poll.id)
+			changeset = Reference.changeset(%Reference{}, params)
+			case Reference.create(changeset) do
+				{:ok, reference} ->
+					conn
+					|> put_status(:created)
+					|> put_resp_header("location", poll_reference_path(conn, :show, reference))
+					|> render("show.json", reference: reference)
+				{:error, changeset} ->
+					conn
+					|> put_status(:unprocessable_entity)
+					|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
+			end
+		else
+			conn
+			|> put_status(:not_found)
+			|> render(Democracy.ErrorView, "error.json", message: "Poll does not exist")
 		end
 	end
 end

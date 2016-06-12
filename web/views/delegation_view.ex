@@ -13,8 +13,8 @@ defmodule Democracy.DelegationView do
 		%{
 			from_username: delegation.from_identity.username,
 			to_username: delegation.to_identity.username,
-			weight: delegation.weight,
-			topics: delegation.topics
+			weight: delegation.data.weight,
+			topics: delegation.data.topics
 		}
 	end
 end
