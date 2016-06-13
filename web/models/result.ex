@@ -18,6 +18,7 @@ defmodule Democracy.Result do
 		IO.inspect inverse_delegations
 		IO.inspect votes
 
+		:ets.new(:power_registry, [:named_table])
 		contributions = Enum.map(votes, fn({identity_id, data}) ->
 			own_weight = get_power(identity_id, delegations, inverse_delegations, votes)
 			Enum.map(data, fn({choice, score}) ->
@@ -56,16 +57,26 @@ defmodule Democracy.Result do
 	end
 
 	def get_power(identity_id, delegations, inverse_delegations, votes) do
-		receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.map(fn({from_identity_id, from_weight}) ->
-			if Map.has_key?(votes, from_identity_id) do
-				0
-			else
-				from_power = get_power(from_identity_id, delegations, inverse_delegations, votes)
-				total_weight = delegations[from_identity_id] |> Map.values |> Enum.sum
-				from_power * (from_weight / total_weight)
-			end
-		end) |> Enum.sum
-		1 + receiving
+		power = case :ets.lookup(:power_registry, identity_id) do
+			[{^identity_id, bucket}] -> bucket
+			[] -> nil
+		end
+		if power do
+			power
+		else
+			receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.map(fn({from_identity_id, from_weight}) ->
+				if Map.has_key?(votes, from_identity_id) do
+					0
+				else
+					from_power = get_power(from_identity_id, delegations, inverse_delegations, votes)
+					total_weight = delegations[from_identity_id] |> Map.values |> Enum.sum
+					from_power * (from_weight / total_weight)
+				end
+			end) |> Enum.sum
+			power = 1 + receiving
+			:ets.insert(:power_registry, {identity_id, power})
+			power
+		end
 	end
 
 	def get_delegations(poll, trust_metric_key, datetime) do
@@ -86,11 +97,11 @@ defmodule Democracy.Result do
 				ta == nil or tb == nil or Enum.any?(ta, &(Enum.member?(tb, &1)))
 			end
 		end)
-		delegations = for {from_identity_id, from_identity_rows} <- rows |> Enum.group_by(&(&1 |> Enum.at 0)), into: %{}, do: {
+		delegations = for {from_identity_id, from_identity_rows} <- rows |> Enum.group_by(&(&1 |> Enum.at(0))), into: %{}, do: {
 			from_identity_id,
 			(for row <- from_identity_rows, into: %{}, do: {Enum.at(row, 1), Enum.at(row, 2)["weight"]})
 		}
-		inverse_delegations = for {to_identity_id, to_identity_rows} <- rows |> Enum.group_by(&(&1 |> Enum.at 1)), into: %{}, do: {
+		inverse_delegations = for {to_identity_id, to_identity_rows} <- rows |> Enum.group_by(&(&1 |> Enum.at(1))), into: %{}, do: {
 			to_identity_id,
 			(for row <- to_identity_rows, into: %{}, do: {Enum.at(row, 0), Enum.at(row, 2)["weight"]})
 		}

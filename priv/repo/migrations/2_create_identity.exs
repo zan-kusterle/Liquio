@@ -10,6 +10,8 @@ defmodule Democracy.Repo.Migrations.CreateIdentity do
 
 			add :trust_metric_poll_id, references(:polls, on_delete: :nothing), null: false
 
+			add :trust_metric_url, :string
+
 			timestamps
 		end
 
