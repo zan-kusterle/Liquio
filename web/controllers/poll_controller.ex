@@ -36,7 +36,7 @@ defmodule Democracy.PollController do
 
 	def results(conn, %{"poll_id" => id}) do
 		poll = Repo.get!(Poll, id)
-		results = Result.calculate(poll, "ALL", Ecto.DateTime.utc())
+		results = Result.calculate(poll, Ecto.DateTime.utc(), MapSet.new(Enum.to_list 1..1000000))
 		conn
 		|> render("results.json", results: results)
 	end
