@@ -14,6 +14,8 @@ defmodule Democracy.Identity do
 		has_many :delegations_from, Democracy.Delegation, foreign_key: :from_identity_id
 		has_many :delegations_to, Democracy.Delegation, foreign_key: :to_identity_id
 
+		field :trust_metric_url, :string
+
 		timestamps
 	end
 	

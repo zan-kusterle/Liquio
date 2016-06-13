@@ -3,7 +3,7 @@ defmodule Democracy.PollController do
 
 	alias Democracy.Poll
 	alias Democracy.Vote
-	alias Democracy.Results
+	alias Democracy.Result
 
 	plug :scrub_params, "poll" when action in [:create]
 
@@ -36,7 +36,7 @@ defmodule Democracy.PollController do
 
 	def results(conn, %{"poll_id" => id}) do
 		poll = Repo.get!(Poll, id)
-		results = Results.get(poll)
+		results = Result.calculate(poll, "ALL", Ecto.DateTime.utc())
 		conn
 		|> render("results.json", results: results)
 	end
