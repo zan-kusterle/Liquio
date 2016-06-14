@@ -146,7 +146,7 @@ defmodule Democracy.Result do
 
 	def calculate_total_weights(identity_id, inverse_delegations, votes, topics, trust_identity_ids) do
 		unless Democracy.TotalDelegationsWeightServer.is_done?(identity_id) do
-			inverse_delegations |> elem(identity_id - 1) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
+			inverse_delegations |> Map.get(identity_id, %{}) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
 				cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> nil
 					Map.has_key?(votes, from_identity_id) -> nil
@@ -165,7 +165,7 @@ defmodule Democracy.Result do
 		if power do
 			power
 		else
-			receiving = inverse_delegations |> elem(identity_id - 1) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
+			receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
 				acc + cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
@@ -193,13 +193,13 @@ defmodule Democracy.Result do
 		end)
 		inverse_delegations = for {to_identity_id, to_identity_rows} <- rows |> Enum.group_by(&(&1 |> Enum.at(1))), into: %{}, do: {
 			to_identity_id,
-			(for row <- to_identity_rows, into: %{}, do: {
-				Enum.at(row, 0),
+			to_identity_rows |> Enum.map(fn(row) ->
 				{
+					Enum.at(row, 0),
 					Enum.at(row, 2)["weight"],
 					if Enum.at(row, 2)["topics"] == nil do nil else Enum.at(row, 2)["topics"] |> MapSet.new end
 				}
-			})
+			end)
 		}
 		inverse_delegations
 	end
@@ -234,10 +234,11 @@ defmodule Democracy.Result do
 	end
 
 	def get_random_inverse_delegations(identity_ids, num_delegations) do
-		r = for to_identity_id <- identity_ids, do: identity_ids
+		for to_identity_id <- identity_ids, into: %{}, do: {to_identity_id,
+			identity_ids
 			|> Enum.slice(max(0, to_identity_id - num_delegations - 1), min(to_identity_id - 1, num_delegations))
 			|> Enum.map(& {&1, 1, nil})
-		r |> List.to_tuple
+		}
 	end
 
 	def get_random_votes(identity_ids, num_votes) do

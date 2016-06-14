@@ -4,6 +4,7 @@ defmodule Democracy.ResultTest do
 	alias Democracy.Result
 
 	test "results with random delegations and votes" do
-		Result.calculate_random(1000, 100, 10)
+		Result.create_random("1K.data", 1000, 100, 10)
+		Result.calculate_random("1K.data")
 	end
 end
