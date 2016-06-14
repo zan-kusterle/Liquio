@@ -19,7 +19,7 @@ defmodule Democracy.Mixfile do
   def application do
     [mod: {Democracy, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex]]
+                    :phoenix_ecto, :postgrex, :stopwatch]]
   end
 
   # Specifies which paths to compile per environment.
@@ -37,7 +37,8 @@ defmodule Democracy.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.9"},
      {:cowboy, "~> 1.0"},
-     {:guardian, "~> 0.10.0"}]
+     {:guardian, "~> 0.10.0"},
+     {:stopwatch, ">= 0.0.0"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.

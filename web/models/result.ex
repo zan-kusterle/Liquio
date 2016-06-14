@@ -1,16 +1,16 @@
 defmodule Democracy.VotingPowerServer do
 	def start_link do
-		Agent.start_link(fn -> HashDict.new end, name: __MODULE__)
+		Agent.start_link(fn -> Map.new end, name: __MODULE__)
 	end
 
 	def get(identity_id) do
-		Agent.get(__MODULE__, fn dict ->
-			Dict.get(dict, identity_id)
+		Agent.get(__MODULE__, fn map ->
+			Map.get(map, identity_id)
 		end)
 	end
 
 	def put(identity_id, power) do
-		Agent.update(__MODULE__, &Dict.put(&1, identity_id, power))
+		Agent.update(__MODULE__, &Map.put(&1, identity_id, power))
 	end
 end
 
@@ -28,23 +28,57 @@ defmodule Democracy.Result do
 
 	def calculate(poll, datetime, trust_identity_ids) do
 		votes = get_votes(poll.id, datetime)
-		inverse_delegations = if poll.is_direct do nil else get_inverse_delegations(datetime) end
-		topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
-
-		calculate_contributions(votes, inverse_delegations, trust_identity_ids, poll.topics, poll.choices, poll.is_direct)
+		unless poll.is_direct do
+			inverse_delegations = get_inverse_delegations(datetime)
+			topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
+			calculate_contributions(votes, inverse_delegations, trust_identity_ids, poll.topics, poll.choices)
+		else
+			calculate_direct_contributions(votes, trust_identity_ids, poll.choices)
+		end
 	end
 
-	def calculate_contributions(votes, inverse_delegations, trust_identity_ids, topics, choices, is_direct \\ false) do
+	def calculate_contributions(votes, inverse_delegations, trust_identity_ids, topics, choices) do
+		watch = Stopwatch.Watch.new
+
 		Democracy.VotingPowerServer.start_link
 
 		contributions = Enum.map(votes, fn({identity_id, data}) ->
 			if MapSet.member?(trust_identity_ids, identity_id) do
-				voting_power = if is_direct do 1 else get_power(identity_id, inverse_delegations, votes, topics, trust_identity_ids) end
+				voting_power = get_power(identity_id, inverse_delegations, votes, topics, trust_identity_ids)
 				Enum.map(data, fn({choice, score}) ->
 					%{
 						choice: choice,
 						identity_id: identity_id,
 						voting_power: voting_power,
+						score: score
+					}
+				end)
+			else
+				[]
+			end
+		end) |> List.flatten
+
+		watch = Stopwatch.Watch.lap(watch, "calculate contributions")
+
+		contributions_by_choice = contributions |> Enum.group_by(&(&1.choice))
+
+		for choice <- choices, into: %{}, do: {
+			choice,
+			calculate_contributions_for_choice(choice, Map.get(contributions_by_choice, choice, []))
+		}
+
+		watch = Stopwatch.Watch.last_lap(watch, "calculate contributions for choices")
+		IO.inspect Stopwatch.Watch.get_laps(watch, :secs)
+	end
+
+	def calculate_direct_contributions(votes, trust_identity_ids, choices) do
+		contributions = Enum.map(votes, fn({identity_id, data}) ->
+			if MapSet.member?(trust_identity_ids, identity_id) do
+				Enum.map(data, fn({choice, score}) ->
+					%{
+						choice: choice,
+						identity_id: identity_id,
+						voting_power: 1,
 						score: score
 					}
 				end)
@@ -82,16 +116,17 @@ defmodule Democracy.Result do
 		if power do
 			power
 		else
-			receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.map(fn({from_identity_id, {from_ratio, from_topics}}) ->
-				cond do
+			receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.reduce(0, fn({from_identity_id, {from_ratio, from_topics}}, acc) ->
+				acc + cond do
 					not MapSet.member?(trust_identity_ids, identity_id) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> 0
 					true ->
 						from_power = get_power(from_identity_id, inverse_delegations, votes, topics, trust_identity_ids)
-						from_power * from_ratio
+						#from_power * from_ratio
+						from_power / 100
 				end
-			end) |> Enum.sum
+			end)
 			power = 1 + receiving
 			Democracy.VotingPowerServer.put(identity_id, power)
 			power
@@ -139,6 +174,7 @@ defmodule Democracy.Result do
 		trust_identity_ids = Enum.to_list 1..num_identities
 		votes = get_random_votes trust_identity_ids, num_votes
 		inverse_delegations = get_random_inverse_delegations trust_identity_ids, num_delegations_per_identity
+		IO.puts "Done generating random delegations and votes"
 		
 		calculate_contributions(votes, inverse_delegations, trust_identity_ids |> MapSet.new, nil, ["true"])
 	end
@@ -146,7 +182,7 @@ defmodule Democracy.Result do
 	def get_random_inverse_delegations(identity_ids, num_delegations) do
 		for to_identity_id <- identity_ids, into: %{}, do: {
 			to_identity_id,
-			(for from_identity_id <- identity_ids |> Enum.take(to_identity_id - 1) |> Enum.take_random(num_delegations), into: %{}, do: {
+			(for from_identity_id <- identity_ids |> Enum.slice(max(0, to_identity_id - num_delegations - 1), min(to_identity_id - 1, num_delegations)), into: %{}, do: {
 				from_identity_id, {1, nil}
 			})
 		}
