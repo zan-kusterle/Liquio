@@ -69,8 +69,6 @@ defmodule Democracy.Result do
 	end
 
 	def calculate_contributions(votes, inverse_delegations, trust_identity_ids, topics, choices) do
-		watch = Stopwatch.Watch.new
-
 		Democracy.VotingPowerServer.start_link
 		Democracy.TotalDelegationsWeightServer.start_link
 
@@ -96,17 +94,14 @@ defmodule Democracy.Result do
 			end
 		end) |> List.flatten
 
-		watch = Stopwatch.Watch.lap(watch, "calculate contributions")
-
 		contributions_by_choice = contributions |> Enum.group_by(&(&1.choice))
 
-		for choice <- choices, into: %{}, do: {
+		data = for choice <- choices, into: %{}, do: {
 			choice,
 			calculate_contributions_for_choice(choice, Map.get(contributions_by_choice, choice, []))
 		}
-
-		watch = Stopwatch.Watch.last_lap(watch, "calculate contributions for choices")
-		IO.inspect Stopwatch.Watch.get_laps(watch, :secs)
+		
+		data
 	end
 
 	def calculate_direct_contributions(votes, trust_identity_ids, choices) do
@@ -151,7 +146,7 @@ defmodule Democracy.Result do
 
 	def calculate_total_weights(identity_id, inverse_delegations, votes, topics, trust_identity_ids) do
 		unless Democracy.TotalDelegationsWeightServer.is_done?(identity_id) do
-			inverse_delegations |> Map.get(identity_id, %{}) |> Enum.each(fn({from_identity_id, {from_weight, from_topics}}) ->
+			inverse_delegations |> elem(identity_id - 1) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
 				cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> nil
 					Map.has_key?(votes, from_identity_id) -> nil
@@ -170,7 +165,7 @@ defmodule Democracy.Result do
 		if power do
 			power
 		else
-			receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.reduce(0, fn({from_identity_id, {from_weight, from_topics}}, acc) ->
+			receiving = inverse_delegations |> elem(identity_id - 1) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
 				acc + cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
@@ -223,22 +218,26 @@ defmodule Democracy.Result do
 		votes
 	end
 
-	def calculate_random(num_identities, num_votes, num_delegations_per_identity) do
-		trust_identity_ids = Enum.to_list 1..num_identities
-		votes = get_random_votes trust_identity_ids, num_votes
-		inverse_delegations = get_random_inverse_delegations trust_identity_ids, num_delegations_per_identity
-		IO.puts "Done generating random delegations and votes"
-		
+	def calculate_random(filename) do
+		{trust_identity_ids, votes, inverse_delegations} = :erlang.binary_to_term(File.read! filename)
+
 		calculate_contributions(votes, inverse_delegations, trust_identity_ids |> MapSet.new, nil, ["true"])
 	end
 
+	def create_random(filename, num_identities, num_votes, num_delegations_per_identity) do
+		trust_identity_ids = Enum.to_list 1..num_identities
+		votes = get_random_votes trust_identity_ids, num_votes
+		inverse_delegations = get_random_inverse_delegations trust_identity_ids, num_delegations_per_identity
+
+		{:ok, file} = File.open filename, [:write]
+		IO.binwrite file, :erlang.term_to_binary({trust_identity_ids, votes, inverse_delegations})
+	end
+
 	def get_random_inverse_delegations(identity_ids, num_delegations) do
-		for to_identity_id <- identity_ids, into: %{}, do: {
-			to_identity_id,
-			(for from_identity_id <- identity_ids |> Enum.slice(max(0, to_identity_id - num_delegations - 1), min(to_identity_id - 1, num_delegations)), into: %{}, do: {
-				from_identity_id, {1, nil}
-			})
-		}
+		r = for to_identity_id <- identity_ids, do: identity_ids
+			|> Enum.slice(max(0, to_identity_id - num_delegations - 1), min(to_identity_id - 1, num_delegations))
+			|> Enum.map(& {&1, 1, nil})
+		r |> List.to_tuple
 	end
 
 	def get_random_votes(identity_ids, num_votes) do
