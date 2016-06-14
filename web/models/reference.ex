@@ -28,8 +28,7 @@ defmodule Democracy.Reference do
 			:kind => "is_reference",
 			:title => nil,
 			:choices => ["true"],
-			:topics => nil,
-			:is_direct => false
+			:topics => nil
 		})
 
 		changeset = changeset

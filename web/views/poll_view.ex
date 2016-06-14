@@ -16,7 +16,6 @@ defmodule Democracy.PollView do
 			title: poll.title,
 			choices: poll.choices,
 			topics: poll.topics,
-			is_direct: poll.is_direct
 		}
 		v
 	end

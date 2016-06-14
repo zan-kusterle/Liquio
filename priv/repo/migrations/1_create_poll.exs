@@ -7,7 +7,6 @@ defmodule Democracy.Repo.Migrations.CreatePoll do
 			add :title, :string
 			add :choices, {:array, :string}, null: false
 			add :topics, {:array, :string}
-			add :is_direct, :boolean, default: false
 
 			timestamps
 		end

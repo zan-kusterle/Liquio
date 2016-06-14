@@ -33,7 +33,6 @@ defmodule Democracy.Identity do
 			:title => nil,
 			:choices => ["true"],
 			:topics => nil,
-			:is_direct => true
 		})
 
 		changeset = changeset

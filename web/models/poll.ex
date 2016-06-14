@@ -6,7 +6,6 @@ defmodule Democracy.Poll do
 		field :title, :string
 		field :choices, {:array, :string}
 		field :topics, {:array, :string}
-		field :is_direct, :boolean
 
 		timestamps
 	end
@@ -15,6 +14,5 @@ defmodule Democracy.Poll do
 		model
 		|> cast(params, ["title", "choices"], ["topics"])
 		|> put_change(:kind, "custom")
-		|> put_change(:is_direct, false)
 	end
 end

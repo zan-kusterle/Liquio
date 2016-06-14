@@ -59,7 +59,7 @@ defmodule Democracy.Result do
 
 	def calculate(poll, datetime, trust_identity_ids) do
 		votes = get_votes(poll.id, datetime)
-		unless poll.is_direct do
+		unless poll.kind == "is_human" do
 			inverse_delegations = get_inverse_delegations(datetime)
 			topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
 			calculate_contributions(votes, inverse_delegations, trust_identity_ids, poll.topics, poll.choices)

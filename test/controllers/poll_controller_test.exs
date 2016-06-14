@@ -18,7 +18,6 @@ defmodule Democracy.PollControllerTest do
 			"choices" => @valid_attrs.choices,
 			"topics" => @valid_attrs.topics,
 			"kind" => "custom",
-			"is_direct" => false
 		}
 	end
 
