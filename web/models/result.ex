@@ -69,7 +69,6 @@ defmodule Democracy.Result do
 	end
 
 	def calculate_contributions(votes, inverse_delegations, trust_identity_ids, topics, choices) do
-		Democracy.VotingPowerServer.start_link
 		Democracy.TotalDelegationsWeightServer.start_link
 
 		Enum.each(votes, fn({identity_id, data}) ->
@@ -78,9 +77,10 @@ defmodule Democracy.Result do
 			end
 		end)
 
+		power_memo = %{}
 		contributions = Enum.map(votes, fn({identity_id, data}) ->
 			if MapSet.member?(trust_identity_ids, identity_id) do
-				voting_power = get_power(identity_id, inverse_delegations, votes, topics, trust_identity_ids)
+				{voting_power, power_memo} = get_power(identity_id, inverse_delegations, votes, topics, trust_identity_ids, power_memo)
 				Enum.map(data, fn({choice, score}) ->
 					%{
 						choice: choice,
@@ -160,24 +160,25 @@ defmodule Democracy.Result do
 		end
 	end
 
-	def get_power(identity_id, inverse_delegations, votes, topics, trust_identity_ids) do
-		power = Democracy.VotingPowerServer.get(identity_id)
+	def get_power(identity_id, inverse_delegations, votes, topics, trust_identity_ids, memo) do
+		power = Map.get(memo, identity_id)
 		if power do
-			power
+			{power, memo}
 		else
-			receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
-				acc + cond do
+			{receiving, memo} = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.reduce({0, memo}, fn({from_identity_id, from_weight, from_topics}, {acc, memo}) ->
+				acc = acc + cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> 0
 					true ->
-						from_power = get_power(from_identity_id, inverse_delegations, votes, topics, trust_identity_ids)
+						{from_power, memo} = get_power(from_identity_id, inverse_delegations, votes, topics, trust_identity_ids, memo)
 						from_power * (from_weight / Democracy.TotalDelegationsWeightServer.get(from_identity_id))
 				end
+				{acc, memo}
 			end)
 			power = 1 + receiving
-			Democracy.VotingPowerServer.put(identity_id, power)
-			power
+			memo = Map.put(memo, identity_id, power)
+			{power, memo}
 		end
 	end
 
