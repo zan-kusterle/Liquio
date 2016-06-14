@@ -1,46 +1,46 @@
-defmodule Democracy.VotingPowerServer do
-	def start_link do
-		Agent.start_link(fn -> Map.new end, name: __MODULE__)
+defmodule Democracy.CalculateResultServer do
+	def start_link(uuid) do
+		Agent.start_link(fn -> {Map.new, Map.new, MapSet.new} end, name: uuid)
 	end
 
-	def get(identity_id) do
-		Agent.get(__MODULE__, fn map ->
-			Map.get(map, identity_id)
+	def stop(uuid) do
+		Agent.stop(uuid)
+	end
+
+	def get_power(uuid, identity_id) do
+		Agent.get(uuid, fn({powers, weights, done_ids}) ->
+			Map.get(powers, identity_id)
 		end)
 	end
 
-	def put(identity_id, power) do
-		Agent.update(__MODULE__, &Map.put(&1, identity_id, power))
-	end
-end
-
-defmodule Democracy.TotalDelegationsWeightServer do
-	def start_link do
-		Agent.start_link(fn -> {Map.new, MapSet.new} end, name: __MODULE__)
+	def put_power(uuid, identity_id, power) do
+		Agent.update(uuid, fn({powers, weights, done_ids}) ->
+			{Map.put(powers, identity_id, power), weights, done_ids}
+		end)
 	end
 
-	def get(identity_id) do
-		Agent.get(__MODULE__, fn({weights, done_ids}) ->
+	def get_total_weight(uuid, identity_id) do
+		Agent.get(uuid, fn({powers, weights, done_ids}) ->
 			Map.get(weights, identity_id)
 		end)
 	end
 
-	def add(identity_id, weight) do
-		Agent.update(__MODULE__, fn({weights, done_ids}) ->
+	def add_weight(uuid, identity_id, weight) do
+		Agent.update(uuid, fn({powers, weights, done_ids}) ->
 			new_total = Map.get(weights, identity_id, 0) + weight
-			{Map.put(weights, identity_id, new_total), done_ids}
+			{powers, Map.put(weights, identity_id, new_total), done_ids}
 		end)
 	end
 
-	def is_done?(identity_id) do
-		Agent.get(__MODULE__, fn({weights, done_ids}) ->
+	def traversed_incoming_delegations?(uuid, identity_id) do
+		Agent.get(uuid, fn({powers, weights, done_ids}) ->
 			MapSet.member?(done_ids, identity_id)
 		end)
 	end
 
-	def add_done(identity_id) do
-		Agent.update(__MODULE__, fn({weights, done_ids}) ->
-			{weights, MapSet.put(done_ids, identity_id)}
+	def set_traverse_incoming_delegations(uuid, identity_id) do
+		Agent.update(uuid, fn({powers, weights, done_ids}) ->
+			{powers, weights, MapSet.put(done_ids, identity_id)}
 		end)
 	end
 end
@@ -69,18 +69,20 @@ defmodule Democracy.Result do
 	end
 
 	def calculate_contributions(votes, inverse_delegations, trust_identity_ids, topics, choices) do
-		Democracy.TotalDelegationsWeightServer.start_link
+		uuid = UUID.uuid4(:hex) |> String.to_atom
 
+		Democracy.CalculateResultServer.start_link uuid
+
+		state = {inverse_delegations, votes, topics, trust_identity_ids}
 		Enum.each(votes, fn({identity_id, data}) ->
 			if MapSet.member?(trust_identity_ids, identity_id) do
-				calculate_total_weights(identity_id, inverse_delegations, votes, topics, trust_identity_ids)
+				calculate_total_weights(identity_id, state, uuid)
 			end
 		end)
 
-		power_memo = %{}
 		contributions = Enum.map(votes, fn({identity_id, data}) ->
 			if MapSet.member?(trust_identity_ids, identity_id) do
-				{voting_power, power_memo} = get_power(identity_id, inverse_delegations, votes, topics, trust_identity_ids, power_memo)
+				voting_power = get_power(identity_id, state, uuid)
 				Enum.map(data, fn({choice, score}) ->
 					%{
 						choice: choice,
@@ -94,14 +96,16 @@ defmodule Democracy.Result do
 			end
 		end) |> List.flatten
 
+		Democracy.CalculateResultServer.stop uuid
+
 		contributions_by_choice = contributions |> Enum.group_by(&(&1.choice))
 
-		data = for choice <- choices, into: %{}, do: {
+		result = for choice <- choices, into: %{}, do: {
 			choice,
 			calculate_contributions_for_choice(choice, Map.get(contributions_by_choice, choice, []))
 		}
 		
-		data
+		result
 	end
 
 	def calculate_direct_contributions(votes, trust_identity_ids, choices) do
@@ -144,41 +148,44 @@ defmodule Democracy.Result do
 		}
 	end
 
-	def calculate_total_weights(identity_id, inverse_delegations, votes, topics, trust_identity_ids) do
-		unless Democracy.TotalDelegationsWeightServer.is_done?(identity_id) do
+	def calculate_total_weights(identity_id, state, uuid) do
+		{inverse_delegations, votes, topics, trust_identity_ids} = state
+
+		unless Democracy.CalculateResultServer.traversed_incoming_delegations?(uuid, identity_id) do
 			inverse_delegations |> Map.get(identity_id, %{}) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
 				cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> nil
 					Map.has_key?(votes, from_identity_id) -> nil
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> nil
 					true ->
-						Democracy.TotalDelegationsWeightServer.add(from_identity_id, from_weight)
-						calculate_total_weights(from_identity_id, inverse_delegations, votes, topics, trust_identity_ids)
+						Democracy.CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
+						calculate_total_weights(from_identity_id, state, uuid)
 				end
 			end)
-			Democracy.TotalDelegationsWeightServer.add_done(identity_id)
+			Democracy.CalculateResultServer.set_traverse_incoming_delegations(uuid, identity_id)
 		end
 	end
 
-	def get_power(identity_id, inverse_delegations, votes, topics, trust_identity_ids, memo) do
-		power = Map.get(memo, identity_id)
+	def get_power(identity_id, state, uuid) do
+		{inverse_delegations, votes, topics, trust_identity_ids} = state
+
+		power = Democracy.CalculateResultServer.get_power(uuid, identity_id)
 		if power do
-			{power, memo}
+			power
 		else
-			{receiving, memo} = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.reduce({0, memo}, fn({from_identity_id, from_weight, from_topics}, {acc, memo}) ->
-				acc = acc + cond do
+			receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
+				acc + cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> 0
 					true ->
-						{from_power, memo} = get_power(from_identity_id, inverse_delegations, votes, topics, trust_identity_ids, memo)
-						from_power * (from_weight / Democracy.TotalDelegationsWeightServer.get(from_identity_id))
+						from_power = get_power(from_identity_id, state, uuid)
+						from_power * (from_weight / Democracy.CalculateResultServer.get_total_weight(uuid, from_identity_id))
 				end
-				{acc, memo}
 			end)
 			power = 1 + receiving
-			memo = Map.put(memo, identity_id, power)
-			{power, memo}
+			Democracy.CalculateResultServer.put_power(uuid, identity_id, power)
+			power
 		end
 	end
 
@@ -187,11 +194,7 @@ defmodule Democracy.Result do
 			FROM delegations
 			WHERE datetime <= '#{Ecto.DateTime.to_iso8601(datetime)}'
 			ORDER BY from_identity_id, to_identity_id, datetime DESC;"
-		result = Ecto.Adapters.SQL.query!(Repo, query , [])
-		rows = result.rows |> Enum.filter(fn(r) ->
-			data = Enum.at(r, 2)
-			data != nil
-		end)
+		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows |> Enum.filter(& Enum.at(&1, 2))
 		inverse_delegations = for {to_identity_id, to_identity_rows} <- rows |> Enum.group_by(&(&1 |> Enum.at(1))), into: %{}, do: {
 			to_identity_id,
 			to_identity_rows |> Enum.map(fn(row) ->
@@ -210,11 +213,7 @@ defmodule Democracy.Result do
 			FROM votes AS v
 			WHERE v.poll_id = #{poll_id} AND v.datetime <= '#{Ecto.DateTime.to_iso8601(datetime)}'
 			ORDER BY v.identity_id, v.datetime DESC;"
-		result = Ecto.Adapters.SQL.query!(Repo, query , [])
-		rows = result.rows |> Enum.filter(fn(r) ->
-			data = Enum.at(r, 1)
-			data != nil
-		end)
+		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows |> Enum.filter(& Enum.at(&1, 1))
 		votes = for row <- rows, into: %{}, do: {Enum.at(row, 0), Enum.at(row, 1)["score_by_choices"]}
 		votes
 	end
