@@ -13,8 +13,6 @@ defmodule Democracy.VoteControllerTest do
 
 	test "shows chosen resource", %{conn: conn} do
 		vote = create_vote()
-		IO.inspect vote
-		IO.inspect poll_vote_path(conn, :show, vote["poll"]["id"], vote["id"])
 		conn = get conn, poll_vote_path(conn, :show, vote["poll"]["id"], vote["id"])
 		assert json_response(conn, 200)["data"] == vote
 	end
