@@ -19,7 +19,7 @@ defmodule Democracy.Router do
 		end
 
 		resources "/polls", PollController, only: [:create, :show] do
-			resources "/votes", VoteController, only: [:index, :create]
+			resources "/votes", VoteController, only: [:index, :create, :show]
 			resources "/references", ReferenceController, only: [:index, :create]
 			get "/results", PollController, :results
 		end		

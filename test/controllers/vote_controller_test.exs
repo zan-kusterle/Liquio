@@ -5,6 +5,20 @@ defmodule Democracy.VoteControllerTest do
 		{:ok, conn: put_req_header(conn, "accept", "application/json")}
 	end
 
+	test "lists all entries on index", %{conn: conn} do
+		poll = create_poll(%{title: "Test", choices: ["a", "b"]})
+		conn = get conn, poll_vote_path(conn, :index, poll["id"])
+		assert json_response(conn, 200)["data"] == []
+	end
+
+	test "shows chosen resource", %{conn: conn} do
+		vote = create_vote()
+		IO.inspect vote
+		IO.inspect poll_vote_path(conn, :show, vote["poll"]["id"], vote["id"])
+		conn = get conn, poll_vote_path(conn, :show, vote["poll"]["id"], vote["id"])
+		assert json_response(conn, 200)["data"] == vote
+	end
+
 	def create_identity(params) do
 		conn = post(conn, identity_path(conn, :create), identity: params)
 		json_response(conn, 201)["data"]
@@ -15,11 +29,20 @@ defmodule Democracy.VoteControllerTest do
 		json_response(conn, 200)["data"]["access_token"]
 	end
 
-	def create_poll() do
-
+	def create_poll(params) do
+		conn = post(conn, poll_path(conn, :create), poll: params)
+		json_response(conn, 201)["data"]
 	end
 
 	def create_vote() do
-		
+		poll = create_poll(%{title: "Test", choices: ["a", "b"]})
+		a = create_identity(%{username: "aaa", name: "AAA"})
+		t = login(a["username"], a["password"])
+		conn = Plug.Conn.put_req_header(conn, "authorization", t)
+		conn = post(conn, poll_vote_path(conn, :create, poll["id"]), vote: %{score_by_choices: %{
+			"a" => 1.0,
+			"b" => 0.5
+		}})
+		json_response(conn, 201)["data"]
 	end
 end
