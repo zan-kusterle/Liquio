@@ -43,9 +43,10 @@ defmodule Democracy.PollController do
 			else
 				TrustMetric.default_trust_metric_url()
 			end
+		vote_weight_halving_days = if user do user.vote_weight_halving_days else nil end
 
 		poll = Repo.get!(Poll, id)
-		results = Result.calculate(poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url))
+		results = Result.calculate(poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url), vote_weight_halving_days)
 		conn
 		|> render("results.json", results: results)
 	end

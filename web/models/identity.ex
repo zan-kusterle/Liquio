@@ -15,6 +15,7 @@ defmodule Democracy.Identity do
 		has_many :delegations_to, Democracy.Delegation, foreign_key: :to_identity_id
 
 		field :trust_metric_url, :string
+		field :vote_weight_halving_days, :integer
 
 		timestamps
 	end

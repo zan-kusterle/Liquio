@@ -15,6 +15,7 @@ defmodule Democracy.ReferenceController do
 			else
 				TrustMetric.default_trust_metric_url()
 			end
+		vote_weight_halving_days = if user do user.vote_weight_halving_days else nil end
 
 		poll = Repo.get(Poll, poll_id)
 		if poll do
@@ -22,8 +23,8 @@ defmodule Democracy.ReferenceController do
 			|> Repo.all
 			|> Repo.preload([:approval_poll])
 			|> Enum.filter(fn(reference) ->
-				approval_result = Result.calculate(reference.approval_poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url))
-				is_approved = approval_result["mean"] > 0.5 and approval_result["total"] > 1
+				approval_result = Result.calculate(reference.approval_poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url), vote_weight_halving_days)["true"]
+				is_approved = approval_result["mean"] > 0.5 and approval_result["total"] >= 1 and approval_result["count"] >= 1
 				is_approved
 			end)
 
