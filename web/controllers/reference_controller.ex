@@ -12,6 +12,11 @@ defmodule Democracy.ReferenceController do
 			references = from(d in Reference, where: d.poll_id == ^poll.id)
 			|> Repo.all
 			|> Repo.preload([:approval_poll])
+			|> Enum.filter(fn(reference) ->
+				approval_result = Result.calculate(reference.approval_poll, Ecto.DateTime.utc(), MapSet.new(Enum.to_list 1..1000000))
+				is_approved = approval_result["mean"] > 0.5 and approval_result["total"] > 1
+				is_approved
+			end)
 
 			conn
 			|> render("index.json", references: references)
@@ -43,5 +48,9 @@ defmodule Democracy.ReferenceController do
 			|> put_status(:not_found)
 			|> render(Democracy.ErrorView, "error.json", message: "Poll does not exist")
 		end
+	end
+
+	def show(conn, %{"poll_id" => poll_id, "id" => reference_poll_id}) do
+		
 	end
 end

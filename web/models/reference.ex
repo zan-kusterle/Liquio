@@ -4,9 +4,7 @@ defmodule Democracy.Reference do
 	schema "references" do
 		belongs_to :poll, Democracy.Poll
 		belongs_to :reference_poll, Democracy.Poll
-		belongs_to :reference_document, Democracy.Document
 		belongs_to :approval_poll, Democracy.Poll
-		field :reference_kind, :string
 		field :choice, :string
 		field :pole, :string
 
@@ -15,12 +13,10 @@ defmodule Democracy.Reference do
 	
 	def changeset(model, params \\ :empty) do
 		model
-		|> cast(params, ["poll_id", "reference_kind", "choice", "pole"], ["reference_poll_id", "reference_document_id"])
+		|> cast(params, ["poll_id", "reference_poll_id", "choice", "pole"], [])
 		|> assoc_constraint(:poll)
 		|> assoc_constraint(:reference_poll)
-		|> assoc_constraint(:reference_document)
 		|> validate_inclusion(:pole, ["positive", "negative"])
-		|> validate_inclusion(:reference_kind, ["poll", "document"])
 	end
 
 	def create(changeset) do

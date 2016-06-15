@@ -1,4 +1,4 @@
-defmodule Democracy.Repo.Migrations.CreateVote do
+defmodule Democracy.Repo.Migrations.CreateTrustMetric do
 	use Ecto.Migration
 
 	def change do

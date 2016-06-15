@@ -17,10 +17,10 @@ defmodule Democracy.Router do
 		resources "/identities", IdentityController, only: [:index, :create, :show] do
 			resources "/delegations", DelegationController, only: [:index, :create, :show, :delete]
 		end
-
+		
 		resources "/polls", PollController, only: [:create, :show] do
 			resources "/votes", VoteController, only: [:index, :create, :show]
-			resources "/references", ReferenceController, only: [:index, :create]
+			resources "/references", ReferenceController, only: [:index, :create, :show]
 			get "/results", PollController, :results
 		end		
 	end

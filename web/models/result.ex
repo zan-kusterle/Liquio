@@ -221,7 +221,7 @@ defmodule Democracy.Result do
 	def calculate_random(filename) do
 		{trust_identity_ids, votes, inverse_delegations} = :erlang.binary_to_term(File.read! filename)
 
-		calculate_contributions(votes, inverse_delegations, trust_identity_ids |> MapSet.new, nil, ["true"])
+		calculate_contributions(votes, inverse_delegations, trust_identity_ids, nil, ["true"])
 	end
 
 	def create_random(filename, num_identities, num_votes, num_delegations_per_identity) do
@@ -230,7 +230,7 @@ defmodule Democracy.Result do
 		inverse_delegations = get_random_inverse_delegations trust_identity_ids, num_delegations_per_identity
 
 		{:ok, file} = File.open filename, [:write]
-		IO.binwrite file, :erlang.term_to_binary({trust_identity_ids, votes, inverse_delegations})
+		IO.binwrite file, :erlang.term_to_binary({trust_identity_ids |> MapSet.new, votes, inverse_delegations})
 	end
 
 	def get_random_inverse_delegations(identity_ids, num_delegations) do

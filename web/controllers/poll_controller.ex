@@ -9,16 +9,16 @@ defmodule Democracy.PollController do
 
 	def create(conn, %{"poll" => params}) do
 		changeset = Poll.changeset(%Poll{}, params)
-		if changeset.valid? do
-			poll = Repo.insert!(changeset)
-			conn
-			|> put_status(:created)
-			|> put_resp_header("location", poll_path(conn, :show, poll))
-			|> render("show.json", poll: poll)
-		else
-			conn
-			|> put_status(:unprocessable_entity)
-			|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
+		case Poll.create(changeset) do
+			{:ok, poll} ->
+				conn
+				|> put_status(:created)
+				|> put_resp_header("location", poll_path(conn, :show, poll))
+				|> render("show.json", poll: poll)
+			{:error, changeset} ->
+				conn
+				|> put_status(:unprocessable_entity)
+				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
 		end
 	end
 
