@@ -152,7 +152,7 @@ defmodule Democracy.Result do
 		{inverse_delegations, votes, topics, trust_identity_ids} = state
 
 		unless Democracy.CalculateResultServer.traversed_incoming_delegations?(uuid, identity_id) do
-			inverse_delegations |> Map.get(identity_id, %{}) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
+			inverse_delegations |> Map.get(identity_id, []) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
 				cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> nil
 					Map.has_key?(votes, from_identity_id) -> nil
@@ -173,7 +173,7 @@ defmodule Democracy.Result do
 		if power do
 			power
 		else
-			receiving = inverse_delegations |> Map.get(identity_id, %{}) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
+			receiving = inverse_delegations |> Map.get(identity_id, []) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
 				acc + cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0

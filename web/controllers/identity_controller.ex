@@ -35,4 +35,8 @@ defmodule Democracy.IdentityController do
 			|> render(Democracy.ErrorView, "error.json", message: "Identity does not exist")
 		end
 	end
+
+	def update(conn, %{"id" => id, "identity" => params}) do
+		
+	end
 end

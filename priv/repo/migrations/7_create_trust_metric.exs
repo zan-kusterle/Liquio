@@ -3,12 +3,11 @@ defmodule Democracy.Repo.Migrations.CreateTrustMetric do
 
 	def change do
 		create table(:trust_metrics) do
-			add :identity_id, references(:identities, on_delete: :nothing), null: false
-			add :key, :string, null: false
+			add :url, :string, null: false
+			add :last_update, :datetime, null: false
+			add :usernames, {:array, :string}, null: false
 		end
 
-		create index(:trust_metrics, [:identity_id])
-		create index(:trust_metrics, [:key])
-		create unique_index(:trust_metrics, [:identity_id, :key])
+		create unique_index(:trust_metrics, [:url])
 	end
 end
