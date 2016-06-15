@@ -1,13 +1,15 @@
 defmodule Democracy.PollController do
 	use Democracy.Web, :controller
+	use Guardian.Phoenix.Controller
 
 	alias Democracy.Poll
 	alias Democracy.Vote
 	alias Democracy.Result
+	alias Democracy.TrustMetric
 
 	plug :scrub_params, "poll" when action in [:create]
 
-	def create(conn, %{"poll" => params}) do
+	def create(conn, %{"poll" => params}, _, _) do
 		changeset = Poll.changeset(%Poll{}, params)
 		case Poll.create(changeset) do
 			{:ok, poll} ->
@@ -22,7 +24,7 @@ defmodule Democracy.PollController do
 		end
 	end
 
-	def show(conn, %{"id" => id}) do
+	def show(conn, %{"id" => id}, _, _) do
 		poll = Repo.get(Poll, id)
 		if poll do
 			conn
@@ -34,9 +36,16 @@ defmodule Democracy.PollController do
 		end
 	end
 
-	def results(conn, %{"poll_id" => id}) do
+	def results(conn, %{"poll_id" => id}, user, _) do
+		trust_metric_url =
+			if user != nil and user.trust_metric_url != nil do
+				user.trust_metric_url
+			else
+				TrustMetric.default_trust_metric_url()
+			end
+
 		poll = Repo.get!(Poll, id)
-		results = Result.calculate(poll, Ecto.DateTime.utc(), MapSet.new(Enum.to_list 1..1000000))
+		results = Result.calculate(poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url))
 		conn
 		|> render("results.json", results: results)
 	end

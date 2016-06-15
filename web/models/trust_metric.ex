@@ -10,8 +10,8 @@ defmodule Democracy.TrustMetric do
 		field :usernames, {:array, :string}
 	end
 
-	def get() do
-		get(Application.get_env(:democracy, :default_trust_metric_url))
+	def default_trust_metric_url() do
+		Application.get_env(:democracy, :default_trust_metric_url)
 	end
 
 	def get(url) do

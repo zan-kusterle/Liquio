@@ -1,19 +1,28 @@
 defmodule Democracy.ReferenceController do
 	use Democracy.Web, :controller
+	use Guardian.Phoenix.Controller
 
 	alias Democracy.Reference
 	alias Democracy.Poll
+	alias Democracy.TrustMetric
 
 	plug :scrub_params, "reference" when action in [:create]
 
-	def index(conn, %{"poll_id" => poll_id}) do
+	def index(conn, %{"poll_id" => poll_id}, user, _) do
+		trust_metric_url =
+			if user != nil and user.trust_metric_url != nil do
+				user.trust_metric_url
+			else
+				TrustMetric.default_trust_metric_url()
+			end
+
 		poll = Repo.get(Poll, poll_id)
 		if poll do
 			references = from(d in Reference, where: d.poll_id == ^poll.id, order_by: d.created_at)
 			|> Repo.all
 			|> Repo.preload([:approval_poll])
 			|> Enum.filter(fn(reference) ->
-				approval_result = Result.calculate(reference.approval_poll, Ecto.DateTime.utc(), MapSet.new(Enum.to_list 1..1000000))
+				approval_result = Result.calculate(reference.approval_poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url))
 				is_approved = approval_result["mean"] > 0.5 and approval_result["total"] > 1
 				is_approved
 			end)
@@ -27,7 +36,7 @@ defmodule Democracy.ReferenceController do
 		end
 	end
 
-	def create(conn, %{"poll_id" => poll_id, "reference" => params}) do
+	def create(conn, %{"poll_id" => poll_id, "reference" => params}, _, _) do
 		poll = Repo.get(Poll, poll_id)
 		if poll do
 			params = Map.put(params, "poll_id", poll.id)
@@ -50,7 +59,7 @@ defmodule Democracy.ReferenceController do
 		end
 	end
 
-	def show(conn, %{"poll_id" => poll_id, "id" => reference_id}) do
+	def show(conn, %{"poll_id" => poll_id, "id" => reference_id}, _, _) do
 		poll = Repo.get(Poll, poll_id)
 		reference = Repo.get(Reference, reference_id)
 		if poll do
