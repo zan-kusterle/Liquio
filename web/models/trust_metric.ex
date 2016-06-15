@@ -18,10 +18,16 @@ defmodule Democracy.TrustMetric do
 		trust_metric = Repo.get_by(TrustMetric, url: url)
 		if trust_metric do
 			Task.async(fn ->
-				if trust_metric.last_update < Ecto.DateTime.utc() do
+				if_before_datetime = Ecto.DateTime.utc
+					|> Ecto.DateTime.to_erl
+					|> :calendar.datetime_to_gregorian_seconds
+					|> Kernel.-(60 * 5)
+					|> :calendar.gregorian_seconds_to_datetime
+					|> Ecto.DateTime.from_erl
+				if trust_metric.last_update < if_before_datetime do
 					response = HTTPotion.get(url, headers: ["If-Modified-Since": trust_metric.last_update |> Ecto.DateTime.to_iso8601])
 					if response.status_code == 200 do
-						usernames = response.body |> String.split("\n")
+						usernames = response.body |> String.strip(?\n) |> String.split("\n")
 						trust_metric = Ecto.Changeset.change trust_metric, usernames: usernames, last_update: Ecto.DateTime.utc()
 						Repo.update!(trust_metric)
 					end
@@ -31,7 +37,7 @@ defmodule Democracy.TrustMetric do
 		else
 			response = HTTPotion.get url
 			if HTTPotion.Response.success?(response) do
-				usernames = response.body |> String.split("\n")
+				usernames = response.body |> String.strip(?\n) |> String.split("\n")
 				Task.async(fn ->
 					Repo.insert!(%TrustMetric{
 						url: url,
