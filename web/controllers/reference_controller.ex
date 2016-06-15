@@ -9,7 +9,7 @@ defmodule Democracy.ReferenceController do
 	def index(conn, %{"poll_id" => poll_id}) do
 		poll = Repo.get(Poll, poll_id)
 		if poll do
-			references = from(d in Reference, where: d.poll_id == ^poll.id)
+			references = from(d in Reference, where: d.poll_id == ^poll.id, order_by: d.created_at)
 			|> Repo.all
 			|> Repo.preload([:approval_poll])
 			|> Enum.filter(fn(reference) ->
@@ -36,7 +36,7 @@ defmodule Democracy.ReferenceController do
 				{:ok, reference} ->
 					conn
 					|> put_status(:created)
-					|> put_resp_header("location", poll_reference_path(conn, :show, reference))
+					|> put_resp_header("location", poll_reference_path(conn, :show, poll.id, reference))
 					|> render("show.json", reference: reference)
 				{:error, changeset} ->
 					conn
@@ -50,7 +50,22 @@ defmodule Democracy.ReferenceController do
 		end
 	end
 
-	def show(conn, %{"poll_id" => poll_id, "id" => reference_poll_id}) do
-		
+	def show(conn, %{"poll_id" => poll_id, "id" => reference_id}) do
+		poll = Repo.get(Poll, poll_id)
+		reference = Repo.get(Reference, reference_id)
+		if poll do
+			if reference != nil and reference.poll_id == poll.id do
+				conn
+				|> render("show.json", reference: reference)
+			else
+				conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: "Reference does not exist")
+			end
+		else
+			conn
+			|> put_status(:not_found)
+			|> render(Democracy.ErrorView, "error.json", message: "Poll does not exist")
+		end
 	end
 end

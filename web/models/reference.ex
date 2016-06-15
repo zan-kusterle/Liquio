@@ -1,10 +1,13 @@
 defmodule Democracy.Reference do
 	use Democracy.Web, :model
 
+	alias Democracy.Repo
+	alias Democracy.Poll
+
 	schema "references" do
-		belongs_to :poll, Democracy.Poll
-		belongs_to :reference_poll, Democracy.Poll
-		belongs_to :approval_poll, Democracy.Poll
+		belongs_to :poll, Poll
+		belongs_to :reference_poll, Poll
+		belongs_to :approval_poll, Poll
 		field :choice, :string
 		field :pole, :string
 
@@ -20,7 +23,7 @@ defmodule Democracy.Reference do
 	end
 
 	def create(changeset) do
-		approval_poll = Repo.insert!(%Democracy.Poll{
+		approval_poll = Repo.insert!(%Poll{
 			:kind => "is_reference",
 			:title => nil,
 			:choices => ["true"],
