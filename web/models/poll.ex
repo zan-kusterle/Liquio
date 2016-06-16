@@ -2,6 +2,7 @@ defmodule Democracy.Poll do
 	use Democracy.Web, :model
 
 	alias Democracy.Repo
+	alias Democracy.Vote
 
 	schema "polls" do
 		field :kind, :string
@@ -9,6 +10,8 @@ defmodule Democracy.Poll do
 		field :source_urls, {:array, :string}
 		field :choices, {:array, :string}
 		field :topics, {:array, :string}
+
+		has_many :votes, Vote
 
 		timestamps
 	end

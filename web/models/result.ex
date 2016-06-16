@@ -58,14 +58,7 @@ defmodule Democracy.Result do
 	end
 
 	def calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days) do
-		votes = get_votes(poll.id, datetime)
-		contributions = unless poll.kind == "is_human" do
-			inverse_delegations = get_inverse_delegations(datetime)
-			topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
-			calculate_contributions(votes, inverse_delegations, trust_identity_ids, poll.topics, poll.choices)
-		else
-			calculate_direct_contributions(votes, trust_identity_ids, poll.choices)
-		end
+		contributions = calculate_contributions_for_poll(poll, datetime, trust_identity_ids)
 
 		contributions_by_choice = contributions |> Enum.group_by(&(&1.choice))
 
@@ -76,7 +69,38 @@ defmodule Democracy.Result do
 		result
 	end
 
-	def calculate_contributions(votes, inverse_delegations, trust_identity_ids, topics, choices) do
+	def calculate_by_time(poll, datetime, trust_identity_ids, interval) do
+		contributions = calculate_contributions_for_poll(poll, datetime, trust_identity_ids)
+
+		contributions_by_interval = contributions |> Enum.group_by(fn(contribution) ->
+			{{year, month, day}, {hour, minute, second}} = contribution.datetime |> Ecto.DateTime.to_erl
+			IO.inspect {{year, month, day}, {hour, minute, second}}
+			{{year, month, 1}, {0, 0, 0}}
+		end)
+
+		Enum.map(contributions_by_interval, fn({interval, contributions_in_interval}) ->
+			contributions_by_choice = contributions_in_interval |> Enum.group_by(&(&1.choice))
+
+			result = for choice <- poll.choices, into: %{}, do: {
+				choice,
+				calculate_contributions_for_choice(choice, Map.get(contributions_by_choice, choice, []), datetime, nil)
+			}
+
+			%{
+				interval: interval,
+				result: result
+			}
+		end)
+	end
+
+	def calculate_contributions_for_poll(poll, datetime, trust_identity_ids) do
+		votes = get_votes(poll.id, datetime)
+		inverse_delegations = get_inverse_delegations(datetime)
+		topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
+		calculate_contributions(votes, inverse_delegations, trust_identity_ids, poll.topics)
+	end
+
+	def calculate_contributions(votes, inverse_delegations, trust_identity_ids, topics) do
 		uuid = UUID.uuid4(:hex) |> String.to_atom
 
 		Democracy.CalculateResultServer.start_link uuid
@@ -107,24 +131,6 @@ defmodule Democracy.Result do
 
 		Democracy.CalculateResultServer.stop uuid
 
-		contributions
-	end
-
-	def calculate_direct_contributions(votes, trust_identity_ids, choices) do
-		contributions = Enum.map(votes, fn({identity_id, data}) ->
-			if MapSet.member?(trust_identity_ids, identity_id) do
-				Enum.map(data, fn({choice, score}) ->
-					%{
-						choice: choice,
-						identity_id: identity_id,
-						voting_power: 1,
-						score: score
-					}
-				end)
-			else
-				[]
-			end
-		end) |> List.flatten
 		contributions
 	end
 
@@ -234,7 +240,7 @@ defmodule Democracy.Result do
 	def calculate_random(filename) do
 		{trust_identity_ids, votes, inverse_delegations} = :erlang.binary_to_term(File.read! filename)
 
-		calculate_contributions(votes, inverse_delegations, trust_identity_ids, nil, ["true"])
+		calculate_contributions(votes, inverse_delegations, trust_identity_ids, nil)
 	end
 
 	def create_random(filename, num_identities, num_votes, num_delegations_per_identity) do

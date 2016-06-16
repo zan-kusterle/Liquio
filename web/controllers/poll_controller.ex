@@ -36,6 +36,10 @@ defmodule Democracy.PollController do
 		end
 	end
 
+	# TODO: Maybe send preferences (trust metric url and vote weight halving days) as query params. It makes API more friendly to other services.
+	# Also allows users to set preferences client side, without having an account.
+	# Also allow datetime query parameter to be sent, this enables users to view results at specified point in time.
+	# Same in ReferenceController
 	def results(conn, %{"poll_id" => id}, user, _) do
 		trust_metric_url =
 			if user != nil and user.trust_metric_url != nil do
@@ -49,5 +53,9 @@ defmodule Democracy.PollController do
 		results = Result.calculate(poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url), vote_weight_halving_days)
 		conn
 		|> render("results.json", results: results)
+	end
+
+	def results_by_time() do
+		# TODO
 	end
 end

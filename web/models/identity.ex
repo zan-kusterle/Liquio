@@ -10,6 +10,7 @@ defmodule Democracy.Identity do
 		field :name, :string
 
 		belongs_to :trust_metric_poll, Democracy.Poll
+		has_many :trust_metric_poll_votes, through: [:trust_metric_poll, :votes]
 
 		has_many :delegations_from, Democracy.Delegation, foreign_key: :from_identity_id
 		has_many :delegations_to, Democracy.Delegation, foreign_key: :to_identity_id

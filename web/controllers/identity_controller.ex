@@ -6,7 +6,7 @@ defmodule Democracy.IdentityController do
 	plug :scrub_params, "identity" when action in [:create]
 
 	def index(conn, %{}) do
-		identities = Repo.all(Identity)
+		identities = Repo.all(Identity) |> Repo.preload([:trust_metric_poll_votes])
 		render(conn, "index.json", identities: identities)
 	end
 
@@ -26,7 +26,7 @@ defmodule Democracy.IdentityController do
 	end
 
 	def show(conn, %{"id" => id}) do
-		identity = Repo.get(Identity, id)
+		identity = Repo.get(Identity, id) |> Repo.preload([:trust_metric_poll_votes])
 		if identity do
 			render(conn, "show.json", identity: identity)
 		else
