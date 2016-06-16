@@ -22,6 +22,8 @@ defmodule Democracy.Router do
 			resources "/votes", VoteController, only: [:index, :create, :show]
 			resources "/references", ReferenceController, only: [:index, :create, :show]
 			get "/results", PollController, :results
-		end		
+		end
+
+		get "/search", SearchController, :index
 	end
 end

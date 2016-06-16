@@ -26,8 +26,9 @@ defmodule Democracy.IdentityController do
 	end
 
 	def show(conn, %{"id" => id}) do
-		identity = Repo.get(Identity, id) |> Repo.preload([:trust_metric_poll_votes])
+		identity = Repo.get(Identity, id)
 		if identity do
+			identity = identity |> Repo.preload([:trust_metric_poll_votes])
 			render(conn, "show.json", identity: identity)
 		else
 			conn
@@ -37,6 +38,6 @@ defmodule Democracy.IdentityController do
 	end
 
 	def update(conn, %{"id" => id, "identity" => params}) do
-		
+		# TODO: Update preferences
 	end
 end

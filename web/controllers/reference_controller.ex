@@ -9,6 +9,7 @@ defmodule Democracy.ReferenceController do
 	plug :scrub_params, "reference" when action in [:create]
 
 	def index(conn, %{"poll_id" => poll_id}, user, _) do
+		# TODO: Inverse references, all references / only approved
 		trust_metric_url =
 			if user != nil and user.trust_metric_url != nil do
 				user.trust_metric_url
