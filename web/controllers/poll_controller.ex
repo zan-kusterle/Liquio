@@ -1,6 +1,5 @@
 defmodule Democracy.PollController do
 	use Democracy.Web, :controller
-	use Guardian.Phoenix.Controller
 
 	alias Democracy.Poll
 	alias Democracy.Vote
@@ -9,7 +8,7 @@ defmodule Democracy.PollController do
 
 	plug :scrub_params, "poll" when action in [:create]
 
-	def create(conn, %{"poll" => params}, _, _) do
+	def create(conn, %{"poll" => params}) do
 		changeset = Poll.changeset(%Poll{}, params)
 		case Poll.create(changeset) do
 			{:ok, poll} ->
@@ -24,7 +23,7 @@ defmodule Democracy.PollController do
 		end
 	end
 
-	def show(conn, %{"id" => id}, _, _) do
+	def show(conn, %{"id" => id}) do
 		poll = Repo.get(Poll, id)
 		if poll do
 			conn
@@ -35,24 +34,40 @@ defmodule Democracy.PollController do
 			|> render(Democracy.ErrorView, "error.json", message: "Poll does not exist")
 		end
 	end
-
-	# TODO: Maybe send preferences (trust metric url and vote weight halving days) as query params. It makes API more friendly to other services.
-	# Also allows users to set preferences client side, without having an account.
-	# Also allow datetime query parameter to be sent, this enables users to view results at specified point in time.
-	# Same in ReferenceController
-	def results(conn, %{"poll_id" => id}, user, _) do
-		trust_metric_url =
-			if user != nil and user.trust_metric_url != nil do
-				user.trust_metric_url
+	
+	def results(conn, params = %{"poll_id" => id}) do
+		trust_metric_url = Map.get(params, "trust_metric_url") || TrustMetric.default_trust_metric_url()
+		vote_weight_halving_days =
+			if Map.get(params, "vote_weight_halving_days") do
+				{value, _} = Integer.parse(params["vote_weight_halving_days"])
+				value
 			else
-				TrustMetric.default_trust_metric_url()
+				nil
 			end
-		vote_weight_halving_days = if user do user.vote_weight_halving_days else nil end
-
-		poll = Repo.get!(Poll, id)
-		results = Result.calculate(poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url), vote_weight_halving_days)
-		conn
-		|> render("results.json", results: results)
+		datetime =
+			if Map.get(params, "datetime") do
+				Ecto.DateTime.cast!(params["datetime"])
+			else
+				Ecto.DateTime.utc()
+			end
+		
+		poll = Repo.get(Poll, id)
+		if poll do
+			case TrustMetric.get(trust_metric_url) do
+				{:ok, trust_identity_ids} ->
+					results = Result.calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days)
+					conn
+					|> render("results.json", results: results)
+				{:error, message} ->
+					conn
+					|> put_status(:not_found)
+					|> render(Democracy.ErrorView, "error.json", message: message)
+			end
+		else
+			conn
+			|> put_status(:not_found)
+			|> render(Democracy.ErrorView, "error.json", message: "Poll does not exist")
+		end
 	end
 
 	def results_by_time() do
