@@ -1,6 +1,5 @@
 defmodule Democracy.ReferenceController do
 	use Democracy.Web, :controller
-	use Guardian.Phoenix.Controller
 
 	alias Democracy.Reference
 	alias Democracy.Poll
@@ -8,15 +7,23 @@ defmodule Democracy.ReferenceController do
 
 	plug :scrub_params, "reference" when action in [:create]
 
-	def index(conn, %{"poll_id" => poll_id}, user, _) do
+	def index(conn, params = %{"poll_id" => poll_id}) do
 		# TODO: Inverse references, all references / only approved
-		trust_metric_url =
-			if user != nil and user.trust_metric_url != nil do
-				user.trust_metric_url
+		# TODO: Is approved config in params (mean, total)
+		trust_metric_url = Map.get(params, "trust_metric_url") || TrustMetric.default_trust_metric_url()
+		vote_weight_halving_days =
+			if Map.get(params, "vote_weight_halving_days") do
+				{value, _} = Integer.parse(params["vote_weight_halving_days"])
+				value
 			else
-				TrustMetric.default_trust_metric_url()
+				nil
 			end
-		vote_weight_halving_days = if user do user.vote_weight_halving_days else nil end
+		datetime =
+			if Map.get(params, "datetime") do
+				Ecto.DateTime.cast!(params["datetime"])
+			else
+				Ecto.DateTime.utc()
+			end
 
 		poll = Repo.get(Poll, poll_id)
 		if poll do
@@ -24,8 +31,8 @@ defmodule Democracy.ReferenceController do
 			|> Repo.all
 			|> Repo.preload([:approval_poll])
 			|> Enum.filter(fn(reference) ->
-				approval_result = Result.calculate(reference.approval_poll, Ecto.DateTime.utc(), TrustMetric.get(trust_metric_url), vote_weight_halving_days)["true"]
-				is_approved = approval_result["mean"] > 0.5 and approval_result["total"] >= 1 and approval_result["count"] >= 1
+				approval_result = Result.calculate(reference.approval_poll, datetime, TrustMetric.get(trust_metric_url), vote_weight_halving_days)["true"]
+				is_approved = approval_result["mean"] > 0.5 and approval_result["total"] >= 1
 				is_approved
 			end)
 
@@ -38,7 +45,7 @@ defmodule Democracy.ReferenceController do
 		end
 	end
 
-	def create(conn, %{"poll_id" => poll_id, "reference" => params}, _, _) do
+	def create(conn, %{"poll_id" => poll_id, "reference" => params}) do
 		poll = Repo.get(Poll, poll_id)
 		if poll do
 			params = Map.put(params, "poll_id", poll.id)
@@ -61,7 +68,7 @@ defmodule Democracy.ReferenceController do
 		end
 	end
 
-	def show(conn, %{"poll_id" => poll_id, "id" => reference_id}, _, _) do
+	def show(conn, %{"poll_id" => poll_id, "id" => reference_id}) do
 		poll = Repo.get(Poll, poll_id)
 		reference = Repo.get(Reference, reference_id)
 		if poll do
