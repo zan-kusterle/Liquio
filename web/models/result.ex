@@ -32,15 +32,21 @@ defmodule Democracy.CalculateResultServer do
 		end)
 	end
 
-	def traversed_incoming_delegations?(uuid, identity_id) do
+	def visited?(uuid, identity_id) do
 		Agent.get(uuid, fn({powers, weights, done_ids}) ->
 			MapSet.member?(done_ids, identity_id)
 		end)
 	end
 
-	def set_traverse_incoming_delegations(uuid, identity_id) do
+	def add_visited(uuid, identity_id) do
 		Agent.update(uuid, fn({powers, weights, done_ids}) ->
 			{powers, weights, MapSet.put(done_ids, identity_id)}
+		end)
+	end
+
+	def reset_visited(uuid) do
+		Agent.update(uuid, fn({powers, weights, done_ids}) ->
+			{powers, weights, MapSet.new}
 		end)
 	end
 end
@@ -112,6 +118,8 @@ defmodule Democracy.Result do
 			end
 		end)
 
+		Democracy.CalculateResultServer.reset_visited(uuid)
+
 		contributions = Enum.map(votes, fn({identity_id, {datetime, score_by_choices}}) ->
 			if MapSet.member?(trust_identity_ids, identity_id) do
 				voting_power = get_power(identity_id, state, uuid)
@@ -167,7 +175,7 @@ defmodule Democracy.Result do
 	def calculate_total_weights(identity_id, state, uuid) do
 		{inverse_delegations, votes, topics, trust_identity_ids} = state
 
-		unless Democracy.CalculateResultServer.traversed_incoming_delegations?(uuid, identity_id) do
+		unless Democracy.CalculateResultServer.visited?(uuid, identity_id) do
 			inverse_delegations |> Map.get(identity_id, []) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
 				cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> nil
@@ -178,7 +186,7 @@ defmodule Democracy.Result do
 						calculate_total_weights(from_identity_id, state, uuid)
 				end
 			end)
-			Democracy.CalculateResultServer.set_traverse_incoming_delegations(uuid, identity_id)
+			Democracy.CalculateResultServer.add_visited(uuid, identity_id)
 		end
 	end
 
@@ -189,11 +197,13 @@ defmodule Democracy.Result do
 		if power do
 			power
 		else
+			Democracy.CalculateResultServer.add_visited(uuid, identity_id)
 			receiving = inverse_delegations |> Map.get(identity_id, []) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
 				acc + cond do
 					not MapSet.member?(trust_identity_ids, from_identity_id) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> 0
+					Democracy.CalculateResultServer.visited?(uuid, from_identity_id) -> 0
 					true ->
 						from_power = get_power(from_identity_id, state, uuid)
 						from_power * (from_weight / Democracy.CalculateResultServer.get_total_weight(uuid, from_identity_id))
