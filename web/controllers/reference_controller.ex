@@ -6,6 +6,9 @@ defmodule Democracy.ReferenceController do
 	alias Democracy.TrustMetric
 
 	plug :scrub_params, "reference" when action in [:create]
+	plug :datetime_query
+	plug :trust_metric_url_query
+	plug :vote_weight_halving_days_query
 	plug :get_poll
 	plug :get_reference
 
@@ -37,29 +40,41 @@ defmodule Democracy.ReferenceController do
 		end
 	end
 
-	def index(conn, params = %{"poll_id" => poll_id}) do
-		# TODO: Inverse references, all references / only approved
-		# TODO: Is approved config in params (mean, total)
-		trust_metric_url = Map.get(params, "trust_metric_url") || TrustMetric.default_trust_metric_url()
-		vote_weight_halving_days =
-			if Map.get(params, "vote_weight_halving_days") do
-				{value, _} = Integer.parse(params["vote_weight_halving_days"])
+	def datetime_query(conn, _) do
+		assign(conn, :datetime,
+			if Map.get(conn.params, "datetime") do
+				Ecto.DateTime.cast!(conn.params["datetime"])
+			else
+				Ecto.DateTime.utc()
+			end
+		)
+	end
+
+	def trust_metric_url_query(conn, _) do
+		assign(conn, :trust_metric_url,
+			Map.get(conn.params, "trust_metric_url") || TrustMetric.default_trust_metric_url()
+		)
+	end
+
+	def vote_weight_halving_days_query(conn, _) do
+		assign(conn, :vote_weight_halving_days,
+			if Map.get(conn.params, "vote_weight_halving_days") do
+				{value, _} = Integer.parse(conn.params["vote_weight_halving_days"])
 				value
 			else
 				nil
 			end
-		datetime =
-			if Map.get(params, "datetime") do
-				Ecto.DateTime.cast!(params["datetime"])
-			else
-				Ecto.DateTime.utc()
-			end
+		)
+	end
 
+	def index(conn, params) do
+		# TODO: Inverse references, all references / only approved
+		# TODO: Is approved config in params (mean, total)
 		references = from(d in Reference, where: d.poll_id == ^conn.assigns.poll.id, order_by: d.created_at)
 		|> Repo.all
 		|> Repo.preload([:approval_poll])
 		|> Enum.filter(fn(reference) ->
-			approval_result = Result.calculate(reference.approval_poll, datetime, TrustMetric.get(trust_metric_url), vote_weight_halving_days)["true"]
+			approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, TrustMetric.get(conn.assigns.trust_metric_url), conn.assigns.vote_weight_halving_days)["true"]
 			is_approved = approval_result["mean"] > 0.5 and approval_result["total"] >= 1
 			is_approved
 		end)
@@ -68,7 +83,7 @@ defmodule Democracy.ReferenceController do
 		|> render("index.json", references: references)
 	end
 
-	def create(conn, %{"poll_id" => poll_id, "reference" => params}) do
+	def create(conn, %{"reference" => params}) do
 		params = Map.put(params, "poll_id", conn.assigns.poll.id)
 		changeset = Reference.changeset(%Reference{}, params)
 		case Reference.create(changeset) do
