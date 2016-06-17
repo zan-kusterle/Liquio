@@ -26,6 +26,7 @@ defmodule Democracy.IdentityController do
 	end
 
 	def show(conn, %{"id" => id}) do
+		# TODO: Id can be "me", show preferences in view if id = current user
 		identity = Repo.get(Identity, id)
 		if identity do
 			identity = identity |> Repo.preload([:trust_metric_poll_votes])
