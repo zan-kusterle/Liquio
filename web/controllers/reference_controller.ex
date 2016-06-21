@@ -6,66 +6,13 @@ defmodule Democracy.ReferenceController do
 	alias Democracy.TrustMetric
 
 	plug :scrub_params, "reference" when action in [:create]
-	plug :datetime_query
-	plug :trust_metric_url_query
-	plug :vote_weight_halving_days_query
-	plug :get_poll
-	plug :get_reference
 
-	defp get_poll(conn, _) do
-		poll = Repo.get(Poll, conn.params["poll_id"])
-		if poll do
-			assign(conn, :poll, poll)
-		else
-			conn
-			|> put_status(:not_found)
-			|> render(Democracy.ErrorView, "error.json", message: "Poll does not exist")
-			|> halt
-		end
-	end
-
-	defp get_reference(conn, _) do
-		if Map.has_key?(conn.params, "id") do
-			reference = Repo.get(Reference, conn.params["id"])
-			if reference do
-				assign(conn, :reference, reference)
-			else
-				conn
-				|> put_status(:not_found)
-				|> render(Democracy.ErrorView, "error.json", message: "Reference does not exist")
-				|> halt
-			end
-		else
-			conn
-		end
-	end
-
-	def datetime_query(conn, _) do
-		assign(conn, :datetime,
-			if Map.get(conn.params, "datetime") do
-				Ecto.DateTime.cast!(conn.params["datetime"])
-			else
-				Ecto.DateTime.utc()
-			end
-		)
-	end
-
-	def trust_metric_url_query(conn, _) do
-		assign(conn, :trust_metric_url,
-			Map.get(conn.params, "trust_metric_url") || TrustMetric.default_trust_metric_url()
-		)
-	end
-
-	def vote_weight_halving_days_query(conn, _) do
-		assign(conn, :vote_weight_halving_days,
-			if Map.get(conn.params, "vote_weight_halving_days") do
-				{value, _} = Integer.parse(conn.params["vote_weight_halving_days"])
-				value
-			else
-				nil
-			end
-		)
-	end
+	plug Democracy.Plugs.Datetime, {:datetime, "datetime"} when action in [:index]
+	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"} when action in [:index]
+	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:index]
+	
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"}
+	plug Democracy.Plugs.QueryId, {:reference, Reference, "id"} when action in [:show]
 
 	def index(conn, params) do
 		# TODO: Inverse references, all references / only approved
