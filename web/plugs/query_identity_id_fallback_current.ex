@@ -18,7 +18,7 @@ defmodule Democracy.Plugs.QueryIdentityIdFallbackCurrent do
 		if user do
 			assign conn, assign_atom, user
 		else
-			send_resp(conn, :unauthorized, "Identity does not exist")
+			send_resp(conn, :not_found, "Identity does not exist")
 			|> halt
 		end
 	end

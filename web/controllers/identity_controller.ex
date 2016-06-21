@@ -5,6 +5,8 @@ defmodule Democracy.IdentityController do
 
 	plug :scrub_params, "identity" when action in [:create]
 
+	plug Democracy.Plugs.QueryIdentityIdFallbackCurrent, {:identity, "id"} when action in [:show]
+
 	def index(conn, %{}) do
 		identities = Repo.all(Identity) |> Repo.preload([:trust_metric_poll_votes])
 		render(conn, "index.json", identities: identities)
@@ -25,17 +27,9 @@ defmodule Democracy.IdentityController do
 		end
 	end
 
-	def show(conn, %{"id" => id}) do
-		# TODO: Id can be "me", show preferences in view if id = current user
-		identity = Repo.get(Identity, id)
-		if identity do
-			identity = identity |> Repo.preload([:trust_metric_poll_votes])
-			render(conn, "show.json", identity: identity)
-		else
-			conn
-			|> put_status(:not_found)
-			|> render(Democracy.ErrorView, "error.json", message: "Identity does not exist")
-		end
+	def show(conn, _params) do
+		identity = conn.assigns.identity |> Repo.preload([:trust_metric_poll_votes])
+		render(conn, "show.json", identity: identity)
 	end
 
 	def update(conn, %{"id" => id, "identity" => params}) do
