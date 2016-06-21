@@ -12,7 +12,7 @@ defmodule Democracy.Plugs.QueryId do
 		else
 			conn
 			|> put_status(:not_found)
-			|> Phoenix.View.render(Democracy.ErrorView, "error.json", message: "Reference does not exist")
+			|> Phoenix.Controller.render(Democracy.ErrorView, "error.json", message: "Invalid #{query_name} query parameter")
 			|> halt
 		end
 	end

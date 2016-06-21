@@ -8,6 +8,13 @@ defmodule Democracy.PollController do
 
 	plug :scrub_params, "poll" when action in [:create]
 
+	plug Democracy.Plugs.Datetime, {:datetime, "datetime"} when action in [:results]
+	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"} when action in [:results]
+	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:results]
+	
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "id"} when action in [:show]
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"} when action in [:results]
+
 	def create(conn, %{"poll" => params}) do
 		changeset = Poll.changeset(%Poll{}, params)
 		case Poll.create(changeset) do
@@ -23,50 +30,21 @@ defmodule Democracy.PollController do
 		end
 	end
 
-	def show(conn, %{"id" => id}) do
-		poll = Repo.get(Poll, id)
-		if poll do
-			conn
-			|> render("show.json", poll: poll)
-		else
-			conn
-			|> put_status(:not_found)
-			|> render(Democracy.ErrorView, "error.json", message: "Poll does not exist")
-		end
+	def show(conn, _params) do
+		conn
+		|> render("show.json", poll: conn.assigns.poll)
 	end
 	
-	def results(conn, params = %{"poll_id" => id}) do
-		trust_metric_url = Map.get(params, "trust_metric_url") || TrustMetric.default_trust_metric_url()
-		vote_weight_halving_days =
-			if Map.get(params, "vote_weight_halving_days") do
-				{value, _} = Integer.parse(params["vote_weight_halving_days"])
-				value
-			else
-				nil
-			end
-		datetime =
-			if Map.get(params, "datetime") do
-				Ecto.DateTime.cast!(params["datetime"])
-			else
-				Ecto.DateTime.utc()
-			end
-		
-		poll = Repo.get(Poll, id)
-		if poll do
-			case TrustMetric.get(trust_metric_url) do
-				{:ok, trust_identity_ids} ->
-					results = Result.calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days)
-					conn
-					|> render("results.json", results: results)
-				{:error, message} ->
-					conn
-					|> put_status(:not_found)
-					|> render(Democracy.ErrorView, "error.json", message: message)
-			end
-		else
-			conn
-			|> put_status(:not_found)
-			|> render(Democracy.ErrorView, "error.json", message: "Poll does not exist")
+	def results(conn, _params) do
+		case TrustMetric.get(conn.assigns.trust_metric_url) do
+			{:ok, trust_identity_ids} ->
+				results = Result.calculate(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
+				conn
+				|> render("results.json", results: results)
+			{:error, message} ->
+				conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: message)
 		end
 	end
 
