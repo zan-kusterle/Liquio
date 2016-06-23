@@ -2,7 +2,6 @@ defmodule Democracy.PollController do
 	use Democracy.Web, :controller
 
 	alias Democracy.Poll
-	alias Democracy.Vote
 	alias Democracy.Result
 	alias Democracy.TrustMetric
 

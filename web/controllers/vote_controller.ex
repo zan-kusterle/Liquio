@@ -1,6 +1,5 @@
 defmodule Democracy.VoteController do
 	use Democracy.Web, :controller
-	use Guardian.Phoenix.Controller
 
 	alias Democracy.Vote
 	alias Democracy.Poll
@@ -12,13 +11,13 @@ defmodule Democracy.VoteController do
 	plug Democracy.Plugs.QueryId, {:vote, Vote, "id", &Democracy.VoteController.is_vote/2} when action in [:show]
 	plug Democracy.Plugs.EnsureCurrentIdentity when action in [:create]
 
-	def index(conn, _params, _, _) do
+	def index(conn, _params) do
 		votes = from(v in Vote, where: v.poll_id == ^conn.assigns.poll.id and v.is_last and not is_nil(v.data))
 		|> Repo.all
 		render(conn, "index.json", votes: votes)
 	end
 
-	def create(conn, %{"vote" => params}, user, claims) do
+	def create(conn, %{"vote" => params}) do
 		params = params |> Map.put("poll_id", conn.assigns.poll.id) |> Map.put("identity_id", conn.assigns.user.id)
 		changeset = Vote.changeset(%Vote{}, params)
 		case Vote.set(changeset) do
@@ -34,7 +33,7 @@ defmodule Democracy.VoteController do
 		end
 	end
 
-	def show(conn, _params, _, _) do
+	def show(conn, _params) do
 		render(conn, "show.json", vote: conn.assigns.vote)
 	end
 end

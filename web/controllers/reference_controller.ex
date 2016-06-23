@@ -4,6 +4,7 @@ defmodule Democracy.ReferenceController do
 	alias Democracy.Reference
 	alias Democracy.Poll
 	alias Democracy.TrustMetric
+	alias Democracy.Result
 
 	plug :scrub_params, "reference" when action in [:create]
 
@@ -14,7 +15,7 @@ defmodule Democracy.ReferenceController do
 	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"}
 	plug Democracy.Plugs.QueryId, {:reference, Reference, "id"} when action in [:show]
 
-	def index(conn, params) do
+	def index(conn, _params) do
 		# TODO: Inverse references, all references / only approved
 		# TODO: Is approved config in params (mean, total)
 		references = from(d in Reference, where: d.poll_id == ^conn.assigns.poll.id, order_by: d.created_at)
