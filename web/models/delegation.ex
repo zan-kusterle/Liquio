@@ -1,18 +1,19 @@
 defmodule Democracy.DelegationData do
-	use Ecto.Model
+	use Ecto.Schema
+	alias Ecto.Changeset
 
 	embedded_schema do
 		field :weight, :float, default: 1.0
 		field :topics, {:array, :string}
 	end
 
-	def changeset(model, params \\ %{}) do
+	def changeset(data, params) do
 		if is_integer(params["weight"]) do
 			params = Map.put(params, "weight", params["weight"] * 1.0)
 		end
-		model
-		|> cast(params, [], ["weight", "topics"])
-		|> validate_number(:weight, greater_than_or_equal_to: 0)
+		data
+		|> Changeset.cast(params, ["weight", "topics"])
+		|> Changeset.validate_number(:weight, greater_than_or_equal_to: 0)
 	end
 end
 
@@ -33,9 +34,11 @@ defmodule Democracy.Delegation do
 		embeds_one :data, DelegationData
 	end
 
-	def changeset(model, params \\ :empty) do
-		model
-		|> cast(params, ["from_identity_id", "to_identity_id"], [])
+	def changeset(data, params) do
+		data
+		|> cast(params, ["from_identity_id", "to_identity_id"])
+		|> validate_required(:from_identity_id)
+		|> validate_required(:to_identity_id)
 		|> assoc_constraint(:from_identity)
 		|> assoc_constraint(:to_identity)
 		|> put_embed(:data, DelegationData.changeset(%DelegationData{}, params))

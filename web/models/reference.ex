@@ -13,9 +13,12 @@ defmodule Democracy.Reference do
 		timestamps
 	end
 	
-	def changeset(model, params \\ :empty) do
-		model
-		|> cast(params, ["poll_id", "reference_poll_id", "pole"], [])
+	def changeset(data, params) do
+		data
+		|> cast(params, ["poll_id", "reference_poll_id", "pole"])
+		|> validate_required(:poll_id)
+		|> validate_required(:reference_poll_id)
+		|> validate_required(:pole)
 		|> assoc_constraint(:poll)
 		|> assoc_constraint(:reference_poll)
 		|> validate_inclusion(:pole, ["positive", "negative"])

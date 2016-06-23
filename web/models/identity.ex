@@ -21,9 +21,11 @@ defmodule Democracy.Identity do
 		timestamps
 	end
 	
-	def changeset(model, params \\ :empty) do
-		model
-		|> cast(params, ["username", "name"], [])
+	def changeset(data, params) do
+		data
+		|> cast(params, ["username", "name"])
+		|> validate_required(:username)
+		|> validate_required(:name)
 		|> unique_constraint(:username)
 		|> validate_length(:username, min: 3, max: 20)
 		|> validate_length(:name, min: 3, max: 255)

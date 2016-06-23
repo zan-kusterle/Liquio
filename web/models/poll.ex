@@ -16,9 +16,10 @@ defmodule Democracy.Poll do
 		timestamps
 	end
 	
-	def changeset(model, params \\ :empty) do
-		model
-		|> cast(params, ["title"], ["source_urls", "topics"])
+	def changeset(data, params) do
+		data
+		|> cast(params, ["title", "source_urls", "topics"])
+		|> validate_required(:title)
 		|> put_change(:kind, "custom")
 	end
 

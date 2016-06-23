@@ -1,13 +1,15 @@
 defmodule Democracy.VoteData do
-	use Ecto.Model
+	use Ecto.Schema
+	alias Ecto.Changeset
 
 	embedded_schema do
 		field :score, :float
 	end
 
-	def changeset(model, params \\ :empty) do
-		model
-		|> cast(params, ["score"], [])
+	def changeset(data, params) do
+		data
+		|> Changeset.cast(params, ["score"])
+		|> Changeset.validate_required(:score)
 	end
 end
 
@@ -28,9 +30,11 @@ defmodule Democracy.Vote do
 		embeds_one :data, VoteData
 	end
 
-	def changeset(model, params \\ :empty) do
-		model
-		|> cast(params, ["poll_id", "identity_id"], [])
+	def changeset(data, params) do
+		data
+		|> cast(params, ["poll_id", "identity_id"])
+		|> validate_required(:poll_id)
+		|> validate_required(:identity_id)
 		|> assoc_constraint(:poll)
 		|> assoc_constraint(:identity)
 		|> put_embed(:data, VoteData.changeset(%VoteData{}, params))
