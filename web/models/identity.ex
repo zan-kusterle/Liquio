@@ -33,7 +33,6 @@ defmodule Democracy.Identity do
 		trust_metric_poll = Repo.insert!(%Democracy.Poll{
 			:kind => "is_human",
 			:title => nil,
-			:choices => ["true"],
 			:topics => nil,
 		})
 

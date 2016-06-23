@@ -6,7 +6,7 @@ defmodule Democracy.VoteControllerTest do
 	end
 
 	test "lists all entries on index", %{conn: conn} do
-		poll = create_poll(%{title: "Test", choices: ["a", "b"]})
+		poll = create_poll(%{title: "Test"})
 		conn = get conn, poll_vote_path(conn, :index, poll["id"])
 		assert json_response(conn, 200)["data"] == []
 	end
@@ -33,14 +33,11 @@ defmodule Democracy.VoteControllerTest do
 	end
 
 	def create_vote() do
-		poll = create_poll(%{title: "Test", choices: ["a", "b"]})
+		poll = create_poll(%{title: "Test"})
 		a = create_identity(%{username: "aaa", name: "AAA"})
 		t = login(a["username"], a["password"])
 		conn = Plug.Conn.put_req_header(conn, "authorization", t)
-		conn = post(conn, poll_vote_path(conn, :create, poll["id"]), vote: %{score_by_choices: %{
-			"a" => 1.0,
-			"b" => 0.5
-		}})
+		conn = post(conn, poll_vote_path(conn, :create, poll["id"]), vote: %{score: 1})
 		json_response(conn, 201)["data"]
 	end
 end

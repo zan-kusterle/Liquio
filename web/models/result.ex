@@ -64,15 +64,9 @@ defmodule Democracy.Result do
 	end
 
 	def calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days) do
-		contributions = calculate_contributions_for_poll(poll, datetime, trust_identity_ids)
-
-		contributions_by_choice = contributions |> Enum.group_by(&(&1.choice))
-
-		result = for choice <- poll.choices, into: %{}, do: {
-			choice,
-			calculate_contributions_for_choice(choice, Map.get(contributions_by_choice, choice, []), datetime, vote_weight_halving_days)
-		}
-		result
+		poll
+		|> calculate_contributions_for_poll(datetime, trust_identity_ids)
+		|> aggregate_contributions(datetime, vote_weight_halving_days)
 	end
 
 	def calculate_by_time(poll, datetime, trust_identity_ids, interval) do
@@ -85,16 +79,9 @@ defmodule Democracy.Result do
 		end)
 
 		Enum.map(contributions_by_interval, fn({interval, contributions_in_interval}) ->
-			contributions_by_choice = contributions_in_interval |> Enum.group_by(&(&1.choice))
-
-			result = for choice <- poll.choices, into: %{}, do: {
-				choice,
-				calculate_contributions_for_choice(choice, Map.get(contributions_by_choice, choice, []), datetime, nil)
-			}
-
 			%{
 				interval: interval,
-				result: result
+				result: aggregate_contributions(contributions_in_interval, datetime, nil)
 			}
 		end)
 	end
@@ -112,49 +99,44 @@ defmodule Democracy.Result do
 		Democracy.CalculateResultServer.start_link uuid
 
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
-		Enum.each(votes, fn({identity_id, {datetime, score_by_choices}}) ->
-			if MapSet.member?(trust_identity_ids, identity_id) do
-				calculate_total_weights(identity_id, state, uuid)
-			end
+
+		trust_votes = votes |> Enum.filter(fn({identity_id, {datetime, score}}) ->
+			MapSet.member?(trust_identity_ids, identity_id)
+		end)
+
+		Enum.each(trust_votes, fn({identity_id, {datetime, _score}}) ->
+			calculate_total_weights(identity_id, state, uuid)
 		end)
 
 		Democracy.CalculateResultServer.reset_visited(uuid)
 
-		contributions = Enum.map(votes, fn({identity_id, {datetime, score_by_choices}}) ->
-			if MapSet.member?(trust_identity_ids, identity_id) do
-				voting_power = get_power(identity_id, state, uuid)
-				Enum.map(score_by_choices, fn({choice, score}) ->
-					%{
-						choice: choice,
-						identity_id: identity_id,
-						voting_power: voting_power,
-						score: score,
-						datetime: datetime
-					}
-				end)
-			else
-				[]
-			end
-		end) |> List.flatten
+		contributions = trust_votes |> Enum.map(fn({identity_id, {datetime, score}}) ->
+			%{
+				identity_id: identity_id,
+				voting_power: get_power(identity_id, state, uuid),
+				score: score,
+				datetime: datetime
+			}
+		end)
 
 		Democracy.CalculateResultServer.stop uuid
 
 		contributions
 	end
 
-	def calculate_contributions_for_choice(choice, contributions_for_choice, datetime, vote_weight_halving_days) do
-		contributions_by_identities = for contribution <- contributions_for_choice, into: %{}, do: {to_string(contribution.identity_id), %{
+	def aggregate_contributions(contributions, datetime, vote_weight_halving_days) do
+		contributions_by_identities = for contribution <- contributions, into: %{}, do: {to_string(contribution.identity_id), %{
 			:voting_power => contribution.voting_power,
 			:score => contribution.score
 		}}
-		total_power = Enum.sum(Enum.map(contributions_for_choice, & &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
-		total_score = Enum.sum(Enum.map(contributions_for_choice, & &1.score * &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
+		total_score = Enum.sum(Enum.map(contributions, & &1.score * &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
 		mean = if total_power > 0 do total_score / total_power else nil end
 		
 		%{
 			:mean => mean,
 			:total => total_power,
-			:count => Enum.count(contributions_for_choice)
+			:count => Enum.count(contributions)
 			#:contributions_by_identities => contributions_by_identities
 		}
 	end
@@ -242,7 +224,7 @@ defmodule Democracy.Result do
 		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows |> Enum.filter(& Enum.at(&1, 2))
 		votes = for row <- rows, into: %{}, do: {Enum.at(row, 0), {
 			Enum.at(row, 1),
-			Enum.at(row, 2)["score_by_choices"]
+			Enum.at(row, 2)["score"]
 		}}
 		votes
 	end

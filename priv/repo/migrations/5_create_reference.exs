@@ -6,7 +6,6 @@ defmodule Democracy.Repo.Migrations.CreateReference do
 			add :poll_id, references(:polls, on_delete: :nothing), null: false
 			add :reference_poll_id, references(:polls, on_delete: :nothing)
 			add :approval_poll_id, references(:polls, on_delete: :nothing), null: false
-			add :choice, :string, null: false
 			add :pole, :string, null: false
 
 			timestamps
@@ -15,6 +14,6 @@ defmodule Democracy.Repo.Migrations.CreateReference do
 		create index(:references, [:poll_id])
 		create index(:references, [:reference_poll_id])
 		create index(:references, [:approval_poll_id])
-		create unique_index(:references, [:poll_id, :reference_poll_id, :choice, :pole])
+		create unique_index(:references, [:poll_id, :reference_poll_id, :pole])
 	end
 end

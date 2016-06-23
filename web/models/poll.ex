@@ -8,7 +8,6 @@ defmodule Democracy.Poll do
 		field :kind, :string
 		field :title, :string
 		field :source_urls, {:array, :string}
-		field :choices, {:array, :string}
 		field :topics, {:array, :string}
 
 		has_many :votes, Vote
@@ -18,7 +17,7 @@ defmodule Democracy.Poll do
 	
 	def changeset(model, params \\ :empty) do
 		model
-		|> cast(params, ["title", "choices"], ["source_urls", "topics"])
+		|> cast(params, ["title"], ["source_urls", "topics"])
 		|> put_change(:kind, "custom")
 	end
 

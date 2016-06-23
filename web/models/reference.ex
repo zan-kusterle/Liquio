@@ -8,7 +8,6 @@ defmodule Democracy.Reference do
 		belongs_to :poll, Poll
 		belongs_to :reference_poll, Poll
 		belongs_to :approval_poll, Poll
-		field :choice, :string
 		field :pole, :string
 
 		timestamps
@@ -16,7 +15,7 @@ defmodule Democracy.Reference do
 	
 	def changeset(model, params \\ :empty) do
 		model
-		|> cast(params, ["poll_id", "reference_poll_id", "choice", "pole"], [])
+		|> cast(params, ["poll_id", "reference_poll_id", "pole"], [])
 		|> assoc_constraint(:poll)
 		|> assoc_constraint(:reference_poll)
 		|> validate_inclusion(:pole, ["positive", "negative"])
@@ -26,7 +25,6 @@ defmodule Democracy.Reference do
 		approval_poll = Repo.insert!(%Poll{
 			:kind => "is_reference",
 			:title => nil,
-			:choices => ["true"],
 			:topics => nil
 		})
 

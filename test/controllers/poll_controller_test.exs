@@ -2,8 +2,8 @@ defmodule Democracy.PollControllerTest do
 	use Democracy.ConnCase
 
 	alias Democracy.Poll
-	@valid_attrs %{title: "Test title", choices: ["a", "b"], topics: ["politics"]}
-	@invalid_attrs %{title: nil, choices: ["a", nil]}
+	@valid_attrs %{title: "Test title", topics: ["politics"]}
+	@invalid_attrs %{title: nil}
 
 	setup %{conn: conn} do
 		{:ok, conn: put_req_header(conn, "accept", "application/json")}
@@ -15,7 +15,6 @@ defmodule Democracy.PollControllerTest do
 		conn = get conn, location
 		assert json_response(conn, 200)["data"] |> Map.drop(["id"]) == %{
 			"title" => @valid_attrs.title,
-			"choices" => @valid_attrs.choices,
 			"topics" => @valid_attrs.topics,
 			"kind" => "custom",
 		}

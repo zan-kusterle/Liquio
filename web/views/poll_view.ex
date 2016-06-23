@@ -14,7 +14,6 @@ defmodule Democracy.PollView do
 			id: poll.id,
 			kind: poll.kind,
 			title: poll.title,
-			choices: poll.choices,
 			topics: poll.topics,
 		}
 		v

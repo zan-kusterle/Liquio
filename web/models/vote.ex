@@ -2,13 +2,12 @@ defmodule Democracy.VoteData do
 	use Ecto.Model
 
 	embedded_schema do
-		field :score_by_choices, :map
+		field :score, :float
 	end
 
 	def changeset(model, params \\ :empty) do
 		model
-		|> cast(params, ["score_by_choices"], [])
-		# TODO: Validate structure of scores_by_choice
+		|> cast(params, ["score"], [])
 	end
 end
 

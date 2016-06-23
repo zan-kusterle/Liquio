@@ -14,7 +14,6 @@ defmodule Democracy.ReferenceView do
 			id: reference.id,
 			poll: %{id: reference.poll_id},
 			reference_poll: %{id: reference.reference_poll_id},
-			choice: reference.choice,
 			pole: reference.pole
 		}
 	end
