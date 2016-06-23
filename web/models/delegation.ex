@@ -1,6 +1,5 @@
 defmodule Democracy.DelegationData do
-	use Ecto.Schema
-	alias Ecto.Changeset
+	use Democracy.Web, :model
 
 	embedded_schema do
 		field :weight, :float, default: 1.0
@@ -12,8 +11,8 @@ defmodule Democracy.DelegationData do
 			params = Map.put(params, "weight", params["weight"] * 1.0)
 		end
 		data
-		|> Changeset.cast(params, ["weight", "topics"])
-		|> Changeset.validate_number(:weight, greater_than_or_equal_to: 0)
+		|> cast(params, ["weight", "topics"])
+		|> validate_number(:weight, greater_than_or_equal_to: 0)
 	end
 end
 

@@ -1,6 +1,5 @@
 defmodule Democracy.VoteData do
-	use Ecto.Schema
-	alias Ecto.Changeset
+	use Democracy.Web, :model
 
 	embedded_schema do
 		field :score, :float
@@ -8,8 +7,8 @@ defmodule Democracy.VoteData do
 
 	def changeset(data, params) do
 		data
-		|> Changeset.cast(params, ["score"])
-		|> Changeset.validate_required(:score)
+		|> cast(params, ["score"])
+		|> validate_required(:score)
 	end
 end
 
