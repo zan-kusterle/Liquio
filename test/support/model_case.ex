@@ -26,8 +26,10 @@ defmodule Democracy.ModelCase do
   end
 
   setup tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Democracy.Repo)
+
     unless tags[:async] do
-      Ecto.Adapters.SQL.restart_test_transaction(Democracy.Repo, [])
+      Ecto.Adapters.SQL.Sandbox.mode(Democracy.Repo, {:shared, self()})
     end
 
     :ok

@@ -18,16 +18,19 @@ defmodule Democracy.VoteControllerTest do
 	end
 
 	def create_identity(params) do
+		conn = build_conn
 		conn = post(conn, identity_path(conn, :create), identity: params)
 		json_response(conn, 201)["data"]
 	end
 
 	def login(username, password) do
+		conn = build_conn
 		conn = post(conn, login_path(conn, :create), identity: %{username: username, password: password})
 		json_response(conn, 200)["data"]["access_token"]
 	end
 
 	def create_poll(params) do
+		conn = build_conn
 		conn = post(conn, poll_path(conn, :create), poll: params)
 		json_response(conn, 201)["data"]
 	end
@@ -36,6 +39,8 @@ defmodule Democracy.VoteControllerTest do
 		poll = create_poll(%{title: "Test"})
 		a = create_identity(%{username: "aaa", name: "AAA"})
 		t = login(a["username"], a["password"])
+
+		conn = build_conn
 		conn = Plug.Conn.put_req_header(conn, "authorization", t)
 		conn = post(conn, poll_vote_path(conn, :create, poll["id"]), vote: %{score: 1})
 		json_response(conn, 201)["data"]

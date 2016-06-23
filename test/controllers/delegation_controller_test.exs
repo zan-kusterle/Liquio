@@ -18,16 +18,19 @@ defmodule Democracy.DelegationControllerTest do
 	end
 
 	def create_identity(params) do
+		conn = build_conn
 		conn = post(conn, identity_path(conn, :create), identity: params)
 		json_response(conn, 201)["data"]
 	end
 
 	def login(username, password) do
+		conn = build_conn
 		conn = post(conn, login_path(conn, :create), identity: %{username: username, password: password})
 		json_response(conn, 200)["data"]["access_token"]
 	end
 
 	def create_delegation() do
+		conn = build_conn
 		a = create_identity(%{username: "aaa", name: "AAA"})
 		b = create_identity(%{username: "bbb", name: "BBB"})
 		t = login(a["username"], a["password"])

@@ -6,7 +6,7 @@ defmodule Democracy.DelegationData do
 		field :topics, {:array, :string}
 	end
 
-	def changeset(model, params \\ :empty) do
+	def changeset(model, params \\ %{}) do
 		if is_integer(params["weight"]) do
 			params = Map.put(params, "weight", params["weight"] * 1.0)
 		end

@@ -12,6 +12,7 @@ defmodule Democracy.ReferenceControllerTest do
 	end
 
 	def create_poll(params) do
+		conn = build_conn
 		conn = post(conn, poll_path(conn, :create), poll: params)
 		json_response(conn, 201)["data"]
 	end
@@ -19,6 +20,8 @@ defmodule Democracy.ReferenceControllerTest do
 	def create_reference() do
 		poll = create_poll(%{title: "A"})
 		reference_poll = create_poll(%{title: "B"})
+
+		conn = build_conn
 		conn = post(conn, poll_reference_path(conn, :create, poll["id"]), reference: %{
 			reference_poll_id: reference_poll["id"],
 			pole: "positive"
