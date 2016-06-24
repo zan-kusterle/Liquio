@@ -257,7 +257,7 @@ defmodule Democracy.Result do
 			identity_id,
 			{
 				Ecto.DateTime.utc(),
-				%{"true" => :random.uniform}
+				:random.uniform
 			}
 		}
 	end

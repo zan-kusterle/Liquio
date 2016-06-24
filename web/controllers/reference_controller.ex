@@ -25,8 +25,8 @@ defmodule Democracy.ReferenceController do
 				|> Repo.all
 				|> Repo.preload([:approval_poll, :reference_poll, :poll])
 				|> Enum.filter(fn(reference) ->
-					approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)["true"]
-					is_approved = approval_result["mean"] > 0.5 and approval_result["total"] >= 1
+					approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
+					is_approved = approval_result.mean > 0.5 and approval_result.total >= 1
 					is_approved
 				end)
 				|> Enum.map(fn(reference) ->
