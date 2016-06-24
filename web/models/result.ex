@@ -101,7 +101,7 @@ defmodule Democracy.Result do
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
 
 		trust_votes = votes |> Enum.filter(fn({identity_id, {datetime, score}}) ->
-			MapSet.member?(trust_identity_ids, identity_id)
+			MapSet.member?(trust_identity_ids, to_string(identity_id))
 		end)
 
 		Enum.each(trust_votes, fn({identity_id, {datetime, _score}}) ->
