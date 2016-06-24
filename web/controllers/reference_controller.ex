@@ -18,17 +18,29 @@ defmodule Democracy.ReferenceController do
 	def index(conn, _params) do
 		# TODO: Inverse references, all references / only approved
 		# TODO: Is approved config in params (mean, total)
-		references = from(d in Reference, where: d.poll_id == ^conn.assigns.poll.id, order_by: d.inserted_at)
-		|> Repo.all
-		|> Repo.preload([:approval_poll])
-		|> Enum.filter(fn(reference) ->
-			approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, TrustMetric.get(conn.assigns.trust_metric_url), conn.assigns.vote_weight_halving_days)["true"]
-			is_approved = approval_result["mean"] > 0.5 and approval_result["total"] >= 1
-			is_approved
-		end)
 
-		conn
-		|> render("index.json", references: references)
+		case TrustMetric.get(conn.assigns.trust_metric_url) do
+			{:ok, trust_identity_ids} ->
+				references = from(d in Reference, where: d.poll_id == ^conn.assigns.poll.id, order_by: d.inserted_at)
+				|> Repo.all
+				|> Repo.preload([:approval_poll, :reference_poll, :poll])
+				|> Enum.filter(fn(reference) ->
+					approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)["true"]
+					is_approved = approval_result["mean"] > 0.5 and approval_result["total"] >= 1
+					is_approved
+				end)
+				|> Enum.map(fn(reference) ->
+					results = Result.calculate(reference.reference_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
+					Map.put(reference, :reference_poll, Map.put(reference.reference_poll, :results, results))
+				end)
+
+				conn
+				|> render("index.json", references: references)
+			{:error, message} ->
+				conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: message)
+		end
 	end
 
 	def create(conn, %{"reference" => params}) do
