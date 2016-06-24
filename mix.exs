@@ -32,6 +32,7 @@ defmodule Democracy.Mixfile do
   defp deps do
     [{:phoenix, "~> 1.2.0"},
      {:phoenix_pubsub, "~> 1.0"},
+     {:cors_plug, "~> 1.1"},
      {:postgrex, ">= 0.0.0"},
      {:phoenix_ecto, "~> 3.0-rc"},
      {:phoenix_html, "~> 2.4"},

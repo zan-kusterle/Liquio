@@ -18,7 +18,7 @@ defmodule Democracy.ReferenceController do
 	def index(conn, _params) do
 		# TODO: Inverse references, all references / only approved
 		# TODO: Is approved config in params (mean, total)
-		references = from(d in Reference, where: d.poll_id == ^conn.assigns.poll.id, order_by: d.created_at)
+		references = from(d in Reference, where: d.poll_id == ^conn.assigns.poll.id, order_by: d.inserted_at)
 		|> Repo.all
 		|> Repo.preload([:approval_poll])
 		|> Enum.filter(fn(reference) ->

@@ -2,6 +2,7 @@ defmodule Democracy.Router do
 	use Democracy.Web, :router
 
 	pipeline :api do
+		plug CORSPlug, [origin: "*"]
 		plug :accepts, ["json"]
 		plug :fetch_session
 
@@ -21,7 +22,6 @@ defmodule Democracy.Router do
 		resources "/polls", PollController, only: [:create, :show] do
 			resources "/votes", VoteController, only: [:index, :create, :show]
 			resources "/references", ReferenceController, only: [:index, :create, :show]
-			get "/results", PollController, :results
 		end
 
 		get "/search", SearchController, :index
