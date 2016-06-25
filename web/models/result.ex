@@ -65,35 +65,18 @@ defmodule Democracy.Result do
 
 	def calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days) do
 		poll
-		|> calculate_contributions_for_poll(datetime, trust_identity_ids)
+		|> calculate_contributions(datetime, trust_identity_ids)
 		|> aggregate_contributions(datetime, vote_weight_halving_days)
 	end
 
-	def calculate_by_time(poll, datetime, trust_identity_ids, interval) do
-		contributions = calculate_contributions_for_poll(poll, datetime, trust_identity_ids)
-
-		contributions_by_interval = contributions |> Enum.group_by(fn(contribution) ->
-			{{year, month, day}, {hour, minute, second}} = contribution.datetime |> Ecto.DateTime.to_erl
-			IO.inspect {{year, month, day}, {hour, minute, second}}
-			{{year, month, 1}, {0, 0, 0}}
-		end)
-
-		Enum.map(contributions_by_interval, fn({interval, contributions_in_interval}) ->
-			%{
-				interval: interval,
-				result: aggregate_contributions(contributions_in_interval, datetime, nil)
-			}
-		end)
-	end
-
-	def calculate_contributions_for_poll(poll, datetime, trust_identity_ids) do
+	def calculate_contributions(poll, datetime, trust_identity_ids) do
 		votes = get_votes(poll.id, datetime)
 		inverse_delegations = get_inverse_delegations(datetime)
 		topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
-		calculate_contributions(votes, inverse_delegations, trust_identity_ids, poll.topics)
+		calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, poll.topics)
 	end
 
-	def calculate_contributions(votes, inverse_delegations, trust_identity_ids, topics) do
+	def calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, topics) do
 		uuid = UUID.uuid4(:hex) |> String.to_atom
 
 		Democracy.CalculateResultServer.start_link uuid
@@ -232,7 +215,7 @@ defmodule Democracy.Result do
 	def calculate_random(filename) do
 		{trust_identity_ids, votes, inverse_delegations} = :erlang.binary_to_term(File.read! filename)
 
-		calculate_contributions(votes, inverse_delegations, trust_identity_ids, nil)
+		calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, nil)
 	end
 
 	def create_random(filename, num_identities, num_votes, num_delegations_per_identity) do

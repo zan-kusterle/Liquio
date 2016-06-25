@@ -19,6 +19,9 @@ defmodule Democracy.PollView do
 		if Map.has_key?(poll, :results) do
 			v = Map.put(v, :results, poll.results)
 		end
+		if Map.has_key?(poll, :contributions) do
+			v = Map.put(v, :contributions, poll.contributions)
+		end
 		v
 	end
 
