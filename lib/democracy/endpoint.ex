@@ -33,5 +33,7 @@ defmodule Democracy.Endpoint do
     key: "_democracy_key",
     signing_salt: "widKJvj0"
 
+  plug CORSPlug, [origin: "*"]
+
   plug Democracy.Router
 end
