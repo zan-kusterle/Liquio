@@ -9,7 +9,7 @@ defmodule Democracy.VoteController do
 	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"}
 	def is_vote(conn, vote), do: vote.data != nil and conn.assigns.poll.id == vote.poll_id
 	plug Democracy.Plugs.QueryId, {:vote, Vote, "id", &Democracy.VoteController.is_vote/2} when action in [:show]
-	plug Democracy.Plugs.EnsureCurrentIdentity when action in [:create]
+	plug Democracy.Plugs.EnsureCurrentIdentity when action in [:create, :delete]
 
 	def index(conn, _params) do
 		votes = from(v in Vote, where: v.poll_id == ^conn.assigns.poll.id and v.is_last and not is_nil(v.data))
@@ -35,5 +35,11 @@ defmodule Democracy.VoteController do
 
 	def show(conn, _params) do
 		render(conn, "show.json", vote: conn.assigns.vote)
+	end
+
+	def delete(conn, _params) do
+		Vote.delete(conn.assigns.poll, conn.assigns.user)
+		conn
+		|> send_resp(200, "{}")
 	end
 end

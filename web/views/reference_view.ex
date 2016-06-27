@@ -14,6 +14,7 @@ defmodule Democracy.ReferenceView do
 			id: reference.id,
 			poll: Democracy.PollView.render("poll.json", poll: reference.poll),
 			reference_poll: Democracy.PollView.render("poll.json", poll: reference.reference_poll),
+			approval_poll_id: reference.approval_poll_id,
 			pole: reference.pole
 		}
 	end

@@ -46,6 +46,16 @@ defmodule Democracy.Vote do
 		Repo.insert(changeset)
 	end
 
+	def delete(poll, identity) do
+		remove_current_last(poll.id, identity.id)
+		Repo.insert(%Vote{
+			:poll_id => poll.id,
+			:identity_id => identity.id,
+			:is_last => true,
+			:data => nil
+		})
+	end
+
 	def remove_current_last(poll_id, identity_id) do
 		current_last = Repo.get_by(Vote,
 			poll_id: poll_id, identity_id: identity_id, is_last: true)
