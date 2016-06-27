@@ -38,8 +38,7 @@ defmodule Democracy.VoteController do
 	end
 
 	def delete(conn, _params) do
-		Vote.delete(conn.assigns.poll, conn.assigns.user)
-		conn
-		|> send_resp(200, "{}")
+		vote = Vote.delete(conn.assigns.poll, conn.assigns.user)
+		render(conn, "show.json", vote: vote)
 	end
 end

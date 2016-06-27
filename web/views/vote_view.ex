@@ -14,7 +14,7 @@ defmodule Democracy.VoteView do
 			id: vote.id,
 			identity: %{id: vote.identity_id},
 			poll: %{id: vote.poll_id},
-			score: vote.data.score
+			score: if vote.data do vote.data.score else nil end
 		}
 	end
 end
