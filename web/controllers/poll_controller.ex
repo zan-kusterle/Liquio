@@ -30,6 +30,10 @@ defmodule Democracy.PollController do
 	end
 
 	def show(conn, _params) do
+		# TODO: Get polls in same category (for every category poll where current category is proposed calculate best category)
+		# Do this by periodically updating :group_title field on kind=custom polls. Use default trust metric here, because the category can be custom changed by each user if they want (this is just the default)
+		# TODO: Give option to select a different list (it's automatically saved and used from then on, with reset option)
+		# TODO: Pick the one with the most voting power. If it is the same as conn.assigns.poll then show it, otherwise return a redirect response.
 		case TrustMetric.get(conn.assigns.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
 				results = Result.calculate(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
