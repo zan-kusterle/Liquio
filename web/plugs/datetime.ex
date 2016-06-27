@@ -8,7 +8,7 @@ defmodule Democracy.Plugs.Datetime do
 			if Map.get(conn.params, query_name) do
 				Ecto.DateTime.cast!(conn.params[query_name])
 			else
-				Ecto.DateTime.utc()
+				Ecto.DateTime.utc(:usec)
 			end
 		)
 	end
