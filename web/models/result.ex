@@ -108,6 +108,7 @@ defmodule Democracy.Result do
 	end
 
 	def aggregate_contributions(contributions, datetime, vote_weight_halving_days) do
+		# TODO: Also include option to add T fake votes with score S
 		contributions_by_identities = for contribution <- contributions, into: %{}, do: {to_string(contribution.identity_id), %{
 			:voting_power => contribution.voting_power,
 			:score => contribution.score

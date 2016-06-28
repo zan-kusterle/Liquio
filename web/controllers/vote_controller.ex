@@ -8,7 +8,7 @@ defmodule Democracy.VoteController do
 
 	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"}
 	def is_vote(conn, vote), do: vote.data != nil and conn.assigns.poll.id == vote.poll_id
-	plug Democracy.Plugs.QueryId, {:vote, Vote, "id", &Democracy.VoteController.is_vote/2} when action in [:show]
+	plug Democracy.Plugs.QueryIdentityIdFallbackCurrent, {:identity, "id"} when action in [:show]
 	plug Democracy.Plugs.EnsureCurrentIdentity when action in [:create, :delete]
 
 	def index(conn, _params) do
@@ -34,7 +34,13 @@ defmodule Democracy.VoteController do
 	end
 
 	def show(conn, _params) do
-		render(conn, "show.json", vote: conn.assigns.vote)
+		# TODO: Lookup by identity id instead of directly (also "me")
+		vote = Repo.get_by!(Vote, identity_id: conn.assigns.identity.id, poll_id: conn.assigns.poll.id, is_last: true)
+		if vote do
+			conn |> render("show.json", vote: vote)
+		else
+			conn |> put_status(:not_found)
+		end
 	end
 
 	def delete(conn, _params) do
