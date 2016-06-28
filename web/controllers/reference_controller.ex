@@ -11,6 +11,7 @@ defmodule Democracy.ReferenceController do
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"} when action in [:index]
 	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"} when action in [:index]
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:index]
+	plug Democracy.Plugs.QueryFlag, {:include_unapproved, "include_unapproved"} when action in [:index]
 	
 	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"}
 	plug Democracy.Plugs.QueryId, {:reference, Reference, "id"} when action in [:show]
@@ -24,12 +25,14 @@ defmodule Democracy.ReferenceController do
 				references = from(d in Reference, where: d.poll_id == ^conn.assigns.poll.id, order_by: d.inserted_at)
 				|> Repo.all
 				|> Repo.preload([:approval_poll, :reference_poll, :poll])
-				|> Enum.filter(fn(reference) ->
-					approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
-					is_approved = approval_result.mean > 0.5 and approval_result.total >= 1
-					is_approved
-				end)
-				|> Enum.map(fn(reference) ->
+				if not conn.assigns.include_unapproved do
+					references = references |> Enum.filter(fn(reference) ->
+						approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
+						is_approved = approval_result.mean > 0.5 and approval_result.total >= 1
+						is_approved
+					end)
+				end
+				references = references|> Enum.map(fn(reference) ->
 					results = Result.calculate(reference.reference_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
 					Map.put(reference, :reference_poll, Map.put(reference.reference_poll, :results, results))
 				end)
