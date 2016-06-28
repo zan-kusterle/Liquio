@@ -50,7 +50,12 @@ defmodule Democracy.PollController do
 		case TrustMetric.get(conn.assigns.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
 				contributions = Result.calculate_contributions(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids) |> Enum.map(fn(contribution) ->
-					%{contribution | :datetime => (contribution.datetime |> Ecto.DateTime.cast! |> Ecto.DateTime.to_iso8601)}
+					%{
+						:datetime => contribution.datetime |> Ecto.DateTime.cast! |> Ecto.DateTime.to_iso8601,
+						:score => contribution.score,
+						:voting_power => contribution.voting_power,
+						:identity_id => contribution.identity_id
+					}
 				end)
 				conn
 				|> render("results.json", results: contributions)
