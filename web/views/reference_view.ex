@@ -10,12 +10,15 @@ defmodule Democracy.ReferenceView do
 	end
 
 	def render("reference.json", %{reference: reference}) do
-		%{
+		v = %{
 			id: reference.id,
 			poll: Democracy.PollView.render("poll.json", poll: reference.poll),
 			reference_poll: Democracy.PollView.render("poll.json", poll: reference.reference_poll),
 			approval_poll_id: reference.approval_poll_id,
-			pole: reference.pole
+			pole: reference.pole,
 		}
+		if Map.has_key?(reference, :is_approved) do
+			v = Map.put(v, :is_approved, reference.is_approved)
+		end
 	end
 end
