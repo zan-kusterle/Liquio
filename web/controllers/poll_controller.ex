@@ -18,6 +18,7 @@ defmodule Democracy.PollController do
 		changeset = Poll.changeset(%Poll{}, params)
 		case Poll.create(changeset) do
 			{:ok, poll} ->
+				poll = Map.put(poll, :results, Result.empty())
 				conn
 				|> put_status(:created)
 				|> put_resp_header("location", poll_path(conn, :show, poll))

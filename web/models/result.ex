@@ -69,6 +69,14 @@ defmodule Democracy.Result do
 		|> aggregate_contributions(datetime, vote_weight_halving_days)
 	end
 
+	def empty() do
+		%{
+			:mean => nil,
+			:total => 0,
+			:count => 0
+		}
+	end
+
 	def calculate_contributions(poll, datetime, trust_identity_ids) do
 		votes = get_votes(poll.id, datetime)
 		inverse_delegations = get_inverse_delegations(datetime)
