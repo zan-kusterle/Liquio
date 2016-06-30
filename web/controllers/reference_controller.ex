@@ -17,8 +17,7 @@ defmodule Democracy.ReferenceController do
 	plug Democracy.Plugs.QueryId, {:reference, Reference, "id"} when action in [:show]
 
 	def index(conn, _params) do
-		# TODO: Inverse references, all references / only approved
-		# TODO: Is approved config in params (mean, total)
+		# TODO: Is approved threshold in param
 
 		case TrustMetric.get(conn.assigns.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
@@ -26,8 +25,8 @@ defmodule Democracy.ReferenceController do
 				|> Repo.all
 				|> Repo.preload([:approval_poll, :reference_poll, :poll])
 				|> Enum.map(fn(reference) ->
-					approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
-					is_approved = approval_result.mean > 0.5 and approval_result.total >= 1
+					approval_result = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+					is_approved = approval_result.mean > 0.5
 					Map.put(reference, :is_approved, is_approved)
 				end)
 				if not conn.assigns.include_unapproved do
@@ -36,7 +35,7 @@ defmodule Democracy.ReferenceController do
 					end)
 				end
 				references = references|> Enum.map(fn(reference) ->
-					results = Result.calculate(reference.reference_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
+					results = Result.calculate(reference.reference_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
 					Map.put(reference, :reference_poll, Map.put(reference.reference_poll, :results, results))
 				end)
 

@@ -37,7 +37,7 @@ defmodule Democracy.PollController do
 		# TODO: Pick the one with the most voting power. If it is the same as conn.assigns.poll then show it, otherwise return a redirect response.
 		case TrustMetric.get(conn.assigns.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
-				results = Result.calculate(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days)
+				results = Result.calculate(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
 				conn
 				|> render("show.json", poll: conn.assigns.poll |> Map.put(:results, results))
 			{:error, message} ->

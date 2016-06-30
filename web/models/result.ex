@@ -63,10 +63,10 @@ defmodule Democracy.Result do
 		field :data, :map
 	end
 
-	def calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days) do
+	def calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days, soft_quorum_t) do
 		poll
 		|> calculate_contributions(datetime, trust_identity_ids)
-		|> aggregate_contributions(datetime, vote_weight_halving_days)
+		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t)
 	end
 
 	def empty() do
@@ -115,13 +115,13 @@ defmodule Democracy.Result do
 		contributions
 	end
 
-	def aggregate_contributions(contributions, datetime, vote_weight_halving_days) do
-		# TODO: Also include option to add T fake votes with score S
+	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t) do
+		# TODO: Also include option to add T voting power with score 0
 		contributions_by_identities = for contribution <- contributions, into: %{}, do: {to_string(contribution.identity_id), %{
 			:voting_power => contribution.voting_power,
 			:score => contribution.score
 		}}
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days))) + soft_quorum_t
 		total_score = Enum.sum(Enum.map(contributions, & &1.score * &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
 		mean = if total_power > 0 do total_score / total_power else nil end
 		
