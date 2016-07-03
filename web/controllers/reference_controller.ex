@@ -33,6 +33,7 @@ defmodule Democracy.ReferenceController do
 					results = Result.calculate(reference.reference_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
 					Map.put(reference, :reference_poll, Map.put(reference.reference_poll, :results, results))
 				end)
+				|> Enum.sort(&(&1.reference_poll.results.mean > &2.reference_poll.results.mean))
 
 				conn
 				|> render("index.json", references: references)

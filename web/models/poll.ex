@@ -27,4 +27,10 @@ defmodule Democracy.Poll do
 		# TODO: Store snapshot of source urls content. In case content changes on the url later users can be warned and given the option to view both versions.
 		Repo.insert(changeset)
 	end
+
+	def search(query, search_term) do
+		from(p in query,
+		where: fragment("? % ?", p.title, ^search_term),
+		order_by: fragment("similarity(?, ?) DESC", p.title, ^search_term))
+	end
 end
