@@ -121,9 +121,9 @@ defmodule Democracy.Result do
 			:voting_power => contribution.voting_power,
 			:score => contribution.score
 		}}
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days))) + soft_quorum_t
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
 		total_score = Enum.sum(Enum.map(contributions, & &1.score * &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
-		mean = if total_power > 0 do total_score / total_power else nil end
+		mean = if total_power + soft_quorum_t > 0 do total_score / (total_power + soft_quorum_t) else nil end
 		
 		%{
 			:mean => mean,
