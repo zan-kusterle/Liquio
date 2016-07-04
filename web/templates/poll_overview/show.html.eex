@@ -1,8 +1,10 @@
-<h3 class="topics">
-	<%= for topic <- @poll.topics do %>
-		<a href="/topics/<%= topic %>" class="topic">#<%= topic %></a>
-	<% end %>
-</h3>
+<%= if @poll.topics != nil do %>
+	<h3 class="topics">
+		<%= for topic <- @poll.topics do %>
+			<a href="/topics/<%= topic %>" class="topic">#<%= topic %></a>
+		<% end %>
+	</h3>
+<% end %>
 
 <h1 class="title"><%= @poll.title %></h1>
 
@@ -16,23 +18,27 @@
 	<a href="/polls/1/vote">Vote</a>
 </div>
 
-<h2 class="references-title">Evidence</h2>
+<%= unless Enum.empty?(@references) do %>
+	<h2 class="references-title">Evidence</h2>
 
-<div class="references">
-	<div class="pole">
-		<h3 class="pole-heading">Positive</h3>
-		<div class="pole-list">
-			<%= for reference <- @references |> Enum.filter(& &1.pole == "positive") do %>
-				<%= render "reference.html", reference: reference %>
-			<% end %>
+	<div class="references">
+		<div class="pole">
+			<h3 class="pole-heading">Positive</h3>
+			<div class="pole-list">
+				<%= for reference <- @references |> Enum.filter(& &1.pole == "positive") do %>
+					<%= render "reference.html", reference: reference %>
+				<% end %>
+			</div>
+		</div>
+		<div class="pole">
+			<h3 class="pole-heading">Negative</h3>
+			<div class="pole-list">
+				<%= for reference <- @references |> Enum.filter(& &1.pole == "negative") do %>
+					<%= render "reference.html", reference: reference %>
+				<% end %>
+			</div>
 		</div>
 	</div>
-	<div class="pole">
-		<h3 class="pole-heading">Negative</h3>
-		<div class="pole-list">
-			<%= for reference <- @references |> Enum.filter(& &1.pole == "negative") do %>
-				<%= render "reference.html", reference: reference %>
-			<% end %>
-		</div>
-	</div>
-</div>
+<% else %>
+	<h2 class="references-title">There is no evidence</h2>
+<% end %>
