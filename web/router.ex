@@ -20,6 +20,13 @@ defmodule Democracy.Router do
 	scope "/", Democracy do
 		pipe_through :browser
 
+		get "/", LandingController, :index
+		resources "/polls", PollOverviewController, only: [:show]
+	end
+
+	scope "/api", Democracy do
+		pipe_through :api
+
 		resources "/login", LoginController, only: [:create, :delete]
 
 		resources "/identities", IdentityController, only: [:index, :create, :show] do
@@ -34,7 +41,5 @@ defmodule Democracy.Router do
 		end
 
 		get "/search", SearchController, :index
-
-		get "/", LandingController, :index
 	end
 end
