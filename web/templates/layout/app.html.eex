@@ -12,11 +12,25 @@
 	</head>
 
 	<body>
-		<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-		<p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+		<div class="container">
+			<div class="header">
+				<a href="/landing"><img class="logo" src="/images/logo.png"></a>
 
-		<main role="main">
-			<%= render @view_module, @view_template, assigns %>
-		</main>
+				<input class="search" placeholder="Search">
+
+				<div class="actions">
+					<a>Create</a>
+					<a>zan</a>
+					<a>Logout</a>
+				</div>
+			</div>
+
+			<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+			<p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+
+			<main role="main" class="main">
+				<%= render @view_module, @view_template, assigns %>
+			</main>
+		</div>
 	</body>
 </html>

@@ -1,61 +1,59 @@
-<div class="container">
-	<div class="headline">
-		<img src="/images/logo.png"></img>
-		<h1>A liquid democracy where anyone can vote on anything</h1>
+<div class="headline">
+	<img src="/images/logo.png"></img>
+	<h1>A liquid democracy where anyone can vote on anything</h1>
 
-		<div class="ctas">
-			<a href="/polls/1" class="cta">View random poll</a>
+	<div class="ctas">
+		<a href="/polls/1" class="cta">View random poll</a>
+	</div>
+</div>
+<div class="features">
+	<div class="features-row">
+		<div class="feature">
+			<h3>DELEGATIONS</h3>
+			<p>
+				You always have the power to vote on anything. But in cases when you don't know enough about the subject you can delegate your vote to other people. You can also choose which subjects you want to delegate to whom.
+			</p>
+		</div>
+
+		<div class="feature">
+			<h3>EVIDENCE</h3>
+			<p>
+				Evidence explains why people vote a certain way. Someone who is not familiar with the subject can quickly learn more about it by exploring evidence.
+			</p>
+		</div>
+
+		<div class="feature">
+			<h3>TRUST METRICS</h3>
+			<p>
+				Trust metrics try to prevent one person from having multiple identities. Developers can create their own trust metrics and people can decide for themselves which one to trusts.
+			</p>
 		</div>
 	</div>
-	<div class="features">
-		<div class="features-row">
-			<div class="feature">
-				<h3>DELEGATIONS</h3>
-				<p>
-					You always have the power to vote on anything. But in cases when you don't know enough about the subject you can delegate your vote to other people. You can also choose which subjects you want to delegate to whom.
-				</p>
-			</div>
-
-			<div class="feature">
-				<h3>EVIDENCE</h3>
-				<p>
-					Evidence explains why people vote a certain way. Someone who is not familiar with the subject can quickly learn more about it by exploring evidence.
-				</p>
-			</div>
-
-			<div class="feature">
-				<h3>TRUST METRICS</h3>
-				<p>
-					Trust metrics try to prevent one person from having multiple identities. Developers can create their own trust metrics and people can decide for themselves which one to trusts.
-				</p>
-			</div>
+	
+	<div class="features-row">
+		<div class="feature">
+			<h3>RANGE VOTING</h3>
+			<p>
+				A simple yet powerful voting system. People express how strongly they agree by voting with a score between 0% and 100%. You can read more about it <a href="http://www.rangevoting.org/" target="_blank">here</a>.
+			</p>
 		</div>
-		
-		<div class="features-row">
-			<div class="feature">
-				<h3>RANGE VOTING</h3>
-				<p>
-					A simple yet powerful voting system. People express how strongly they agree by voting with a score between 0% and 100%. You can read more about it <a href="http://www.rangevoting.org/" target="_blank">here</a>.
-				</p>
-			</div>
 
-			<div class="feature">
-				<h3>INSIGHTS</h3>
-				<p>
-					View how results change over time, between different demographics or between age groups. You can also view results at specific points in time.
-				</p>
-			</div>
+		<div class="feature">
+			<h3>INSIGHTS</h3>
+			<p>
+				View how results change over time, between different demographics or between age groups. You can also view results at specific points in time.
+			</p>
+		</div>
 
-			<div class="feature">
-				<h3>TRANSPARENCY</h3>
-				<p>
-					The source code, the API and all the data are publicly available under MIT license. 
-				</p>
-			</div>
+		<div class="feature">
+			<h3>TRANSPARENCY</h3>
+			<p>
+				The source code, the API and all the data are publicly available under MIT license. 
+			</p>
 		</div>
 	</div>
-	<div class="learn">
-		<a href="/learn">Learn more</a>
-		<a href="https://github.com/zan-kusterle/Democracy" target="_blank">View on Github</a>
-	</div>
+</div>
+<div class="learn">
+	<a href="/learn">Learn more</a>
+	<a href="https://github.com/zan-kusterle/Democracy" target="_blank">View on Github</a>
 </div>

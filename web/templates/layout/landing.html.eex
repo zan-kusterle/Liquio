@@ -12,6 +12,8 @@
 	</head>
 
 	<body>
-		<%= render @view_module, @view_template, assigns %>
+		<div class="landing-container">
+			<%= render @view_module, @view_template, assigns %>
+		</div>
 	</body>
 </html>
