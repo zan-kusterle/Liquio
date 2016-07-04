@@ -116,7 +116,6 @@ defmodule Democracy.Result do
 	end
 
 	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t) do
-		# TODO: Also include option to add T voting power with score 0
 		contributions_by_identities = for contribution <- contributions, into: %{}, do: {to_string(contribution.identity_id), %{
 			:voting_power => contribution.voting_power,
 			:score => contribution.score
@@ -176,7 +175,6 @@ defmodule Democracy.Result do
 					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> 0
-					Democracy.CalculateResultServer.visited?(uuid, from_identity_id) -> 0
 					true ->
 						from_power = get_power(from_identity_id, state, uuid)
 						from_power * (from_weight / Democracy.CalculateResultServer.get_total_weight(uuid, from_identity_id))
