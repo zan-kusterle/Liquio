@@ -21,9 +21,23 @@
 	color: #333;
 }
 
-.score-box {
+.score-with-links {
 	margin: 0px auto;
 	margin-top: 15px;
+	width: 400px;
+	height: 64px;
+}
+
+.score-with-links .score-box {
+	float: left;
+	margin-left: 125px;
+}
+
+.score-with-links .links {
+	float: right;
+}
+
+.score-box {
 	width: 150px;
 	padding: 10px 0px;
 	text-align: center;
@@ -49,16 +63,18 @@
 }
 
 .links {
-	text-align: center;
 	line-height: 18px;
-	margin-top: 5px;
 	font-size: 12px;
+	width: 125px;
+	text-align: left;
+	padding-top: 11px;
+	padding-left: 10px;
 }
 
 .links a {
-	display: inline-block;
-	width: 75px;
+	display: block;
 	color: #4aa5f3;
+	margin: 2px 0px;
 }
 
 .links a:hover {

@@ -8,14 +8,16 @@
 
 <h1 class="title"><%= @poll.title %></h1>
 
-<div class="score-box" style="background-color: rgb(255, 164, 164);">
-	<div class="number"><%= round(@poll.results.mean * 100) %><span class="percent">%</span></div>
-	<div class="subtext"><%= @poll.results.total %> voting power</div>
-</div>
+<div class="score-with-links">
+	<div class="score-box" style="background-color: <%= score_color @poll.results.mean %>;">
+		<div class="number"><%= round(@poll.results.mean * 100) %><span class="percent">%</span></div>
+		<div class="subtext"><%= @poll.results.total %> voting power</div>
+	</div>
 
-<div class="links">
-	<a href="/polls/1/details">Details</a>
-	<a href="/polls/1/vote">Vote</a>
+	<div class="links">
+		<a href="/polls/1/details">Details</a>
+		<a href="/polls/1/vote">Vote</a>
+	</div>
 </div>
 
 <%= unless Enum.empty?(@references) do %>
