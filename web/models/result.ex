@@ -81,7 +81,7 @@ defmodule Democracy.Result do
 		votes = get_votes(poll.id, datetime)
 		inverse_delegations = get_inverse_delegations(datetime)
 		topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
-		calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, poll.topics)
+		calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, topics)
 	end
 
 	def calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, topics) do
@@ -152,7 +152,7 @@ defmodule Democracy.Result do
 		unless Democracy.CalculateResultServer.visited?(uuid, identity_id) do
 			inverse_delegations |> Map.get(identity_id, []) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
 				cond do
-					not MapSet.member?(trust_identity_ids, from_identity_id) -> nil
+					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> nil
 					Map.has_key?(votes, from_identity_id) -> nil
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> nil
 					true ->
@@ -174,7 +174,7 @@ defmodule Democracy.Result do
 			Democracy.CalculateResultServer.add_visited(uuid, identity_id)
 			receiving = inverse_delegations |> Map.get(identity_id, []) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
 				acc + cond do
-					not MapSet.member?(trust_identity_ids, from_identity_id) -> 0
+					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> 0
 					Democracy.CalculateResultServer.visited?(uuid, from_identity_id) -> 0
