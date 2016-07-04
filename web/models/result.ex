@@ -127,9 +127,8 @@ defmodule Democracy.Result do
 		
 		%{
 			:mean => mean,
-			:total => total_power,
+			:total => round(total_power),
 			:count => Enum.count(contributions)
-			#:contributions_by_identities => contributions_by_identities
 		}
 	end
 
