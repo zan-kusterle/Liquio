@@ -1,6 +1,14 @@
 defmodule Democracy.Router do
 	use Democracy.Web, :router
 
+	pipeline :browser do
+		plug :accepts, ["html"]
+		plug :fetch_session
+		plug :fetch_flash
+		plug :protect_from_forgery
+		plug :put_secure_browser_headers
+	end
+
 	pipeline :api do
 		plug :accepts, ["json"]
 		plug :fetch_session
@@ -10,7 +18,7 @@ defmodule Democracy.Router do
 	end
 
 	scope "/", Democracy do
-		pipe_through :api
+		pipe_through :browser
 
 		resources "/login", LoginController, only: [:create, :delete]
 
@@ -26,5 +34,7 @@ defmodule Democracy.Router do
 		end
 
 		get "/search", SearchController, :index
+
+		get "/landing", LandingController, :index
 	end
 end

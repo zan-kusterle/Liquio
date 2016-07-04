@@ -11,7 +11,7 @@ config :democracy, Democracy.Endpoint,
 	debug_errors: true,
 	code_reloader: true,
 	check_origin: false,
-	watchers: []
+	watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin", cd: Path.expand("../", __DIR__)]]
 
 # Watch static and templates for browser reloading.
 config :democracy, Democracy.Endpoint,
