@@ -7,7 +7,7 @@ defmodule Democracy.Plugs.QueryId do
 
 	def call(conn, {assign_atom, schema, query_name}) do
 		item = Repo.get(schema, conn.params[query_name])
-		if item do
+		if item != nil do
 			assign(conn, assign_atom, item)
 		else
 			conn

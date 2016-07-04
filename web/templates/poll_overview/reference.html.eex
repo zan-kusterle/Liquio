@@ -1,0 +1,6 @@
+<div class="reference">
+	<a class="reference-text"><%= @reference.reference_poll.title %></a>
+	<div class="reference-score" style="background-color: <%= score_color @reference.reference_poll.results.mean %>;">
+		<%= round(@reference.reference_poll.results.mean * 100) %>%
+	</div>
+</div>

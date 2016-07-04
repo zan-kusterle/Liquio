@@ -1,14 +1,14 @@
 <h3 class="topics">
-	<a href="/tags/science" class="topic">#science</a>
-	<a href="/tags/nature" class="topic">#nature</a>
-	<a href="/tags/global-warming" class="topic">#global warming</a>
+	<%= for topic <- @poll.topics do %>
+		<a href="/topics/<%= topic %>" class="topic">#<%= topic %></a>
+	<% end %>
 </h3>
 
-<h1 class="title">Global warming is caused by humans</h1>
+<h1 class="title"><%= @poll.title %></h1>
 
 <div class="score-box" style="background-color: rgb(255, 164, 164);">
-	<div class="number">33<span class="percent">%</span></div>
-	<div class="subtext">3 voting power</div>
+	<div class="number"><%= round(@poll.results.mean * 100) %><span class="percent">%</span></div>
+	<div class="subtext"><%= @poll.results.total %> voting power</div>
 </div>
 
 <div class="links">
@@ -22,51 +22,17 @@
 	<div class="pole">
 		<h3 class="pole-heading">Positive</h3>
 		<div class="pole-list">
-			<div class="reference">
-				<a class="reference-text">Global temperature rise</a>
-				<div class="reference-score" style="background-color: rgb(140, 232, 140);">75%</div>
-			</div>
-			<div class="reference">
-				<a class="reference-text">Ocean acidification</a>
-				<div class="reference-score" style="background-color: rgb(249, 226, 110);">67%</div>
-			</div>
-			<div class="reference">
-				<a class="reference-text">Declining Arctic sea ice</a>
-				<div class="reference-score" style="background-color: rgb(249, 226, 110);">67%</div>
-			</div>
-			<div class="reference">
-				<a class="reference-text">Warming oceans</a>
-				<div class="reference-score" style="background-color: rgb(249, 226, 110);">67%</div>
-			</div>
-			<div class="reference">
-				<a class="reference-text">Sea level rise</a>
-				<div class="reference-score" style="background-color: rgb(255, 164, 164);">42%</div>
-			</div>
-			<div class="reference">
-				<a class="reference-text">Glacial retreat</a>
-				<div class="reference-score" style="background-color: rgb(255, 164, 164);">0%</div>
-			</div>
+			<%= for reference <- @references |> Enum.filter(& &1.pole == "positive") do %>
+				<%= render "reference.html", reference: reference %>
+			<% end %>
 		</div>
 	</div>
 	<div class="pole">
 		<h3 class="pole-heading">Negative</h3>
 		<div class="pole-list">
-			<div class="reference">
-				<a class="reference-text">Climate Models used are Proven to be Unreliable</a>
-				<div class="reference-score" style="background-color: rgb(249, 226, 110);">67%</div>
-			</div>
-			<div class="reference">
-				<a class="reference-text">Not enough historical data available to prove global warming</a>
-				<div class="reference-score" style="background-color: rgb(249, 226, 110);">67%</div>
-			</div>
-			<div class="reference">
-				<a class="reference-text">Early Predictions About the Effects of Warming Have Been Proven Wrong</a>
-				<div class="reference-score" style="background-color: rgb(255, 164, 164);">33%</div>
-			</div>
-			<div class="reference">
-				<a class="reference-text">Arctic Ice Increased by 50% Since 2012</a>
-				<div class="reference-score" style="background-color: rgb(255, 164, 164);">0%</div>
-			</div>
+			<%= for reference <- @references |> Enum.filter(& &1.pole == "negative") do %>
+				<%= render "reference.html", reference: reference %>
+			<% end %>
 		</div>
 	</div>
 </div>
