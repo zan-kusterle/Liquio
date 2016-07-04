@@ -35,6 +35,6 @@ defmodule Democracy.Router do
 
 		get "/search", SearchController, :index
 
-		get "/landing", LandingController, :index
+		get "/", LandingController, :index
 	end
 end
