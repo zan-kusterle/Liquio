@@ -52,13 +52,14 @@
 	text-align: center;
 	line-height: 18px;
 	margin-top: 5px;
-	color: #4aa5f3;
 	font-size: 12px;
 }
 
 .links a {
 	display: inline-block;
 	width: 75px;
+	color: #4aa5f3;
+	text-decoration: none;
 }
 
 .links a:hover {

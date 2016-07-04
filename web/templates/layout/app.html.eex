@@ -16,7 +16,9 @@
 			<div class="header">
 				<a href="/landing"><img class="logo" src="/images/logo.png"></a>
 
-				<input class="search" placeholder="Search">
+				<form method="GET" action="/search">
+					<input class="search" placeholder="Search" name="query">
+				</form>
 
 				<div class="actions">
 					<a>Create</a>

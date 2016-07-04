@@ -12,8 +12,8 @@
 </div>
 
 <div class="links">
-	<a>Details</a>
-	<a>Vote</a>
+	<a href="/polls/1/details">Details</a>
+	<a href="/polls/1/vote">Vote</a>
 </div>
 
 <h2 class="references-title">Evidence</h2>
