@@ -7,11 +7,16 @@ defmodule Democracy.HtmlPollController do
 	alias Democracy.TrustMetric
 	alias Democracy.Result
 
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id"} when action in [:details]
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id"} when action in [:details, :embed]
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"}
 	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"}
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"}
 	
+	def new(conn, _params) do
+		conn
+		|> render "new.html"
+	end
+
 	def show(conn, %{"id" => "random"}) do
 		conn
 		|> redirect to: html_poll_path(conn, :show, Poll.get_random().id)
@@ -59,6 +64,22 @@ defmodule Democracy.HtmlPollController do
 				poll = conn.assigns.poll |> Map.put(:results, results)
 				conn
 				|> render "details.html", datetime_text: Map.get(params, "datetime", ""), poll: poll, contributions: contributions, results_with_datetime: results_with_datetime
+			{:error, message} ->
+				conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: message)
+		end
+	end
+
+	def embed(conn, _params) do
+		case TrustMetric.get(Democracy.TrustMetric.default_trust_metric_url) do
+			{:ok, trust_identity_ids} ->
+				datetime = Timex.DateTime.now
+				references = Reference.for_poll(conn.assigns.poll, datetime, nil, trust_identity_ids)
+				results = Result.calculate(conn.assigns.poll, datetime, trust_identity_ids, nil, 1)
+				poll = conn.assigns.poll |> Map.put(:results, results)
+				conn
+				|> render "embed.html", poll: poll, references: references
 			{:error, message} ->
 				conn
 				|> put_status(:not_found)

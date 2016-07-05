@@ -43,6 +43,7 @@ h1 {
 
 .cta:hover {
 	background: #255c6f;
+	color: white !important;
 }
 
 .features {
