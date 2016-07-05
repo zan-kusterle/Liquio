@@ -112,6 +112,14 @@
 	margin-top: 15px;
 }
 
+.reference-a:hover {
+	color: inherit;
+}
+
+.reference-a:hover .reference-text {
+	color: #4aa5f3 !important;
+}
+
 .reference {
 	margin: 6px 0px;
 	min-height: 28px;
@@ -125,11 +133,7 @@
 	padding: 7px 5px 5px 0px;
 	line-height: 16px;
 	text-transform: capitalize;
-}
-
-.reference-text:hover {
-	text-decoration: none;
-	color: #4aa5f3;
+	margin: 0px;
 }
 
 .reference-score {
