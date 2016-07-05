@@ -62,7 +62,7 @@ a {
 }
 
 a:hover {
-	color: #337ab7;
+	color: #337ab7 !important;
 }
 
 .container {

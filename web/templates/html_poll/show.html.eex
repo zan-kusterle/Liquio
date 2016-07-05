@@ -10,13 +10,17 @@
 
 <div class="score-with-links">
 	<%= render "score.html", poll: @poll %>
-	
-	<div class="links">
-		<a href="/polls/<%= @poll.id %>/details">Details</a>
-		<%= if @is_logged_in do %>
+
+	<%= if @is_logged_in do %>
+		<div class="links" style="padding-top: 11px;">
+			<a href="/polls/<%= @poll.id %>/details">Details</a>
 			<a href="/polls/<%= @poll.id %>/vote">Vote</a>
-		<% end %>
-	</div>
+		</div>
+	<% else %>
+		<div class="links" style="padding-top: 22px;">
+			<a href="/polls/<%= @poll.id %>/details">Details</a>
+		</div>
+	<% end %>
 </div>
 
 <%= unless Enum.empty?(@references) do %>

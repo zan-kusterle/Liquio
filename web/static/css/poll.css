@@ -64,17 +64,14 @@
 	font-size: 12px;
 	width: 125px;
 	text-align: left;
-	padding-top: 11px;
 	padding-left: 10px;
+	height: 64px;
 }
 
 .links a {
 	display: block;
 	color: #4aa5f3;
 	margin: 2px 0px;
-}
-
-.links a:hover {
 	font-weight: bold;
 }
 

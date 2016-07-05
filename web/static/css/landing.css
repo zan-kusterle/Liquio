@@ -27,7 +27,7 @@ h1 {
 	margin: 40px 5px 0px;
 	font-weight: 700;
 	padding: 15px 55px;
-	color: #fff;
+	color: #fff !important;
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
