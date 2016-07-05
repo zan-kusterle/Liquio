@@ -11,6 +11,8 @@ defmodule Democracy.HtmlPollController do
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"}
 	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"}
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"}
+
+	plug :put_layout, "minimal.html" when action in [:embed]
 	
 	def new(conn, _params) do
 		conn

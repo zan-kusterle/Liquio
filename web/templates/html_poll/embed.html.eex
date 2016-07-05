@@ -1,20 +1,8 @@
-<%= if @poll.topics != nil do %>
-	<h3 class="topics">
-		<%= for topic <- @poll.topics do %>
-			<a href="/topics/<%= topic %>" class="topic">#<%= topic %></a>
-		<% end %>
-	</h3>
-<% end %>
-
 <h1 class="title"><%= @poll.title || @poll.id %></h1>
 
-<div class="score-with-links">
-	<%= render "score.html", poll: @poll %>
-</div>
+<%= render "score.html", poll: @poll %>
 
 <%= unless Enum.empty?(@references) do %>
 	<h2 class="references-title">References</h2>
 	<%= render "references.html", references: @references %>
-<% else %>
-	<h2 class="references-title">There are no references.</h2>
 <% end %>
