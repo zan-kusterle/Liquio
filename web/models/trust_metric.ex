@@ -6,7 +6,7 @@ defmodule Democracy.TrustMetric do
 
 	schema "trust_metrics" do
 		field :url, :string
-		field :last_update, Ecto.DateTime
+		field :last_update, Timex.Ecto.DateTime
 		field :usernames, {:array, :string}
 	end
 
@@ -18,17 +18,17 @@ defmodule Democracy.TrustMetric do
 		trust_metric = Repo.get_by(TrustMetric, url: url)
 		if trust_metric do
 			Task.async(fn ->
-				if_before_datetime = Ecto.DateTime.utc
-					|> Ecto.DateTime.to_erl
+				if_before_datetime = Timex.DateTime.now
+					|> Timex.to_erlang_datetime
 					|> :calendar.datetime_to_gregorian_seconds
 					|> Kernel.-(60 * 5)
 					|> :calendar.gregorian_seconds_to_datetime
-					|> Ecto.DateTime.from_erl
+					|> Timex.DateTime.from_erl
 				if trust_metric.last_update < if_before_datetime do
-					response = HTTPotion.get(url, headers: ["If-Modified-Since": trust_metric.last_update |> Ecto.DateTime.to_iso8601])
+					response = HTTPotion.get(url, headers: ["If-Modified-Since": Timex.format!(trust_metric.last_update, "{ISO}")])
 					if response.status_code == 200 do
 						usernames = response.body |> String.strip(?\n) |> String.split("\n")
-						trust_metric = Ecto.Changeset.change trust_metric, usernames: usernames, last_update: Ecto.DateTime.utc()
+						trust_metric = Ecto.Changeset.change trust_metric, usernames: usernames, last_update: Timex.DateTime.now()
 						Repo.update!(trust_metric)
 					end
 				end
@@ -41,7 +41,7 @@ defmodule Democracy.TrustMetric do
 				Task.async(fn ->
 					Repo.insert!(%TrustMetric{
 						url: url,
-						last_update: Ecto.DateTime.utc(),
+						last_update: Timex.DateTime.now(),
 						usernames: usernames
 					})
 				end)

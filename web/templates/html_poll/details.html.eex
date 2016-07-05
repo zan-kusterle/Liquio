@@ -40,7 +40,7 @@
 			<td><a href="/identities/<%= contribution.identity_id %>"><%= contribution.identity_id %></a></td>
 			<td><%= Float.round(contribution.voting_power, 2) %></td>
 			<td><%= Float.round(contribution.score, 2) %></td>
-			<td><%= contribution.datetime |> Ecto.DateTime.cast! |> Ecto.DateTime.to_iso8601 %></td>
+			<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
 		</tr>
 	<% end %>
 </table>

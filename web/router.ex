@@ -27,6 +27,8 @@ defmodule Democracy.Router do
 		resources "/login", HtmlLoginController, only: [:index, :create]
 		get "/logout", HtmlLoginController, :delete
 
+		resources "/identities", HtmlIdentityController, only: [:show]
+
 		resources "/polls", HtmlPollController, only: [:show] do
 			get "/details", HtmlPollController, :details
 			resources "/vote", HtmlVoteController, only: [:index, :create, :delete]

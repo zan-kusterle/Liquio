@@ -41,6 +41,7 @@ defmodule Democracy.HtmlPollController do
 	end
 
 	def details(conn, _params) do
+		IO.inspect conn.assigns.datetime
 		case TrustMetric.get(conn.assigns.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
 				contributions = Result.calculate_contributions(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids)

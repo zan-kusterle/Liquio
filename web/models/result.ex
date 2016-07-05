@@ -135,8 +135,8 @@ defmodule Democracy.Result do
 		if vote_weight_halving_days == nil do
 			1
 		else
-			ct = contribution.datetime |> Ecto.DateTime.to_erl |> :calendar.datetime_to_gregorian_seconds
-			rt = reference_datetime |> Ecto.DateTime.to_erl |> :calendar.datetime_to_gregorian_seconds
+			ct = contribution.datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
+			rt = reference_datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
 			delta_days = (rt - ct) / (24 * 3600)
 
 			base = :math.pow(0.5, 1 / vote_weight_halving_days)
@@ -189,7 +189,7 @@ defmodule Democracy.Result do
 	def get_inverse_delegations(datetime) do
 		query = "SELECT DISTINCT ON (from_identity_id, to_identity_id) from_identity_id, to_identity_id, data
 			FROM delegations
-			WHERE datetime <= '#{Ecto.DateTime.to_iso8601(datetime)}'
+			WHERE datetime <= '#{Timex.format!(datetime, "{ISO}")}'
 			ORDER BY from_identity_id, to_identity_id, datetime DESC;"
 		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows |> Enum.filter(& Enum.at(&1, 2))
 		inverse_delegations = for {to_identity_id, to_identity_rows} <- rows |> Enum.group_by(&(&1 |> Enum.at(1))), into: %{}, do: {
@@ -208,13 +208,17 @@ defmodule Democracy.Result do
 	def get_votes(poll_id, datetime) do
 		query = "SELECT DISTINCT ON (v.identity_id) v.identity_id, v.datetime, v.data
 			FROM votes AS v
-			WHERE v.poll_id = #{poll_id} AND v.datetime <= '#{Ecto.DateTime.to_iso8601(datetime)}'
+			WHERE v.poll_id = #{poll_id} AND v.datetime <= '#{Timex.format!(datetime, "{ISO}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
 		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows |> Enum.filter(& Enum.at(&1, 2))
-		votes = for row <- rows, into: %{}, do: {Enum.at(row, 0), {
-			Enum.at(row, 1),
-			Enum.at(row, 2)["score"]
-		}}
+		votes = for row <- rows, into: %{} do
+			{date, {h, m, s, _}} = Enum.at(row, 1)
+			data = {
+				Timex.datetime({date, {h, m, s}}),
+				Enum.at(row, 2)["score"]
+			}
+			{Enum.at(row, 0), data}
+		end
 		votes
 	end
 
@@ -245,7 +249,7 @@ defmodule Democracy.Result do
 		for identity_id <- identity_ids |> Enum.take_random(num_votes), into: %{}, do: {
 			identity_id,
 			{
-				Ecto.DateTime.utc(),
+				Timex.DateTime.now,
 				:random.uniform
 			}
 		}
