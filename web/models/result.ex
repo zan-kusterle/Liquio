@@ -104,7 +104,7 @@ defmodule Democracy.Result do
 		contributions = trust_votes |> Enum.map(fn({identity_id, {datetime, score}}) ->
 			%{
 				identity_id: identity_id,
-				voting_power: get_power(identity_id, state, uuid),
+				voting_power: get_power(identity_id, state, uuid) / 1,
 				score: score,
 				datetime: datetime
 			}

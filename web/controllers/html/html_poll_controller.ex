@@ -41,14 +41,24 @@ defmodule Democracy.HtmlPollController do
 	end
 
 	def details(conn, _params) do
-		IO.inspect conn.assigns.datetime
 		case TrustMetric.get(conn.assigns.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
 				contributions = Result.calculate_contributions(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids)
 				results = Result.calculate(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+
+				num_units = 30
+				results_with_datetime = Enum.map(0..num_units, fn(shift_units) ->
+					datetime = Timex.shift(conn.assigns.datetime, days: -shift_units)
+					{
+						num_units - shift_units,
+						datetime,
+						Result.calculate(conn.assigns.poll, datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+					}
+				end)
+
 				poll = conn.assigns.poll |> Map.put(:results, results)
 				conn
-				|> render "details.html", datetime_text: _params["datetime"], poll: poll, contributions: contributions
+				|> render "details.html", datetime_text: _params["datetime"], poll: poll, contributions: contributions, results_with_datetime: results_with_datetime
 			{:error, message} ->
 				conn
 				|> put_status(:not_found)
