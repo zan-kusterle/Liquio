@@ -27,7 +27,7 @@
 	<text x="1140" y="140" fill="#333">DEC</text>
 </svg>
 
-<div class="section-title">All votes (excluding soft quorum)</div>
+<div class="section-title">List of all votes</div>
 <table class="contributions">
 	<tr class="contribution">
 		<td class="column-name">By identity</td>
@@ -37,9 +37,9 @@
 	</tr>
 	<%= for contribution <- @contributions do %>
 		<tr class="contribution">
-			<td><a><%= contribution.identity_id %></a></td>
-			<td><%= contribution.voting_power %></td>
-			<td><%= contribution.score %></td>
+			<td><a href="/identities/<%= contribution.identity_id %>"><%= contribution.identity_id %></a></td>
+			<td><%= Float.round(contribution.voting_power, 2) %></td>
+			<td><%= Float.round(contribution.score, 2) %></td>
 			<td><%= contribution.datetime |> Ecto.DateTime.cast! |> Ecto.DateTime.to_iso8601 %></td>
 		</tr>
 	<% end %>

@@ -26,4 +26,16 @@ defmodule Democracy.HtmlVoteController do
 				|> render(Democracy.ErrorView, "error.json", message: message)
 		end
 	end
+
+	def create(conn, %{"score" => score_text}) do
+		score = case Float.parse(score_text) do
+			{score, _} ->
+				score
+			:error ->
+				nil
+		end
+
+		conn
+		|> redirect to: poll_overview_html_vote_path(conn, :index, conn.assigns.poll.id)
+	end
 end

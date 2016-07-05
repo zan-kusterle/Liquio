@@ -28,5 +28,9 @@
 .contributions td {
 	border: 1px solid #ccc;
 	padding: 2px 12px;
-	width: 33.33%;
+	width: 25%;
+}
+
+.column-name {
+	font-weight: bold;
 }

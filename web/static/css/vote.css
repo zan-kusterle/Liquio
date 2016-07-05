@@ -22,3 +22,10 @@
 	text-decoration: underline;
 	background: none;
 }
+
+.link {
+	display: block;
+	margin-top: 10px;
+	color: #337ab7;
+	font-size: 14px;
+}
