@@ -34,7 +34,6 @@ defmodule Democracy.VoteController do
 	end
 
 	def show(conn, _params) do
-		# TODO: Lookup by identity id instead of directly (also "me")
 		vote = Repo.get_by!(Vote, identity_id: conn.assigns.identity.id, poll_id: conn.assigns.poll.id, is_last: true)
 		if vote do
 			conn |> render("show.json", vote: vote)

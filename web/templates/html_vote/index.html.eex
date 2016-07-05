@@ -16,12 +16,14 @@
 
 <div class="section-title">After reviewing the evidence, decide whether the claim is true or false</div>
 <p class="claim"><%= @poll.title %></p>
-<form method="POST">
+<form method="POST" class="cast-vote">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-	<button type="submit" name="score" value="1.0" class="true-choice">TRUE</button>
-	<button type="submit" name="score" value="0.0" class="false-choice">FALSE</button>
+	<button type="submit" name="score" value="1.0" class="true-choice<%= if @own_vote != nil and @own_vote.data != nil and @own_vote.data.score == 1.0 do %> active<% end %>">TRUE</button>
+	<button type="submit" name="score" value="0.0" class="false-choice<%= if @own_vote != nil and @own_vote.data != nil and @own_vote.data.score == 0.0 do %> active<% end %>">FALSE</button>
 	<br>
-	<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
+	<%= if @own_vote != nil and @own_vote.data != nil do %>
+		<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
+	<% end %>
 </form>
 
 <%= render Democracy.HtmlPollView, "score.html", poll: @poll %>

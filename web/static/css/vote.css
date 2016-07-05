@@ -11,11 +11,14 @@
 	margin-top: 10px;
 }
 
+.cast-vote {
+	margin-bottom: 20px;
+}
+
 .remove-vote {
 	border: none;
 	font-size: 10px;
 	color: #337ab7;
-	margin-bottom: 20px;
 }
 
 .remove-vote:hover {

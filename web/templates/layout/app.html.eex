@@ -22,8 +22,12 @@
 
 				<div class="actions">
 					<a>Create</a>
-					<a>zan</a>
-					<a>Logout</a>
+					<%= if user = Guardian.Plug.current_resource(@conn) do %>
+						<a href="/identities/<%= user.id %>"><%= user.username %></a>
+						<a href="/logout">Logout</a>
+					<% else %>
+						<a href="/login">Login</a>
+					<% end %>
 				</div>
 			</div>
 

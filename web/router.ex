@@ -7,6 +7,8 @@ defmodule Democracy.Router do
 		plug :fetch_flash
 		plug :protect_from_forgery
 		plug :put_secure_browser_headers
+		plug Guardian.Plug.VerifySession
+		plug Guardian.Plug.LoadResource
 	end
 
 	pipeline :api do
@@ -21,6 +23,10 @@ defmodule Democracy.Router do
 		pipe_through :browser
 
 		get "/", LandingController, :index
+
+		resources "/login", HtmlLoginController, only: [:index, :create]
+		get "/logout", HtmlLoginController, :delete
+
 		resources "/polls", HtmlPollController, only: [:show] do
 			get "/details", HtmlPollController, :details
 			resources "/vote", HtmlVoteController, only: [:index, :create, :delete]

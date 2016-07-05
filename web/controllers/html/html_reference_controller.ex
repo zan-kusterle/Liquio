@@ -26,7 +26,7 @@ defmodule Democracy.HtmlReferenceController do
 					results = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
 					reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 					conn
-					|> render("show.html", reference: reference)
+					|> render("show.html", reference: reference, pole: pole)
 				{:error, message} ->
 					conn
 					|> put_status(:not_found)
