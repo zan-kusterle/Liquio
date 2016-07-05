@@ -85,7 +85,7 @@ a:hover {
 .header-contents {
 	width: 900px;
 	margin: 0 auto;
-	padding: 15px 25px;
+	padding: 14px 25px;
 }
 
 .header .logo {
@@ -110,9 +110,9 @@ a:hover {
 
 .header .actions {
 	float: right;
-	margin-top: 10px;
 	font-size: 14px;
 	color: rgb(51, 122, 183);
+	line-height: 32px;
 }
 
 .header .actions a {
