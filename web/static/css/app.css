@@ -44,7 +44,7 @@ input {
 	background-image: none;
 	outline: none;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-	border: 1px solid #ccc;
+	border: 1px solid #ddd;
 	padding: 6px 12px;
 	height: 31px;
 	-webkit-appearance:none;
@@ -66,8 +66,8 @@ a:hover {
 }
 
 .container {
-	margin: 70px auto 100px auto;
-	width: 900px;
+	margin: 0px auto 100px auto;
+	width: 100%;
 	color: #333;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	text-align: center;
@@ -78,8 +78,14 @@ a:hover {
 }
 
 .header {
-	height: 35px;
-	padding: 0 25px;
+	height: 62px;
+	background-color: #f6f6f6;
+}
+
+.header-contents {
+	width: 900px;
+	margin: 0 auto;
+	padding: 15px 25px;
 }
 
 .header .logo {
@@ -95,6 +101,11 @@ a:hover {
 	padding: 0px 5px;
 	color: #555;
 	float: left;
+	border-color: #eee;
+}
+
+.search:focus {
+	border-color: #ccc;
 }
 
 .header .actions {
@@ -116,10 +127,14 @@ a:hover {
 
 .main {
 	padding: 40px 35px 40px 35px;
-	margin-top: 10px;
+	margin-top: 50px;
 	margin-bottom: 30px;
 	border-radius: 0px;
 	color: #333;
 	background-color: white;
+	width: 900px;
+	margin-left: auto;
+	margin-right: auto;
+
 	/* box-shadow: 0 3px 20px 0 rgba(0, 0, 0, 0.1); */
 }

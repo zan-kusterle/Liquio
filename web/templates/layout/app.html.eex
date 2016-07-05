@@ -14,20 +14,22 @@
 	<body>
 		<div class="container">
 			<div class="header">
-				<a href="/"><img class="logo" src="/images/logo.png"></a>
+				<div class="header-contents">
+					<a href="/"><img class="logo" src="/images/logo.png"></a>
 
-				<form method="GET" action="/search">
-					<input type="search" class="search" placeholder="Search" name="query">
-				</form>
+					<form method="GET" action="/search">
+						<input type="search" class="search" placeholder="Search" name="query">
+					</form>
 
-				<div class="actions">
-					<a>Create <i class="fa fa-plus" aria-hidden="true"></i></a>
-					<%= if user = Guardian.Plug.current_resource(@conn) do %>
-						<a href="/identities/<%= user.id %>"><%= user.name %> <i class="fa fa-user" aria-hidden="true"></i></a>
-						<a href="/logout">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a>
-					<% else %>
-						<a href="/login">Login <i class="fa fa-sign-in" aria-hidden="true"></i></a>
-					<% end %>
+					<div class="actions">
+						<a>Create <i class="fa fa-plus" aria-hidden="true"></i></a>
+						<%= if user = Guardian.Plug.current_resource(@conn) do %>
+							<a href="/identities/<%= user.id %>"><%= user.name %> <i class="fa fa-user" aria-hidden="true"></i></a>
+							<a href="/logout">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a>
+						<% else %>
+							<a href="/login">Login <i class="fa fa-sign-in" aria-hidden="true"></i></a>
+						<% end %>
+					</div>
 				</div>
 			</div>
 
