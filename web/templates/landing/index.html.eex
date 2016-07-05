@@ -3,7 +3,7 @@
 	<h1>A liquid democracy where anyone can vote on anything.</h1>
 
 	<div class="ctas">
-		<a href="/polls/1" class="cta">View random poll</a>
+		<a href="/polls/random" class="cta">View random poll</a>
 	</div>
 </div>
 <div class="features">

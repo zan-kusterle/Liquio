@@ -13,7 +13,6 @@ defmodule Democracy.HtmlReferenceController do
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:show]
 
 	def index(conn, %{"reference_poll_id" => reference_poll_id, "pole" => pole}) do
-		IO.inspect conn.params
 		conn
 		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, reference_poll_id, pole: pole)
 	end

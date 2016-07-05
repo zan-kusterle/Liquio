@@ -2,6 +2,7 @@ defmodule Democracy.Poll do
 	use Democracy.Web, :model
 
 	alias Democracy.Repo
+	alias Democracy.Poll
 	alias Democracy.Vote
 
 	schema "polls" do
@@ -32,5 +33,16 @@ defmodule Democracy.Poll do
 		from(p in query,
 		where: fragment("? % ?", p.title, ^search_term),
 		order_by: fragment("similarity(?, ?) DESC", p.title, ^search_term))
+	end
+
+	def get_random() do
+		# TODO: More likely to choose popular polls
+		from(p in Poll,
+		select: p,
+		where: p.kind == "custom",
+		order_by: fragment("RANDOM()"),
+		limit: 1)
+		|> Repo.all()
+		|> List.first
 	end
 end
