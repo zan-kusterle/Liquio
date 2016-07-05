@@ -20,6 +20,7 @@ defmodule Democracy.HtmlVoteController do
 				results = Result.calculate(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
 				poll = conn.assigns.poll |> Map.put(:results, results)
 				vote = Repo.get_by!(Vote, identity_id: conn.assigns.user.id, poll_id: conn.assigns.poll.id, is_last: true)
+				if vote.data == nil do vote = nil end
 				conn
 				|> render "index.html", poll: poll, references: references, own_vote: vote
 			{:error, message} ->

@@ -13,7 +13,9 @@
 	
 	<div class="links">
 		<a href="/polls/<%= @poll.id %>/details">Details</a>
-		<a href="/polls/<%= @poll.id %>/vote">Vote</a>
+		<%= if @is_logged_in do %>
+			<a href="/polls/<%= @poll.id %>/vote">Vote</a>
+		<% end %>
 	</div>
 </div>
 

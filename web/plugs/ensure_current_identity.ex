@@ -8,9 +8,14 @@ defmodule Democracy.Plugs.EnsureCurrentIdentity do
 		if user != nil do
 			assign conn, :user, user
 		else
-			conn
-			|> send_resp(:unauthorized, "No current user")
-			|> halt
+			if :browser in conn.private.phoenix_pipelines do
+				conn
+				|> Phoenix.Controller.redirect to: "/login"
+			else
+				conn
+				|> send_resp(:unauthorized, "No current user")
+				|> halt
+			end
 		end
 	end
 end

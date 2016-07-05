@@ -22,11 +22,12 @@ defmodule Democracy.HtmlPollController do
 		if poll do
 			case TrustMetric.get(conn.assigns.trust_metric_url) do
 				{:ok, trust_identity_ids} ->
+					is_logged_in = Guardian.Plug.current_resource(conn) != nil
 					references = Reference.for_poll(poll, conn.assigns.datetime, conn.assigns.vote_weight_halving_days, trust_identity_ids)
 					results = Result.calculate(poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
 					poll = poll |> Map.put(:results, results)
 					conn
-					|> render "show.html", poll: poll, references: references
+					|> render "show.html", is_logged_in: is_logged_in, poll: poll, references: references
 				{:error, message} ->
 					conn
 					|> put_status(:not_found)
