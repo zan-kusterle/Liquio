@@ -6,7 +6,7 @@ defmodule Democracy.HtmlVoteController do
 	alias Democracy.TrustMetric
 	alias Democracy.Result
 
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_overview_id"}
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id"}
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"}
 	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"}
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"}
@@ -36,6 +36,6 @@ defmodule Democracy.HtmlVoteController do
 		end
 
 		conn
-		|> redirect to: poll_overview_html_vote_path(conn, :index, conn.assigns.poll.id)
+		|> redirect to: html_poll_html_vote_path(conn, :index, conn.assigns.poll.id)
 	end
 end

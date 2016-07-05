@@ -1,4 +1,4 @@
-defmodule Democracy.PollOverviewController do
+defmodule Democracy.HtmlPollController do
 	use Democracy.Web, :controller
 
 	alias Democracy.Poll
@@ -7,7 +7,7 @@ defmodule Democracy.PollOverviewController do
 	alias Democracy.Result
 
 	plug Democracy.Plugs.QueryId, {:poll, Poll, "id"} when action in [:show]
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_overview_id"} when action in [:details]
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id"} when action in [:details]
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"}
 	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"}
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"}

@@ -2,7 +2,7 @@
 
 <div class="section-title">Before voting review the evidence</div>
 <%= unless Enum.empty?(@references) do %>
-	<%= render Democracy.PollOverviewView, "references.html", references: @references %>
+	<%= render Democracy.HtmlPollView, "references.html", references: @references %>
 <% end %>
 
 <div class="section-title">Propose new evidence with ID</div>
@@ -24,4 +24,4 @@
 	<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
 </form>
 
-<%= render Democracy.PollOverviewView, "score.html", poll: @poll %>
+<%= render Democracy.HtmlPollView, "score.html", poll: @poll %>

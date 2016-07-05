@@ -1,4 +1,4 @@
-defmodule Democracy.PollOverviewView do
+defmodule Democracy.HtmlPollView do
 	use Democracy.Web, :view
 
 	def score_color(score) do

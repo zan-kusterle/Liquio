@@ -6,7 +6,7 @@ defmodule Democracy.HtmlReferenceController do
 	alias Democracy.TrustMetric
 	alias Democracy.Result
 
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_overview_id"}
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id"}
 	plug Democracy.Plugs.QueryId, {:reference_poll, Poll, "id"} when action in [:show]
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"} when action in [:show]
 	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"} when action in [:show]
@@ -15,7 +15,7 @@ defmodule Democracy.HtmlReferenceController do
 	def index(conn, %{"reference_poll_id" => reference_poll_id, "pole" => pole}) do
 		IO.inspect conn.params
 		conn
-		|> redirect to: poll_overview_html_reference_path(conn, :show, conn.assigns.poll.id, reference_poll_id, pole: pole)
+		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, reference_poll_id, pole: pole)
 	end
 
 	def show(conn, %{"pole" => pole}) do

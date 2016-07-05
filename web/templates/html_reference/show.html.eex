@@ -11,6 +11,6 @@
 	<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
 </form>
 
-<%= render Democracy.PollOverviewView, "score.html", poll: @reference.approval_poll %>
+<%= render Democracy.HtmlPollView, "score.html", poll: @reference.approval_poll %>
 
 <a href="/polls/<%= @reference.approval_poll.id %>/details" class="link">Details</a>
