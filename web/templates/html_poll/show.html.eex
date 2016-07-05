@@ -20,8 +20,8 @@
 </div>
 
 <%= unless Enum.empty?(@references) do %>
-	<h2 class="references-title">Evidence</h2>
+	<h2 class="references-title">References</h2>
 	<%= render "references.html", references: @references %>
 <% else %>
-	<h2 class="references-title">There is no evidence</h2>
+	<h2 class="references-title">There are no references.</h2>
 <% end %>
