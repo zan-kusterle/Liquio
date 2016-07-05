@@ -1,5 +1,5 @@
 TODO identity
 
-# me: add properties, edit voting_decay_weight and trust_metric_urc
+# me: add properties, edit voting_decay_weight and trust_metric_urc, soft quorum num 0 votes
 # other: edit delegation from you to him, is_human yes/no
 # list of incoming and outgoing delegations

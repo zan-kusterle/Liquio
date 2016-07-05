@@ -10,7 +10,7 @@ defmodule Democracy.Plugs.Datetime do
 				time_text = conn.params[query_name]
 				case Timex.parse(time_text, "%Y-%m-%d", :strftime) do
 					{:ok, datetime} ->
-						datetime
+						Timex.DateTime.shift(datetime, days: 1)
 					{:error, _} ->
 						Timex.DateTime.now
 				end

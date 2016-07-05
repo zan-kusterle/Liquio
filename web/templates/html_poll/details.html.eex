@@ -2,7 +2,7 @@
 
 <div class="section-title">View results at specific time</div>
 <form>
-	<input type="date" name="datetime" class="time-input" <%= if @datetime_text do %>value=<%= @datetime_text %><% end %> />
+	<input type="date" name="datetime" placeholder="YYYY-MM-DD" class="time-input" <%= if @datetime_text do %>value=<%= @datetime_text %><% end %> />
 	<button class="set-time">Set time</button>
 </form>
 
