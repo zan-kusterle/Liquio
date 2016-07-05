@@ -40,7 +40,7 @@ defmodule Democracy.HtmlPollController do
 		end
 	end
 
-	def details(conn, _params) do
+	def details(conn, params) do
 		case TrustMetric.get(conn.assigns.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
 				contributions = Result.calculate_contributions(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids)
@@ -58,7 +58,7 @@ defmodule Democracy.HtmlPollController do
 
 				poll = conn.assigns.poll |> Map.put(:results, results)
 				conn
-				|> render "details.html", datetime_text: _params["datetime"], poll: poll, contributions: contributions, results_with_datetime: results_with_datetime
+				|> render "details.html", datetime_text: Map.get(params, "datetime", ""), poll: poll, contributions: contributions, results_with_datetime: results_with_datetime
 			{:error, message} ->
 				conn
 				|> put_status(:not_found)

@@ -14,7 +14,7 @@ defmodule Democracy.HtmlLoginController do
 			conn
 			|> put_flash(:info, "Logged in.")
 			|> Guardian.Plug.sign_in(identity)
-			|> redirect(to: identity_path(conn, :show, identity.id))
+			|> redirect(to: html_identity_path(conn, :show, identity.id))
 		else
 			conn
 			|> send_resp(:unauthorized, "")

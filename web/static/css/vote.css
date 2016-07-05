@@ -19,6 +19,8 @@
 	border: none;
 	font-size: 10px;
 	color: #337ab7;
+	padding: 0px;
+	margin-top: 10px;
 }
 
 .remove-vote:hover {

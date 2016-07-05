@@ -6,7 +6,7 @@
 <% end %>
 
 <div class="section-title">Propose new evidence with ID</div>
-<form action="references">
+<form action="references" target="_blank">
 	<input name="reference_poll_id" type="text" placeholder="Poll ID" />
 	<button type="submit" name="pole" value="positive">View positive</button>
 	<button type="submit" name="pole" value="negative">View negative</button>
