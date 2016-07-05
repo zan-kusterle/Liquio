@@ -6,8 +6,8 @@
 *:before,
 *:after {
   -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
+	 -moz-box-sizing: border-box;
+		  box-sizing: border-box;
 }
 
 body {
@@ -19,23 +19,31 @@ body {
 button {
 	outline: none;
 	border-radius: 0px;
+	border: 1px solid #ccc;
+	padding: 6px 12px;
+	font-size: 14px;
+	background-color: #fff;
+}
+
+button:hover {
+	background-color: #e3e3e3;
 }
 
 input {
 	border-radius: 0px;
 	box-shadow: none;
 	font-size: 14px;
-    background-color: #fff;
-    background-image: none;
-    border: none;
-    outline: none;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+	background-color: #fff;
+	background-image: none;
+	border: none;
+	outline: none;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
 
 hr {
 	margin: 20px 0px;
-    border: 0;
-    border-top: 1px solid #ddd;
+	border: 0;
+	border-top: 1px solid #ddd;
 }
 
 a {
