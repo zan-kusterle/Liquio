@@ -1,7 +1,7 @@
-<h1 class="title"><a href="/polls/<%= @poll.id %>""><%= @poll.title %></a></h1>
+<h1 class="title"><a href="/polls/<%= @poll.id %>""><%= @poll.title || @poll.id %></a></h1>
 
-<div class="section-title">Before voting review the evidence</div>
 <%= unless Enum.empty?(@references) do %>
+	<div class="section-title">Before voting review the evidence.</div>
 	<%= render Democracy.HtmlPollView, "references.html", references: @references %>
 <% end %>
 
@@ -14,7 +14,7 @@
 
 <hr>
 
-<div class="section-title">After reviewing the evidence, decide whether the claim is true or false</div>
+<div class="section-title">After reviewing the evidence, decide whether the claim is true or false.</div>
 <p class="claim"><%= @poll.title %></p>
 <form method="POST" class="cast-vote">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />

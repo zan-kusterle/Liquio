@@ -6,7 +6,7 @@
 	</h3>
 <% end %>
 
-<h1 class="title"><%= @poll.title %></h1>
+<h1 class="title"><%= @poll.title || @poll.id %></h1>
 
 <div class="score-with-links">
 	<%= render "score.html", poll: @poll %>

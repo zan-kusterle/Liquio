@@ -45,21 +45,15 @@ defmodule Democracy.HtmlReferenceController do
 	end
 
 	def create(conn, %{"pole" => pole, "score" => score_text}) do
-		score = case Float.parse(score_text) do
-			{score, _} ->
-				score
-			:error ->
-				nil
-		end
-
 		if pole == "positive" or pole == "negative" do
 			reference = Reference.get(conn.assigns.poll, conn.assigns.reference_poll, pole)
 			|> Repo.preload([:approval_poll, :reference_poll, :poll])
 
-			if score do
-				Vote.set(reference.approval_poll, conn.assigns.user, score)
-			else
-				Vote.delete(reference.approval_poll, conn.assigns.user)
+			case Float.parse(score_text) do
+				{score, _} ->
+					Vote.set(reference.approval_poll, conn.assigns.user, score)
+				:error ->
+					Vote.delete(reference.approval_poll, conn.assigns.user)
 			end
 
 			conn

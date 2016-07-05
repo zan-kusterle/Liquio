@@ -31,17 +31,11 @@ defmodule Democracy.HtmlVoteController do
 	end
 
 	def create(conn, %{"score" => score_text}) do
-		score = case Float.parse(score_text) do
+		case Float.parse(score_text) do
 			{score, _} ->
-				score
+				Vote.set(conn.assigns.poll, conn.assigns.user, score)
 			:error ->
-				nil
-		end
-
-		if score do
-			Vote.set(conn.assigns.poll, conn.assigns.user, score)
-		else
-			Vote.delete(conn.assigns.poll, conn.assigns.user)
+				Vote.delete(conn.assigns.poll, conn.assigns.user)
 		end
 
 		conn
