@@ -8,8 +8,12 @@ defmodule Democracy.Plugs.Datetime do
 		assign(conn, assign_atom,
 			if Map.get(conn.params, query_name) do
 				time_text = conn.params[query_name]
-				{:ok, datetime} = Timex.parse(time_text, "%Y-%M-%d", :strftime)
-				Ecto.DateTime.cast!(datetime)
+				case Timex.parse(time_text, "%Y-%M-%d", :strftime) do
+					{:ok, datetime} ->
+						Ecto.DateTime.cast!(datetime)
+					{:error, _} ->
+						Ecto.DateTime.utc(:usec)
+				end
 			else
 				Ecto.DateTime.utc(:usec)
 			end
