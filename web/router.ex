@@ -21,7 +21,9 @@ defmodule Democracy.Router do
 		pipe_through :browser
 
 		get "/", LandingController, :index
-		resources "/polls", PollOverviewController, only: [:show]
+		resources "/polls", PollOverviewController, only: [:show] do
+			get "/details", PollOverviewController, :details
+		end
 	end
 
 	scope "/api", Democracy do

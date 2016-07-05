@@ -1,0 +1,37 @@
+.section-title {
+	margin: 20px 0px 8px 0px;
+	font-size: 15px;
+}
+
+.time-input {
+	border: 1px solid #ccc;
+	padding: 6px 12px;
+}
+
+.set-time {
+	margin-left: 10px;
+	border: 1px solid #ccc;
+	padding: 6px 12px;
+	font-size: 14px;
+    line-height: 1.42857143;
+    background-color: #fff;
+}
+
+.score-by-time {
+	margin-top: 40px;
+}
+
+.contributions {
+	width: 260px;
+    margin: 0 auto;
+    text-transform: lowercase;
+    text-align: center;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.contributions td {
+	border: 1px solid #ccc;
+    padding: 2px 12px;
+    width: 33.33%;
+}

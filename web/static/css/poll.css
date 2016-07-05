@@ -38,6 +38,7 @@
 }
 
 .score-box {
+	margin: 0 auto;
 	width: 150px;
 	padding: 10px 0px;
 	text-align: center;

@@ -15,8 +15,8 @@
 	</div>
 
 	<div class="links">
-		<a href="/polls/1/details">Details</a>
-		<a href="/polls/1/vote">Vote</a>
+		<a href="/polls/<%= @poll.id %>/details">Details</a>
+		<a href="/polls/<%= @poll.id %>/vote">Vote</a>
 	</div>
 </div>
 

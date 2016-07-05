@@ -17,7 +17,7 @@
 				<a href="/"><img class="logo" src="/images/logo.png"></a>
 
 				<form method="GET" action="/search">
-					<input class="search" placeholder="Search" name="query">
+					<input type="search" class="search" placeholder="Search" name="query">
 				</form>
 
 				<div class="actions">
