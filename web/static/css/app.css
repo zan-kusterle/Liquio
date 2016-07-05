@@ -47,8 +47,7 @@ input {
 	border: 1px solid #ccc;
 	padding: 6px 12px;
 	height: 31px;
-	position: relative;
-	top: -1px;
+	-webkit-appearance:none;
 }
 
 hr {
@@ -60,6 +59,10 @@ hr {
 a {
 	color: #333;
 	text-decoration: none;
+}
+
+a:hover {
+	color: #337ab7;
 }
 
 .container {
@@ -85,7 +88,7 @@ a {
 	margin-left: 10px;
 	width: 250px;
 	height: 31px;
-	padding: 0px 10px;
+	padding: 0px 5px;
 	opacity: 0.8;
 	color: #666;
 	float: left;

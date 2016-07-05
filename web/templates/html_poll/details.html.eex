@@ -1,4 +1,4 @@
-<h1 class="title"><%= @poll.title %></h1>
+<h1 class="title"><a href="/polls/<%= @poll.id %>""><%= @poll.title %></a></h1>
 
 <div class="section-title">View results at specific time</div>
 <form>

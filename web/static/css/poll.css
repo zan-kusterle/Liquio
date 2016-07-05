@@ -8,10 +8,6 @@
 	margin: 0 10px;
 }
 
-.topic:hover {
-	color: #337ab7;
-}
-
 .title {
 	margin: 0px;
 	margin-top: 11px;
@@ -80,8 +76,6 @@
 
 .links a:hover {
 	font-weight: bold;
-	text-decoration: none;
-	color: #337ab7;
 }
 
 .references-title {

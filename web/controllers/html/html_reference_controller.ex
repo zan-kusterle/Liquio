@@ -28,8 +28,8 @@ defmodule Democracy.HtmlReferenceController do
 					|> Repo.preload([:approval_poll, :reference_poll, :poll])
 					results = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
 					reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
-					vote = Repo.get_by!(Vote, identity_id: conn.assigns.user.id, poll_id: reference.approval_poll.id, is_last: true)
-					if vote.data == nil do vote = nil end
+					vote = Repo.get_by(Vote, identity_id: conn.assigns.user.id, poll_id: reference.approval_poll.id, is_last: true)
+					if vote != nil and vote.data == nil do vote = nil end
 					conn
 					|> render("show.html", reference: reference, pole: pole, own_vote: vote)
 				{:error, message} ->
