@@ -21,12 +21,12 @@
 				</form>
 
 				<div class="actions">
-					<a>Create</a>
+					<a>Create <i class="fa fa-plus" aria-hidden="true"></i></a>
 					<%= if user = Guardian.Plug.current_resource(@conn) do %>
-						<a href="/identities/<%= user.id %>"><%= user.username %></a>
-						<a href="/logout">Logout</a>
+						<a href="/identities/<%= user.id %>"><%= user.name %> <i class="fa fa-user" aria-hidden="true"></i></a>
+						<a href="/logout">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a>
 					<% else %>
-						<a href="/login">Login</a>
+						<a href="/login">Login <i class="fa fa-sign-in" aria-hidden="true"></i></a>
 					<% end %>
 				</div>
 			</div>

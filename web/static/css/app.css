@@ -73,6 +73,10 @@ a:hover {
 	text-align: center;
 }
 
+.alert {
+	margin: 0px;
+}
+
 .header {
 	height: 35px;
 	padding: 0 25px;
@@ -95,7 +99,7 @@ a:hover {
 
 .header .actions {
 	float: right;
-	margin-top: 8px;
+	margin-top: 10px;
 	font-size: 14px;
 	color: rgb(51, 122, 183);
 }
@@ -112,7 +116,7 @@ a:hover {
 
 .main {
 	padding: 40px 35px 40px 35px;
-	margin-top: 15px;
+	margin-top: 10px;
 	margin-bottom: 30px;
 	border-radius: 0px;
 	color: #333;
