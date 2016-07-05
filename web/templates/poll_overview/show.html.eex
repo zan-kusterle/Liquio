@@ -9,11 +9,8 @@
 <h1 class="title"><%= @poll.title %></h1>
 
 <div class="score-with-links">
-	<div class="score-box" style="background-color: <%= score_color @poll.results.mean %>;">
-		<div class="number"><%= round(@poll.results.mean * 100) %><span class="percent">%</span></div>
-		<div class="subtext"><%= @poll.results.total %> voting power</div>
-	</div>
-
+	<%= render "score.html", poll: @poll %>
+	
 	<div class="links">
 		<a href="/polls/<%= @poll.id %>/details">Details</a>
 		<a href="/polls/<%= @poll.id %>/vote">Vote</a>
@@ -22,25 +19,7 @@
 
 <%= unless Enum.empty?(@references) do %>
 	<h2 class="references-title">Evidence</h2>
-
-	<div class="references">
-		<div class="pole">
-			<h3 class="pole-heading">Positive</h3>
-			<div class="pole-list">
-				<%= for reference <- @references |> Enum.filter(& &1.pole == "positive") do %>
-					<%= render "reference.html", reference: reference %>
-				<% end %>
-			</div>
-		</div>
-		<div class="pole">
-			<h3 class="pole-heading">Negative</h3>
-			<div class="pole-list">
-				<%= for reference <- @references |> Enum.filter(& &1.pole == "negative") do %>
-					<%= render "reference.html", reference: reference %>
-				<% end %>
-			</div>
-		</div>
-	</div>
+	<%= render "references.html", references: @references %>
 <% else %>
 	<h2 class="references-title">There is no evidence</h2>
 <% end %>

@@ -7,10 +7,7 @@
 </form>
 
 <div class="section-title">Aggregate score</div>
-<div class="score-box" style="background-color: <%= score_color @poll.results.mean %>;">
-	<div class="number"><%= round(@poll.results.mean * 100) %><span class="percent">%</span></div>
-	<div class="subtext"><%= @poll.results.total %> voting power</div>
-</div>
+<%= render "score.html", poll: @poll %>
 
 <svg viewBox="0 0 1220 140" class="score-by-time">
 	<polyline fill="none" stroke="#4aa5f3" stroke-width="2" points="20,50 120,60 220,80 320,70 420,45 520,40 620,50 720,35 820,30 920,50 1020,60 1120,70  1220,75"></polyline>

@@ -33,7 +33,9 @@ input {
 }
 
 hr {
-	border-color: #ddd;
+	margin: 20px 0px;
+    border: 0;
+    border-top: 1px solid #ddd;
 }
 
 a {

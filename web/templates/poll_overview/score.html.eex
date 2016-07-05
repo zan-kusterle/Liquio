@@ -1,0 +1,4 @@
+<div class="score-box" style="background-color: <%= score_color @poll.results.mean %>;">
+	<div class="number"><%= round(@poll.results.mean * 100) %><span class="percent">%</span></div>
+	<div class="subtext"><%= @poll.results.total %> voting power</div>
+</div>

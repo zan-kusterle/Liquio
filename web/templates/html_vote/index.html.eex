@@ -1,0 +1,26 @@
+<h1 class="title"><%= @poll.title %></h1>
+
+<div class="section-title">Before voting review the evidence</div>
+<%= unless Enum.empty?(@references) do %>
+	<%= render Democracy.PollOverviewView, "references.html", references: @references %>
+<% end %>
+
+<div class="section-title">Propose new evidence with ID</div>
+<form action="references">
+	<input name="reference_poll_id" type="text" placeholder="Poll ID" class="time-input" />
+	<button type="submit" name="pole" value="positive" class="set-time">View positive</button>
+	<button type="submit" name="pole" value="negative" class="set-time">View negative</button>
+</form>
+
+<hr>
+
+<div class="section-title">After reviewing the evidence, decide whether the claim is true or false</div>
+
+<form method="POST">
+	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+	<button type="submit" name="score" value="1.0">TRUE</button>
+	<button type="submit" name="score" value="0.0">FALSE</button>
+	<button type="submit" name="score" value="null">REMOVE VOTE</button>
+</form>
+
+<%= render Democracy.PollOverviewView, "score.html", poll: @poll %>

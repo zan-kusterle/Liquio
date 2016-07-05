@@ -23,6 +23,7 @@ defmodule Democracy.Router do
 		get "/", LandingController, :index
 		resources "/polls", PollOverviewController, only: [:show] do
 			get "/details", PollOverviewController, :details
+			resources "/vote", HtmlVoteController, only: [:index, :create, :delete]
 		end
 	end
 

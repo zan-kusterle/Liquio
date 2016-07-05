@@ -1,0 +1,18 @@
+<div class="references">
+	<div class="pole">
+		<h3 class="pole-heading">Positive</h3>
+		<div class="pole-list">
+			<%= for reference <- @references |> Enum.filter(& &1.pole == "positive") do %>
+				<%= render "reference.html", reference: reference %>
+			<% end %>
+		</div>
+	</div>
+	<div class="pole">
+		<h3 class="pole-heading">Negative</h3>
+		<div class="pole-list">
+			<%= for reference <- @references |> Enum.filter(& &1.pole == "negative") do %>
+				<%= render "reference.html", reference: reference %>
+			<% end %>
+		</div>
+	</div>
+</div>
