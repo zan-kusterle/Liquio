@@ -1,0 +1,15 @@
+<form method="POST" action="/identities" autocomplete="off" class="create-identity">
+	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+
+	<div class="preference">
+		<label>Username</label>
+		<input name="username" />
+	</div>
+
+	<div class="preference">
+		<label>Name</label>
+		<input name="name" />
+	</div>
+
+	<button type="submit">Create</button>
+</form>

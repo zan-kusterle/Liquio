@@ -4,3 +4,5 @@
 	<input name="password" type="password" placeholder="Password" />
 	<button type="submit">Login</button>
 </form>
+
+<a href="/identities/new" class="new-identity-link">or create new identity</a>

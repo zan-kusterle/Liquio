@@ -25,3 +25,13 @@
 .preference input {
 	margin-left: 3px;
 }
+
+.create-identity input {
+	width: 100%;
+}
+
+.create-identity button {
+	display: block;
+	margin: 0 auto;
+	margin-top: 15px;
+}
