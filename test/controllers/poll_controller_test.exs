@@ -17,6 +17,7 @@ defmodule Democracy.PollControllerTest do
 			"title" => @valid_attrs.title,
 			"topics" => @valid_attrs.topics,
 			"kind" => "custom",
+			"results" => %{"count" => 0, "mean" => 0.0, "total" => 0}
 		}
 	end
 

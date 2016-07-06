@@ -23,13 +23,14 @@
 }
 
 .preference input {
+	margin-top: 4px;
 	margin-left: 3px;
 }
 
 .create-identity input {
 	display: block;
-	margin: 0 auto;
-	margin-top: 4px;
+	margin-left: auto;
+	margin-right: auto;
 	width: 400px;
 	text-align: center;
 }

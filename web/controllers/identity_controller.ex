@@ -13,13 +13,14 @@ defmodule Democracy.IdentityController do
 	end
 
 	def create(conn, %{"identity" => params}) do
-		changeset = Identity.changeset(%Identity{}, params)
+		token = Identity.generate_token()
+		changeset = Identity.changeset(%Identity{token: token}, params)
 		case Identity.create(changeset) do
 			{:ok, identity} ->
 				conn
 				|> put_status(:created)
 				|> put_resp_header("location", identity_path(conn, :show, identity))
-				|> render("show.json", identity: Map.put(identity, :insecure_token, identity.token))
+				|> render("show.json", identity: Map.put(identity, :insecure_token, token))
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
