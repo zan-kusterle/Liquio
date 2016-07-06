@@ -15,6 +15,8 @@ config :democracy, Democracy.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [host: "example.com", port: 80]
 
+config :democracy, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
+
 # Do not print debug messages in production
 config :logger, level: :info
 
