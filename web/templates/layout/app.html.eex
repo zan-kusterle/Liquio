@@ -22,12 +22,12 @@
 					</form>
 
 					<div class="actions">
-						<a href="/polls/new">Create <i class="fa fa-plus" aria-hidden="true"></i></a>
+						<a href="/polls/new"><i class="fa fa-plus" aria-hidden="true"></i> Create</a>
 						<%= if user = Guardian.Plug.current_resource(@conn) do %>
-							<a href="/identities/<%= user.id %>"><%= user.name %> <i class="fa fa-user" aria-hidden="true"></i></a>
-							<a href="/logout">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a>
+							<a href="/identities/<%= user.id %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></a>
+							<a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
 						<% else %>
-							<a href="/login">Login <i class="fa fa-sign-in" aria-hidden="true"></i></a>
+							<a href="/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</a>
 						<% end %>
 					</div>
 				</div>
@@ -36,9 +36,11 @@
 			<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
 			<p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 
-			<main role="main" class="main">
-				<%= render @view_module, @view_template, assigns %>
-			</main>
+			<div class="main-wrap">
+				<main role="main" class="main">
+					<%= render @view_module, @view_template, assigns %>
+				</main>
+			</div>
 		</div>
 	</body>
 </html>
