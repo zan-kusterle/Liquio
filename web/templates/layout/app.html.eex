@@ -33,8 +33,13 @@
 				</div>
 			</div>
 
-			<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-			<p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+			<%= if get_flash(@conn, :error) != nil do %>
+				<p class="alert alert-error" role="alert"><%= get_flash(@conn, :error) %></p>
+			<% else %>
+				<%= if get_flash(@conn, :info) != nil do %>
+					<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>					
+				<% end %>
+			<% end %>
 
 			<div class="main-wrap">
 				<main role="main" class="main">

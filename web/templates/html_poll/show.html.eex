@@ -11,16 +11,14 @@
 <div class="score-with-links">
 	<%= render "score.html", poll: @poll %>
 
-	<%= if @is_logged_in do %>
-		<div class="links" style="padding-top: 11px;">
-			<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-pie-chart" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+	<div class="links" style="padding-top: 11px;">
+		<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-pie-chart" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+		<%= if @is_logged_in do %>
 			<a href="/polls/<%= @poll.id %>/vote"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
-		</div>
-	<% else %>
-		<div class="links" style="padding-top: 21px;">
-			<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-pie-chart" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
-		</div>
-	<% end %>
+		<% else %>
+			<a href="/login"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
+		<% end %>
+	</div>
 </div>
 
 <%= unless Enum.empty?(@references) do %>

@@ -154,3 +154,11 @@ a:hover {
 	font-weight: normal;
 	font-size: 20px;
 }
+
+.alert {
+	margin: 0px auto;
+	width: 900px;
+	padding: 8px 0px;
+	font-size: 16px;
+	background-color: #DCEDC8;
+}
