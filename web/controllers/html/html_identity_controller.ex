@@ -12,12 +12,13 @@ defmodule Democracy.HtmlIdentityController do
 	end
 
 	def create(conn, params) do
-		changeset = Identity.changeset(%Identity{}, params)
+		token = Identity.generate_token()
+		changeset = Identity.changeset(%Identity{token: token}, params)
 		case Identity.create(changeset) do
 			{:ok, identity} ->
 				conn
 				|> Guardian.Plug.sign_in(identity)
-				|> redirect to: html_identity_path(conn, :show, identity.id)
+				|> render "credentials.html", identity: identity, token: token
 			{:error, changeset} ->
 				conn
 				|> put_flash(:error, "Couldn't create identity")

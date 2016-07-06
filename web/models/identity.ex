@@ -39,12 +39,11 @@ defmodule Democracy.Identity do
 		})
 
 		changeset = changeset
-		|> put_change(:token, generate_token())
 		|> put_change(:trust_metric_poll_id, trust_metric_poll.id)
 		Repo.insert(changeset)
 	end
 
-	defp generate_token() do
+	def generate_token() do
 		random_string(16)
 	end
 
