@@ -8,6 +8,7 @@ defmodule Democracy.HtmlIdentityController do
 
 	def show(conn, _params) do
 		current_identity = Guardian.Plug.current_resource(conn)
+		is_me = current_identity != nil and conn.assigns.identity.id == current_identity.id
 		own_is_human_vote =
 			if current_identity != nil do
 				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: conn.assigns.identity.trust_metric_poll_id, is_last: true)
@@ -18,6 +19,6 @@ defmodule Democracy.HtmlIdentityController do
 			end
 		
 		conn
-		|> render "index.html", identity: conn.assigns.identity, is_me: conn.assigns.identity.id == current_identity.id, own_is_human_vote: own_is_human_vote
+		|> render "index.html", identity: conn.assigns.identity, is_me: is_me, own_is_human_vote: own_is_human_vote
 	end
 end
