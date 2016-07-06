@@ -127,6 +127,10 @@ a:hover {
 	color: #337ab7;
 }
 
+.header .actions a:first-child {
+	margin-left: 0px;
+}
+
 .main-wrap {
 	position: absolute;
 	top: 62px;

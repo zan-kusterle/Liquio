@@ -22,6 +22,7 @@
 					</form>
 
 					<div class="actions">
+						<a href="/explore"><i class="fa fa-eye" aria-hidden="true"></i> Explore</a>
 						<a href="/polls/new"><i class="fa fa-plus" aria-hidden="true"></i> Create</a>
 						<%= if user = Guardian.Plug.current_resource(@conn) do %>
 							<a href="/identities/<%= user.id %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></a>
