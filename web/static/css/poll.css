@@ -29,10 +29,6 @@
 	margin-left: 125px;
 }
 
-.score-with-links .links {
-	float: right;
-}
-
 .score-with-links i {
 	color: #337ab7;
 }
@@ -64,11 +60,12 @@
 }
 
 .links {
+	float: right;
 	line-height: 18px;
 	font-size: 12px;
 	width: 125px;
 	text-align: left;
-	padding-left: 10px;
+	padding-left: 15px;
 	height: 64px;
 }
 
@@ -146,4 +143,19 @@
 	width: 60px;
 	float: right;
 	color: #333;
+}
+
+
+.create-poll {
+
+}
+
+.create-poll input {
+	width: 100%;
+}
+
+.create-poll button {
+	display: block;
+	margin: 0 auto;
+	margin-top: 15px;
 }

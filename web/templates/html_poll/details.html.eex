@@ -28,20 +28,22 @@
 	<text x="1140" y="140" fill="#333">DEC</text>
 </svg>
 
-<div class="section-title">List of all votes</div>
-<table class="contributions">
-	<tr class="contribution">
-		<td class="column-name">By identity</td>
-		<td class="column-name">Power</td>
-		<td class="column-name">Score</td>
-		<td class="column-name">Time</td>
-	</tr>
-	<%= for contribution <- @contributions do %>
+<%= unless Enum.empty? @contributions do %>
+	<div class="section-title">List of all votes</div>
+	<table class="contributions">
 		<tr class="contribution">
-			<td><a href="/identities/<%= contribution.identity_id %>"><%= contribution.identity_id %></a></td>
-			<td><%= Float.round(contribution.voting_power, 2) %></td>
-			<td><%= Float.round(contribution.score, 2) %></td>
-			<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
+			<td class="column-name">By identity</td>
+			<td class="column-name">Power</td>
+			<td class="column-name">Score</td>
+			<td class="column-name">Time</td>
 		</tr>
-	<% end %>
-</table>
+		<%= for contribution <- @contributions do %>
+			<tr class="contribution">
+				<td><a href="/identities/<%= contribution.identity_id %>"><%= contribution.identity_id %></a></td>
+				<td><%= Float.round(contribution.voting_power, 2) %></td>
+				<td><%= Float.round(contribution.score, 2) %></td>
+				<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
+			</tr>
+		<% end %>
+	</table>
+<% end %>

@@ -29,6 +29,16 @@ defmodule Democracy.Poll do
 		Repo.insert(changeset)
 	end
 
+	def create(title, topics) do
+		Repo.insert!(%Poll{
+			:kind => "custom",
+			:title => title,
+			:source_urls => [],
+			:topics => topics,
+			:is_binary => false
+		})
+	end
+
 	def search(query, search_term) do
 		from(p in query,
 		where: fragment("? % ?", p.title, ^search_term),

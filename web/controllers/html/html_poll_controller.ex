@@ -19,6 +19,15 @@ defmodule Democracy.HtmlPollController do
 		|> render "new.html"
 	end
 
+	def create(conn, %{"title" => title, "topics" => topics}) do
+		title = title |> String.trim
+		topics = topics |> String.split(",") |> Enum.map(&String.trim/1)
+		poll = Poll.create(title, topics)
+		
+		conn
+		|> redirect to: html_poll_path(conn, :show, poll.id)
+	end
+
 	def show(conn, %{"id" => "random"}) do
 		conn
 		|> redirect to: html_poll_path(conn, :show, Poll.get_random().id)

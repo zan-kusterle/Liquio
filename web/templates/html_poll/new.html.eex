@@ -1,1 +1,15 @@
-TODO create poll
+<form method="POST" action="/polls" autocomplete="off" class="create-poll">
+	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+
+	<div class="preference">
+		<label>Title</label>
+		<input name="title" />
+	</div>
+
+	<div class="preference">
+		<label>Topics (separated by comma)</label>
+		<input name="topics" />
+	</div>
+
+	<button type="submit">Create</button>
+</form>
