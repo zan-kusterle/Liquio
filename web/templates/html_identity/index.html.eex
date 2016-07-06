@@ -1,5 +1,42 @@
-TODO identity
+<div class="identity">
+	<h1 class="identity-username"><%= @identity.username %></h1>
+	<h1 class="identity-name"><%= @identity.name %></h1>
+</div>
 
-# me: add properties, edit voting_decay_weight and trust_metric_urc, soft quorum num 0 votes
-# other: edit delegation from you to him, is_human yes/no
-# list of incoming and outgoing delegations
+<%= if @is_me do %>
+	<form>
+		<div class="preference">
+			<label>Vote weight halving days</label>
+			<input name="vote_weight_halving_days" />
+		</div>
+
+		<div class="preference">
+			<label>Trust metric URL</label>
+			<input name="trust_metric_url" />
+		</div>
+
+		<div class="preference">
+			<label>Number of fake votes with score zero</label>
+			<input name="soft_quorum_t" style="width: 100px;" />
+		</div>
+	</form>
+	<a href="#">Add public info</a>
+<% else %>
+	<div class="section-title">Is this identity human?</div>
+	<%= render Democracy.HtmlPollView, "cast_vote.html", own_vote: @own_is_human_vote %>
+
+	<form>
+		<div class="preference">
+			<label>Weight</label>
+			<input name="weight" />
+		</div>
+
+		<div class="preference">
+			<label>For topics</label>
+			<input name="topics" />
+		</div>
+	</form>
+<% end %>
+
+<div class="section-title">List of delegations from this identity</div>
+<div class="section-title">List of delegations to this identity</div>

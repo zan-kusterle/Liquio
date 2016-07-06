@@ -3,15 +3,7 @@
 <div class="section-title">Decide whether the claim is <%= @pole %> reference.</div>
 <p class="claim"><%= @reference.reference_poll.title %></p>
 
-<form method="POST" class="cast-vote">
-	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-	<button type="submit" name="score" value="1.0" class="true-choice<%= if @own_vote != nil and @own_vote.data.score == 1.0 do %> active<% end %>">TRUE</button>
-	<button type="submit" name="score" value="0.0" class="false-choice<%= if @own_vote != nil and @own_vote.data.score == 0.0 do %> active<% end %>">FALSE</button>
-	<br>
-	<%= if @own_vote != nil do %>
-		<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
-	<% end %>
-</form>
+<%= render Democracy.HtmlPollView, "cast_vote.html", own_vote: @own_vote %>
 
 <%= render Democracy.HtmlPollView, "score.html", poll: @reference.approval_poll %>
 

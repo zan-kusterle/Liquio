@@ -81,6 +81,7 @@ a:hover {
 .header {
 	height: 62px;
 	background-color: #f6f6f6;
+	padding-right: 14px;
 }
 
 .header-contents {
@@ -133,12 +134,13 @@ a:hover {
 	right: 0px;
 	bottom: 0px;
 	overflow-y: scroll;
+	overflow-y: auto;
 }
 
 .main {
 	padding: 40px 35px 40px 35px;
 	margin-top: 50px;
-	margin-bottom: 30px;
+	margin-bottom: 100px;
 	border-radius: 0px;
 	color: #333;
 	background-color: white;
