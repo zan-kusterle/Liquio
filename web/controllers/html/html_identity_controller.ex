@@ -18,6 +18,7 @@ defmodule Democracy.HtmlIdentityController do
 			{:ok, identity} ->
 				conn
 				|> Guardian.Plug.sign_in(identity)
+				|> put_flash(:info, "Hello, #{identity.name}")
 				|> render "credentials.html", identity: identity, token: token
 			{:error, changeset} ->
 				conn

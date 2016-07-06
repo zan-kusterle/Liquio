@@ -49,14 +49,17 @@ defmodule Democracy.HtmlReferenceController do
 			reference = Reference.get(conn.assigns.poll, conn.assigns.reference_poll, pole)
 			|> Repo.preload([:approval_poll, :reference_poll, :poll])
 
-			case Float.parse(score_text) do
+			{message} = case Float.parse(score_text) do
 				{score, _} ->
 					Vote.set(reference.approval_poll, conn.assigns.user, score)
+					{"Your vote has been counted"}
 				:error ->
 					Vote.delete(reference.approval_poll, conn.assigns.user)
+					{"Your vote has been removed"}
 			end
 
 			conn
+			|> put_flash(:info, message)
 			|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, conn.assigns.reference_poll.id, pole: pole)
 		else
 			conn

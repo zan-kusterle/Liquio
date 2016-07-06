@@ -25,6 +25,7 @@ defmodule Democracy.HtmlPollController do
 		poll = Poll.create(title, topics)
 		
 		conn
+		|> put_flash(:info, "Done, share the url so others can vote")
 		|> redirect to: html_poll_path(conn, :show, poll.id)
 	end
 

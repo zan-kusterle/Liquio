@@ -31,14 +31,17 @@ defmodule Democracy.HtmlVoteController do
 	end
 
 	def create(conn, %{"score" => score_text}) do
-		case Float.parse(score_text) do
+		{message} = case Float.parse(score_text) do
 			{score, _} ->
 				Vote.set(conn.assigns.poll, conn.assigns.user, score)
+				{"Your vote has been counted"}
 			:error ->
 				Vote.delete(conn.assigns.poll, conn.assigns.user)
+				{"Your vote has been removed"}
 		end
 
 		conn
+		|> put_flash(:info, message)
 		|> redirect to: html_poll_html_vote_path(conn, :index, conn.assigns.poll.id)
 	end
 end
