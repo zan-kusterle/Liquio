@@ -33,6 +33,10 @@
 	float: right;
 }
 
+.score-with-links i {
+	color: #337ab7;
+}
+
 .score-box {
 	margin: 0 auto;
 	width: 150px;
