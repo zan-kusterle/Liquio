@@ -13,7 +13,7 @@
 }
 
 .preference {
-	margin-top: 15px;
+	margin-bottom: 15px;
 }
 
 .preference label {
@@ -27,11 +27,16 @@
 }
 
 .create-identity input {
-	width: 100%;
+	display: block;
+	margin: 0 auto;
+	margin-top: 4px;
+	width: 400px;
+	text-align: center;
 }
 
 .create-identity button {
 	display: block;
 	margin: 0 auto;
-	margin-top: 15px;
+	margin-top: 20px;
+	width: 150px;
 }

@@ -1,14 +1,16 @@
+<h1 class="title-md" style="margin-bottom: 20px;">Create a poll</h1>
+
 <form method="POST" action="/polls" autocomplete="off" class="create-poll">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 	<div class="preference">
 		<label>Title</label>
-		<input name="title" />
+		<input name="title" placeholder="Title must explain itself enough for voters to make a decision" />
 	</div>
 
 	<div class="preference">
-		<label>Topics (separated by comma)</label>
-		<input name="topics" />
+		<label>Topics</label>
+		<input name="topics" placeholder="global warming, science, nature" />
 	</div>
 
 	<button type="submit">Create</button>

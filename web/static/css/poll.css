@@ -147,6 +147,7 @@
 
 .create-poll input {
 	width: 100%;
+	text-align: center;
 }
 
 .create-poll button {

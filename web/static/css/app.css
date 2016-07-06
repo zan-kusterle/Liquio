@@ -147,3 +147,10 @@ a:hover {
 	margin-left: auto;
 	margin-right: auto;
 }
+
+.title-md {
+	color: #333;
+	margin: 0px;
+	font-weight: normal;
+	font-size: 20px;
+}
