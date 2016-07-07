@@ -45,6 +45,10 @@ defmodule Democracy.Poll do
 		order_by: fragment("similarity(?, ?) DESC", p.title, ^search_term))
 	end
 
+	def all() do
+		from(p in Poll, where: p.kind == "custom")
+	end
+
 	def get_random() do
 		# TODO: More likely to choose popular polls
 		from(p in Poll,

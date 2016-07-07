@@ -1,1 +1,5 @@
-TODO EXPLORE
+<%= for poll <- @polls do %>
+	<div class="poll-item">
+		<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
+	</div>
+<% end %>
