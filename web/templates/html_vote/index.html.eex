@@ -1,4 +1,4 @@
-<h1 class="title"><a href="/polls/<%= @poll.id %>""><%= @poll.title || @poll.id %></a></h1>
+<h1 class="title" style="margin-top: 0px;"><a href="/polls/<%= @poll.id %>""><%= @poll.title || @poll.id %></a></h1>
 
 <%= unless Enum.empty?(@references) do %>
 	<div class="section-title">Before voting review the references.</div>

@@ -1,4 +1,9 @@
 .poll-item {
 	text-align: left;
-	margin-bottom: 10px;
+	margin-top: 15px;
+	text-transform: capitalize;
+}
+
+.poll-item:first-child {
+	margin-top: 0px;
 }

@@ -161,6 +161,8 @@ a:hover {
 
 .alert {
 	margin: 0px auto;
+	margin-top: 35px;
+	margin-bottom: -30px;
 	width: 900px;
 	padding: 8px 0px;
 	font-size: 16px;
