@@ -39,6 +39,7 @@ defmodule Democracy.Router do
 		end
 
 		get "/explore", HtmlExploreController, :index
+		get "/search", HtmlExploreController, :search
 	end
 
 	scope "/api", Democracy do
