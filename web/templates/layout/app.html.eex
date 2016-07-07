@@ -33,16 +33,16 @@
 					</div>
 				</div>
 			</div>
-
-			<%= if get_flash(@conn, :error) != nil do %>
-				<p class="alert alert-error" role="alert"><%= get_flash(@conn, :error) %></p>
-			<% else %>
-				<%= if get_flash(@conn, :info) != nil do %>
-					<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>					
-				<% end %>
-			<% end %>
-
+			
 			<div class="main-wrap">
+				<%= if get_flash(@conn, :error) != nil do %>
+					<p class="alert alert-error" role="alert"><%= get_flash(@conn, :error) %></p>
+				<% else %>
+					<%= if get_flash(@conn, :info) != nil do %>
+						<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>					
+					<% end %>
+				<% end %>
+
 				<main role="main" class="main">
 					<%= render @view_module, @view_template, assigns %>
 				</main>
