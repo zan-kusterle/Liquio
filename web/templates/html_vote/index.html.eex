@@ -5,9 +5,9 @@
 	<%= render Democracy.HtmlPollView, "references.html", references: @references %>
 <% end %>
 
-<div class="section-title">Propose new reference with ID</div>
+<div class="section-title">Propose new reference with URL</div>
 <form action="references" target="_blank">
-	<input name="reference_poll_id" type="text" placeholder="Poll ID" />
+	<input name="reference_poll_id" type="text" placeholder="Poll URL" style="width: 300px;" />
 	<button type="submit" name="pole" value="positive">View positive</button>
 	<button type="submit" name="pole" value="negative">View negative</button>
 </form>

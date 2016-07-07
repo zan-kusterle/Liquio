@@ -15,7 +15,15 @@ defmodule Democracy.HtmlReferenceController do
 	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"} when action in [:show]
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:show]
 
-	def index(conn, %{"reference_poll_id" => reference_poll_id, "pole" => pole}) do
+	def index(conn, %{"reference_poll_id" => reference_poll_url, "pole" => pole}) do
+		url = URI.parse(reference_poll_url)
+		reference_poll_id =
+			if url.path |> String.starts_with?("/polls/") do
+				String.replace(url.path, "/polls/", "")
+			else
+				reference_poll_url
+			end
+
 		conn
 		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, reference_poll_id, pole: pole)
 	end
