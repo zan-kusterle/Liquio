@@ -17,7 +17,8 @@ defmodule Democracy.HtmlLoginController do
 			|> redirect(to: html_identity_path(conn, :show, identity.id))
 		else
 			conn
-			|> send_resp(:unauthorized, "")
+			|> put_flash(:error, "Wrong username or password")
+			|> redirect(to: html_login_path(conn, :index))
 		end	
 	end
 

@@ -166,5 +166,12 @@ a:hover {
 	width: 900px;
 	padding: 8px 0px;
 	font-size: 16px;
+}
+
+.alert-info {
 	background-color: #DCEDC8;
+}
+
+.alert-error {
+	background-color: #fba3a3;
 }
