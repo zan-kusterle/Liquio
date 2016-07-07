@@ -49,6 +49,10 @@ defmodule Democracy.Poll do
 		from(p in Poll, where: p.kind == "custom")
 	end
 
+	def by_topic(topic) do
+		from(p in Poll, where: p.kind == "custom" and fragment("? = ANY(?)", ^topic, p.topics))
+	end
+
 	def get_random() do
 		# TODO: More likely to choose popular polls
 		from(p in Poll,

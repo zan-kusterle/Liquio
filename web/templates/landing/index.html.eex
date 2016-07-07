@@ -3,8 +3,8 @@
 	<h1>A liquid democracy where anyone can vote on anything.</h1>
 
 	<div class="ctas">
-		<a href="/polls/random" class="cta">View random poll</a>
 		<a href="/explore" class="cta">Explore polls</a>
+		<a href="/polls/random" class="cta">View random poll</a>
 	</div>
 </div>
 <div class="features">
@@ -26,7 +26,7 @@
 		<div class="feature">
 			<h3>TRUST METRICS</h3>
 			<p>
-				Trust metrics try to prevent one person from having multiple identities. Developers can create their own trust metrics and people can decide for themselves which one to trusts.
+				Trust metrics try to prevent one person from having multiple identities. Developers can create any number of trust metrics and everyone can decide themselves which one to trust.
 			</p>
 		</div>
 	</div>

@@ -9,6 +9,12 @@ defmodule Democracy.HtmlExploreController do
 		|> render "index.html", polls: polls
 	end
 
+	def show(conn, %{"id" => topic}) do
+		polls = Poll.by_topic(topic |> String.downcase) |> Repo.all
+		conn
+		|> render "index.html", polls: polls
+	end
+
 	def search(conn, %{"query" => query}) do
 		polls = Poll.search(Poll, query) |> Repo.all
 		conn
