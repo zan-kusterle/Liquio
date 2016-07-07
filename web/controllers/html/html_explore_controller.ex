@@ -12,6 +12,6 @@ defmodule Democracy.HtmlExploreController do
 	def search(conn, %{"query" => query}) do
 		polls = Poll.search(Poll, query) |> Repo.all
 		conn
-		|> render "index.html", polls: polls
+		|> render "index.html", polls: polls, query: query
 	end
 end
