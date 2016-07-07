@@ -26,5 +26,10 @@
 	<%= render "references.html", references: @references %>
 <% else %>
 	<h2 class="references-title">There are no references here.</h2>
-	<a href="/polls/<%= @poll.id %>/vote">Vote to add references here.</a>
+	<div class="section-title" style="margin-top: 0px;">You can enter the URL of reference below, then vote for it to be shown.</div>
+	<form action="/polls/<%= @poll.id %>/references" target="_blank">
+		<input name="reference_poll_id" type="text" placeholder="Poll URL" style="width: 300px;" />
+		<button type="submit" name="pole" value="positive">View positive</button>
+		<button type="submit" name="pole" value="negative">View negative</button>
+	</form>
 <% end %>
