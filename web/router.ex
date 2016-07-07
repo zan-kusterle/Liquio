@@ -37,6 +37,8 @@ defmodule Democracy.Router do
 			end
 			get "/embed", HtmlPollController, :embed
 		end
+
+		get "/explore", HtmlExploreController, :index
 	end
 
 	scope "/api", Democracy do

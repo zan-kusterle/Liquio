@@ -8,7 +8,7 @@ defmodule Democracy.HtmlIdentityController do
 
 	def new(conn, _params) do
 		conn
-		|> render "new.html"	
+		|> render "new.html"
 	end
 
 	def create(conn, params) do
