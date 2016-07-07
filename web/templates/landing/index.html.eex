@@ -4,6 +4,7 @@
 
 	<div class="ctas">
 		<a href="/polls/random" class="cta">View random poll</a>
+		<a href="/explore" class="cta">Explore polls</a>
 	</div>
 </div>
 <div class="features">
