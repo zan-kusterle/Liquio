@@ -10,7 +10,6 @@ defmodule Democracy.Poll do
 		field :title, :string
 		field :source_urls, {:array, :string}
 		field :topics, {:array, :string}
-		field :is_binary, :boolean
 
 		has_many :votes, Vote
 
@@ -35,7 +34,6 @@ defmodule Democracy.Poll do
 			:title => title,
 			:source_urls => [],
 			:topics => topics,
-			:is_binary => false
 		})
 	end
 

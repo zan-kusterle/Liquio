@@ -19,6 +19,11 @@
 			<label>Number of fake votes with score zero</label>
 			<input name="soft_quorum_t" style="width: 100px;" />
 		</div>
+
+		<div class="preference">
+			<label>Include references with score at least</label>
+			<input name="minimum_reference_approval_score" />
+		</div>
 	</form>
 	<a href="#">Add public info</a>
 <% else %>
