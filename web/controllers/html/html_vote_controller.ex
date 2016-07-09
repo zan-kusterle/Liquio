@@ -22,7 +22,7 @@ defmodule Democracy.HtmlVoteController do
 				vote = Repo.get_by(Vote, identity_id: conn.assigns.user.id, poll_id: conn.assigns.poll.id, is_last: true)
 				if vote != nil and vote.data == nil do vote = nil end
 				conn
-				|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate")
+				|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 				|> render "index.html", title: poll.title, poll: poll, references: references, own_vote: vote
 			{:error, message} ->
 				conn
