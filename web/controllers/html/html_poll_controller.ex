@@ -44,6 +44,7 @@ defmodule Democracy.HtmlPollController do
 					results = Result.calculate(poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
 					poll = poll |> Map.put(:results, results)
 					conn
+					|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate")
 					|> render "show.html", title: poll.title, is_logged_in: is_logged_in, poll: poll, references: references
 				{:error, message} ->
 					conn
@@ -75,6 +76,7 @@ defmodule Democracy.HtmlPollController do
 
 				poll = conn.assigns.poll |> Map.put(:results, results)
 				conn
+				|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate")
 				|> render "details.html", title: poll.title, datetime_text: Map.get(params, "datetime", ""), poll: poll, contributions: contributions, results_with_datetime: results_with_datetime
 			{:error, message} ->
 				conn

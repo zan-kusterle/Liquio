@@ -39,7 +39,8 @@ defmodule Democracy.HtmlReferenceController do
 					vote = Repo.get_by(Vote, identity_id: conn.assigns.user.id, poll_id: reference.approval_poll.id, is_last: true)
 					if vote != nil and vote.data == nil do vote = nil end
 					conn
-					|> render("show.html", reference: reference, pole: pole, own_vote: vote)
+					|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate")
+					|> render("show.html", title: reference.poll.title, reference: reference, pole: pole, own_vote: vote)
 				{:error, message} ->
 					conn
 					|> put_status(:not_found)
