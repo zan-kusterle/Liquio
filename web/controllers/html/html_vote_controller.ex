@@ -22,7 +22,7 @@ defmodule Democracy.HtmlVoteController do
 				vote = Repo.get_by(Vote, identity_id: conn.assigns.user.id, poll_id: conn.assigns.poll.id, is_last: true)
 				if vote != nil and vote.data == nil do vote = nil end
 				conn
-				|> render "index.html", poll: poll, references: references, own_vote: vote
+				|> render "index.html", title: poll.title, poll: poll, references: references, own_vote: vote
 			{:error, message} ->
 				conn
 				|> put_status(:not_found)

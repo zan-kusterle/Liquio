@@ -7,7 +7,11 @@
 		<meta name="description" content="A liquid democracy where anyone can vote on anything">
 		<meta name="author" content="Zan Kusterle">
 
-		<title>Liquio</title>
+		<%= if assigns[:title] do %>
+			<title><%= @title %></title>
+		<% else %>
+			<title>Liquio</title>
+		<% end %>
 		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
 	</head>
 

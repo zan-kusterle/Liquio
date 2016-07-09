@@ -40,6 +40,6 @@ defmodule Democracy.HtmlIdentityController do
 			end
 		
 		conn
-		|> render "index.html", identity: conn.assigns.identity, is_me: is_me, own_is_human_vote: own_is_human_vote
+		|> render "index.html", title: conn.assigns.identity.name, identity: conn.assigns.identity, is_me: is_me, own_is_human_vote: own_is_human_vote
 	end
 end
