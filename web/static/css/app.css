@@ -120,6 +120,8 @@ a:hover {
 .header .actions a {
 	margin-left: 30px;
 	color: #4aa5f3;
+	float: left;
+	display: block;
 }
 
 .header .actions a:hover {
@@ -129,6 +131,14 @@ a:hover {
 
 .header .actions a:first-child {
 	margin-left: 0px;
+}
+
+.not-in-trust-metric {
+	line-height: 0px;
+	display: block;
+	font-size: 11px;
+	color: #e80606;
+	font-weight: bold;
 }
 
 .main-wrap {
