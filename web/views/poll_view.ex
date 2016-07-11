@@ -13,6 +13,7 @@ defmodule Democracy.PollView do
 		v = %{
 			id: poll.id,
 			kind: poll.kind,
+			choice_type: poll.choice_type,
 			title: poll.title,
 			topics: poll.topics,
 		}

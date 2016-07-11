@@ -19,10 +19,10 @@ defmodule Democracy.HtmlPollController do
 		|> render "new.html"
 	end
 
-	def create(conn, %{"title" => title, "topics" => topics}) do
+	def create(conn, %{"choice_type" => choice_type, "title" => title, "topics" => topics}) do
 		title = title |> String.trim
 		topics = topics |> String.split(",") |> Enum.map(&String.trim/1)
-		poll = Poll.create(title, topics)
+		poll = Poll.create(choice_type, title, topics)
 		
 		conn
 		|> put_flash(:info, "Done, share the url so others can vote")

@@ -4,6 +4,7 @@ defmodule Democracy.Repo.Migrations.CreatePoll do
 	def change do
 		create table(:polls) do
 			add :kind, :string, null: false
+			add :choice_type, :string, null: false
 			add :title, :string
 			add :source_urls, {:array, :string}
 			add :topics, {:array, :string}

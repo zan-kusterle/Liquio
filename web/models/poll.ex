@@ -7,6 +7,7 @@ defmodule Democracy.Poll do
 
 	schema "polls" do
 		field :kind, :string
+		field :choice_type, :string
 		field :title, :string
 		field :source_urls, {:array, :string}
 		field :topics, {:array, :string}
@@ -18,7 +19,7 @@ defmodule Democracy.Poll do
 	
 	def changeset(data, params) do
 		data
-		|> cast(params, ["title", "source_urls", "topics"])
+		|> cast(params, ["choice_type", "title", "source_urls", "topics"])
 		|> validate_required(:title)
 		|> put_change(:kind, "custom")
 	end
@@ -28,9 +29,10 @@ defmodule Democracy.Poll do
 		Repo.insert(changeset)
 	end
 
-	def create(title, topics) do
+	def create(choice_type, title, topics) do
 		Repo.insert!(%Poll{
 			:kind => "custom",
+			:choice_type => choice_type,
 			:title => title,
 			:source_urls => [],
 			:topics => topics,
