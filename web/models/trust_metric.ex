@@ -17,14 +17,15 @@ defmodule Democracy.TrustMetric do
 	def get(url) do
 		trust_metric = Repo.get_by(TrustMetric, url: url)
 		if trust_metric do
+			cache_time = Application.get_env(:democracy, :trust_metric_cache_time_seconds)
 			Task.async(fn ->
 				if_before_datetime = Timex.DateTime.now
 					|> Timex.to_erlang_datetime
 					|> :calendar.datetime_to_gregorian_seconds
-					|> Kernel.-(60 * 5)
+					|> Kernel.-(cache_time)
 					|> :calendar.gregorian_seconds_to_datetime
 					|> Timex.DateTime.from_erl
-				if trust_metric.last_update < if_before_datetime do
+				if Timex.DateTime.compare(trust_metric.last_update, if_before_datetime) < 0 do
 					response = HTTPotion.get(url, headers: ["If-Modified-Since": Timex.format!(trust_metric.last_update, "{ISO}")])
 					if response.status_code == 200 do
 						usernames = response.body |> String.strip(?\n) |> String.split("\n")

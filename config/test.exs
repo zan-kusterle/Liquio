@@ -19,3 +19,4 @@ config :democracy, Democracy.Repo,
 	pool: Ecto.Adapters.SQL.Sandbox
 
 config :democracy, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
+config :democracy, trust_metric_cache_time_seconds: 5 * 60
