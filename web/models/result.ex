@@ -64,6 +64,9 @@ defmodule Democracy.Result do
 	end
 
 	def calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days, soft_quorum_t) do
+		if poll.choice_type == "quantity" do
+			soft_quorum_t = 0
+		end
 		poll
 		|> calculate_contributions(datetime, trust_identity_ids)
 		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t)

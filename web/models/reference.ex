@@ -20,6 +20,7 @@ defmodule Democracy.Reference do
 		if reference == nil do
 			approval_poll = Repo.insert!(%Poll{
 				:kind => "is_reference",
+				:choice_type => "probability",
 				:title => nil,
 				:topics => nil
 			})
