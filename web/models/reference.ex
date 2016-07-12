@@ -10,13 +10,13 @@ defmodule Democracy.Reference do
 		belongs_to :poll, Poll
 		belongs_to :reference_poll, Poll
 		belongs_to :approval_poll, Poll
-		field :pole, :string
+		field :for_choice, :float
 
 		timestamps
 	end
 
-	def get(poll, reference_poll, pole) do
-		reference = Repo.get_by(Reference, poll_id: poll.id, reference_poll_id: reference_poll.id, pole: pole)
+	def get(poll, reference_poll, for_choice) do
+		reference = Repo.get_by(Reference, poll_id: poll.id, reference_poll_id: reference_poll.id, for_choice: for_choice)
 		if reference == nil do
 			approval_poll = Repo.insert!(%Poll{
 				:kind => "is_reference",
@@ -28,7 +28,7 @@ defmodule Democracy.Reference do
 				:poll => poll,
 				:reference_poll => reference_poll,
 				:approval_poll => approval_poll,
-				:pole => pole
+				:for_choice => for_choice
 			})
 		end
 		reference

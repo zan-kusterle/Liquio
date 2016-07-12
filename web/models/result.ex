@@ -64,12 +64,14 @@ defmodule Democracy.Result do
 	end
 
 	def calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days, soft_quorum_t) do
-		if poll.choice_type == "quantity" do
-			soft_quorum_t = 0
+		mean_fn = if poll.choice_type == "quantity" do
+			&median/2
+		else
+			&mean/2
 		end
 		poll
 		|> calculate_contributions(datetime, trust_identity_ids)
-		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t)
+		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t, mean_fn)
 	end
 
 	def empty() do
@@ -118,20 +120,35 @@ defmodule Democracy.Result do
 		contributions
 	end
 
-	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t) do
-		contributions_by_identities = for contribution <- contributions, into: %{}, do: {to_string(contribution.identity_id), %{
-			:voting_power => contribution.voting_power,
-			:score => contribution.score
-		}}
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
-		total_score = Enum.sum(Enum.map(contributions, & &1.score * &1.voting_power * moving_average_weight(&1, datetime, vote_weight_halving_days)))
-		mean = if total_power + soft_quorum_t > 0 do total_score / (total_power + soft_quorum_t) else nil end
-		
+	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t, mean_fn) do
+		contributions = contributions |> Enum.map(fn(contribution) ->
+			contribution
+			|> Map.put(:voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
+		end)
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		%{
-			:mean => mean,
+			:mean => mean_fn.(contributions, soft_quorum_t),
 			:total => round(total_power),
 			:count => Enum.count(contributions)
 		}
+	end
+
+	def mean(contributions, soft_quorum_t) do
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
+		total_score = Enum.sum(Enum.map(contributions, & &1.score * &1.voting_power))
+		mean = if total_power + soft_quorum_t > 0 do total_score / (total_power + soft_quorum_t) else nil end
+	end
+
+	def median(contributions, soft_quorum_t) do
+		contributions = contributions |> Enum.sort(&(&1.score > &2.score))
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
+		Enum.reduce_while(contributions, 0, fn(contribution, current_power) ->
+			if current_power > total_power / 2 do
+				{ :halt, contribution.score }
+			else
+				{ :cont, current_power + contribution.voting_power }
+			end
+		end)
 	end
 
 	def moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do
