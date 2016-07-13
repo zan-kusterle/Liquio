@@ -12,7 +12,7 @@
 }
 
 .cast-vote {
-	margin-bottom: 20px;
+	display: inline-block;
 }
 
 .remove-vote {
@@ -21,6 +21,7 @@
 	color: #337ab7;
 	padding: 0px;
 	margin-top: 10px;
+	margin-bottom: 15px;
 }
 
 .remove-vote:hover {
@@ -33,4 +34,13 @@
 	margin-top: 10px;
 	color: #337ab7;
 	font-size: 14px;
+}
+
+.score-input {
+	height: 47px;
+	position: relative;
+	top: -1px;
+	text-align: center;
+	font-size: 18px;
+	text-transform: uppercase;
 }
