@@ -17,7 +17,7 @@
 			</div>
 		</div>
 	<% else %>
-		<div class="pole-list" style="padding: 0px 20px;">
+		<div class="references-list">
 			<%= for reference <- @references do %>
 				<%= render "reference.html", reference: reference, for_choice: reference.for_choice %>
 			<% end %>

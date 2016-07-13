@@ -110,6 +110,14 @@
 	margin-top: 15px;
 }
 
+.references .references-list {
+	padding: 0px 20px;
+}
+
+.references .references-list .reference-text {
+	width: initial !important;
+}
+
 .reference-a:hover {
 	color: inherit;
 }
@@ -120,8 +128,9 @@
 
 .for-choice-text {
 	font-size: 20px;
-	margin-right: 6px;
+	margin-right: 10px;
 	text-transform: none;
+	line-height: 0px;
 }
 
 .reference {
