@@ -9,6 +9,7 @@
 	font-size: 18px;
 	margin: 0 5px;
 	margin-top: 10px;
+	width: 120px;
 }
 
 .cast-vote {
@@ -43,4 +44,5 @@
 	text-align: center;
 	font-size: 18px;
 	text-transform: uppercase;
+	width: 120px;
 }

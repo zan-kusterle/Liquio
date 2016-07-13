@@ -1,14 +1,14 @@
-<form method="POST" class="cast-vote">
+<form action="/polls/<%= @poll_id %>/vote" method="POST" class="cast-vote">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 	<button type="submit" name="score" value="0.0" class="false-choice<%= if @own_vote != nil and @own_vote.data.score == 0.0 do %> active<% end %>">
 		FALSE
 	</button>
 </form>
-<form method="POST" class="cast-vote">
+<form action="/polls/<%= @poll_id %>/vote" method="POST" class="cast-vote">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 	<input type="text" class="score-input" name="score"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.score) %>"<% end %> />
 </form>
-<form method="POST" class="cast-vote">
+<form action="/polls/<%= @poll_id %>/vote" method="POST" class="cast-vote">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 	<button type="submit" name="score" value="1.0" class="true-choice<%= if @own_vote != nil and @own_vote.data.score == 1.0 do %> active<% end %>">
 		TRUE
@@ -16,7 +16,7 @@
 </form>
 
 <br>
-<form method="POST" class="cast-vote">
+<form action="/polls/<%= @poll_id %>/vote" method="POST" class="cast-vote">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 	<%= if @own_vote != nil do %>
 		<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>

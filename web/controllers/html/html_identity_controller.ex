@@ -3,6 +3,7 @@ defmodule Democracy.HtmlIdentityController do
 
 	alias Democracy.Identity
 	alias Democracy.Vote
+	alias Democracy.Delegation
 
 	plug Democracy.Plugs.QueryId, {:identity, Identity, "id"} when action in [:show]
 
@@ -28,8 +29,9 @@ defmodule Democracy.HtmlIdentityController do
 	end
 
 	def show(conn, _params) do
+		identity_id = conn.assigns.identity.id
 		current_identity = Guardian.Plug.current_resource(conn)
-		is_me = current_identity != nil and conn.assigns.identity.id == current_identity.id
+		is_me = current_identity != nil and identity_id == current_identity.id
 		own_is_human_vote =
 			if current_identity != nil do
 				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: conn.assigns.identity.trust_metric_poll_id, is_last: true)
@@ -38,8 +40,32 @@ defmodule Democracy.HtmlIdentityController do
 			else
 				nil
 			end
+
+		num_votes = Repo.one(
+			from(v in Vote,
+			where: v.identity_id == ^identity_id
+				and v.is_last == true
+				and not is_nil(v.data),
+			select: count(v.id))
+		)
+
+		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity_id and d.is_last == true and not is_nil(d.data))
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
+
+		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity_id and d.is_last == true and not is_nil(d.data))
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
 		
 		conn
-		|> render "index.html", title: conn.assigns.identity.name, identity: conn.assigns.identity, is_me: is_me, own_is_human_vote: own_is_human_vote
+		|> render "show.html",
+			title: conn.assigns.identity.name,
+			identity: conn.assigns.identity,
+			is_me: is_me,
+			own_is_human_vote: own_is_human_vote,
+			num_votes: num_votes,
+			is_trusted: true,
+			delegations_to: delegations_to,
+			delegations_from: delegations_from
 	end
 end

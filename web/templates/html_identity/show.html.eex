@@ -25,10 +25,13 @@
 			<input name="minimum_reference_approval_score" />
 		</div>
 	</form>
-	<a href="#">Add public info</a>
-<% else %>
+<% end %>
+
+<%= @num_votes %> votes
+
+<%= unless @is_me do %>
 	<div class="section-title">Is this identity human?</div>
-	<%= render Democracy.HtmlPollView, "cast_vote.html", own_vote: @own_is_human_vote %>
+	<%= render Democracy.HtmlPollView, "cast_vote.html", poll_id: @identity.trust_metric_poll_id, own_vote: @own_is_human_vote %>
 
 	<form>
 		<div class="preference">
@@ -45,3 +48,7 @@
 
 <div class="section-title">List of delegations from this identity</div>
 <div class="section-title">List of delegations to this identity</div>
+
+<%= for delegation <- @delegations_to do %>
+	<%= delegation.from_identity.name %>
+<% end %>
