@@ -1,4 +1,4 @@
-<div class="score-box" style="background-color: <%= score_color @poll.results.mean %>;">
+<div class="score-box" style="background-color: <%= score_color @poll %>;">
 	<div class="number">
 		<%= if @poll.choice_type == "probability" do %>
 			<%= round(@poll.results.mean * 100) %><span class="percent">%</span>
