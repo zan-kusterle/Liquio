@@ -54,6 +54,8 @@ defmodule Democracy.Web do
       import Democracy.Router.Helpers
       import Democracy.ErrorHelpers
       import Democracy.Gettext
+      
+      import Democracy.NumberFormat, only: [number_format: 1]
     end
   end
 
