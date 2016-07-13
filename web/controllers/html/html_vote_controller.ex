@@ -34,8 +34,12 @@ defmodule Democracy.HtmlVoteController do
 	def create(conn, %{"score" => score_text}) do
 		{message} = case Float.parse(score_text) do
 			{score, _} ->
-				Vote.set(conn.assigns.poll, conn.assigns.user, score)
-				{"Your vote is now live."}
+				if conn.assigns.poll.choice_type == "probability" and (score < 0 or score > 1) do
+					{"Choice must be between 0 and 1."}
+				else
+					Vote.set(conn.assigns.poll, conn.assigns.user, score)
+					{"Your vote is now live."}
+				end
 			:error ->
 				Vote.delete(conn.assigns.poll, conn.assigns.user)
 				{"You no longer have a vote in this poll."}
