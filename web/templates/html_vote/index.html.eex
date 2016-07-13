@@ -2,14 +2,19 @@
 
 <%= unless Enum.empty?(@references) do %>
 	<div class="section-title">Before voting review the references.</div>
-	<%= render Democracy.HtmlPollView, "references.html", references: @references %>
+	<%= render Democracy.HtmlPollView, "references.html", poll: @poll, references: @references %>
 <% end %>
 
 <div class="section-title">Propose new reference with URL</div>
 <form action="references" target="_blank">
 	<input name="reference_poll_id" type="text" placeholder="Poll URL" style="width: 300px;" />
-	<button type="submit" name="pole" value="positive">View positive</button>
-	<button type="submit" name="pole" value="negative">View negative</button>
+	<%= if @poll.choice_type == "probability" do %>
+		<button type="submit" name="for_choice" value="1">View positive</button>
+		<button type="submit" name="for_choice" value="0">View negative</button>
+	<% else %>
+		<input name="for_choice" type="text" placeholder="Evidence for choice" />
+		<button type="submit">View</button>
+	<% end %>
 </form>
 
 <hr>

@@ -31,25 +31,19 @@ defmodule Democracy.ReferenceController do
 		end
 	end
 
-	def show(conn, %{"pole" => pole}) do
-		if pole == "positive" or pole == "negative" do
-			case TrustMetric.get(conn.assigns.trust_metric_url) do
-				{:ok, trust_identity_ids} ->
-					reference = Reference.get(conn.assigns.poll, conn.assigns.reference_poll, pole)
-					|> Repo.preload([:approval_poll, :reference_poll, :poll])
-					results = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
-					reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
-					conn
-					|> render("show.json", reference: reference)
-				{:error, message} ->
-					conn
-					|> put_status(:not_found)
-					|> render(Democracy.ErrorView, "error.json", message: message)
-			end
-		else
-			conn
-			|> put_status(:not_found)
-			|> Phoenix.Controller.render(Democracy.ErrorView, "error.json", message: "Pole must be positive or negative")
+	def show(conn, %{"for_choice" => for_choice}) do
+		case TrustMetric.get(conn.assigns.trust_metric_url) do
+			{:ok, trust_identity_ids} ->
+				reference = Reference.get(conn.assigns.poll, conn.assigns.reference_poll, for_choice)
+				|> Repo.preload([:approval_poll, :reference_poll, :poll])
+				results = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+				reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
+				conn
+				|> render("show.json", reference: reference)
+			{:error, message} ->
+				conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: message)
 		end
 	end
 end

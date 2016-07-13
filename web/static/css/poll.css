@@ -118,6 +118,11 @@
 	color: #4aa5f3 !important;
 }
 
+.for-choice-text {
+	font-size: 20px;
+	margin-right: 6px;
+}
+
 .reference {
 	margin: 10px 0px;
 	min-height: 28px;

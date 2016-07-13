@@ -23,7 +23,7 @@
 
 <%= unless Enum.empty?(@references) do %>
 	<h2 class="references-title">References</h2>
-	<%= render "references.html", references: @references %>
+	<%= render "references.html", poll: @poll, references: @references %>
 <% else %>
 	<h2 class="references-title">There are no references here.</h2>
 	<%= if @is_logged_in do %>
@@ -37,7 +37,6 @@
 				<input name="for_choice" type="text" placeholder="Evidence for choice" />
 				<button type="submit">View</button>
 			<% end %>
-			
 		</form>
 	<% end %>
 <% end %>
