@@ -34,13 +34,20 @@ defmodule Democracy.HtmlReferenceController do
 			{:ok, trust_identity_ids} ->
 				reference = Reference.get(conn.assigns.poll, conn.assigns.reference_poll, conn.assigns.for_choice)
 				|> Repo.preload([:approval_poll, :reference_poll, :poll])
-				results = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
-				reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
-				vote = Repo.get_by(Vote, identity_id: conn.assigns.user.id, poll_id: reference.approval_poll.id, is_last: true)
-				if vote != nil and vote.data == nil do vote = nil end
-				conn
-				|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-				|> render("show.html", title: reference.poll.title, reference: reference, for_choice: conn.assigns.for_choice, own_vote: vote)
+				if reference.poll.kind == "custom" do
+					results = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+					reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
+					vote = Repo.get_by(Vote, identity_id: conn.assigns.user.id, poll_id: reference.approval_poll.id, is_last: true)
+					if vote != nil and vote.data == nil do vote = nil end
+					conn
+					|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+					|> render("show.html", title: reference.poll.title, reference: reference, for_choice: conn.assigns.for_choice, own_vote: vote)
+				else
+					conn
+				|> put_status(:not_found)
+				|> render(Democracy.ErrorView, "error.json", message: "Does not exist")
+				end
+				
 			{:error, message} ->
 				conn
 				|> put_status(:not_found)

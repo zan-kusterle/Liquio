@@ -51,7 +51,11 @@ defmodule Democracy.HtmlPollController do
 					is_logged_in = Guardian.Plug.current_resource(conn) != nil
 					references = Reference.for_poll(poll, conn.assigns.datetime, conn.assigns.vote_weight_halving_days, trust_identity_ids)
 					results = Result.calculate(poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
-					poll = poll |> Map.put(:results, results)
+
+					poll = poll
+					|> Map.put(:results, results)
+					|> Map.put(:title, Poll.title(poll))
+
 					conn
 					|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 					|> render "show.html", title: poll.title, is_logged_in: is_logged_in, poll: poll, references: references
@@ -83,7 +87,10 @@ defmodule Democracy.HtmlPollController do
 					}
 				end)
 
-				poll = conn.assigns.poll |> Map.put(:results, results)
+				poll = conn.assigns.poll
+				|> Map.put(:results, results)
+				|> Map.put(:title, Poll.title(conn.assigns.poll))
+
 				conn
 				|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 				|> render "details.html", title: poll.title, datetime_text: Map.get(params, "datetime", ""), poll: poll, contributions: contributions, results_with_datetime: results_with_datetime
@@ -100,7 +107,11 @@ defmodule Democracy.HtmlPollController do
 				datetime = Timex.DateTime.now
 				references = Reference.for_poll(conn.assigns.poll, datetime, nil, trust_identity_ids)
 				results = Result.calculate(conn.assigns.poll, datetime, trust_identity_ids, nil, 1)
-				poll = conn.assigns.poll |> Map.put(:results, results)
+
+				poll = conn.assigns.poll
+				|> Map.put(:results, results)
+				|> Map.put(:title, Poll.title(conn.assigns.poll))
+
 				conn
 				|> render "embed.html", poll: poll, references: references
 			{:error, message} ->

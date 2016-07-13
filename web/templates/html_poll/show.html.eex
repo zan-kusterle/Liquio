@@ -6,7 +6,7 @@
 	</h3>
 <% end %>
 
-<h1 class="title"><%= @poll.title || @poll.id %></h1>
+<h1 class="title"><%= raw(@poll.title) %></h1>
 
 <div class="score-with-links">
 	<%= render "score.html", poll: @poll %>
@@ -22,7 +22,11 @@
 </div>
 
 <%= unless Enum.empty?(@references) do %>
-	<h2 class="references-title">References</h2>
+	<%= if @poll.choice_type == "probability" do %>
+		<h2 class="references-title">References</h2>
+	<% else %>
+		<h2 class="references-title">References for quantity</h2>
+	<% end %>
 	<%= render "references.html", poll: @poll, references: @references %>
 <% else %>
 	<h2 class="references-title">There are no references here.</h2>

@@ -4,6 +4,8 @@ defmodule Democracy.Poll do
 	alias Democracy.Repo
 	alias Democracy.Poll
 	alias Democracy.Vote
+	alias Democracy.Reference
+	alias Democracy.Identity
 
 	schema "polls" do
 		field :kind, :string
@@ -51,6 +53,19 @@ defmodule Democracy.Poll do
 
 	def by_topic(topic) do
 		from(p in Poll, where: p.kind == "custom" and fragment("? = ANY(?)", ^topic, p.topics))
+	end
+
+	def title(poll) do
+		cond do
+			poll.kind == "is_reference" ->
+				reference = Repo.get_by(Reference, approval_poll_id: poll.id) |> Repo.preload([:poll, :reference_poll])
+				"Is poll <u>#{reference.reference_poll.title}</u> relavant as a reference to poll <u>#{reference.poll.title}</u>?"
+			poll.kind == "is_human" ->
+				identity = Repo.get_by(Identity, approval_poll_id: poll.id)
+				"Is identity #{identity.username} human?"
+			true ->
+				poll.title
+		end
 	end
 
 	def get_random() do
