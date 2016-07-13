@@ -26,7 +26,7 @@ defmodule Democracy.HtmlReferenceController do
 			end
 
 		conn
-		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, reference_poll_id, for_choice: conn.assigns.for_choice)
+		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, reference_poll_id, for_choice: to_string(conn.assigns.for_choice))
 	end
 
 	def show(conn, _params) do
@@ -63,6 +63,6 @@ defmodule Democracy.HtmlReferenceController do
 
 		conn
 		|> put_flash(:info, message)
-		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, conn.assigns.reference_poll.id, for_choice: conn.assigns.for_choice)
+		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, conn.assigns.reference_poll.id, for_choice: to_string(conn.assigns.for_choice))
 	end
 end
