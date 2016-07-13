@@ -121,6 +121,7 @@
 .for-choice-text {
 	font-size: 20px;
 	margin-right: 6px;
+	text-transform: none;
 }
 
 .reference {
