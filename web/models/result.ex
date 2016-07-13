@@ -126,6 +126,7 @@ defmodule Democracy.Result do
 			|> Map.put(:voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
 		end)
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
+
 		%{
 			:mean => mean_fn.(contributions, soft_quorum_t),
 			:total => round(total_power),
@@ -143,7 +144,7 @@ defmodule Democracy.Result do
 		contributions = contributions |> Enum.sort(&(&1.score > &2.score))
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		Enum.reduce_while(contributions, 0, fn(contribution, current_power) ->
-			if current_power > total_power / 2 do
+			if current_power + contribution.voting_power > total_power / 2 do
 				{ :halt, contribution.score }
 			else
 				{ :cont, current_power + contribution.voting_power }
