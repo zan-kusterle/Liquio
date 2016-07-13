@@ -35,10 +35,10 @@ defmodule Democracy.HtmlVoteController do
 		{message} = case Float.parse(score_text) do
 			{score, _} ->
 				Vote.set(conn.assigns.poll, conn.assigns.user, score)
-				{"Your vote has been counted"}
+				{"Your vote is now live."}
 			:error ->
 				Vote.delete(conn.assigns.poll, conn.assigns.user)
-				{"Your vote has been removed"}
+				{"You no longer have a vote in this poll."}
 		end
 
 		conn

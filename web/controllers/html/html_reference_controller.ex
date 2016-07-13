@@ -55,10 +55,10 @@ defmodule Democracy.HtmlReferenceController do
 		{message} = case Float.parse(score_text) do
 			{score, _} ->
 				Vote.set(reference.approval_poll, conn.assigns.user, score)
-				{"Your vote is now live"}
+				{"Your vote is now live."}
 			:error ->
 				Vote.delete(reference.approval_poll, conn.assigns.user)
-				{"You no longer have a vote in this poll"}
+				{"You no longer have a vote in this poll."}
 		end
 
 		conn
