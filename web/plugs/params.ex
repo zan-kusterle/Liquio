@@ -15,9 +15,12 @@ defmodule Democracy.Plugs.Params do
 		end)
 		errors = Enum.filter(results, fn({status, name, data}) -> status == :error end)
 		if Enum.count(errors) > 0 do
+			{:error, name, data} = Enum.at(errors, 0)
+
 			conn
-			|> put_status(:not_found)
-			|> Phoenix.Controller.render(Democracy.ErrorView, "error.json", message: "Invalid query parameter")
+			|> put_status(data[:status])
+			|> Phoenix.Controller.put_flash(:error, message: data[:message])
+			|> Phoenix.Controller.redirect(to: "/polls/4")
 			|> halt
 		else
 			params = for {:ok, name, data} <- results, into: %{} do

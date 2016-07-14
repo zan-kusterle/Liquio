@@ -1,14 +1,10 @@
 defmodule Democracy.HtmlPollController do
 	use Democracy.Web, :controller
 
-	alias Democracy.Repo
 	alias Democracy.Poll
 	alias Democracy.Reference
-	alias Democracy.TrustMetric
 	alias Democracy.Result
 
-	plug :put_layout, "minimal.html" when action in [:embed]
-	
 	def new(conn, _) do
 		conn
 		|> render "new.html"
@@ -69,6 +65,7 @@ defmodule Democracy.HtmlPollController do
 		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
 		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]},
 	] when action in [:embed]
+	plug :put_layout, "minimal.html" when action in [:embed]
 	def embed(conn, params = %{:poll => poll, :trust_metric_ids => trust_metric_ids}) do
 		params = Map.marge(params, %{
 			:datetime =>  Timex.DateTime.now,
@@ -96,7 +93,7 @@ defmodule Democracy.HtmlPollController do
 	end
 
 	defp prepare_results_with_datetime(poll, num_units, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
-		results_with_datetime = Enum.map(0..num_units, fn(shift_units) ->
+		Enum.map(0..num_units, fn(shift_units) ->
 			datetime = Timex.shift(datetime, days: -shift_units)
 			{
 				num_units - shift_units,
