@@ -1,6 +1,5 @@
 defmodule Democracy.HtmlLoginController do
 	use Democracy.Web, :controller
-
 	alias Democracy.Identity
 
 	def index(conn, _params) do

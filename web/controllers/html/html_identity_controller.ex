@@ -1,6 +1,5 @@
 defmodule Democracy.HtmlIdentityController do
 	use Democracy.Web, :controller
-
 	alias Democracy.Identity
 	alias Democracy.Vote
 	alias Democracy.Delegation

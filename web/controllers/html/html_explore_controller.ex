@@ -1,9 +1,8 @@
 defmodule Democracy.HtmlExploreController do
 	use Democracy.Web, :controller
-
 	alias Democracy.Poll
 
-	def index(conn, _params) do
+	def index(conn, _) do
 		polls = Poll.all |> Repo.all
 		conn
 		|> render "index.html", polls: polls

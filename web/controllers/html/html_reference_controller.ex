@@ -1,6 +1,5 @@
 defmodule Democracy.HtmlReferenceController do
 	use Democracy.Web, :controller
-
 	alias Democracy.Poll
 	alias Democracy.Reference
 	alias Democracy.Result

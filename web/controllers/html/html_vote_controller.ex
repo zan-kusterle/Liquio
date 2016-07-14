@@ -1,6 +1,5 @@
 defmodule Democracy.HtmlVoteController do
 	use Democracy.Web, :controller
-
 	alias Democracy.Poll
 	alias Democracy.Reference
 	alias Democracy.Result
@@ -31,17 +30,19 @@ defmodule Democracy.HtmlVoteController do
 		{&Democracy.Plugs.NumberParam.handle/2, :score, [name: "score"]}
 	] when action in [:index]
 	def create(conn, %{:user => user, :poll => poll, :score => score}) do
-		{message} = if score != nil do
-			if poll.choice_type == "probability" and (score < 0 or score > 1) do
-				{"Choice must be between 0 and 1."}
+		message =
+			if score != nil do
+				if poll.choice_type == "probability" and (score < 0 or score > 1) do
+					"Choice must be between 0 and 1."
+				else
+					# TODO: Use changeset to verify above constraint
+					Vote.set(poll, user, score)
+					"Your vote is now live."
+				end
 			else
-				Vote.set(poll, user, score)
-				{"Your vote is now live."}
+				Vote.delete(poll, user)
+				"You no longer have a vote in this poll."
 			end
-		else
-			Vote.delete(poll, user)
-			{"You no longer have a vote in this poll."}
-		end
 
 		conn
 		|> put_flash(:info, message)

@@ -29,4 +29,11 @@ defmodule Democracy.Plugs.Params do
 			%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(params)}
 		end
 	end
+
+	defmacro with_params(list, func) do
+		quote do
+			plug Democracy.Plugs.Params, unquote(list) when unquote("action") in [:show]
+			unquote(func)
+		end
+	end
 end
