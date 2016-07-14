@@ -1,5 +1,6 @@
 defmodule Democracy.Plugs.TrustMetricIds do
 	import Plug.Conn
+	alias Democracy.TrustMetric
 
 	def init(default), do: default
 
@@ -13,7 +14,7 @@ defmodule Democracy.Plugs.TrustMetricIds do
 				%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => url})}
 			{:error, message} ->
 				conn
-				|> put_flash(:error, message)
+				|> Phoenix.Controller.put_flash(:error, message)
 				|> halt
 		end
 	end

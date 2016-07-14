@@ -62,7 +62,7 @@ defmodule Democracy.HtmlPollController do
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "details.html",
 			title: Poll.title(poll),
-			datetime_text: Map.get(params, "datetime", ""),
+			datetime_text: Timex.format!(datetime, "{D}.{M}.{YYYY}"),
 			poll: poll
 				|> Map.put(:results, Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1))
 				|> Map.put(:title, Poll.title(poll)),
@@ -78,6 +78,6 @@ defmodule Democracy.HtmlPollController do
 			poll: poll
 				|> Map.put(:results, Result.calculate(poll, datetime, trust_metric_ids, nil, 1))
 				|> Map.put(:title, Poll.title(poll)),
-			references: Reference.for_poll(conn.params.poll, datetime, nil, trust_identity_ids)
+			references: Reference.for_poll(conn.params.poll, datetime, nil, trust_metric_ids)
 	end
 end
