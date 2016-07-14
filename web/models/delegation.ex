@@ -51,6 +51,19 @@ defmodule Democracy.Delegation do
 		Repo.insert(changeset)
 	end
 
+	def set(from_identity, to_identity, weight, topics) do
+		remove_current_last(from_identity.id, to_identity.id)
+		Repo.insert!(%Delegation{
+			from_identity_id: from_identity.id,
+			to_identity_id: to_identity.id,
+			is_last: true,
+			data: %DelegationData{
+				weight: weight,
+				topics: topics
+			}
+		})
+	end
+
 	def unset(from_identity, to_identity) do
 		remove_current_last(from_identity.id, to_identity.id)
 		Repo.insert(%Delegation{

@@ -21,7 +21,7 @@ defmodule Democracy.HtmlPollController do
 
 	def create(conn, %{"choice_type" => choice_type, "title" => title, "topics" => topics}) do
 		title = title |> String.trim
-		topics = topics |> String.split(",") |> Enum.map(&String.trim/1)
+		topics = topics |> String.split(",") |> Enum.map(&String.trim/1) |> Enum.filter(& String.length(&1) > 0)
 		if choice_type == "from_topics" do
 			choice_type =
 				if Enum.member?(topics, "quantity") do
