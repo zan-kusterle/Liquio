@@ -12,7 +12,7 @@ defmodule Democracy.DelegationData do
 		end
 		data
 		|> cast(params, ["weight", "topics"])
-		|> validate_number(:weight, greater_than_or_equal_to: 0)
+		|> validate_number(:weight, greater_than: 0)
 	end
 end
 

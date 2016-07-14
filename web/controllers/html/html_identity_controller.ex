@@ -9,23 +9,19 @@ defmodule Democracy.HtmlIdentityController do
 
 	def new(conn, _params) do
 		conn
-		|> render "new.html"
+		|> render("new.html")
 	end
 
 	def create(conn, params) do
 		token = Identity.generate_token()
 		changeset = Identity.changeset(%Identity{token: token}, params)
-		case Identity.create(changeset) do
-			{:ok, identity} ->
-				conn
-				|> Guardian.Plug.sign_in(identity)
-				|> put_flash(:info, "Hello, #{identity.name}")
-				|> render "credentials.html", identity: identity, token: token
-			{:error, changeset} ->
-				conn
-				|> put_flash(:error, "Couldn't create identity")
-				|> redirect to: html_identity_path(conn, :new)
-		end
+		
+		Identity.create(changeset) |> handle_errors(conn, fn identity ->
+			conn
+			|> Guardian.Plug.sign_in(identity)
+			|> put_flash(:info, "Hello, #{identity.name}")
+			|> render("credentials.html", identity: identity, token: token)
+		end)
 	end
 
 	def show(conn, %{:identity => identity}) do
@@ -69,7 +65,7 @@ defmodule Democracy.HtmlIdentityController do
 		
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render "show.html",
+		|> render("show.html",
 			title: identity.name,
 			identity: identity,
 			is_me: is_me,
@@ -78,6 +74,6 @@ defmodule Democracy.HtmlIdentityController do
 			is_trusted: true,
 			delegation: delegation,
 			delegations_to: delegations_to,
-			delegations_from: delegations_from
+			delegations_from: delegations_from)
 	end
 end
