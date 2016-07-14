@@ -7,7 +7,6 @@ defmodule Democracy.VoteController do
 	plug :scrub_params, "vote" when action in [:create, :update]
 
 	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"}
-	def is_vote(conn, vote), do: vote.data != nil and conn.params.poll.id == vote.poll_id
 	plug Democracy.Plugs.QueryIdentityIdFallbackCurrent, {:identity, "id"} when action in [:show]
 	plug Democracy.Plugs.EnsureCurrentIdentity when action in [:create, :delete]
 

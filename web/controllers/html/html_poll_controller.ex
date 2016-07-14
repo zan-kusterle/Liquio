@@ -7,9 +7,10 @@ defmodule Democracy.HtmlPollController do
 	alias Democracy.TrustMetric
 	alias Democracy.Result
 
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "id"} when action in [:show]
 	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id"} when action in [:details, :embed]
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"}
-	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"}
+	plug Democracy.Plugs.TrustMetricIds, {:trust_metric_ids, "trust_metric_url"} when action in [:show, :details, :embed]
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"}
 	plug Democracy.Plugs.TopicsQuery, {:topics, "topics"} when action in [:create]
 	plug Democracy.Plugs.ChoiceType, {:choice_type, "choice_type", :topics} when action in [:create]
@@ -34,81 +35,49 @@ defmodule Democracy.HtmlPollController do
 		|> redirect to: html_poll_path(conn, :show, Poll.get_random().id)
 	end
 
-	def show(conn, %{"id" => id}) do
-		poll = Repo.get(Poll, id)
-		if poll do
-			case TrustMetric.get(conn.params.trust_metric_url) do
-				{:ok, trust_identity_ids} ->
-					is_logged_in = Guardian.Plug.current_resource(conn) != nil
-					references = Reference.for_poll(poll, conn.params.datetime, conn.params.vote_weight_halving_days, trust_identity_ids)
-					results = Result.calculate(poll, conn.params.datetime, trust_identity_ids, conn.params.vote_weight_halving_days, 1)
-
-					poll = poll
-					|> Map.put(:results, results)
-					|> Map.put(:title, Poll.title(poll))
-
-					conn
-					|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-					|> render "show.html", title: poll.title, is_logged_in: is_logged_in, poll: poll, references: references
-				{:error, message} ->
-					conn
-					|> put_status(:not_found)
-					|> render(Democracy.ErrorView, "error.json", message: message)
-			end
-		else
-			conn
-			|> put_status(:not_found)
-			|> render("404.html")
-		end
+	def show(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+		conn
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+		|> render "show.html",
+			title: Poll.title(poll),
+			is_logged_in: Guardian.Plug.current_resource(conn) != nil,
+			poll: poll
+                |> Map.put(:results, Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1))
+                |> Map.put(:title, Poll.title(poll)),
+			references: Reference.for_poll(poll, datetime, vote_weight_halving_days, trust_metric_ids)
 	end
 
-	def details(conn, params) do
-		case TrustMetric.get(conn.params.trust_metric_url) do
-			{:ok, trust_identity_ids} ->
-				contributions = Result.calculate_contributions(conn.params.poll, conn.params.datetime, trust_identity_ids)
-				results = Result.calculate(conn.params.poll, conn.params.datetime, trust_identity_ids, conn.params.vote_weight_halving_days, 1)
+	def details(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+		num_units = 30
+		results_with_datetime = Enum.map(0..num_units, fn(shift_units) ->
+			datetime = Timex.shift(datetime, days: -shift_units)
+			{
+				num_units - shift_units,
+				datetime,
+				Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
+			}
+		end)
 
-				num_units = 30
-				results_with_datetime = Enum.map(0..num_units, fn(shift_units) ->
-					datetime = Timex.shift(conn.params.datetime, days: -shift_units)
-					{
-						num_units - shift_units,
-						datetime,
-						Result.calculate(conn.params.poll, datetime, trust_identity_ids, conn.params.vote_weight_halving_days, 1)
-					}
-				end)
-
-				poll = conn.params.poll
-				|> Map.put(:results, results)
-				|> Map.put(:title, Poll.title(conn.params.poll))
-
-				conn
-				|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-				|> render "details.html", title: poll.title, datetime_text: Map.get(params, "datetime", ""), poll: poll, contributions: contributions, results_with_datetime: results_with_datetime
-			{:error, message} ->
-				conn
-				|> put_status(:not_found)
-				|> render(Democracy.ErrorView, "error.json", message: message)
-		end
+		conn
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+		|> render "details.html",
+			title: Poll.title(poll),
+			datetime_text: Map.get(params, "datetime", ""),
+			poll: poll
+				|> Map.put(:results, Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1))
+				|> Map.put(:title, Poll.title(poll)),
+			contributions: Result.calculate_contributions(poll, datetime, trust_metric_ids),
+			results_with_datetime: results_with_datetime
 	end
 
-	def embed(conn, _params) do
-		case TrustMetric.get(Democracy.TrustMetric.default_trust_metric_url) do
-			{:ok, trust_identity_ids} ->
-				datetime = Timex.DateTime.now
-				references = Reference.for_poll(conn.params.poll, datetime, nil, trust_identity_ids)
-				results = Result.calculate(conn.params.poll, datetime, trust_identity_ids, nil, 1)
+	def embed(conn, %{:poll => poll, :trust_metric_ids => trust_metric_ids}) do
+		datetime = Timex.DateTime.now
 
-				poll = conn.params.poll
-				|> Map.put(:results, results)
-				|> Map.put(:title, Poll.title(conn.params.poll))
-
-				conn
-				|> render "embed.html", poll: poll, references: references
-			{:error, message} ->
-				conn
-				|> put_status(:not_found)
-				|> render(Democracy.ErrorView, "error.json", message: message)
-		end
+		conn
+		|> render "embed.html",
+			poll: poll
+				|> Map.put(:results, Result.calculate(poll, datetime, trust_metric_ids, nil, 1))
+				|> Map.put(:title, Poll.title(poll)),
+			references: Reference.for_poll(conn.params.poll, datetime, nil, trust_identity_ids)
 	end
 end
