@@ -6,7 +6,7 @@ defmodule Democracy.Plugs.EnsureCurrentIdentity do
 	def call(conn, _) do
 		user = Guardian.Plug.current_resource(conn)
 		if user != nil do
-			assign conn, :user, user
+			%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{:user => user})}
 		else
 			if :browser in conn.private.phoenix_pipelines do
 				conn

@@ -20,9 +20,9 @@ defmodule Democracy.ReferenceController do
 	plug Democracy.Plugs.FloatQuery, {:for_choice, "for_choice"} when action in [:show]
 
 	def index(conn, %{"threshold" => threshold}) do
-		case TrustMetric.get(conn.assigns.trust_metric_url) do
+		case TrustMetric.get(conn.params.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
-				references = Reference.for_poll(conn.assigns.poll, conn.assigns.datetime, conn.assigns.vote_weight_halving_days, trust_identity_ids)
+				references = Reference.for_poll(conn.params.poll, conn.params.datetime, conn.params.vote_weight_halving_days, trust_identity_ids)
 				conn
 				|> render("index.json", references: references)
 			{:error, message} ->
@@ -33,11 +33,11 @@ defmodule Democracy.ReferenceController do
 	end
 
 	def show(conn, _params) do
-		case TrustMetric.get(conn.assigns.trust_metric_url) do
+		case TrustMetric.get(conn.params.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
-				reference = Reference.get(conn.assigns.poll, conn.assigns.reference_poll, conn.assigns.for_choice)
+				reference = Reference.get(conn.params.poll, conn.params.reference_poll, conn.params.for_choice)
 				|> Repo.preload([:approval_poll, :reference_poll, :poll])
-				results = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+				results = Result.calculate(reference.approval_poll, conn.params.datetime, trust_identity_ids, conn.params.vote_weight_halving_days, 1)
 				reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 				conn
 				|> render("show.json", reference: reference)

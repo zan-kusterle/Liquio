@@ -16,7 +16,7 @@ defmodule Democracy.Plugs.QueryIdentityIdFallbackCurrent do
 		end
 
 		if user do
-			assign conn, assign_atom, user
+			%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => user})}
 		else
 			send_resp(conn, :not_found, "Identity does not exist")
 			|> halt

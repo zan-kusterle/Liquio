@@ -8,6 +8,6 @@ defmodule Democracy.Plugs.TrustMetricUrl do
 		if url == nil or String.length(url) == 0 do
 			url = Democracy.TrustMetric.default_trust_metric_url()
 		end
-		assign(conn, assign_atom, url)
+		%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => url})}
 	end
 end

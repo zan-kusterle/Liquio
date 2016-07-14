@@ -6,25 +6,15 @@ defmodule Democracy.HtmlDelegationController do
 
 	plug Democracy.Plugs.EnsureCurrentIdentity
 	plug Democracy.Plugs.QueryId, {:identity, Identity, "html_identity_id"}
+	plug Democracy.Plugs.FloatQuery, {:weight, "weight", "Delegation weight must be a number"}
+	plug Democracy.Plugs.TopicsQuery, {:topics, "topics"}
+	plug Democracy.Plugs.RedirectBack
 
-	def create(conn, %{"weight" => weight, "topics" => topics}) do
-		topics = topics |> String.split(",") |> Enum.map(&String.trim/1) |> Enum.filter(& String.length(&1) > 0)
-		case Float.parse(weight) do
-			{weight, _} ->
-				if weight > 0 do
-					delegation = Delegation.set(conn.assigns.user, conn.assigns.identity, weight, topics)
-				else
-					delegation = Repo.get_by(Delegation, %{from_identity_id: conn.assigns.user.id, to_identity_id: conn.assigns.identity.id, is_last: true})
-					if delegation do
-						Delegation.unset(conn.assigns.user, conn.assigns.identity)
-					end
-				end
-			:error ->
-				conn = conn
-				|> put_flash(:error, "Delegation weight must be a number")
+	def create(conn, %{:user => from_identity, :identity => to_identity, :weight => weight, :topics => topics}) do
+		if weight > 0 do
+			Delegation.set(from_identity, to_identity, weight, topics)
+		else
+			Delegation.unset(from_identity, to_identity)
 		end
-
-		conn
-        |> redirect to: html_identity_path(conn, :show, conn.assigns.identity.id)
 	end
 end

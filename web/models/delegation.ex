@@ -65,13 +65,16 @@ defmodule Democracy.Delegation do
 	end
 
 	def unset(from_identity, to_identity) do
-		remove_current_last(from_identity.id, to_identity.id)
-		Repo.insert(%Delegation{
-			from_identity_id: from_identity.id,
-			to_identity_id: to_identity.id,
-			is_last: true,
-			data: nil
-		})
+		delegation = Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id, is_last: true})
+    	if delegation != nil do
+			remove_current_last(from_identity.id, to_identity.id)
+			Repo.insert(%Delegation{
+				from_identity_id: from_identity.id,
+				to_identity_id: to_identity.id,
+				is_last: true,
+				data: nil
+			})
+		end
 	end
 
 	def remove_current_last(from_identity_id, to_identity_id) do

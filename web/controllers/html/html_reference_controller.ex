@@ -26,22 +26,22 @@ defmodule Democracy.HtmlReferenceController do
 			end
 
 		conn
-		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, reference_poll_id, for_choice: to_string(conn.assigns.for_choice))
+		|> redirect to: html_poll_html_reference_path(conn, :show, conn.params.poll.id, reference_poll_id, for_choice: to_string(conn.params.for_choice))
 	end
 
 	def show(conn, _params) do
-		case TrustMetric.get(conn.assigns.trust_metric_url) do
+		case TrustMetric.get(conn.params.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
-				reference = Reference.get(conn.assigns.poll, conn.assigns.reference_poll, conn.assigns.for_choice)
+				reference = Reference.get(conn.params.poll, conn.params.reference_poll, conn.params.for_choice)
 				|> Repo.preload([:approval_poll, :reference_poll, :poll])
 				if reference.poll.kind == "custom" do
-					results = Result.calculate(reference.approval_poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+					results = Result.calculate(reference.approval_poll, conn.params.datetime, trust_identity_ids, conn.params.vote_weight_halving_days, 1)
 					reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
-					vote = Repo.get_by(Vote, identity_id: conn.assigns.user.id, poll_id: reference.approval_poll.id, is_last: true)
+					vote = Repo.get_by(Vote, identity_id: conn.params.user.id, poll_id: reference.approval_poll.id, is_last: true)
 					if vote != nil and vote.data == nil do vote = nil end
 					conn
 					|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-					|> render("show.html", title: reference.poll.title, reference: reference, for_choice: conn.assigns.for_choice, own_vote: vote)
+					|> render("show.html", title: reference.poll.title, reference: reference, for_choice: conn.params.for_choice, own_vote: vote)
 				else
 					conn
 				|> put_status(:not_found)
@@ -56,20 +56,20 @@ defmodule Democracy.HtmlReferenceController do
 	end
 
 	def create(conn, %{"score" => score_text}) do
-		reference = Reference.get(conn.assigns.poll, conn.assigns.reference_poll, conn.assigns.for_choice)
+		reference = Reference.get(conn.params.poll, conn.params.reference_poll, conn.params.for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
 
 		{message} = case Float.parse(score_text) do
 			{score, _} ->
-				Vote.set(reference.approval_poll, conn.assigns.user, score)
+				Vote.set(reference.approval_poll, conn.params.user, score)
 				{"Your vote is now live."}
 			:error ->
-				Vote.delete(reference.approval_poll, conn.assigns.user)
+				Vote.delete(reference.approval_poll, conn.params.user)
 				{"You no longer have a vote in this poll."}
 		end
 
 		conn
 		|> put_flash(:info, message)
-		|> redirect to: html_poll_html_reference_path(conn, :show, conn.assigns.poll.id, conn.assigns.reference_poll.id, for_choice: to_string(conn.assigns.for_choice))
+		|> redirect to: html_poll_html_reference_path(conn, :show, conn.params.poll.id, conn.params.reference_poll.id, for_choice: to_string(conn.params.for_choice))
 	end
 end

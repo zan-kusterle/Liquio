@@ -46,11 +46,11 @@ defmodule Democracy.HtmlPollController do
 	def show(conn, %{"id" => id}) do
 		poll = Repo.get(Poll, id)
 		if poll do
-			case TrustMetric.get(conn.assigns.trust_metric_url) do
+			case TrustMetric.get(conn.params.trust_metric_url) do
 				{:ok, trust_identity_ids} ->
 					is_logged_in = Guardian.Plug.current_resource(conn) != nil
-					references = Reference.for_poll(poll, conn.assigns.datetime, conn.assigns.vote_weight_halving_days, trust_identity_ids)
-					results = Result.calculate(poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+					references = Reference.for_poll(poll, conn.params.datetime, conn.params.vote_weight_halving_days, trust_identity_ids)
+					results = Result.calculate(poll, conn.params.datetime, trust_identity_ids, conn.params.vote_weight_halving_days, 1)
 
 					poll = poll
 					|> Map.put(:results, results)
@@ -72,24 +72,24 @@ defmodule Democracy.HtmlPollController do
 	end
 
 	def details(conn, params) do
-		case TrustMetric.get(conn.assigns.trust_metric_url) do
+		case TrustMetric.get(conn.params.trust_metric_url) do
 			{:ok, trust_identity_ids} ->
-				contributions = Result.calculate_contributions(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids)
-				results = Result.calculate(conn.assigns.poll, conn.assigns.datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+				contributions = Result.calculate_contributions(conn.params.poll, conn.params.datetime, trust_identity_ids)
+				results = Result.calculate(conn.params.poll, conn.params.datetime, trust_identity_ids, conn.params.vote_weight_halving_days, 1)
 
 				num_units = 30
 				results_with_datetime = Enum.map(0..num_units, fn(shift_units) ->
-					datetime = Timex.shift(conn.assigns.datetime, days: -shift_units)
+					datetime = Timex.shift(conn.params.datetime, days: -shift_units)
 					{
 						num_units - shift_units,
 						datetime,
-						Result.calculate(conn.assigns.poll, datetime, trust_identity_ids, conn.assigns.vote_weight_halving_days, 1)
+						Result.calculate(conn.params.poll, datetime, trust_identity_ids, conn.params.vote_weight_halving_days, 1)
 					}
 				end)
 
-				poll = conn.assigns.poll
+				poll = conn.params.poll
 				|> Map.put(:results, results)
-				|> Map.put(:title, Poll.title(conn.assigns.poll))
+				|> Map.put(:title, Poll.title(conn.params.poll))
 
 				conn
 				|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
@@ -105,12 +105,12 @@ defmodule Democracy.HtmlPollController do
 		case TrustMetric.get(Democracy.TrustMetric.default_trust_metric_url) do
 			{:ok, trust_identity_ids} ->
 				datetime = Timex.DateTime.now
-				references = Reference.for_poll(conn.assigns.poll, datetime, nil, trust_identity_ids)
-				results = Result.calculate(conn.assigns.poll, datetime, trust_identity_ids, nil, 1)
+				references = Reference.for_poll(conn.params.poll, datetime, nil, trust_identity_ids)
+				results = Result.calculate(conn.params.poll, datetime, trust_identity_ids, nil, 1)
 
-				poll = conn.assigns.poll
+				poll = conn.params.poll
 				|> Map.put(:results, results)
-				|> Map.put(:title, Poll.title(conn.assigns.poll))
+				|> Map.put(:title, Poll.title(conn.params.poll))
 
 				conn
 				|> render "embed.html", poll: poll, references: references

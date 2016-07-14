@@ -29,12 +29,12 @@ defmodule Democracy.HtmlIdentityController do
 	end
 
 	def show(conn, _params) do
-		identity_id = conn.assigns.identity.id
+		identity_id = conn.params.identity.id
 		current_identity = Guardian.Plug.current_resource(conn)
 		is_me = current_identity != nil and identity_id == current_identity.id
 		own_is_human_vote =
 			if current_identity != nil do
-				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: conn.assigns.identity.trust_metric_poll_id, is_last: true)
+				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: conn.params.identity.trust_metric_poll_id, is_last: true)
 				if vote != nil and vote.data == nil do vote = nil end
 				vote
 			else
@@ -50,7 +50,7 @@ defmodule Democracy.HtmlIdentityController do
 		)
 
 		delegation = if current_identity != nil and not is_me do
-			delegation = Repo.get_by(Delegation, %{from_identity_id: current_identity.id, to_identity_id: conn.assigns.identity.id, is_last: true})
+			delegation = Repo.get_by(Delegation, %{from_identity_id: current_identity.id, to_identity_id: conn.params.identity.id, is_last: true})
 			if delegation != nil and delegation.data != nil do
 				delegation
 			else
@@ -71,8 +71,8 @@ defmodule Democracy.HtmlIdentityController do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "show.html",
-			title: conn.assigns.identity.name,
-			identity: conn.assigns.identity,
+			title: conn.params.identity.name,
+			identity: conn.params.identity,
 			is_me: is_me,
 			own_is_human_vote: own_is_human_vote,
 			num_votes: num_votes,

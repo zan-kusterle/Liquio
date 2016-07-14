@@ -35,6 +35,7 @@
 	<div class="section-title">Is this identity human?</div>
 	<%= render Democracy.HtmlPollView, "cast_vote.html", poll_id: @identity.trust_metric_poll_id, own_vote: @own_is_human_vote %>
 
+	<div class="section-title">Delegation to this identity</div>
 	<form method="POST" action="/identities/<%= @identity.id %>/delegations">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 

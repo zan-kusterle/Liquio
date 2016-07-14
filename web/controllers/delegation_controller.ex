@@ -12,7 +12,7 @@ defmodule Democracy.DelegationController do
 	plug Democracy.Plugs.QueryId, {:to_identity, Identity, "id"} when action in [:show, :delete]
 
 	def index(conn, _params) do
-		delegations = from(d in Delegation, where: d.from_identity_id == ^conn.assigns.from_identity.id and d.is_last == true and not is_nil(d.data))
+		delegations = from(d in Delegation, where: d.from_identity_id == ^conn.params.from_identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
 
@@ -21,14 +21,14 @@ defmodule Democracy.DelegationController do
 	end
 
 	def create(conn, %{"delegation" => params}) do
-		params = params |> Map.put("from_identity_id", conn.assigns.from_identity.id)
+		params = params |> Map.put("from_identity_id", conn.params.from_identity.id)
 		changeset = Delegation.changeset(%Delegation{}, params)
 		case Delegation.set(changeset) do
 			{:ok, delegation} ->
 				delegation = Repo.preload delegation, [:from_identity, :to_identity]
 				conn
 				|> put_status(:created)
-				|> put_resp_header("location", identity_delegation_path(conn, :show, conn.assigns.from_identity.id, delegation))
+				|> put_resp_header("location", identity_delegation_path(conn, :show, conn.params.from_identity.id, delegation))
 				|> render("show.json", delegation: delegation)
 			{:error, changeset} ->
 				conn
@@ -39,7 +39,7 @@ defmodule Democracy.DelegationController do
 
 	def show(conn, _params) do
 		delegation = Repo.all(from(d in Delegation, where:
-			d.from_identity_id == ^conn.assigns.from_identity.id and d.to_identity_id == ^conn.assigns.to_identity.id
+			d.from_identity_id == ^conn.params.from_identity.id and d.to_identity_id == ^conn.params.to_identity.id
 			and d.is_last == true and not is_nil(d.data))) |> Enum.at(0)
 		if delegation do
 			delegation = Repo.preload delegation, [:from_identity, :to_identity]
@@ -53,9 +53,9 @@ defmodule Democracy.DelegationController do
 	end
 
 	def delete(conn, _params) do
-		delegation = Repo.get_by(Delegation, %{from_identity_id: conn.assigns.from_identity.id, to_identity_id: conn.assigns.to_identity.id, is_last: true})
+		delegation = Repo.get_by(Delegation, %{from_identity_id: conn.params.from_identity.id, to_identity_id: conn.params.to_identity.id, is_last: true})
 		if delegation do
-			Delegation.unset(conn.assigns.from_identity, conn.assigns.to_identity)
+			Delegation.unset(conn.params.from_identity, conn.params.to_identity)
 			conn
 			|> send_resp(:no_content, "")
 		else

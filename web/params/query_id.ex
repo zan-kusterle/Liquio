@@ -8,7 +8,7 @@ defmodule Democracy.Plugs.QueryId do
 	def call(conn, {assign_atom, schema, query_name}) do
 		item = Repo.get(schema, conn.params[query_name])
 		if item != nil do
-			assign(conn, assign_atom, item)
+			%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => item})}
 		else
 			conn
 			|> put_status(:not_found)
@@ -21,7 +21,7 @@ defmodule Democracy.Plugs.QueryId do
 		item = Repo.get(schema, conn.params[query_name])
 		# TODO: Also verify with is_item/2
 		if item != nil do
-			assign(conn, assign_atom, item)
+			%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => item})}
 		else
 			conn
 			|> put_status(:not_found)
