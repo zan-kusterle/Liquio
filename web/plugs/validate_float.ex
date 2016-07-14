@@ -1,5 +1,6 @@
 defmodule Democracy.Plugs.ValidateFloat do
 	import Plug.Conn
+	use Democracy.Web, :controller
 
 	def init(default), do: default
 
@@ -15,7 +16,7 @@ defmodule Democracy.Plugs.ValidateFloat do
 		if not is_valid do
 			conn
             |> Phoenix.Controller.put_flash(:error, message)
-            |> Democracy.Plugs.RedirectBack.redirect_back
+            |> redirect_back
             |> halt
         else
         	conn

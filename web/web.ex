@@ -38,7 +38,22 @@ defmodule Democracy.Web do
 
       import Democracy.Router.Helpers
       import Democracy.Gettext
+
+        def redirect_back(conn) do
+				case List.keyfind(conn.req_headers, "referer", 0) do
+				{"referer", referer} ->
+					url = URI.parse(referer)
+					conn
+					|> Phoenix.Controller.redirect to: url.path
+				nil ->
+					conn
+					|> Phoenix.Controller.redirect to: "/"
+			end
+		end
     end
+
+
+
   end
 
   def view do
