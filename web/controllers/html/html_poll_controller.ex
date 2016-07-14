@@ -11,6 +11,9 @@ defmodule Democracy.HtmlPollController do
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"}
 	plug Democracy.Plugs.TrustMetricUrl, {:trust_metric_url, "trust_metric_url"}
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"}
+	plug Democracy.Plugs.TopicsQuery, {:topics, "topics"} when action in [:create]
+	plug Democracy.Plugs.ChoiceType, {:choice_type, "choice_type", :topics} when action in [:create]
+	plug Democracy.Plugs.Title, {:title, "title"} when action in [:create]
 
 	plug :put_layout, "minimal.html" when action in [:embed]
 	
@@ -19,20 +22,8 @@ defmodule Democracy.HtmlPollController do
 		|> render "new.html"
 	end
 
-	def create(conn, %{"choice_type" => choice_type, "title" => title, "topics" => topics}) do
-		title = title |> String.trim
-		topics = topics |> String.split(",") |> Enum.map(&String.trim/1) |> Enum.filter(& String.length(&1) > 0)
-		if choice_type == "from_topics" do
-			choice_type =
-				if Enum.member?(topics, "quantity") do
-					topics = Enum.filter(topics, & &1 != "quantity")
-					"quantity"
-				else
-					"probability"
-				end
-		end
+	def create(conn, %{:choice_type => choice_type, :title => title, :topics => topics}) do
 		poll = Poll.create(choice_type, title, topics)
-		
 		conn
 		|> put_flash(:info, "Done, share the url so others can vote")
 		|> redirect to: html_poll_path(conn, :show, poll.id)
