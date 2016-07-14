@@ -69,6 +69,7 @@ defmodule Democracy.HtmlIdentityController do
 		|> Repo.preload([:from_identity, :to_identity])
 		
 		conn
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "show.html",
 			title: conn.assigns.identity.name,
 			identity: conn.assigns.identity,

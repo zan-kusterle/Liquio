@@ -3,6 +3,8 @@
 	<h1 class="identity-name"><%= @identity.name %></h1>
 </div>
 
+<%= @num_votes %> votes
+
 <%= if @is_me do %>
 	<for method="POST">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
@@ -28,8 +30,6 @@
 		</div>
 	</form>
 <% end %>
-
-<%= @num_votes %> votes
 
 <%= unless @is_me do %>
 	<div class="section-title">Is this identity human?</div>
