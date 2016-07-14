@@ -30,18 +30,18 @@ defmodule Democracy.PollController do
 		end
 	end
 
-	def show(conn, %{:trust_metric_ids => trust_metric_ids}) do
+	def show(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		# TODO: Get polls in same category (for every category poll where current category is proposed calculate best category)
 		# Do this by periodically updating :group_title field on kind=custom polls. Use default trust metric here, because the category can be custom changed by each user if they want (this is just the default)
 		# TODO: Give option to select a different list (it's automatically saved and used from then on, with reset option)
-		# TODO: Pick the one with the most voting power. If it is the same as conn.params.poll then show it, otherwise return a redirect response.
-		results = Result.calculate(conn.params.poll, conn.params.datetime, trust_metric_ids, conn.params.vote_weight_halving_days, 1)
+		# TODO: Pick the one with the most voting power. If it is the same as poll then show it, otherwise return a redirect response.
+		results = Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
 		conn
-		|> render("show.json", poll: conn.params.poll |> Map.put(:results, results))
+		|> render("show.json", poll: poll |> Map.put(:results, results))
 	end
 
-	def contributions(conn, %{:trust_metric_ids => trust_metric_ids}) do
-		contributions = Result.calculate_contributions(conn.params.poll, conn.params.datetime, trust_metric_ids) |> Enum.map(fn(contribution) ->
+	def contributions(conn, %{:poll => poll, :datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
+		contributions = Result.calculate_contributions(poll, datetime, trust_metric_ids) |> Enum.map(fn(contribution) ->
 			%{
 				:datetime => Timex.format!(contribution.datetime, "{ISO}"),
 				:score => contribution.score,

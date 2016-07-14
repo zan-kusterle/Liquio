@@ -28,8 +28,8 @@ defmodule Democracy.IdentityController do
 		end
 	end
 
-	def show(conn, _params) do
-		identity = conn.params.identity |> Repo.preload([:trust_metric_poll_votes])
+	def show(conn, %{:identity => identity}) do
+		identity = identity |> Repo.preload([:trust_metric_poll_votes])
 		render(conn, "show.json", identity: identity)
 	end
 

@@ -28,13 +28,12 @@ defmodule Democracy.HtmlIdentityController do
 		end
 	end
 
-	def show(conn, _params) do
-		identity_id = conn.params.identity.id
+	def show(conn, %{:identity => identity}) do
 		current_identity = Guardian.Plug.current_resource(conn)
-		is_me = current_identity != nil and identity_id == current_identity.id
+		is_me = current_identity != nil and identity.id == current_identity.id
 		own_is_human_vote =
 			if current_identity != nil do
-				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: conn.params.identity.trust_metric_poll_id, is_last: true)
+				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: identity.trust_metric_poll_id, is_last: true)
 				if vote != nil and vote.data == nil do vote = nil end
 				vote
 			else
@@ -43,14 +42,14 @@ defmodule Democracy.HtmlIdentityController do
 
 		num_votes = Repo.one(
 			from(v in Vote,
-			where: v.identity_id == ^identity_id
+			where: v.identity_id == ^identity.id
 				and v.is_last == true
 				and not is_nil(v.data),
 			select: count(v.id))
 		)
 
 		delegation = if current_identity != nil and not is_me do
-			delegation = Repo.get_by(Delegation, %{from_identity_id: current_identity.id, to_identity_id: conn.params.identity.id, is_last: true})
+			delegation = Repo.get_by(Delegation, %{from_identity_id: current_identity.id, to_identity_id: identity.id, is_last: true})
 			if delegation != nil and delegation.data != nil do
 				delegation
 			else
@@ -60,19 +59,19 @@ defmodule Democracy.HtmlIdentityController do
 			nil
 		end
 
-		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity_id and d.is_last == true and not is_nil(d.data))
+		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
 
-		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity_id and d.is_last == true and not is_nil(d.data))
+		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
 		
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "show.html",
-			title: conn.params.identity.name,
-			identity: conn.params.identity,
+			title: identity.name,
+			identity: identity,
 			is_me: is_me,
 			own_is_human_vote: own_is_human_vote,
 			num_votes: num_votes,

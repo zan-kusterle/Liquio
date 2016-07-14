@@ -78,6 +78,6 @@ defmodule Democracy.HtmlPollController do
 			poll: poll
 				|> Map.put(:results, Result.calculate(poll, datetime, trust_metric_ids, nil, 1))
 				|> Map.put(:title, Poll.title(poll)),
-			references: Reference.for_poll(conn.params.poll, datetime, nil, trust_metric_ids)
+			references: Reference.for_poll(poll, datetime, nil, trust_metric_ids)
 	end
 end

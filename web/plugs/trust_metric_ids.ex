@@ -11,7 +11,7 @@ defmodule Democracy.Plugs.TrustMetricIds do
 		end
 		case TrustMetric.get(url) do
         	{:ok, trust_identity_ids} ->
-				%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => url})}
+				%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => trust_identity_ids})}
 			{:error, message} ->
 				conn
 				|> Phoenix.Controller.put_flash(:error, message)
