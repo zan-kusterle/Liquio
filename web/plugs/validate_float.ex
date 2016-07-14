@@ -8,12 +8,17 @@ defmodule Democracy.Plugs.ValidateFloat do
 		is_valid = case func do
 			">" ->
 				x > constant
+			">=" ->
+				x >= constant
 		end
 
 		if not is_valid do
 			conn
             |> Phoenix.Controller.put_flash(:error, message)
+            |> Democracy.Plugs.RedirectBack.redirect_back
             |> halt
+        else
+        	conn
 		end
 	end
 end

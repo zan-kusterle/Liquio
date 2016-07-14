@@ -4,7 +4,11 @@ defmodule Democracy.Plugs.RedirectBack do
 	def init(default), do: default
 
 	def call(conn, _args) do
-		case List.keyfind(conn.req_headers, "referer", 0) do
+		redirect_back(conn)
+	end
+
+	def redirect_back(conn) do
+  		case List.keyfind(conn.req_headers, "referer", 0) do
 			{"referer", referer} ->
 				url = URI.parse(referer)
 				conn

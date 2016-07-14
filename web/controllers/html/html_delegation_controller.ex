@@ -7,6 +7,7 @@ defmodule Democracy.HtmlDelegationController do
 	plug Democracy.Plugs.EnsureCurrentIdentity
 	plug Democracy.Plugs.QueryId, {:identity, Identity, "html_identity_id"}
 	plug Democracy.Plugs.FloatQuery, {:weight, "weight", "Delegation weight must be a number"}
+	plug Democracy.Plugs.ValidateFloat, {:weight, ">=", 0, "Weight must not be negative"}
 	plug Democracy.Plugs.TopicsQuery, {:topics, "topics"}
 	plug Democracy.Plugs.RedirectBack
 
