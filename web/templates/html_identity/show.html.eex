@@ -55,8 +55,11 @@
 <% end %>
 
 <div class="section-title">List of delegations from this identity</div>
-<div class="section-title">List of delegations to this identity</div>
+<%= for delegation <- @delegations_from do %>
+	<a href="/identities/<%= delegation.to_identity.id %>"><%= delegation.to_identity.name %></a>
+<% end %>
 
+<div class="section-title">List of delegations to this identity</div>
 <%= for delegation <- @delegations_to do %>
-	<%= delegation.from_identity.name %>
+	<a href="/identities/<%= delegation.from_identity.id %>"><%= delegation.from_identity.name %></a>
 <% end %>
