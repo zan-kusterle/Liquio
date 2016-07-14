@@ -49,6 +49,17 @@ defmodule Democracy.HtmlIdentityController do
 			select: count(v.id))
 		)
 
+		delegation = if current_identity != nil and not is_me do
+			delegation = Repo.get_by(Delegation, %{from_identity_id: current_identity.id, to_identity_id: conn.assigns.identity.id, is_last: true})
+			if delegation != nil and delegation.data != nil do
+				delegation
+			else
+				nil
+			end
+		else
+			nil
+		end
+
 		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity_id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
@@ -65,6 +76,7 @@ defmodule Democracy.HtmlIdentityController do
 			own_is_human_vote: own_is_human_vote,
 			num_votes: num_votes,
 			is_trusted: true,
+			delegation: delegation,
 			delegations_to: delegations_to,
 			delegations_from: delegations_from
 	end

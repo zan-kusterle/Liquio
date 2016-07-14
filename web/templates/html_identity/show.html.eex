@@ -40,12 +40,12 @@
 
 		<div class="preference">
 			<label>Weight</label>
-			<input name="weight" />
+			<input name="weight"<%= if @delegation do %> value="<%= @delegation.data.weight %>"<% end %> />
 		</div>
 
 		<div class="preference">
 			<label>For topics</label>
-			<input name="topics" />
+			<input name="topics"<%= if @delegation do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> />
 		</div>
 
 		<button type="submit">Set delegation</button>
