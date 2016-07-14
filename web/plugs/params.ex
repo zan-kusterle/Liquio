@@ -31,8 +31,10 @@ defmodule Democracy.Plugs.Params do
 	end
 
 	defmacro with_params(list, func) do
+		name = func |> elem(2) |> Enum.at(0) |> elem(0)
+		IO.inspect name
 		quote do
-			plug Democracy.Plugs.Params, unquote(list) when unquote("action") in [:show]
+			plug Democracy.Plugs.Params, unquote(list) #when unquote(:action) in [unquote(name)]
 			unquote(func)
 		end
 	end
