@@ -75,4 +75,13 @@ defmodule Democracy.Vote do
 			Repo.update! Ecto.Changeset.change current_last, is_last: false
 		end
 	end
+
+	def current_by(poll, identity) do
+		vote = Repo.get_by(Vote, identity_id: identity.id, poll_id: poll.id, is_last: true)
+        if vote != nil and vote.data != nil do
+        	vote
+        else
+        	nil
+        end
+	end
 end

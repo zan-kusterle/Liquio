@@ -41,6 +41,11 @@ defmodule Democracy.Poll do
 		})
 	end
 
+	def preload(poll) do
+		poll
+		|> Map.put(:title, Poll.title(poll))
+	end
+
 	def search(query, search_term) do
 		from(p in query,
 		where: fragment("? % ?", p.title, ^search_term),

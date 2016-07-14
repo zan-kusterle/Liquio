@@ -14,16 +14,15 @@ defmodule Democracy.HtmlVoteController do
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:index]
 
 	def index(conn, %{:poll => poll, :user => user, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
-		references = Reference.for_poll(poll, datetime, vote_weight_halving_days, trust_metric_ids)
-		results = Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
-		poll = poll
-		|> Map.put(:results, results)
-		|> Map.put(:title, Poll.title(poll))
-		vote = Repo.get_by(Vote, identity_id: user.id, poll_id: poll.id, is_last: true)
-		if vote != nil and vote.data == nil do vote = nil end
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render "index.html", title: poll.title, poll: poll, references: references, own_vote: vote
+		|> render "index.html",
+			title: poll.title || "Liquio",
+			poll: poll
+				|> Poll.preload
+				|> Map.put(:results, Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)),
+			references:  Reference.for_poll(poll, datetime, vote_weight_halving_days, trust_metric_ids),
+			own_vote: Vote.current_by(poll, user)
 	end
 
 	def create(conn, %{:poll => poll, :user => user, "score" => score_text}) do
