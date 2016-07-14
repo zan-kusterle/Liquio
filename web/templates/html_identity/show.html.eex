@@ -4,7 +4,9 @@
 </div>
 
 <%= if @is_me do %>
-	<form>
+	<for method="POST">
+		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+
 		<div class="preference">
 			<label>Vote weight halving days</label>
 			<input name="vote_weight_halving_days" />
@@ -33,7 +35,9 @@
 	<div class="section-title">Is this identity human?</div>
 	<%= render Democracy.HtmlPollView, "cast_vote.html", poll_id: @identity.trust_metric_poll_id, own_vote: @own_is_human_vote %>
 
-	<form>
+	<form method="POST" action="/identities/<%= @identity.id %>/delegations">
+		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+
 		<div class="preference">
 			<label>Weight</label>
 			<input name="weight" />
@@ -43,6 +47,10 @@
 			<label>For topics</label>
 			<input name="topics" />
 		</div>
+
+		<button type="submit">Set delegation</button>
+
+		<button type="submit" name="weight" value="0">Remove delegation</button>
 	</form>
 <% end %>
 

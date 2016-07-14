@@ -27,3 +27,6 @@ erl_crash.dump
 
 /*.data
 dev_trust_metric.txt
+
+.idea/*
+democracy.iml

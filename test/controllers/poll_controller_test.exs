@@ -2,7 +2,7 @@ defmodule Democracy.PollControllerTest do
 	use Democracy.ConnCase
 
 	alias Democracy.Poll
-	@valid_attrs %{title: "Test title", topics: ["politics"]}
+	@valid_attrs %{title: "Test title", topics: ["politics"], choice_type: "probability"}
 	@invalid_attrs %{title: nil}
 
 	setup %{conn: conn} do
@@ -16,6 +16,7 @@ defmodule Democracy.PollControllerTest do
 		assert json_response(conn, 200)["data"] |> Map.drop(["id"]) == %{
 			"title" => @valid_attrs.title,
 			"topics" => @valid_attrs.topics,
+			"choice_type" => @valid_attrs.choice_type,
 			"kind" => "custom",
 			"results" => %{"count" => 0, "mean" => 0.0, "total" => 0}
 		}
