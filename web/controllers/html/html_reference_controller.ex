@@ -1,9 +1,5 @@
 defmodule Democracy.HtmlReferenceController do
 	use Democracy.Web, :controller
-	alias Democracy.Poll
-	alias Democracy.Reference
-	alias Democracy.Result
-	alias Democracy.Vote
 
 	def index(conn, %{"html_poll_id" => poll_id, "for_choice" => for_choice, "reference_poll_id" => reference_poll_url}) do
 		url = URI.parse(reference_poll_url)
@@ -18,7 +14,7 @@ defmodule Democracy.HtmlReferenceController do
 	end
 
 	def is_poll(poll) do poll.kind == "custom" end
-	plug Democracy.Plugs.Params, [
+	with_params([
 		{&Democracy.Plugs.CurrentUser.handle/2, :user, [require: false]},
     	{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id", validator: &Democracy.HtmlReferenceController.is_poll/1]},
     	{&Democracy.Plugs.ItemParam.handle/2, :reference_poll, [schema: Poll, name: "id"]},
@@ -26,7 +22,7 @@ defmodule Democracy.HtmlReferenceController do
 		{&Democracy.Plugs.DatetimeParam.handle/2, :datetime, [name: "datetime"]},
         {&Democracy.Plugs.VoteWeightHalvingDaysParam.handle/2, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
         {&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]}
-	] when action in [:show]
+	],
 	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll, :for_choice => for_choice, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		reference = Reference.get(poll, reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
@@ -39,5 +35,5 @@ defmodule Democracy.HtmlReferenceController do
 			reference: reference,
 			for_choice: for_choice,
 			own_vote: Vote.current_by(reference.approval_poll, user)
-	end
+	end)
 end

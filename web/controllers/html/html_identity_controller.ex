@@ -1,8 +1,5 @@
 defmodule Democracy.HtmlIdentityController do
 	use Democracy.Web, :controller
-	alias Democracy.Identity
-	alias Democracy.Vote
-	alias Democracy.Delegation
 
 	def new(conn, _params) do
 		conn
@@ -21,9 +18,9 @@ defmodule Democracy.HtmlIdentityController do
 		end)
 	end
 
-	plug Democracy.Plugs.Params, [
+	with_params([
 		{&Democracy.Plugs.ItemParam.handle/2, :identity, [schema: Identity, name: "id"]}
-	] when action in [:show]
+	],
 	def show(conn, %{:identity => identity}) do
 		current_identity = Guardian.Plug.current_resource(conn)
 		is_me = current_identity != nil and identity.id == current_identity.id
@@ -75,5 +72,5 @@ defmodule Democracy.HtmlIdentityController do
 			delegation: delegation,
 			delegations_to: delegations_to,
 			delegations_from: delegations_from)
-	end
+	end)
 end

@@ -41,6 +41,15 @@ defmodule Democracy.Web do
 
       import Democracy.Plugs.Params, only: [with_params: 2]
 
+		alias Democracy.Plugs
+		alias Democracy.Identity
+		alias Democracy.Delegation
+		alias Democracy.Vote
+		alias Democracy.Poll
+		alias Democracy.Reference
+		alias Democracy.Result
+
+
         def redirect_back(conn) do
 			case List.keyfind(conn.req_headers, "referer", 0) do
 				{"referer", referer} ->

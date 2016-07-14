@@ -1,8 +1,5 @@
 defmodule Democracy.HtmlDelegationController do
 	use Democracy.Web, :controller
-	alias Democracy.Identity
-	alias Democracy.Delegation
-	alias Democracy.Plugs
 
 	with_params([
 		{&Plugs.CurrentUser.handle/2, :user, [require: true]},
