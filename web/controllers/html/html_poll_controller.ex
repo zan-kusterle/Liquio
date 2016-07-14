@@ -9,30 +9,30 @@ defmodule Democracy.HtmlPollController do
 		|> render "new.html"
 	end
 
-	plug Democracy.Plugs.Params, [
+	with_params([
 		{&Democracy.Plugs.TopicsParam.handle/2, :topics, [name: "topics"]},
 		{&Democracy.Plugs.ChoiceTypeParam.handle/2, :choice_type, [name: "choice_type", topics_name: :topics]},
 		{&Democracy.Plugs.TitleParam.handle/2, :title, [name: "title"]}
-	] when action in [:create]
+	],
 	def create(conn, %{:choice_type => choice_type, :title => title, :topics => topics}) do
 		poll = Poll.create(choice_type, title, topics)
 		conn
 		|> put_flash(:info, "Done, share the url so others can vote")
 		|> redirect to: html_poll_path(conn, :show, poll.id)
-	end
+	end)
 
 	def show(conn, %{"id" => "random"}) do
 		conn
 		|> redirect to: html_poll_path(conn, :show, Poll.get_random().id)
 	end
 
-	plug Democracy.Plugs.Params, [
+	with_params([
 		{&Democracy.Plugs.CurrentUser.handle/2, :user, [require: false]},
 		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "id"]},
 		{&Democracy.Plugs.DatetimeParam.handle/2, :datetime, [name: "datetime"]},
 		{&Democracy.Plugs.VoteWeightHalvingDaysParam.handle/2, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
 		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]},
-	] when action in [:show]
+	],
 	def show(conn, params = %{:user => user, :poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
@@ -41,14 +41,14 @@ defmodule Democracy.HtmlPollController do
 			is_logged_in: user != nil,
 			poll: prepare_poll(poll, params),
 			references: Reference.for_poll(poll, datetime, vote_weight_halving_days, trust_metric_ids)
-	end
+	end)
 
-	plug Democracy.Plugs.Params, [
+	with_params([
 		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
 		{&Democracy.Plugs.DatetimeParam.handle/2, :datetime, [name: "datetime"]},
 		{&Democracy.Plugs.VoteWeightHalvingDaysParam.handle/2, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
 		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]},
-	] when action in [:details]
+	],
 	def details(conn, params = %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
@@ -58,13 +58,13 @@ defmodule Democracy.HtmlPollController do
 			poll: prepare_poll(poll, params),
 			contributions: prepare_contributions(poll, params),
 			results_with_datetime: prepare_results_with_datetime(poll, 30, params)
-	end
+	end)
 
-	plug Democracy.Plugs.Params, [
+	plug :put_layout, "minimal.html" when action in [:embed]
+	with_params([
 		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
 		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]},
-	] when action in [:embed]
-	plug :put_layout, "minimal.html" when action in [:embed]
+	],
 	def embed(conn, params = %{:poll => poll, :trust_metric_ids => trust_metric_ids}) do
 		params = Map.marge(params, %{
 			:datetime =>  Timex.DateTime.now,
@@ -75,7 +75,7 @@ defmodule Democracy.HtmlPollController do
 		|> render "embed.html",
 			poll: prepare_poll(poll, params),
 			references: prepare_references(poll, params)
-	end
+	end)
 
 	defp prepare_poll(poll, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		poll

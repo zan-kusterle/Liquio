@@ -4,21 +4,13 @@ defmodule Democracy.HtmlDelegationController do
 	alias Democracy.Delegation
 	alias Democracy.Plugs
 
-	import Democracy.Plugs.Params, only: [with_params: 2]
-
 	with_params([
 		{&Plugs.CurrentUser.handle/2, :user, [require: true]},
 		{&Plugs.ItemParam.handle/2, :identity, [schema: Identity, name: "html_identity_id"]},
 		{&Plugs.NumberParam.handle/2, :weight, [name: "weight", error: "Delegation weight must be a number"]},
 		{&Plugs.TopicsParam.handle/2, :topics, [name: "topics"]}
 	],
-	def create(conn, p) do
-	IO.inspect p
-		%{:user => from_identity, :identity => to_identity, :weight => weight, :topics => topics} = p
-		expr = quote do: Democracy.Plugs.Params.with_params([], def a do 1 end)
-		res  = Macro.expand_once(expr, __ENV__)
-		IO.puts Macro.to_string(res)
-
+	def create(conn, %{:user => from_identity, :identity => to_identity, :weight => weight, :topics => topics}) do
 		if weight == 0 do
 			Delegation.unset(from_identity, to_identity)
 			conn
