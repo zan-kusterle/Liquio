@@ -12,6 +12,8 @@ defmodule Democracy.HtmlVoteController do
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"} when action in [:index]
 	plug Democracy.Plugs.TrustMetricIds, {:trust_metric_ids, "trust_metric_url"} when action in [:index]
 	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:index]
+	plug Democracy.Plugs.FloatQuery, {:score, "score"} when action in [:create]
+
 
 	def index(conn, %{:poll => poll, :user => user, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		conn
@@ -25,18 +27,17 @@ defmodule Democracy.HtmlVoteController do
 			own_vote: Vote.current_by(poll, user)
 	end
 
-	def create(conn, %{:poll => poll, :user => user, "score" => score_text}) do
-		{message} = case Float.parse(score_text) do
-			{score, _} ->
-				if poll.choice_type == "probability" and (score < 0 or score > 1) do
-					{"Choice must be between 0 and 1."}
-				else
-					Vote.set(poll, user, score)
-					{"Your vote is now live."}
-				end
-			:error ->
-				Vote.delete(poll, user)
-				{"You no longer have a vote in this poll."}
+	def create(conn, %{:poll => poll, :user => user, :score => score}) do
+		{message} = if score != nil do
+			if poll.choice_type == "probability" and (score < 0 or score > 1) do
+				{"Choice must be between 0 and 1."}
+			else
+				Vote.set(poll, user, score)
+				{"Your vote is now live."}
+			end
+		else
+			Vote.delete(poll, user)
+			{"You no longer have a vote in this poll."}
 		end
 
 		conn

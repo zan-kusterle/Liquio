@@ -8,7 +8,8 @@ defmodule Democracy.HtmlReferenceController do
 	alias Democracy.Vote
 
 	plug Democracy.Plugs.EnsureCurrentIdentity
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id"}
+	def is_poll(poll) do poll.kind == "custom" end
+	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id", &Democracy.HtmlReferenceController.is_poll/1}
 	plug Democracy.Plugs.QueryId, {:reference_poll, Poll, "id"} when action in [:show]
 	plug Democracy.Plugs.QueryId, {:reference_poll, Poll, "html_reference_id"} when action in [:create]
 	plug Democracy.Plugs.Datetime, {:datetime, "datetime"} when action in [:show]
@@ -24,7 +25,6 @@ defmodule Democracy.HtmlReferenceController do
 			else
 				reference_poll_url
 			end
-
 		conn
 		|> redirect to: html_poll_html_reference_path(conn, :show, poll.id, reference_poll_id, for_choice: to_string(for_choice))
 	end
@@ -32,36 +32,14 @@ defmodule Democracy.HtmlReferenceController do
 	def show(conn, %{:poll => poll, :user => user, :reference_poll => reference_poll, :for_choice => for_choice, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		reference = Reference.get(poll, reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
-		if reference.poll.kind == "custom" do
-			results = Result.calculate(reference.approval_poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
-			reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
-			vote = Repo.get_by(Vote, identity_id: user.id, poll_id: reference.approval_poll.id, is_last: true)
-			if vote != nil and vote.data == nil do vote = nil end
-			conn
-			|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-			|> render("show.html", title: reference.poll.title, reference: reference, for_choice: for_choice, own_vote: vote)
-		else
-			conn
-		|> put_status(:not_found)
-		|> render(Democracy.ErrorView, "error.json", message: "Does not exist")
-		end
-	end
-
-	def create(conn, %{:poll => poll, :user => user, :reference_poll => reference_poll, :for_choice => for_choice, "score" => score_text}) do
-		reference = Reference.get(poll, reference_poll, for_choice)
-		|> Repo.preload([:approval_poll, :reference_poll, :poll])
-
-		{message} = case Float.parse(score_text) do
-			{score, _} ->
-				Vote.set(reference.approval_poll, user, score)
-				{"Your vote is now live."}
-			:error ->
-				Vote.delete(reference.approval_poll, user)
-				{"You no longer have a vote in this poll."}
-		end
-
+		results = Result.calculate(reference.approval_poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
+		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 		conn
-		|> put_flash(:info, message)
-		|> redirect to: html_poll_html_reference_path(conn, :show, poll.id, reference_poll.id, for_choice: to_string(for_choice))
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+		|> render "show.html",
+			title: poll.title || "Liquio",
+			reference: reference,
+			for_choice: for_choice,
+			own_vote: Vote.current_by(reference.approval_poll, user)
 	end
 end

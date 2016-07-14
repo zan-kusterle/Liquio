@@ -6,15 +6,13 @@ defmodule Democracy.Plugs.FloatQuery do
 	def call(conn, {assign_atom, query_name}) do
 		value = Map.get(conn.params, query_name)
 		if value == nil or String.length(value) == 0 do
-			send_resp(conn, :bad_request, "Unable to parse float from param #{query_name}")
-			|> halt
+			%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => nil})}
 		else
 			case Float.parse(value) do
 				{value, _} ->
 					%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => value})}
 				:error ->
-					send_resp(conn, :bad_request, "Unable to parse float from param #{query_name}")
-					|> halt
+					%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{assign_atom => nil})}
 			end
 		end
 	end

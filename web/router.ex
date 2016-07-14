@@ -34,9 +34,7 @@ defmodule Democracy.Router do
 		resources "/polls", HtmlPollController, only: [:show, :new, :create] do
 			get "/details", HtmlPollController, :details
 			resources "/vote", HtmlVoteController, only: [:index, :create, :delete]
-			resources "/references", HtmlReferenceController, only: [:index, :show] do
-				post "", HtmlReferenceController, :create
-			end
+			resources "/references", HtmlReferenceController, only: [:index, :show]
 			get "/embed", HtmlPollController, :embed
 		end
 
