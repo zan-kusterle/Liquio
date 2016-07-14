@@ -5,8 +5,6 @@ defmodule Democracy.HtmlIdentityController do
 	alias Democracy.Vote
 	alias Democracy.Delegation
 
-	plug Democracy.Plugs.QueryId, {:identity, Identity, "id"} when action in [:show]
-
 	def new(conn, _params) do
 		conn
 		|> render("new.html")
@@ -15,7 +13,7 @@ defmodule Democracy.HtmlIdentityController do
 	def create(conn, params) do
 		token = Identity.generate_token()
 		changeset = Identity.changeset(%Identity{token: token}, params)
-		
+
 		Identity.create(changeset) |> handle_errors(conn, fn identity ->
 			conn
 			|> Guardian.Plug.sign_in(identity)
@@ -24,6 +22,9 @@ defmodule Democracy.HtmlIdentityController do
 		end)
 	end
 
+	plug Democracy.Plugs.Params, [
+		{&Democracy.Plugs.ItemParam.handle/2, :identity, [schema: Identity, name: "id"]}
+	] when action in [:show]
 	def show(conn, %{:identity => identity}) do
 		current_identity = Guardian.Plug.current_resource(conn)
 		is_me = current_identity != nil and identity.id == current_identity.id

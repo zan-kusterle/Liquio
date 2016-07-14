@@ -3,18 +3,16 @@ defmodule Democracy.HtmlVoteController do
 
 	alias Democracy.Poll
 	alias Democracy.Reference
-	alias Democracy.TrustMetric
 	alias Democracy.Result
 	alias Democracy.Vote
 
-	plug Democracy.Plugs.EnsureCurrentIdentity
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "html_poll_id"}
-	plug Democracy.Plugs.Datetime, {:datetime, "datetime"} when action in [:index]
-	plug Democracy.Plugs.TrustMetricIds, {:trust_metric_ids, "trust_metric_url"} when action in [:index]
-	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:index]
-	plug Democracy.Plugs.FloatQuery, {:score, "score"} when action in [:create]
-
-
+	plug Democracy.Plugs.Params, [
+		{&Democracy.Plugs.CurrentUser.handle/2, :user, [require: false]},
+		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
+		{&Democracy.Plugs.DatetimeParam.handle/2, :datetime, [name: "datetime"]},
+		{&Democracy.Plugs.VoteWeightHalvingDaysParam.handle/2, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]}
+	] when action in [:index]
 	def index(conn, %{:poll => poll, :user => user, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
@@ -27,7 +25,12 @@ defmodule Democracy.HtmlVoteController do
 			own_vote: Vote.current_by(poll, user)
 	end
 
-	def create(conn, %{:poll => poll, :user => user, :score => score}) do
+	plug Democracy.Plugs.Params, [
+		{&Democracy.Plugs.CurrentUser.handle/2, :user, [require: false]},
+		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
+		{&Democracy.Plugs.NumberParam.handle/2, :score, [name: "score"]}
+	] when action in [:index]
+	def create(conn, %{:user => user, :poll => poll, :score => score}) do
 		{message} = if score != nil do
 			if poll.choice_type == "probability" and (score < 0 or score > 1) do
 				{"Choice must be between 0 and 1."}
