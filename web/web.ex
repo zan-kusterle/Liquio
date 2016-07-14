@@ -63,7 +63,6 @@ defmodule Democracy.Web do
 		end
 
 		  def handle_errors({:error, changeset}, conn, _func) do
-		  IO.inspect changeset
 			conn
 			|> Phoenix.Controller.put_flash(:error, "Couldn't create identity")
 			|> Phoenix.Controller.redirect to: html_identity_path(conn, :new)
