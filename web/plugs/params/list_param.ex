@@ -3,7 +3,7 @@ defmodule Democracy.Plugs.ListParam do
 		if is_bitstring(value) do
 			value = value
 			|> String.split(",")
-           	|> Enum.map(&String.trim/1)
+			|> Enum.map(&String.trim/1)
 		end
 		if is_list(value) do
 			{item_handler_module, item_handler_opts} = opts[:item]
