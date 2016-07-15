@@ -13,7 +13,7 @@ defmodule Democracy.Plugs.Params do
 			case first_error_or_result(conn, jobs) do
 				{:ok, params} ->
 					%{conn | params: conn.params |> Map.merge(params)}
-				{:error, status, message} ->
+				{name, {:error, status, message}} ->
 					conn
 					|> put_status(status)
 					|> Phoenix.Controller.put_flash(:error, message)
