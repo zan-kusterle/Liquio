@@ -1,6 +1,6 @@
 defmodule Democracy.Plugs.ItemParam do
 	def handle(conn, value, opts) do
-		item = Democracy.Repo.get(opts[:schema], conn.params[opts[:name]])
+		item = Democracy.Repo.get(opts[:schema], value)
 		if item != nil do
 			if validator = opts[:validator] do
 				if validator.(item) do
