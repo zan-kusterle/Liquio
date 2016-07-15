@@ -73,6 +73,8 @@ defmodule Democracy.Poll do
 		end
 	end
 
+	def is_custom(poll) do poll.kind == "custom" end
+
 	def get_random() do
 		# TODO: More likely to choose popular polls
 		from(p in Poll,
