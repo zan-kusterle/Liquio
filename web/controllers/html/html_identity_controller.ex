@@ -18,9 +18,9 @@ defmodule Democracy.HtmlIdentityController do
 		end)
 	end
 
-	with_params([
-		{Plugs.ItemParam, :identity, [schema: Identity, name: "id"]}
-	],
+	with_params(%{
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
+	},
 	def show(conn, %{:identity => identity}) do
 		current_identity = Guardian.Plug.current_resource(conn)
 		is_me = current_identity != nil and identity.id == current_identity.id

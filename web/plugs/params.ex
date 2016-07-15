@@ -3,31 +3,22 @@ defmodule Democracy.Plugs.Params do
 
 	def init(default), do: default
 
-	def call(conn, {handler, list}) do
-		if handler == nil or conn.private.phoenix_action == handler do
-			results = Enum.map(list, fn({handle_module, name, opts}) ->
-				result = handle_module.handle(conn, opts)
-				case result do
-					{:ok, value} ->
-						{:ok, name, [value: value]}
-					{:error, status, message} ->
-						{:error, name, [status: status, message: message]}
-				end
+	def call(conn, {action, map}) do
+		if action == nil or conn.private.phoenix_action == action do
+			names = Map.keys(map)
+			jobs = Enum.map(names, fn(name) ->
+				{handler_module, opts} = map[name]
+				{name, {handler_module, Map.get(conn.params, opts[:name]), opts}}
 			end)
-			errors = Enum.filter(results, fn({status, name, data}) -> status == :error end)
-			if Enum.count(errors) > 0 do
-				{:error, name, data} = Enum.at(errors, 0)
-
-				conn
-				|> put_status(data[:status])
-				|> Phoenix.Controller.put_flash(:error, message: data[:message])
-				|> Phoenix.Controller.redirect(to: "/polls/4")
-				|> halt
-			else
-				params = for {:ok, name, data} <- results, into: %{} do
-					{name, data[:value]}
-				end
-				%{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(params)}
+			case first_error_or_result(conn, jobs) do
+				{:ok, params} ->
+					%{conn | params: conn.params |> Map.merge(params)}
+				{:error, status, message} ->
+					conn
+					|> put_status(status)
+					|> Phoenix.Controller.put_flash(:error, message)
+					|> Phoenix.Controller.redirect(to: "/polls/4")
+					|> halt
 			end
 		else
 			conn
@@ -43,6 +34,18 @@ defmodule Democracy.Plugs.Params do
 		quote do
 			plug Democracy.Plugs.Params, {unquote(name), unquote(list)}
 			unquote(func)
+		end
+	end
+
+	def first_error_or_result(conn, handlers) do
+		results = Enum.map(handlers, fn({name, {handler, value, opts}}) ->
+			{name, handler.handle(conn, value, opts)}
+		end)
+		error_results = results |> Enum.filter(& elem(&1, 0) == :error)
+		if Enum.empty?(error_results) do
+			{:ok, Enum.map(results, fn({name, {:ok, value}}) -> {name, value} end) |> Enum.into(%{})}
+		else
+			Enum.at(error_results, 0)
 		end
 	end
 end

@@ -1,6 +1,5 @@
 defmodule Democracy.Plugs.ChoiceTypeParam do
-	def handle(conn, opts) do
-		value = Map.get(conn.params, opts[:name], "probability")
+	def handle(conn, value, opts) do
 		if value == "from_topics" do
 			topics = conn.params[opts[:topics_name]]
 			value = if Enum.member?(topics, "quantity") do

@@ -1,8 +1,6 @@
 defmodule Democracy.LoginController do
 	use Democracy.Web, :controller
 
-	alias Democracy.Identity
-
 	plug :scrub_params, "identity" when action in [:create]
 
 	def create(conn, %{"identity" => %{"username" => username, "password" => password}}) do

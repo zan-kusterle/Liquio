@@ -21,7 +21,7 @@ defmodule Democracy.PollController do
 	with_params([
 		{Plugs.ItemParam, :poll, [schema: Poll, name: "id"]},
 		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
-		{Plugs.VoteWeightHalvingDays, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+		{Plugs.IntegerParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
 		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_ids"]},
 	],
 	def show(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do

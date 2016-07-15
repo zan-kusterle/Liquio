@@ -13,15 +13,15 @@ defmodule Democracy.HtmlReferenceController do
 		|> redirect to: html_poll_html_reference_path(conn, :show, poll_id, reference_poll_id, for_choice: for_choice)
 	end
 
-	with_params([
-		{Plugs.CurrentUser, :user, [require: false]},
-    	{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
-    	{Plugs.ItemParam, :reference_poll, [schema: Poll, name: "id"]},
-		{Plugs.NumberParam, :for_choice, [name: "for_choice", error: "For choice must be a number"]},
-		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
-        {Plugs.IntegerParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
-        {Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]}
-	],
+	with_params(%{
+		:user => {Plugs.CurrentUser, [require: false]},
+    	:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
+    	:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
+		:for_choice => {Plugs.NumberParam, [name: "for_choice", error: "For choice must be a number"]},
+		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
+        :vote_weight_halving_days => {Plugs.IntegerParam, [name: "vote_weight_halving_days"]},
+        :trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]}
+	},
 	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll, :for_choice => for_choice, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		reference = Reference.get(poll, reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])

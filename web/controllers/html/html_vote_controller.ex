@@ -1,13 +1,13 @@
 defmodule Democracy.HtmlVoteController do
 	use Democracy.Web, :controller
 
-	with_params([
-		{Plugs.CurrentUser, :user, [require: false]},
-		{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id"]},
-		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
-		{Plugs.IntegerParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
-		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]}
-	],
+	with_params(%{
+		:user => {Plugs.CurrentUser, [require: false]},
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
+		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
+		:vote_weight_halving_days => {Plugs.IntegerParam, [name: "vote_weight_halving_days"]},
+		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]}
+	},
 	def index(conn, %{:poll => poll, :user => user, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
@@ -20,18 +20,18 @@ defmodule Democracy.HtmlVoteController do
 			own_vote: Vote.current_by(poll, user)
 	end)
 
-	with_params([
-		{Plugs.CurrentUser, :user, [require: false]},
-		{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id"]},
-		{Plugs.NumberParam, :score, [name: "score"]}
-	],
+	with_params(%{
+		:user => {Plugs.CurrentUser, [require: false]},
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
+		:score => {Plugs.NumberParam, [name: "score"]}
+	},
 	def create(conn, %{:user => user, :poll => poll, :score => score}) do
 		message =
+			# TODO: Use changeset to verify this constraint
 			if score != nil do
 				if poll.choice_type == "probability" and (score < 0 or score > 1) do
 					"Choice must be between 0 and 1."
 				else
-					# TODO: Use changeset to verify above constraint
 					Vote.set(poll, user, score)
 					"Your vote is now live."
 				end

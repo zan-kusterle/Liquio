@@ -1,6 +1,5 @@
 defmodule Democracy.Plugs.TrustMetricIdsParam do
-	def handle(conn, opts) do
-		url = Map.get(conn.params, opts[:name])
+	def handle(conn, url, opts) do
 		if url == nil or String.length(url) == 0 do
 			url = Democracy.TrustMetric.default_trust_metric_url()
 		end

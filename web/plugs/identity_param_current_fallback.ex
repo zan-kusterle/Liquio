@@ -1,6 +1,6 @@
 defmodule Democracy.Plugs.IdentityParamCurrentFallback do
-	def handle(conn, opts) do
-		item = Democracy.Repo.get(Identity, conn.params[opts[:name]])
+	def handle(conn, value, opts) do
+		item = Democracy.Repo.get(Identity, value)
 		if item != nil do
 			{:ok, item}
 		else
