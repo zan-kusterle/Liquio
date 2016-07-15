@@ -51,7 +51,7 @@ defmodule Democracy.HtmlPollController do
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "details.html",
 			title: Poll.title(poll),
-			datetime_text: Timex.format!(datetime, "{D}.{M}.{YYYY}"),
+			datetime_text: Timex.format!(datetime, "{ISOdate}"),
 			poll: prepare_poll(poll, params),
 			contributions: prepare_contributions(poll, params),
 			results_with_datetime: prepare_results_with_datetime(poll, 30, params)
