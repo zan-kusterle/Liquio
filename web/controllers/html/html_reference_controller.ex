@@ -19,7 +19,7 @@ defmodule Democracy.HtmlReferenceController do
     	{Plugs.ItemParam, :reference_poll, [schema: Poll, name: "id"]},
 		{Plugs.NumberParam, :for_choice, [name: "for_choice", error: "For choice must be a number"]},
 		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
-        {Plugs.VoteWeightHalvingDaysParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+        {Plugs.IntegerParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
         {Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]}
 	],
 	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll, :for_choice => for_choice, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do

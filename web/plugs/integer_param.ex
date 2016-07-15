@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.VoteWeightHalvingDaysParam do
+defmodule Democracy.Plugs.IntegerParam do
 	def handle(conn, opts) do
 		value = if Map.get(conn.params, opts[:name]) do
 			{value, _} = Integer.parse(conn.params[opts[:name]])

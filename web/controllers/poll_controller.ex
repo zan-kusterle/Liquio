@@ -25,10 +25,6 @@ defmodule Democracy.PollController do
 		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_ids"]},
 	],
 	def show(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
-		# TODO: Get polls in same category (for every category poll where current category is proposed calculate best category)
-		# Do this by periodically updating :group_title field on kind=custom polls. Use default trust metric here, because the category can be custom changed by each user if they want (this is just the default)
-		# TODO: Give option to select a different list (it's automatically saved and used from then on, with reset option)
-		# TODO: Pick the one with the most voting power. If it is the same as poll then show it, otherwise return a redirect response.
 		results = Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
 		conn
 		|> render("show.json", poll: poll |> Map.put(:results, results))

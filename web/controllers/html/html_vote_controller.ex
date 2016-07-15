@@ -5,7 +5,7 @@ defmodule Democracy.HtmlVoteController do
 		{Plugs.CurrentUser, :user, [require: false]},
 		{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id"]},
 		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
-		{Plugs.VoteWeightHalvingDaysParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+		{Plugs.IntegerParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
 		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]}
 	],
 	def index(conn, %{:poll => poll, :user => user, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
