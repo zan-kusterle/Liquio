@@ -18,23 +18,23 @@ defmodule Democracy.PollController do
 		end
 	end
 
-	with_params([
-		{Plugs.ItemParam, :poll, [schema: Poll, name: "id"]},
-		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
-		{Plugs.IntegerParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
-		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_ids"]},
-	],
+	with_params(%{
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
+		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
+		:vote_weight_halving_days => {Plugs.IntegerParam, [name: "vote_weight_halving_days"]},
+		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_ids"]},
+	},
 	def show(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		results = Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
 		conn
 		|> render("show.json", poll: poll |> Map.put(:results, results))
 	end)
 
-	with_params([
-		{Plugs.ItemParam, :poll, [schema: Poll, name: "poll_id"]},
-		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
-		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_ids"]},
-	],
+	with_params(%{
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},
+		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
+		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_ids"]},
+	},
 	def contributions(conn, %{:poll => poll, :datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
 		contributions = Result.calculate_contributions(poll, datetime, trust_metric_ids) |> Enum.map(fn(contribution) ->
 			%{

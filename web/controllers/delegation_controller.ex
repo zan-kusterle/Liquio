@@ -1,9 +1,9 @@
 defmodule Democracy.DelegationController do
 	use Democracy.Web, :controller
 
-	with_params([
-		{Plugs.IdentityParamCurrentFallback, :from_identity, [name: "identity_id"]}
-	],
+	with_params(%{
+		:from_identity => {Plugs.IdentityParamCurrentFallback, [name: "identity_id"]}
+	},
 	def index(conn, %{:from_identity => from_identity}) do
 		delegations = from(d in Delegation, where: d.from_identity_id == ^from_identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
@@ -32,10 +32,10 @@ defmodule Democracy.DelegationController do
 		end
 	end
 
-	with_params([
-		{Plugs.IdentityParamCurrentFallback, :from_identity, [name: "identity_id"]},
-		{Plugs.ItemParam, :to_identity, [schema: Identity, name: "id"]}
-	],
+	with_params(%{
+		:from_identity => {Plugs.IdentityParamCurrentFallback, [name: "identity_id"]},
+		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
+	},
 	def show(conn, %{:from_identity => from_identity, :to_identity => to_identity}) do
 		delegation = Repo.all(from(d in Delegation, where:
 			d.from_identity_id == ^from_identity.id and d.to_identity_id == ^to_identity.id
@@ -52,9 +52,9 @@ defmodule Democracy.DelegationController do
 	end)
 
 	plug Democracy.Plugs.QueryIdentityIdEnsureCurrent, {:from_identity, "identity_id"} when action in [:delete]
-	with_params([
-		{Plugs.ItemParam, :to_identity, [schema: Identity, name: "id"]}
-	],
+	with_params(%{
+		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
+	},
 	def delete(conn, %{:from_identity => from_identity, :to_identity => to_identity}) do
 		delegation = Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id, is_last: true})
 		if delegation do
