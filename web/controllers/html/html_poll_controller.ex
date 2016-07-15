@@ -7,9 +7,9 @@ defmodule Democracy.HtmlPollController do
 	end
 
 	with_params([
-		{&Democracy.Plugs.TopicsParam.handle/2, :topics, [name: "topics"]},
-		{&Democracy.Plugs.ChoiceTypeParam.handle/2, :choice_type, [name: "choice_type", topics_name: :topics]},
-		{&Democracy.Plugs.TitleParam.handle/2, :title, [name: "title"]}
+		{Plugs.TopicsParam, :topics, [name: "topics"]},
+		{Plugs.ChoiceTypeParam, :choice_type, [name: "choice_type", topics_name: :topics]},
+		{Plugs.TitleParam, :title, [name: "title"]}
 	],
 	def create(conn, %{:choice_type => choice_type, :title => title, :topics => topics}) do
 		poll = Poll.create(choice_type, title, topics)
@@ -24,11 +24,11 @@ defmodule Democracy.HtmlPollController do
 	end
 
 	with_params([
-		{&Democracy.Plugs.CurrentUser.handle/2, :user, [require: false]},
-		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "id"]},
-		{&Democracy.Plugs.DatetimeParam.handle/2, :datetime, [name: "datetime"]},
-		{&Democracy.Plugs.VoteWeightHalvingDaysParam.handle/2, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
-		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]},
+		{Plugs.CurrentUser, :user, [require: false]},
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "id"]},
+		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
+		{Plugs.VoteWeightHalvingDaysParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]},
 	],
 	def show(conn, params = %{:user => user, :poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		conn
@@ -41,10 +41,10 @@ defmodule Democracy.HtmlPollController do
 	end)
 
 	with_params([
-		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
-		{&Democracy.Plugs.DatetimeParam.handle/2, :datetime, [name: "datetime"]},
-		{&Democracy.Plugs.VoteWeightHalvingDaysParam.handle/2, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
-		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]},
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id"]},
+		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
+		{Plugs.VoteWeightHalvingDaysParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]},
 	],
 	def details(conn, params = %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		conn
@@ -59,8 +59,8 @@ defmodule Democracy.HtmlPollController do
 
 	plug :put_layout, "minimal.html" when action in [:embed]
 	with_params([
-		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
-		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]},
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id"]},
+		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]},
 	],
 	def embed(conn, params = %{:poll => poll, :trust_metric_ids => trust_metric_ids}) do
 		params = Map.marge(params, %{

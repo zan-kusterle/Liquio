@@ -2,10 +2,10 @@ defmodule Democracy.HtmlDelegationController do
 	use Democracy.Web, :controller
 
 	with_params([
-		{&Plugs.CurrentUser.handle/2, :user, [require: true]},
-		{&Plugs.ItemParam.handle/2, :identity, [schema: Identity, name: "html_identity_id"]},
-		{&Plugs.NumberParam.handle/2, :weight, [name: "weight", error: "Delegation weight must be a number"]},
-		{&Plugs.TopicsParam.handle/2, :topics, [name: "topics"]}
+		{Plugs.CurrentUser, :user, [require: true]},
+		{Plugs.ItemParam, :identity, [schema: Identity, name: "html_identity_id"]},
+		{Plugs.NumberParam, :weight, [name: "weight", error: "Delegation weight must be a number"]},
+		{Plugs.TopicsParam, :topics, [name: "topics"]}
 	],
 	def create(conn, %{:user => from_identity, :identity => to_identity, :weight => weight, :topics => topics}) do
 		if weight == 0 do

@@ -2,11 +2,11 @@ defmodule Democracy.HtmlVoteController do
 	use Democracy.Web, :controller
 
 	with_params([
-		{&Democracy.Plugs.CurrentUser.handle/2, :user, [require: false]},
-		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
-		{&Democracy.Plugs.DatetimeParam.handle/2, :datetime, [name: "datetime"]},
-		{&Democracy.Plugs.VoteWeightHalvingDaysParam.handle/2, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
-		{&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]}
+		{Plugs.CurrentUser, :user, [require: false]},
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id"]},
+		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
+		{Plugs.VoteWeightHalvingDaysParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]}
 	],
 	def index(conn, %{:poll => poll, :user => user, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		conn
@@ -21,9 +21,9 @@ defmodule Democracy.HtmlVoteController do
 	end)
 
 	with_params([
-		{&Democracy.Plugs.CurrentUser.handle/2, :user, [require: false]},
-		{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id"]},
-		{&Democracy.Plugs.NumberParam.handle/2, :score, [name: "score"]}
+		{Plugs.CurrentUser, :user, [require: false]},
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id"]},
+		{Plugs.NumberParam, :score, [name: "score"]}
 	],
 	def create(conn, %{:user => user, :poll => poll, :score => score}) do
 		message =

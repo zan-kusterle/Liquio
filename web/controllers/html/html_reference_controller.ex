@@ -15,13 +15,13 @@ defmodule Democracy.HtmlReferenceController do
 
 	def is_poll(poll) do poll.kind == "custom" end
 	with_params([
-		{&Democracy.Plugs.CurrentUser.handle/2, :user, [require: false]},
-    	{&Democracy.Plugs.ItemParam.handle/2, :poll, [schema: Poll, name: "html_poll_id", validator: &Democracy.HtmlReferenceController.is_poll/1]},
-    	{&Democracy.Plugs.ItemParam.handle/2, :reference_poll, [schema: Poll, name: "id"]},
-		{&Democracy.Plugs.NumberParam.handle/2, :for_choice, [name: "for_choice", error: "For choice must be a number"]},
-		{&Democracy.Plugs.DatetimeParam.handle/2, :datetime, [name: "datetime"]},
-        {&Democracy.Plugs.VoteWeightHalvingDaysParam.handle/2, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
-        {&Democracy.Plugs.TrustMetricIdsParam.handle/2, :trust_metric_ids, [name: "trust_metric_url"]}
+		{Plugs.CurrentUser, :user, [require: false]},
+    	{Plugs.ItemParam, :poll, [schema: Poll, name: "html_poll_id", validator: &Democracy.HtmlReferenceController.is_poll/1]},
+    	{Plugs.ItemParam, :reference_poll, [schema: Poll, name: "id"]},
+		{Plugs.NumberParam, :for_choice, [name: "for_choice", error: "For choice must be a number"]},
+		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
+        {Plugs.VoteWeightHalvingDaysParam, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+        {Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_url"]}
 	],
 	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll, :for_choice => for_choice, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		reference = Reference.get(poll, reference_poll, for_choice)

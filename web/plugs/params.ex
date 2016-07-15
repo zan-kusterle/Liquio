@@ -5,8 +5,8 @@ defmodule Democracy.Plugs.Params do
 
 	def call(conn, {handler, list}) do
 		if handler == nil or conn.private.phoenix_action == handler do
-			results = Enum.map(list, fn({handle, name, opts}) ->
-				result = handle.(conn, opts)
+			results = Enum.map(list, fn({handle_module, name, opts}) ->
+				result = handle_module.handle(conn, opts)
 				case result do
 					{:ok, value} ->
 						{:ok, name, [value: value]}
