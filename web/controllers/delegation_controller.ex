@@ -1,16 +1,9 @@
 defmodule Democracy.DelegationController do
 	use Democracy.Web, :controller
 
-	import Ecto.Query, only: [from: 2]
-	alias Democracy.Identity
-	alias Democracy.Delegation
-
-	plug :scrub_params, "delegation" when action in [:create]
-
-	plug Democracy.Plugs.QueryIdentityIdFallbackCurrent, {:from_identity, "identity_id"} when action in [:index, :show]
-	plug Democracy.Plugs.QueryIdentityIdEnsureCurrent, {:from_identity, "identity_id"} when action in [:create, :delete]
-	plug Democracy.Plugs.QueryId, {:to_identity, Identity, "id"} when action in [:show, :delete]
-
+	with_params([
+		{Plugs.IdentityParamCurrentFallback, :from_identity, [name: "identity_id"]}
+	],
 	def index(conn, %{:from_identity => from_identity}) do
 		delegations = from(d in Delegation, where: d.from_identity_id == ^from_identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
@@ -18,8 +11,10 @@ defmodule Democracy.DelegationController do
 
 		conn
 		|> render("index.json", delegations: delegations)
-	end
+	end)
 
+	plug :scrub_params, "delegation" when action in [:create]
+	plug Democracy.Plugs.QueryIdentityIdEnsureCurrent, {:from_identity, "identity_id"} when action in [:create]
 	def create(conn, %{"delegation" => params, :from_identity => from_identity}) do
 		params = params |> Map.put("from_identity_id", from_identity.id)
 		changeset = Delegation.changeset(%Delegation{}, params)
@@ -37,6 +32,10 @@ defmodule Democracy.DelegationController do
 		end
 	end
 
+	with_params([
+		{Plugs.IdentityParamCurrentFallback, :from_identity, [name: "identity_id"]},
+		{Plugs.ItemParam, :to_identity, [schema: Identity, name: "id"]}
+	],
 	def show(conn, %{:from_identity => from_identity, :to_identity => to_identity}) do
 		delegation = Repo.all(from(d in Delegation, where:
 			d.from_identity_id == ^from_identity.id and d.to_identity_id == ^to_identity.id
@@ -50,8 +49,12 @@ defmodule Democracy.DelegationController do
 			|> put_status(:not_found)
 			|> render(Democracy.ErrorView, "error.json", message: "Delegation does not exist")
 		end
-	end
+	end)
 
+	plug Democracy.Plugs.QueryIdentityIdEnsureCurrent, {:from_identity, "identity_id"} when action in [:delete]
+	with_params([
+		{Plugs.ItemParam, :to_identity, [schema: Identity, name: "id"]}
+	],
 	def delete(conn, %{:from_identity => from_identity, :to_identity => to_identity}) do
 		delegation = Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id, is_last: true})
 		if delegation do
@@ -63,5 +66,5 @@ defmodule Democracy.DelegationController do
 			|> put_status(:not_found)
 			|> render(Democracy.ErrorView, "error.json", message: "Delegation does not exist")
 		end
-	end
+	end)
 end

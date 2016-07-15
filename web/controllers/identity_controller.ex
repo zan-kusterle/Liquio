@@ -1,17 +1,12 @@
 defmodule Democracy.IdentityController do
 	use Democracy.Web, :controller
 
-	alias Democracy.Identity
-
-	plug :scrub_params, "identity" when action in [:create]
-
-	plug Democracy.Plugs.QueryIdentityIdFallbackCurrent, {:identity, "id"} when action in [:show]
-
 	def index(conn, %{}) do
 		identities = Repo.all(Identity) |> Repo.preload([:trust_metric_poll_votes])
 		render(conn, "index.json", identities: identities)
 	end
 
+	plug :scrub_params, "identity" when action in [:create]
 	def create(conn, %{"identity" => params}) do
 		token = Identity.generate_token()
 		changeset = Identity.changeset(%Identity{token: token}, params)
@@ -28,10 +23,13 @@ defmodule Democracy.IdentityController do
 		end
 	end
 
+	with_params([
+		{Plugs.IdentityParamCurrentFallback, :identity, [name: "id"]}
+	],
 	def show(conn, %{:identity => identity}) do
 		identity = identity |> Repo.preload([:trust_metric_poll_votes])
 		render(conn, "show.json", identity: identity)
-	end
+	end)
 
 	def update(conn, %{"id" => id, "identity" => params}) do
 		# TODO: Update preferences

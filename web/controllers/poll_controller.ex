@@ -1,19 +1,7 @@
 defmodule Democracy.PollController do
 	use Democracy.Web, :controller
 
-	alias Democracy.Poll
-	alias Democracy.Result
-	alias Democracy.TrustMetric
-
 	plug :scrub_params, "poll" when action in [:create]
-
-	plug Democracy.Plugs.Datetime, {:datetime, "datetime"} when action in [:show, :contributions]
-	plug Democracy.Plugs.TrustMetricIds, {:trust_metric_ids, "trust_metric_url"} when action in [:show, :contributions]
-	plug Democracy.Plugs.VoteWeightHalvingDays, {:vote_weight_halving_days, "vote_weight_halving_days"} when action in [:show]
-	
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "id"} when action in [:show]
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"} when action in [:contributions]
-
 	def create(conn, %{"poll" => params}) do
 		changeset = Poll.changeset(%Poll{}, params)
 		case Poll.create(changeset) do
@@ -30,6 +18,12 @@ defmodule Democracy.PollController do
 		end
 	end
 
+	with_params([
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "id"]},
+		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
+		{Plugs.VoteWeightHalvingDays, :vote_weight_halving_days, [name: "vote_weight_halving_days"]},
+		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_ids"]},
+	],
 	def show(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		# TODO: Get polls in same category (for every category poll where current category is proposed calculate best category)
 		# Do this by periodically updating :group_title field on kind=custom polls. Use default trust metric here, because the category can be custom changed by each user if they want (this is just the default)
@@ -38,8 +32,13 @@ defmodule Democracy.PollController do
 		results = Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
 		conn
 		|> render("show.json", poll: poll |> Map.put(:results, results))
-	end
+	end)
 
+	with_params([
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "poll_id"]},
+		{Plugs.DatetimeParam, :datetime, [name: "datetime"]},
+		{Plugs.TrustMetricIdsParam, :trust_metric_ids, [name: "trust_metric_ids"]},
+	],
 	def contributions(conn, %{:poll => poll, :datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
 		contributions = Result.calculate_contributions(poll, datetime, trust_metric_ids) |> Enum.map(fn(contribution) ->
 			%{
@@ -51,5 +50,5 @@ defmodule Democracy.PollController do
 		end)
 		conn
 		|> render("results.json", results: contributions)
-	end
+	end)
 end

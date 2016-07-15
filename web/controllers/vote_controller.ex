@@ -1,21 +1,20 @@
 defmodule Democracy.VoteController do
 	use Democracy.Web, :controller
 
-	alias Democracy.Vote
-	alias Democracy.Poll
-
-	plug :scrub_params, "vote" when action in [:create, :update]
-
-	plug Democracy.Plugs.QueryId, {:poll, Poll, "poll_id"}
-	plug Democracy.Plugs.QueryIdentityIdFallbackCurrent, {:identity, "id"} when action in [:show]
-	plug Democracy.Plugs.EnsureCurrentIdentity when action in [:create, :delete]
-
+	with_params([
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "poll_id"]}
+	],
 	def index(conn, %{:poll => poll}) do
 		votes = from(v in Vote, where: v.poll_id == ^poll.id and v.is_last and not is_nil(v.data))
 		|> Repo.all
 		render(conn, "index.json", votes: votes)
-	end
+	end)
 
+	plug :scrub_params, "vote" when action in [:create]
+	with_params([
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "poll_id"]},
+		{Plugs.CurrentUser, :user, [require: true]}
+	],
 	def create(conn, %{:poll => poll, :user => user, "vote" => params}) do
 		params = params |> Map.put("poll_id", poll.id) |> Map.put("identity_id", user.id)
 		changeset = Vote.changeset(%Vote{}, params)
@@ -30,8 +29,12 @@ defmodule Democracy.VoteController do
 				|> put_status(:unprocessable_entity)
 				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
 		end
-	end
+	end)
 
+	with_params([
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "poll_id"]},
+		{Plugs.IdentityParamCurrentFallback, :identity, [name: "id"]}
+	],
 	def show(conn, %{:poll => poll, :identity => identity}) do
 		vote = Repo.get_by!(Vote, identity_id: identity.id, poll_id: poll.id, is_last: true)
 		if vote do
@@ -39,10 +42,14 @@ defmodule Democracy.VoteController do
 		else
 			conn |> put_status(:not_found)
 		end
-	end
+	end)
 
+	with_params([
+		{Plugs.ItemParam, :poll, [schema: Poll, name: "poll_id"]},
+		{Plugs.CurrentUser, :user, [require: true]}
+	],
 	def delete(conn, %{:poll => poll, :user => user}) do
 		vote = Vote.delete(poll, user)
 		render(conn, "show.json", vote: vote)
-	end
+	end)
 end
