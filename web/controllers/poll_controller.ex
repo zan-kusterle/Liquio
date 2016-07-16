@@ -25,7 +25,7 @@ defmodule Democracy.PollController do
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_ids"]},
 	},
 	def show(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
-		results = Result.calculate(poll, calculate_opts_from_conn(conn))
+		results = Result.calculate(poll, get_calculation_opts_from_conn(conn))
 		conn
 		|> render("show.json", poll: poll |> Map.put(:results, results))
 	end)
@@ -36,7 +36,7 @@ defmodule Democracy.PollController do
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_ids"]},
 	},
 	def contributions(conn, %{:poll => poll, :datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
-		contributions = Result.calculate_contributions(poll, calculate_opts_from_conn(conn)) |> Enum.map(fn(contribution) ->
+		contributions = Result.calculate_contributions(poll, get_calculation_opts_from_conn(conn)) |> Enum.map(fn(contribution) ->
 			%{
 				:datetime => Timex.format!(contribution.datetime, "{ISO}"),
 				:score => contribution.score,

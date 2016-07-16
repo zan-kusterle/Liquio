@@ -23,38 +23,38 @@ defmodule Democracy.HtmlPollController do
 		|> redirect to: html_poll_path(conn, :show, Poll.get_random().id)
 	end
 
+	# TODO: I don't want user to pass datetime, vote_weight_halving_days or trust_metric_url.
+	# That's why here I should remove those params and ensure get_calculation_opts_from_conn works flexible with any combination of params/preferences/defaults.
+	# Also replace trust_metric_ids with trust_metric_url StringParam, since trust metric ids are generated in the function
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
-		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
-		:vote_weight_halving_days => {Plugs.NumberParam, [maybe: true, name: "vote_weight_halving_days", whole: true]},
-		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]},
 	},
-	def show(conn, params = %{:user => user, :poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+	def show(conn, params = %{:user => user, :poll => poll}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "show.html",
 			title: Poll.title(poll),
 			is_logged_in: user != nil,
-			poll: prepare_poll(poll, calculate_opts_from_conn(conn)),
-			references: prepare_references(poll, calculate_opts_from_conn(conn))
+			poll: prepare_poll(poll, calculation_opts),
+			references: prepare_references(poll, calculation_opts)
 	end)
 
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
 		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
-		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", whole: true]},
-		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]},
 	},
 	def details(conn, %{:poll => poll, :datetime => datetime}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "details.html",
 			title: Poll.title(poll),
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
-			poll: prepare_poll(poll, calculate_opts_from_conn(conn)),
-			contributions: prepare_contributions(poll, calculate_opts_from_conn(conn)),
-			results_with_datetime: prepare_results_with_datetime(poll, 30, calculate_opts_from_conn(conn))
+			poll: prepare_poll(poll, calculation_opts),
+			contributions: prepare_contributions(poll, calculation_opts),
+			results_with_datetime: prepare_results_with_datetime(poll, 30, calculation_opts)
 	end)
 
 	plug :put_layout, "minimal.html" when action in [:embed]
@@ -62,16 +62,13 @@ defmodule Democracy.HtmlPollController do
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]},
 	},
-	def embed(conn, params = %{:poll => poll}) do
-		params = Map.marge(params, %{
-			:datetime =>  Timex.DateTime.now,
-			:vote_weight_halving_days => nil
-		})
+	def embed(conn, %{:poll => poll}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
 
 		conn
 		|> render "embed.html",
-			poll: prepare_poll(poll, params),
-			references: prepare_references(poll, calculate_opts_from_conn(conn))
+			poll: prepare_poll(poll, calculation_opts),
+			references: prepare_references(poll, calculation_opts)
 	end)
 
 	defp prepare_poll(poll, calculate_opts) do

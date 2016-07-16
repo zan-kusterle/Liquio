@@ -7,14 +7,15 @@ defmodule Democracy.HtmlVoteController do
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]}
 	},
 	def index(conn, %{:poll => poll, :user => user}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "index.html",
 			title: poll.title || "Liquio",
 			poll: poll
 				|> Poll.preload
-				|> Map.put(:results, Result.calculate(poll, calculate_opts_from_conn(conn))),
-			references:  Reference.for_poll(poll, calculate_opts_from_conn(conn)),
+				|> Map.put(:results, Result.calculate(poll, calculation_opts)),
+			references:  Reference.for_poll(poll, calculation_opts),
 			own_vote: Vote.current_by(poll, user)
 	end)
 

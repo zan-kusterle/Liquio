@@ -18,14 +18,12 @@ defmodule Democracy.HtmlReferenceController do
     	:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
     	:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
 		:for_choice => {Plugs.NumberParam, [name: "for_choice", error: "For choice must be a number"]},
-		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
-        :vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", whole: true]},
-        :trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]}
 	},
-	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll, :for_choice => for_choice, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll, :for_choice => for_choice}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
 		reference = Reference.get(poll, reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
-		results = Result.calculate(reference.approval_poll, calculate_opts_from_conn(conn))
+		results = Result.calculate(reference.approval_poll, calculation_opts)
 		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")

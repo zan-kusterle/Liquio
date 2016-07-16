@@ -23,7 +23,7 @@ defmodule Democracy.Controllers.Helpers do
 		func.(item)
 	end
 
-	def calculate_opts_from_conn(conn) do
+	def get_calculation_opts_from_conn(conn) do
 		identity = Guardian.Plug.current_resource(conn)
 		%{
 			datetime: conn.params.datetime,
