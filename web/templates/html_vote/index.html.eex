@@ -27,7 +27,7 @@
 		<%= if @own_vote.data.score == 1 do %>
 			TRUE text
 		<% else %>
-			<% if @own_vote.data.score == 0 do %>
+			<%= if @own_vote.data.score == 0 do %>
 				FALSE text
 			<% else %>
 				GENERIC text
