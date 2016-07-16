@@ -26,36 +26,31 @@ defmodule Democracy.Controllers.Helpers do
 	def get_calculation_opts_from_conn(conn) do
 		identity = Guardian.Plug.current_resource(conn)
 		%{
-			datetime: Timex.DateTime.now,
-			trust_metric_ids: MapSet.new(0..100 |> Enum.map(&to_string/1)),
-			vote_weight_halving_days: nil,
-			soft_quorum_t: 0,
-			minimum_reference_approval_score: 0.5
+			datetime: Map.get(conn.params, :datetime) || Timex.DateTime.now,
+			trust_metric_ids: get_trust_identity_ids(conn),
+			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
+			soft_quorum_t: (identity && identity.soft_quorum_t) || 5,
+			minimum_reference_approval_score: (identity && identity.minimum_reference_approval_score) ||  0.5
 		}
+	end
 
-		#def handle(conn, url, opts) do
-		#	if url == nil or String.length(url) == 0 do
-		#		identity = Guardian.Plug.current_resource(conn)
-		#		url = if identity != nil and identity.trust_metric_url != nil do
-		#			identity.trust_metric_url
-		#		else
-		#			Democracy.TrustMetric.default_trust_metric_url()
-		#		end
-		#	end
-		#	case Democracy.TrustMetric.get(url) do
-		#		{:ok, trust_identity_ids} ->
-		#			{:ok, trust_identity_ids}
-		#		{:error, message} ->
-		#			{:error, :bad_request, message}
-		#	end
-		#end
-		
-		#%{
-		#	datetime: conn.params.datetime,
-		#	trust_metric_ids: conn.params.trust_metric_ids,
-		#	vote_weight_halving_days: conn.params.vote_weight_halving_days || identity.vote_weight_halving_days,
-		#	soft_quorum_t: if identity != nil and identity.soft_quorum_t != nil do identity.soft_quorum_t else 1 end,
-		#	minimum_reference_approval_score: if identity != nil and identity.minimum_reference_approval_score != nil do identity.minimum_reference_approval_score else 0.5 end,
-		#}
+	defp get_trust_identity_ids(conn) do
+		identity = Guardian.Plug.current_resource(conn)
+
+		url = Map.get(conn.params, :trust_metric_url)
+		if url == nil or String.length(url) == 0 do
+			url = if identity != nil and identity.trust_metric_url != nil do
+				identity.trust_metric_url
+			else
+				Democracy.TrustMetric.default_trust_metric_url()
+			end
+		end
+
+		case Democracy.TrustMetric.get(url) do
+			{:ok, trust_identity_ids} ->
+				trust_identity_ids
+			{:error, message} ->
+				Democracy.TrustMetric.get!(Democracy.TrustMetric.default_trust_metric_url())
+		end
 	end
 end

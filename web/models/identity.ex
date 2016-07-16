@@ -51,7 +51,7 @@ defmodule Democracy.Identity do
 		|> cast(params, ["trust_metric_url", "vote_weight_halving_days", "soft_quorum_t", "minimum_reference_approval_score"])
 		|> validate_number(:vote_weight_halving_days, greater_than: 0)
 		|> validate_number(:soft_quorum_t, greater_than_or_equal_to: 0)
-		|> validate_number(:minimum_reference_approval_score, greater_than_or_equal_to: 0)
+		|> validate_number(:minimum_reference_approval_score, greater_than_or_equal_to: 0, less_than: 1)
 	end
 
 	def update_preferences(changeset) do
