@@ -27,11 +27,12 @@ defmodule Democracy.Router do
 		resources "/login", HtmlLoginController, only: [:index, :create]
 		get "/logout", HtmlLoginController, :delete
 
-		resources "/identities", HtmlIdentityController, only: [:show, :new, :create] do
+		resources "/identities", HtmlIdentityController, only: [:new, :create, :show] do
 			resources "/delegations", HtmlDelegationController, only: [:create]
 		end
+		post "/identities/preferences", HtmlIdentityController, :update
 
-		resources "/polls", HtmlPollController, only: [:show, :new, :create] do
+		resources "/polls", HtmlPollController, only: [:new, :create, :show] do
 			get "/details", HtmlPollController, :details
 			resources "/vote", HtmlVoteController, only: [:index, :create, :delete]
 			resources "/references", HtmlReferenceController, only: [:index, :show]
@@ -54,10 +55,10 @@ defmodule Democracy.Router do
 		end
 		
 		resources "/polls", PollController, only: [:create, :show] do
-			resources "/votes", VoteController, only: [:index, :create, :show]
+			resources "/votes", VoteController, only: [:create, :index, :show]
 			resources "/votes", VoteController, only: [:delete], singleton: true
 			get "/contributions", PollController, :contributions
-			resources "/references", ReferenceController, only: [:index, :create, :show]
+			resources "/references", ReferenceController, only: [:create, :index, :show]
 		end
 
 		get "/search", SearchController, :index

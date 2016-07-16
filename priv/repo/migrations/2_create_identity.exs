@@ -12,6 +12,8 @@ defmodule Democracy.Repo.Migrations.CreateIdentity do
 
 			add :trust_metric_url, :string
 			add :vote_weight_halving_days, :integer
+			add :soft_quorum_t, :float
+			add :minimum_reference_approval_score, :float
 
 			timestamps
 		end

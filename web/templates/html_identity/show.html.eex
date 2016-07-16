@@ -8,7 +8,7 @@
 <a href="#">3 delegations to</a>
 
 <%= if @is_me do %>
-	<for method="POST">
+	<form method="POST" action="preferences">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="preference">
@@ -30,6 +30,8 @@
 			<label>Include references with score at least</label>
 			<input name="minimum_reference_approval_score" />
 		</div>
+
+		<button type="submit">Update preferences</button>
 	</form>
 <% else %>
 	<div class="section-title">Is this identity human?</div>

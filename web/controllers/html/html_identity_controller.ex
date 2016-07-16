@@ -8,9 +8,9 @@ defmodule Democracy.HtmlIdentityController do
 
 	def create(conn, params) do
 		token = Identity.generate_token()
-		changeset = Identity.changeset(%Identity{token: token}, params)
+		result = Identity.create(Identity.changeset(%Identity{token: token}, params))
 
-		Identity.create(changeset) |> handle_errors(conn, fn identity ->
+		result |> handle_errors(conn, fn identity ->
 			conn
 			|> Guardian.Plug.sign_in(identity)
 			|> put_flash(:info, "Hello, #{identity.name}")
@@ -72,5 +72,22 @@ defmodule Democracy.HtmlIdentityController do
 			delegation: delegation,
 			delegations_to: delegations_to,
 			delegations_from: delegations_from)
+	end)
+
+	with_params(%{
+		:user => {Plugs.CurrentUser, []},
+		:trust_metric_url => {Plugs.StringParam, []},
+		:vote_weight_halving_days => {Plugs.NumberParam, [whole: true]},
+		:soft_quorum_t => {Plugs.NumberParam, []},
+		:minimum_reference_approval_score => {Plugs.NumberParam, []},
+	},
+	def update(conn, params = %{:user => user}) do
+		result = Identity.update(Identity.update_changeset(user, params))
+
+		result |> handle_errors(conn, fn user ->
+			conn
+			|> put_flash(:info, "Your preferences have been updated")
+			|> redirect(to: default_redirect conn)
+		end)
 	end)
 end
