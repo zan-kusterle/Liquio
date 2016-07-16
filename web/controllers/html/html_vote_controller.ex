@@ -4,11 +4,9 @@ defmodule Democracy.HtmlVoteController do
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
-		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
-		:vote_weight_halving_days => {Plugs.IntegerParam, [name: "vote_weight_halving_days"]},
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]}
 	},
-	def index(conn, %{:poll => poll, :user => user, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+	def index(conn, %{:poll => poll, :user => user}) do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "index.html",

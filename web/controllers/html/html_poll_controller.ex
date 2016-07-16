@@ -7,9 +7,9 @@ defmodule Democracy.HtmlPollController do
 	end
 
 	with_params(%{
-		:choice_type => {Plugs.ChoiceTypeParam, [name: "choice_type", topics_name: :topics]},
 		:title => {Plugs.StringParam, [name: "title"]},
-		:topics => {Plugs.ListParam, [name: "topics", item: {Plugs.StringParam, []}]}
+		:topics => {Plugs.ListParam, [name: "topics", item: {Plugs.StringParam, []}]},
+		:choice_type => {Plugs.ChoiceTypeParam, [name: "choice_type", topics_name: :topics]},
 	},
 	def create(conn, %{:choice_type => choice_type, :title => title, :topics => topics}) do
 		poll = Poll.create(choice_type, title, topics)
@@ -27,7 +27,7 @@ defmodule Democracy.HtmlPollController do
 		:user => {Plugs.CurrentUser, [require: false]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
 		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
-		:vote_weight_halving_days => {Plugs.IntegerParam, [name: "vote_weight_halving_days"]},
+		:vote_weight_halving_days => {Plugs.NumberParam, [maybe: true, name: "vote_weight_halving_days", whole: true]},
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]},
 	},
 	def show(conn, params = %{:user => user, :poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
@@ -43,7 +43,7 @@ defmodule Democracy.HtmlPollController do
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
 		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
-		:vote_weight_halving_days => {Plugs.IntegerParam, [name: "vote_weight_halving_days"]},
+		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", whole: true]},
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]},
 	},
 	def details(conn, %{:poll => poll, :datetime => datetime}) do

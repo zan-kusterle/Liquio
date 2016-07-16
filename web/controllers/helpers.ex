@@ -25,11 +25,12 @@ defmodule Democracy.Controllers.Helpers do
 
 	def calculate_opts_from_conn(conn) do
 		identity = Guardian.Plug.current_resource(conn)
-		[
+		%{
 			datetime: conn.params.datetime,
 			trust_metric_ids: conn.params.trust_metric_ids,
 			vote_weight_halving_days: conn.params.vote_weight_halving_days || identity.vote_weight_halving_days,
-			soft_quorum_t: if identity != nil and identity.soft_quorum_t != nil do identity.soft_quorum_t else 1 end
-		]
+			soft_quorum_t: if identity != nil and identity.soft_quorum_t != nil do identity.soft_quorum_t else 1 end,
+			minimum_reference_approval_score: if identity != nil and identity.minimum_reference_approval_score != nil do identity.minimum_reference_approval_score else 0.5 end,
+		}
 	end
 end
