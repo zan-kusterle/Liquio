@@ -37,6 +37,10 @@
 <% end %>
 </div>
 <p class="claim"><%= raw(@poll.title) %></p>
-<%= render Democracy.HtmlPollView, "cast_vote.html", poll: @poll, own_vote: @own_vote %>
+<%= render Democracy.HtmlPollView, "cast_vote.html",
+	to_path: "/polls/#{@poll.id}/vote",
+	poll: @poll,
+	own_vote: @own_vote
+%>
 
 <%= render Democracy.HtmlPollView, "score.html", poll: @poll %>
