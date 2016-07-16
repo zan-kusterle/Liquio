@@ -9,9 +9,14 @@ defmodule Democracy.HtmlPollController do
 	with_params(%{
 		:title => {Plugs.StringParam, [name: "title"]},
 		:topics => {Plugs.ListParam, [name: "topics", item: {Plugs.StringParam, []}]},
-		:choice_type => {Plugs.ChoiceTypeParam, [name: "choice_type", topics_name: :topics]},
+		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity", "from_topics"]]},
 	},
-	def create(conn, %{:choice_type => choice_type, :title => title, :topics => topics}) do
+	def create(conn, %{:title => title, :topics => topics, :choice_type => choice_type}) do
+		if choice_type == "from_topics" and Enum.member?(topics, "quantity") do
+			topics = Enum.filter(topics, & &1 != "quantity")
+			choice_type = "quantity"
+		end
+		
 		poll = Poll.create(choice_type, title, topics)
 		conn
 		|> put_flash(:info, "Done, share the url so others can vote")
@@ -23,9 +28,6 @@ defmodule Democracy.HtmlPollController do
 		|> redirect to: html_poll_path(conn, :show, Poll.get_random().id)
 	end
 
-	# TODO: I don't want user to pass datetime, vote_weight_halving_days or trust_metric_url.
-	# That's why here I should remove those params and ensure get_calculation_opts_from_conn works flexible with any combination of params/preferences/defaults.
-	# Also replace trust_metric_ids with trust_metric_url StringParam, since trust metric ids are generated in the function
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
@@ -60,7 +62,7 @@ defmodule Democracy.HtmlPollController do
 	plug :put_layout, "minimal.html" when action in [:embed]
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
-		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]},
+		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url"]},
 	},
 	def embed(conn, %{:poll => poll}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)

@@ -4,7 +4,6 @@ defmodule Democracy.HtmlVoteController do
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
-		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]}
 	},
 	def index(conn, %{:poll => poll, :user => user}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
