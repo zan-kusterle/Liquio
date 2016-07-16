@@ -11,7 +11,7 @@ defmodule Democracy.HtmlDelegationController do
 		if weight == 0 do
 			Delegation.unset(from_identity, to_identity)
 			conn
-			|> redirect_back
+			|> redirect to: default_redirect(conn)
 		else
 			Delegation.set(Delegation.changeset(%Delegation{}, %{
 				from_identity_id: from_identity.id,
@@ -20,7 +20,7 @@ defmodule Democracy.HtmlDelegationController do
 				topics: topics
 			})) |> handle_errors(conn, fn(delegation) ->
 				conn
-				|> redirect_back
+				|> redirect to: default_redirect(conn)
 			end)
 		end
 	end)

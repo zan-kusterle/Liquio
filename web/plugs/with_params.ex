@@ -15,12 +15,10 @@ defmodule Democracy.Plugs.WithParams do
 					%{conn | params: conn.params |> Map.merge(params)}
 				{:error, name, status, message} ->
 					if :browser in conn.private.phoenix_pipelines do
-						IO.inspect name
-						IO.inspect message
 						conn
 						|> put_status(status)
 						|> Phoenix.Controller.put_flash(:error, message)
-						|> Phoenix.Controller.redirect(to: Map.get(conn.params, "redirect", "/polls/4"))
+						|> Phoenix.Controller.redirect(to: Democracy.Controllers.Helpers.default_redirect(conn))
 						|> halt
 					else
 						conn

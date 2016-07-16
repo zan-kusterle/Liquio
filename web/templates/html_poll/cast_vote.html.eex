@@ -1,6 +1,7 @@
 <%= if @poll.choice_type == "probability" do %>
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+		<input type="hidden" name="redirect" value="<%= @to_path %>" />
 		<button type="submit" name="score" value="0.0" class="false-choice<%= if @own_vote != nil and @own_vote.data.score == 0.0 do %> active<% end %>">
 			FALSE
 		</button>
@@ -8,11 +9,13 @@
 <% end %>
 <form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+	<input type="hidden" name="redirect" value="<%= @to_path %>" />
 	<input type="text" class="score-input" name="score"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.score) %>"<% end %> />
 </form>
 <%= if @poll.choice_type == "probability" do %>
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+		<input type="hidden" name="redirect" value="<%= @to_path %>" />
 		<button type="submit" name="score" value="1.0" class="true-choice<%= if @own_vote != nil and @own_vote.data.score == 1.0 do %> active<% end %>">
 			TRUE
 		</button>
@@ -22,6 +25,7 @@
 <br>
 <form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+	<input type="hidden" name="redirect" value="<%= @to_path %>" />
 	<%= if @own_vote != nil do %>
 		<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
 	<% end %>

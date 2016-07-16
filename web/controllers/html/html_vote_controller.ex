@@ -42,6 +42,6 @@ defmodule Democracy.HtmlVoteController do
 
 		conn
 		|> put_flash(:info, message)
-		|> redirect to: html_poll_html_vote_path(conn, :index, poll.id)
+		|> redirect to: default_redirect(conn)
 	end)
 end

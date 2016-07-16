@@ -67,7 +67,7 @@ defmodule Democracy.Poll do
 				"Is poll <u>#{reference.reference_poll.title}</u> relavant as a reference to poll <u>#{reference.poll.title}</u>?"
 			poll.kind == "is_human" ->
 				identity = Repo.get_by(Identity, trust_metric_poll_id: poll.id)
-				"Is identity #{identity.username} human?"
+				"Is identity <u>#{identity.username}</u> human?"
 			true ->
 				poll.title
 		end

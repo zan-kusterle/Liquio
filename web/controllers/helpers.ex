@@ -1,13 +1,15 @@
 defmodule Democracy.Controllers.Helpers do
-	def redirect_back(conn) do
-		case List.keyfind(conn.req_headers, "referer", 0) do
-			{"referer", referer} ->
-				url = URI.parse(referer)
-				conn
-				|> Phoenix.Controller.redirect to: url.path
-			nil ->
-				conn
-				|> Phoenix.Controller.redirect to: "/"
+	def default_redirect(conn) do
+		if Map.get(conn.params, "redirect") do
+			conn.params["redirect"]
+		else
+			case List.keyfind(conn.req_headers, "referer", 0) do
+				{"referer", referer} ->
+					url = URI.parse(referer)
+					url.path
+				nil ->
+					"/"
+			end
 		end
 	end
 
