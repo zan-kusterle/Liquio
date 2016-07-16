@@ -13,7 +13,7 @@ defmodule Democracy.Plugs.Params do
 			case first_error_or_result(conn, jobs) do
 				{:ok, params} ->
 					%{conn | params: conn.params |> Map.merge(params)}
-				{name, {:error, status, message}} ->
+				{:error, name, status, message} ->
 					conn
 					|> put_status(status)
 					|> Phoenix.Controller.put_flash(:error, message)
@@ -47,7 +47,8 @@ defmodule Democracy.Plugs.Params do
 		if Enum.empty?(error_results) do
 			{:ok, Enum.map(results, fn({name, {:ok, value}}) -> {name, value} end) |> Enum.into(%{})}
 		else
-			Enum.at(error_results, 0)
+			{name, {:error, status, message}} = Enum.at(error_results, 0)
+			{:error, name, status, message}
 		end
 	end
 end
