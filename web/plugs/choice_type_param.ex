@@ -4,7 +4,7 @@ defmodule Democracy.Plugs.ChoiceTypeParam do
 			topics = conn.params[opts[:topics_name]]
 			value = if Enum.member?(topics, "quantity") do
 				topics = Enum.filter(topics, & &1 != "quantity")
-				#conn = %{conn | params: conn.params |> Map.merge(conn.query_params) |> Map.merge(%{topics_assign_atom => topics})}
+				# conn = %{conn | params: conn.params |> Map.put(topics_assign_atom, topics)}
 				"quantity"
 			else
 				"probability"
