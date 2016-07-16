@@ -8,8 +8,8 @@ defmodule Democracy.HtmlPollController do
 
 	with_params(%{
 		:choice_type => {Plugs.ChoiceTypeParam, [name: "choice_type", topics_name: :topics]},
-		:title => {Plugs.TitleParam, [name: "title"]},
-		:topics => {Plugs.TopicsParam, [name: "topics"]},
+		:title => {Plugs.StringParam, [name: "title"]},
+		:topics => {Plugs.ListParam, [name: "topics", item: {Plugs.StringParam, []}]}
 	},
 	def create(conn, %{:choice_type => choice_type, :title => title, :topics => topics}) do
 		poll = Poll.create(choice_type, title, topics)
