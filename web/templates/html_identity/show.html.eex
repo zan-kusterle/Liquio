@@ -13,22 +13,22 @@
 
 		<div class="preference">
 			<label>Vote weight halving days</label>
-			<input name="vote_weight_halving_days" />
+			<input name="vote_weight_halving_days" value="<%= @identity.vote_weight_halving_days %>" />
 		</div>
 
 		<div class="preference">
 			<label>Trust metric URL</label>
-			<input name="trust_metric_url" />
+			<input name="trust_metric_url" value="<%= @identity.trust_metric_url %>" />
 		</div>
 
 		<div class="preference">
 			<label>Number of fake votes with score zero</label>
-			<input name="soft_quorum_t" style="width: 100px;" />
+			<input name="soft_quorum_t" style="width: 100px;" value="<%= @identity.soft_quorum_t %>" />
 		</div>
 
 		<div class="preference">
 			<label>Include references with score at least</label>
-			<input name="minimum_reference_approval_score" />
+			<input name="minimum_reference_approval_score" value="<%= @identity.minimum_reference_approval_score %>" />
 		</div>
 
 		<button type="submit">Update preferences</button>
