@@ -14,10 +14,10 @@ defmodule Democracy.Plugs.StringParam do
 		if clean != nil do
 			{:ok, clean}
 		else
-			if opts[:require] do
-				{:error, :bad_request, "No string param"}
-			else
+			if opts[:maybe] == true do
 				{:ok, nil}
+			else
+				{:error, :bad_request, "No string param"}
 			end
 		end
 	end

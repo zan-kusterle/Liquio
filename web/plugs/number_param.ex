@@ -1,5 +1,6 @@
 defmodule Democracy.Plugs.NumberParam do
 	def handle(conn, value, opts) do
+		IO.inspect value
 		if value == nil or String.length(value) == 0 do
 			if opts[:maybe] == true do
 				{:ok, nil}

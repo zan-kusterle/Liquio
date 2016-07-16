@@ -76,13 +76,15 @@ defmodule Democracy.HtmlIdentityController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, []},
-		:trust_metric_url => {Plugs.StringParam, []},
-		:vote_weight_halving_days => {Plugs.NumberParam, [whole: true]},
-		:soft_quorum_t => {Plugs.NumberParam, []},
-		:minimum_reference_approval_score => {Plugs.NumberParam, []},
+		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url", maybe: true]},
+		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", maybe: true, whole: true]},
+		:soft_quorum_t => {Plugs.NumberParam, [name: "soft_quorum_t", maybe: true]},
+		:minimum_reference_approval_score => {Plugs.NumberParam, [name: "minimum_reference_approval_score", maybe: true]},
 	},
 	def update(conn, params = %{:user => user}) do
-		result = Identity.update(Identity.update_changeset(user, params))
+		IO.inspect params
+		result = Identity.update_preferences(Identity.update_changeset(user, params
+			|> Map.take([:trust_metric_url, :vote_weight_halving_days, :soft_quorum_t, :minimum_reference_approval_score])))
 
 		result |> handle_errors(conn, fn user ->
 			conn
