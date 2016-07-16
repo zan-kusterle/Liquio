@@ -3,7 +3,9 @@
 	<h1 class="identity-name"><%= @identity.name %></h1>
 </div>
 
-<%= @num_votes %> votes
+<a href="#"><%= @num_votes %> votes</a>
+<a href="#">5 delegations from</a>
+<a href="#">3 delegations to</a>
 
 <%= if @is_me do %>
 	<for method="POST">
@@ -29,9 +31,7 @@
 			<input name="minimum_reference_approval_score" />
 		</div>
 	</form>
-<% end %>
-
-<%= unless @is_me do %>
+<% else %>
 	<div class="section-title">Is this identity human?</div>
 	<%= render Democracy.HtmlPollView, "cast_vote.html", poll_id: @identity.trust_metric_poll_id, own_vote: @own_is_human_vote %>
 
@@ -53,14 +53,4 @@
 
 		<button type="submit" name="weight" value="0">Remove delegation</button>
 	</form>
-<% end %>
-
-<div class="section-title">List of delegations from this identity</div>
-<%= for delegation <- @delegations_from do %>
-	<a href="/identities/<%= delegation.to_identity.id %>"><%= delegation.to_identity.name %></a>
-<% end %>
-
-<div class="section-title">List of delegations to this identity</div>
-<%= for delegation <- @delegations_to do %>
-	<a href="/identities/<%= delegation.from_identity.id %>"><%= delegation.from_identity.name %></a>
 <% end %>

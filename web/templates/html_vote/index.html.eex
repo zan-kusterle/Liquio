@@ -19,10 +19,32 @@
 	</form>
 <% end %>
 
-<hr>
+<hr style="margin: 50px 0px;">
 
-<div class="section-title">After reviewing references, decide whether the claim is true or false.</div>
+<div class="section-title">
+<%= if @poll.choice_type == "probability" do %>
+	<%= if @own_vote do %>
+		<%= if @own_vote.data.score == 1 do %>
+			TRUE text
+		<% else %>
+			<% if @own_vote.data.score == 0 do %>
+				FALSE text
+			<% else %>
+				GENERIC text
+			<% end %>
+		<% end %>
+	<% else %>
+		After reviewing references, decide whether the claim is true or false.
+	<% end %>
+<% else %>
+	<%= if @own_vote do %>
+		Your current estimate for the quantity below is <%= number_format_simple(@own_vote.data.score) %>.
+	<% else %>
+		After reviewing references, enter your best estimate for the quantity below:
+	<% end %>
+<% end %>
+</div>
 <p class="claim"><%= raw(@poll.title) %></p>
-<%= render Democracy.HtmlPollView, "cast_vote.html", poll_id: @poll.id, own_vote: @own_vote %>
+<%= render Democracy.HtmlPollView, "cast_vote.html", poll: @poll, own_vote: @own_vote %>
 
 <%= render Democracy.HtmlPollView, "score.html", poll: @poll %>

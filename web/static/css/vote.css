@@ -2,6 +2,7 @@
 	font-size: 20px;
 	margin: 0px;
 	text-transform: capitalize;
+	margin-bottom: 15px;
 }
 
 .true-choice, .false-choice {
@@ -44,5 +45,5 @@
 	text-align: center;
 	font-size: 18px;
 	text-transform: uppercase;
-	width: 120px;
+	width: 160px;
 }
