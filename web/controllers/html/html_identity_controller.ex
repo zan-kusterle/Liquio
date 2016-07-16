@@ -75,6 +75,41 @@ defmodule Democracy.HtmlIdentityController do
 	end)
 
 	with_params(%{
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id"]}
+	},
+	def delegations_from(conn, %{:identity => identity}) do
+		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
+
+		conn
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+		|> render("show.html",
+			title: identity.name,
+			identity: identity,
+			delegations: delegations_from
+		)
+	end)
+
+	with_params(%{
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id"]}
+	},
+	def delegations_to(conn, %{:identity => identity}) do
+		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
+	end)
+
+	with_params(%{
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id"]}
+	},
+	def votes(conn, %{:identity => identity}) do
+		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
+		|> Repo.all
+		|> Repo.preload([:poll, :identity])
+	end)
+
+	with_params(%{
 		:user => {Plugs.CurrentUser, []},
 		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url", maybe: true]},
 		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", maybe: true, whole: true]},

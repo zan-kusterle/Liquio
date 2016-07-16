@@ -29,6 +29,9 @@ defmodule Democracy.Router do
 
 		resources "/identities", HtmlIdentityController, only: [:new, :create, :show] do
 			resources "/delegations", HtmlDelegationController, only: [:create]
+			get "/delegations/from", HtmlIdentityController, :delegations_from
+			get "/delegations/to", HtmlIdentityController, :delegations_to
+			get "/votes", HtmlIdentityController, :votes
 		end
 		post "/identities/preferences", HtmlIdentityController, :update
 

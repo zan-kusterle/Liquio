@@ -36,8 +36,8 @@ defmodule Democracy.HtmlPollController do
 		|> render "show.html",
 			title: Poll.title(poll),
 			is_logged_in: user != nil,
-			poll: prepare_poll(poll, params),
-			references: Reference.for_poll(poll, datetime, vote_weight_halving_days, trust_metric_ids)
+			poll: prepare_poll(poll, calculate_opts_from_conn(conn)),
+			references: prepare_references(poll, calculate_opts_from_conn(conn))
 	end)
 
 	with_params(%{
@@ -46,15 +46,15 @@ defmodule Democracy.HtmlPollController do
 		:vote_weight_halving_days => {Plugs.IntegerParam, [name: "vote_weight_halving_days"]},
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_url"]},
 	},
-	def details(conn, params = %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+	def details(conn, %{:poll => poll, :datetime => datetime}) do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "details.html",
 			title: Poll.title(poll),
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
-			poll: prepare_poll(poll, params),
-			contributions: prepare_contributions(poll, params),
-			results_with_datetime: prepare_results_with_datetime(poll, 30, params)
+			poll: prepare_poll(poll, calculate_opts_from_conn(conn)),
+			contributions: prepare_contributions(poll, calculate_opts_from_conn(conn)),
+			results_with_datetime: prepare_results_with_datetime(poll, 30, calculate_opts_from_conn(conn))
 	end)
 
 	plug :put_layout, "minimal.html" when action in [:embed]
@@ -71,32 +71,32 @@ defmodule Democracy.HtmlPollController do
 		conn
 		|> render "embed.html",
 			poll: prepare_poll(poll, params),
-			references: prepare_references(poll, params)
+			references: prepare_references(poll, calculate_opts_from_conn(conn))
 	end)
 
-	defp prepare_poll(poll, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+	defp prepare_poll(poll, calculate_opts) do
 		poll
-		|> Map.put(:results, Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1))
+		|> Map.put(:results, Results.calculate(poll, calculate_opts))
 		|> Map.put(:title, Poll.title(poll))
 	end
 
-	defp prepare_references(poll, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
-		Reference.for_poll(poll, datetime, vote_weight_halving_days, trust_metric_ids)
+	defp prepare_references(poll, calculate_opts) do
+		Reference.for_poll(poll, calculate_opts)
 	end
 
-	defp prepare_contributions(poll, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
-		Result.calculate_contributions(poll, datetime, trust_metric_ids) |> Enum.map(fn(contribution) ->
+	defp prepare_contributions(poll, calculate_opts) do
+		Result.calculate_contributions(poll, calculate_opts) |> Enum.map(fn(contribution) ->
 			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
 		end)
 	end
 
-	defp prepare_results_with_datetime(poll, num_units, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+	defp prepare_results_with_datetime(poll, num_units, calculate_opts) do
 		Enum.map(0..num_units, fn(shift_units) ->
-			datetime = Timex.shift(datetime, days: -shift_units)
+			datetime = Timex.shift(calculate_opts[:datetime], days: -shift_units)
 			{
 				num_units - shift_units,
 				datetime,
-				Result.calculate(poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
+				Results.calculate(poll, calculate_opts)
 			}
 		end)
 	end

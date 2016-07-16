@@ -8,7 +8,7 @@ defmodule Democracy.ReferenceController do
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_ids"]},
 	},
 	def index(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, "threshold" => threshold, :trust_metric_ids => trust_metric_ids}) do
-		references = Reference.for_poll(poll, datetime, vote_weight_halving_days, trust_metric_ids)
+		references = Reference.for_poll(poll, calculate_opts_from_conn(conn))
 		conn
 		|> render("index.json", references: references)
 	end)
@@ -24,7 +24,7 @@ defmodule Democracy.ReferenceController do
 	def show(conn, %{:poll => poll, :reference_poll => reference_poll, :for_choice => for_choice, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		reference = Reference.get(poll, reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
-		results = Result.calculate(reference.approval_poll, datetime, trust_metric_ids, vote_weight_halving_days, 1)
+		results = Results.calculate(reference.approval_poll, calculate_opts_from_conn(conn))
 		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 		conn
 		|> render("show.json", reference: reference)

@@ -34,17 +34,17 @@ defmodule Democracy.Reference do
 		reference
 	end
 
-	def for_poll(poll, datetime, vote_weight_halving_days, trust_identity_ids) do
+	def for_poll(poll, calculate_opts) do
 		from(d in Reference, where: d.poll_id == ^poll.id, order_by: d.inserted_at)
 		|> Repo.all
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
 		|> Enum.filter(fn(reference) ->
-			approval_result = Result.calculate(reference.approval_poll, datetime, trust_identity_ids, vote_weight_halving_days, 1)
+			approval_result = Result.calculate(reference.approval_poll, calculate_opts)
 			is_approved = approval_result.mean >= 0.5
 			is_approved
 		end)
 		|> Enum.map(fn(reference) ->
-			results = Result.calculate(reference.reference_poll, datetime, trust_identity_ids, vote_weight_halving_days, 1)
+			results = Result.calculate(reference.reference_poll, calculate_opts)
 			Map.put(reference, :reference_poll, Map.put(reference.reference_poll, :results, results))
 		end)
 		|> Enum.sort(&(&1.reference_poll.results.mean > &2.reference_poll.results.mean))

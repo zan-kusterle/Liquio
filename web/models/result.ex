@@ -63,14 +63,21 @@ defmodule Democracy.Result do
 		field :data, :map
 	end
 
-	def calculate(poll, datetime, trust_identity_ids, vote_weight_halving_days, soft_quorum_t) do
+	def calculate(poll, calculate_opts = [datetime: datetime, trust_identity_ids: trust_identity_ids, vote_weight_halving_days: vote_weight_halving_days, soft_quorum_t: soft_quorum_t]) do
+		if datetime == nil do
+			datetime = Timex.DateTime.now
+		end
+		if trust_identity_ids == nil do
+			trust_identity_ids = MapSet.new
+		end
+
 		mean_fn = if poll.choice_type == "quantity" do
 			&median/2
 		else
 			&mean/2
 		end
 		poll
-		|> calculate_contributions(datetime, trust_identity_ids)
+		|> calculate_contributions(calculate_opts)
 		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t, mean_fn)
 	end
 
@@ -82,7 +89,14 @@ defmodule Democracy.Result do
 		}
 	end
 
-	def calculate_contributions(poll, datetime, trust_identity_ids) do
+	def calculate_contributions(poll, [datetime: datetime, trust_identity_ids: trust_identity_ids]) do
+		if datetime == nil do
+			datetime = Timex.DateTime.now
+		end
+		if trust_identity_ids == nil do
+			trust_identity_ids = MapSet.new
+		end
+
 		votes = get_votes(poll.id, datetime)
 		inverse_delegations = get_inverse_delegations(datetime)
 		topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
