@@ -36,7 +36,7 @@ defmodule Democracy.Web do
 
 			import Democracy.Router.Helpers
 			import Democracy.Gettext
-			import Democracy.Plugs.Params, only: [with_params: 2]
+			import Democracy.Plugs.WithParams, only: [with_params: 2]
 
 			alias Democracy.Repo
 			alias Democracy.Plugs

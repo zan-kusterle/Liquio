@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.Params do
+defmodule Democracy.Plugs.WithParams do
 	import Plug.Conn
 
 	def init(default), do: default
@@ -29,14 +29,6 @@ defmodule Democracy.Plugs.Params do
 		call(conn, {nil, list})
 	end
 
-	defmacro with_params(list, func) do
-		name = func |> elem(2) |> Enum.at(0) |> elem(0)
-		quote do
-			plug Democracy.Plugs.Params, {unquote(name), unquote(list)}
-			unquote(func)
-		end
-	end
-
 	def first_error_or_result(conn, handlers) do
 		results = Enum.map(handlers, fn({name, {handler, value, opts}}) ->
 			{name, handler.handle(conn, value, opts)}
@@ -49,6 +41,14 @@ defmodule Democracy.Plugs.Params do
 		else
 			{name, {:error, status, message}} = Enum.at(error_results, 0)
 			{:error, name, status, message}
+		end
+	end
+
+	defmacro with_params(list, func) do
+		name = func |> elem(2) |> Enum.at(0) |> elem(0)
+		quote do
+			plug Democracy.Plugs.WithParams, {unquote(name), unquote(list)}
+			unquote(func)
 		end
 	end
 end
