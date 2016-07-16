@@ -85,7 +85,9 @@ defmodule Democracy.HtmlPollController do
 	end
 
 	defp prepare_contributions(poll, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
-		Result.calculate_contributions(poll, datetime, trust_metric_ids)
+		Result.calculate_contributions(poll, datetime, trust_metric_ids) |> Enum.map(fn(contribution) ->
+			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
+		end)
 	end
 
 	defp prepare_results_with_datetime(poll, num_units, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do

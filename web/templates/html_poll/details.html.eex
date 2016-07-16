@@ -39,7 +39,7 @@
 		</tr>
 		<%= for contribution <- @contributions do %>
 			<tr class="contribution">
-				<td><a href="/identities/<%= contribution.identity_id %>"><%= contribution.identity_id %></a></td>
+				<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
 				<td><%= number_format(contribution.voting_power) %></td>
 				<td><%= number_format(contribution.score) %></td>
 				<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>

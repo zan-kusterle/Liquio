@@ -20,7 +20,7 @@ defmodule Democracy.HtmlPollView do
 		Enum.map_join(results_with_datetime, " ", fn({index, datetime, results}) ->
 			ratio = index / (count - 1)
 			x = 20 + 1200 * ratio
-			y = 120 * (1 - (0.01 + 0.98 * results.mean / max_mean))
+			y = 1 + 118 * (1 - (results.mean / max_mean))
 			"#{round(x)},#{round(y)}"
 		end)
 	end
