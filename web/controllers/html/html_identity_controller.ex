@@ -82,7 +82,6 @@ defmodule Democracy.HtmlIdentityController do
 		:minimum_reference_approval_score => {Plugs.NumberParam, [name: "minimum_reference_approval_score", maybe: true]},
 	},
 	def update(conn, params = %{:user => user}) do
-		IO.inspect params
 		result = Identity.update_preferences(Identity.update_changeset(user, params
 			|> Map.take([:trust_metric_url, :vote_weight_halving_days, :soft_quorum_t, :minimum_reference_approval_score])))
 
