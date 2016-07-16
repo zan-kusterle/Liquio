@@ -10,7 +10,7 @@ defmodule Democracy.Plugs.ListParam do
 			jobs = Enum.map(Enum.with_index(value), fn({x, i}) ->
 				{i, {item_handler_module, x, item_handler_opts}}
 			end)
-			case Democracy.Plugs.Params.first_error_or_result(conn, jobs) do
+			case Democracy.Plugs.WithParams.first_error_or_result(conn, jobs) do
 				{:ok, value} ->
 					{:ok, value |> Map.values() |> Enum.filter(& &1 != nil)}
 				error ->
