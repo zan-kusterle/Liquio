@@ -49,7 +49,8 @@ defmodule Democracy.Router do
 		resources "/login", LoginController, only: [:create, :delete]
 
 		resources "/identities", IdentityController, only: [:index, :create, :show] do
-			resources "/delegations", DelegationController, only: [:index, :create, :show, :delete]
+			resources "/delegations", DelegationController, only: [:index, :show]
+			resources "/delegations", DelegationController, only: [:create, :delete], singleton: true
 		end
 		
 		resources "/polls", PollController, only: [:create, :show] do

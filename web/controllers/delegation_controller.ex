@@ -14,23 +14,25 @@ defmodule Democracy.DelegationController do
 	end)
 
 	plug :scrub_params, "delegation" when action in [:create]
-	plug Democracy.Plugs.QueryIdentityIdEnsureCurrent, {:from_identity, "identity_id"} when action in [:create]
-	def create(conn, %{"delegation" => params, :from_identity => from_identity}) do
-		params = params |> Map.put("from_identity_id", from_identity.id)
+	with_params(%{
+		:user => {Plugs.CurrentUser, []},
+	},
+	def create(conn, %{:user => user, "delegation" => params}) do
+		params = params |> Map.put("from_identity_id", user.id)
 		changeset = Delegation.changeset(%Delegation{}, params)
 		case Delegation.set(changeset) do
 			{:ok, delegation} ->
 				delegation = Repo.preload delegation, [:from_identity, :to_identity]
 				conn
 				|> put_status(:created)
-				|> put_resp_header("location", identity_delegation_path(conn, :show, from_identity.id, delegation))
+				|> put_resp_header("location", identity_delegation_path(conn, :show, user.id, delegation))
 				|> render("show.json", delegation: delegation)
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
 				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
 		end
-	end
+	end)
 
 	with_params(%{
 		:from_identity => {Plugs.IdentityParamCurrentFallback, [name: "identity_id"]},
@@ -51,14 +53,14 @@ defmodule Democracy.DelegationController do
 		end
 	end)
 
-	plug Democracy.Plugs.QueryIdentityIdEnsureCurrent, {:from_identity, "identity_id"} when action in [:delete]
 	with_params(%{
+		:user => {Plugs.CurrentUser, []},
 		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
 	},
-	def delete(conn, %{:from_identity => from_identity, :to_identity => to_identity}) do
-		delegation = Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id, is_last: true})
+	def delete(conn, %{:user => user, :to_identity => to_identity}) do
+		delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: to_identity.id, is_last: true})
 		if delegation do
-			Delegation.unset(from_identity, to_identity)
+			Delegation.unset(user, to_identity)
 			conn
 			|> send_resp(:no_content, "")
 		else
