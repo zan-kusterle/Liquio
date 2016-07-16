@@ -24,7 +24,7 @@ defmodule Democracy.IdentityController do
 	end
 
 	with_params(%{
-		:identity => {Plugs.IdentityParamCurrentFallback, [name: "id"]}
+		:identity => {Plugs.IdentityParam, [name: "id"]}
 	},
 	def show(conn, %{:identity => identity}) do
 		identity = identity |> Repo.preload([:trust_metric_poll_votes])

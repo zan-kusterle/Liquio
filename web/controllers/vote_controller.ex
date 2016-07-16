@@ -33,7 +33,7 @@ defmodule Democracy.VoteController do
 
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},
-		:identity => {Plugs.IdentityParamCurrentFallback, [name: "id"]}
+		:identity => {Plugs.IdentityParam, [name: "id"]}
 	},
 	def show(conn, %{:poll => poll, :identity => identity}) do
 		vote = Repo.get_by!(Vote, identity_id: identity.id, poll_id: poll.id, is_last: true)

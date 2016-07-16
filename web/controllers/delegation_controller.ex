@@ -2,7 +2,7 @@ defmodule Democracy.DelegationController do
 	use Democracy.Web, :controller
 
 	with_params(%{
-		:from_identity => {Plugs.IdentityParamCurrentFallback, [name: "identity_id"]}
+		:from_identity => {Plugs.IdentityParam, [name: "identity_id"]}
 	},
 	def index(conn, %{:from_identity => from_identity}) do
 		delegations = from(d in Delegation, where: d.from_identity_id == ^from_identity.id and d.is_last == true and not is_nil(d.data))
@@ -35,7 +35,7 @@ defmodule Democracy.DelegationController do
 	end)
 
 	with_params(%{
-		:from_identity => {Plugs.IdentityParamCurrentFallback, [name: "identity_id"]},
+		:from_identity => {Plugs.IdentityParam, [name: "identity_id"]},
 		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
 	},
 	def show(conn, %{:from_identity => from_identity, :to_identity => to_identity}) do
