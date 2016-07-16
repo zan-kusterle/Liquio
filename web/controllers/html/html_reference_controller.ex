@@ -25,7 +25,7 @@ defmodule Democracy.HtmlReferenceController do
 	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll, :for_choice => for_choice, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
 		reference = Reference.get(poll, reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
-		results = Results.calculate(reference.approval_poll, calculate_opts_from_conn(conn))
+		results = Result.calculate(reference.approval_poll, calculate_opts_from_conn(conn))
 		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")

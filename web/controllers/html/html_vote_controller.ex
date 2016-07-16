@@ -15,7 +15,7 @@ defmodule Democracy.HtmlVoteController do
 			title: poll.title || "Liquio",
 			poll: poll
 				|> Poll.preload
-				|> Map.put(:results, Results.calculate(poll, calculate_opts_from_conn(conn))),
+				|> Map.put(:results, Result.calculate(poll, calculate_opts_from_conn(conn))),
 			references:  Reference.for_poll(poll, calculate_opts_from_conn(conn)),
 			own_vote: Vote.current_by(poll, user)
 	end)

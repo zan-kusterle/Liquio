@@ -76,7 +76,7 @@ defmodule Democracy.HtmlPollController do
 
 	defp prepare_poll(poll, calculate_opts) do
 		poll
-		|> Map.put(:results, Results.calculate(poll, calculate_opts))
+		|> Map.put(:results, Result.calculate(poll, calculate_opts))
 		|> Map.put(:title, Poll.title(poll))
 	end
 
@@ -96,7 +96,7 @@ defmodule Democracy.HtmlPollController do
 			{
 				num_units - shift_units,
 				datetime,
-				Results.calculate(poll, calculate_opts)
+				Result.calculate(poll, calculate_opts)
 			}
 		end)
 	end

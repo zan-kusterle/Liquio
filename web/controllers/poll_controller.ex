@@ -25,7 +25,7 @@ defmodule Democracy.PollController do
 		:trust_metric_ids => {Plugs.TrustMetricIdsParam, [name: "trust_metric_ids"]},
 	},
 	def show(conn, %{:poll => poll, :datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
-		results = Results.calculate(poll, calculate_opts_from_conn(conn))
+		results = Result.calculate(poll, calculate_opts_from_conn(conn))
 		conn
 		|> render("show.json", poll: poll |> Map.put(:results, results))
 	end)
