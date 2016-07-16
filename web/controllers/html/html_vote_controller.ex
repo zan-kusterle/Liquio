@@ -23,7 +23,7 @@ defmodule Democracy.HtmlVoteController do
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
-		:score => {Plugs.NumberParam, [name: "score"]}
+		:score => {Plugs.NumberParam, [name: "score", maybe: true]}
 	},
 	def create(conn, %{:user => user, :poll => poll, :score => score}) do
 		message =
