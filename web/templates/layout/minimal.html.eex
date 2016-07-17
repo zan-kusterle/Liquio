@@ -15,9 +15,9 @@
 			}
 
 			.container {
-				width: 100%;
 				color: #333;
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				display: inline-block;
 			}
 
 			.title {

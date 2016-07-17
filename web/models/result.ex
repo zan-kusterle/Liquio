@@ -73,7 +73,7 @@ defmodule Democracy.Result do
 		else
 			&mean/2
 		end
-		IO.inspect calculate_opts
+		
 		poll
 		|> calculate_contributions(calculate_opts)
 		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t, mean_fn)
