@@ -155,7 +155,7 @@ defmodule Democracy.Result do
 	def median(contributions, soft_quorum_t) do
 		contributions = contributions |> Enum.sort(&(&1.score > &2.score))
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		Enum.reduce_while(contributions, 0, fn(contribution, current_power) ->
+		Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
 			if current_power + contribution.voting_power > total_power / 2 do
 				{ :halt, contribution.score }
 			else

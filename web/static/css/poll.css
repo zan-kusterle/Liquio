@@ -26,7 +26,7 @@
 
 .score-with-links .score-box {
 	float: left;
-	margin-left: 125px;
+	margin-left: 110px;
 }
 
 .score-with-links i {
@@ -35,8 +35,8 @@
 
 .score-box {
 	margin: 0 auto;
-	width: 150px;
-	padding: 10px 0px;
+	width: 180px;
+	padding: 14px 0px;
 	text-align: center;
 }
 
@@ -63,9 +63,10 @@
 	float: right;
 	line-height: 18px;
 	font-size: 12px;
-	width: 125px;
+	width: 110px;
 	text-align: left;
-	padding-left: 15px;
+	padding-left: 40px;
+	padding-top: 19px;
 	height: 64px;
 }
 

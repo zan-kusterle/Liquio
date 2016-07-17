@@ -2,6 +2,7 @@ defmodule Democracy.NumberFormat do
 	use Phoenix.HTML
 
 	def number_format(x) do
+		x = x * 1.0
 		{value, suffix} = cond do
 			x > 999999999.999999 ->
 				{x / 1000000000, " x 10<sup>9</sup>"}
