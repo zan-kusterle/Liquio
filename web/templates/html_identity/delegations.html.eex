@@ -1,0 +1,6 @@
+DELEGATIONS TODO
+<br>
+<%= for delegation <- @delegations do %>
+	<%= "#{delegation.from_identity.username} -> #{delegation.to_identity.username}" %>
+	<br>
+<% end %>

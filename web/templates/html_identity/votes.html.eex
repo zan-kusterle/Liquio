@@ -1,0 +1,6 @@
+Votes TODO
+<br>
+<%= for vote <- @votes do %>
+	<%= "#{vote.poll.title}: #{vote.data.score}" %>
+	<br>
+<% end %>

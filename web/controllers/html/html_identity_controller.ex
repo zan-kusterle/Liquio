@@ -75,7 +75,7 @@ defmodule Democracy.HtmlIdentityController do
 	end)
 
 	with_params(%{
-		:identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id"]}
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
 	def delegations_from(conn, %{:identity => identity}) do
 		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
@@ -84,29 +84,45 @@ defmodule Democracy.HtmlIdentityController do
 
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render("show.html",
-			title: identity.name,
+		|> render("delegations.html",
+			title: "Delegations from | #{identity.name}",
 			identity: identity,
 			delegations: delegations_from
 		)
 	end)
 
 	with_params(%{
-		:identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id"]}
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
 	def delegations_to(conn, %{:identity => identity}) do
 		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
+
+		conn
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+		|> render("delegations.html",
+			title: "Delegations to | #{identity.name}",
+			identity: identity,
+			delegations: delegations_to
+		)
 	end)
 
 	with_params(%{
-		:identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id"]}
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
 	def votes(conn, %{:identity => identity}) do
 		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
 		|> Repo.all
 		|> Repo.preload([:poll, :identity])
+
+		conn
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+		|> render("votes.html",
+			title: "Votes | #{identity.name}",
+			identity: identity,
+			votes: votes
+		)
 	end)
 
 	with_params(%{
