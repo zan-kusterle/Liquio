@@ -42,7 +42,8 @@ defmodule Democracy.HtmlPollController do
 			title: Poll.title(poll),
 			is_logged_in: user != nil,
 			poll: prepare_poll(poll, calculation_opts),
-			references: prepare_references(poll, calculation_opts)
+			references: prepare_references(poll, calculation_opts),
+			inverse_references: Reference.inverse_for_poll(poll, calculation_opts)
 	end)
 
 	with_params(%{

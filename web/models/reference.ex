@@ -48,4 +48,19 @@ defmodule Democracy.Reference do
 		end)
 		|> Enum.sort(&(&1.reference_poll.results.mean > &2.reference_poll.results.mean))
 	end
+
+	def inverse_for_poll(poll, calculation_opts) do
+		from(d in Reference, where: d.reference_poll_id == ^poll.id, order_by: d.inserted_at)
+		|> Repo.all
+		|> Repo.preload([:approval_poll, :reference_poll, :poll])
+		|> Enum.filter(fn(reference) ->
+			approval_result = Result.calculate(reference.approval_poll, calculation_opts)
+			approval_result.mean >= calculation_opts[:minimum_reference_approval_score]
+		end)
+		|> Enum.map(fn(reference) ->
+			results = Result.calculate(reference.poll, calculation_opts)
+			Map.put(reference, :poll, Map.put(reference.poll, :results, results))
+		end)
+		|> Enum.sort(&(&1.poll.results.mean > &2.poll.results.mean))
+	end
 end
