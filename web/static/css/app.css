@@ -80,7 +80,7 @@ a:hover {
 
 .header {
 	height: 62px;
-	background-color: #f9f9f9;
+	background-color: white;
 	padding-right: 14px;
 }
 
@@ -148,11 +148,12 @@ a:hover {
 	right: 0px;
 	bottom: 0px;
 	overflow-y: auto;
+	padding-top: 40px;
 }
 
 .main {
 	padding: 40px 35px 40px 35px;
-	margin-top: 50px;
+	margin-top: 0px;
 	margin-bottom: 100px;
 	border-radius: 0px;
 	color: #333;
@@ -160,6 +161,22 @@ a:hover {
 	width: 900px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.heading {
+	text-transform: uppercase;
+	font-size: 18px;
+	margin: 0px;
+	margin-bottom: 10px;
+	line-height: 16px;
+}
+
+.heading-a {
+	display: block;
+	margin: 0px;
+	text-transform: uppercase;
+	font-size: 11px;
+	margin-bottom: 20px;
 }
 
 .title-md {
@@ -171,8 +188,7 @@ a:hover {
 
 .alert {
 	margin: 0px auto;
-	margin-top: 35px;
-	margin-bottom: -30px;
+	margin-bottom: 20px;
 	width: 900px;
 	padding: 8px 0px;
 	font-size: 16px;

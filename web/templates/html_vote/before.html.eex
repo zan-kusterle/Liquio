@@ -1,1 +1,2 @@
-Polling place
+<p class="heading">Vote | <span style="text-transform: capitalize;"><%= @poll.title %></span></p>
+<a class="heading-a" href="/polls/<%= @poll.id %>">back to poll</a>
