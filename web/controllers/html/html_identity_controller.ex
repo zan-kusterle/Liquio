@@ -52,13 +52,16 @@ defmodule Democracy.HtmlIdentityController do
 			nil
 		end
 
-		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
-		|> Repo.all
-		|> Repo.preload([:from_identity, :to_identity])
-
-		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
-		|> Repo.all
-		|> Repo.preload([:from_identity, :to_identity])
+		num_delegations_from = Repo.one(
+			from(d in Delegation,
+			where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data),
+			select: count(d.id))
+		)
+		num_delegations_to = Repo.one(
+			from(d in Delegation,
+			where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data),
+			select: count(d.id))
+		)
 		
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
@@ -70,8 +73,8 @@ defmodule Democracy.HtmlIdentityController do
 			num_votes: num_votes,
 			is_trusted: true,
 			delegation: delegation,
-			delegations_to: delegations_to,
-			delegations_from: delegations_from)
+			num_delegations_to: num_delegations_to,
+			num_delegations_from: num_delegations_from)
 	end)
 
 	with_params(%{

@@ -4,15 +4,49 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="A liquid democracy where anyone can vote on anything">
+		<meta name="description" content="Poll with results badge">
 		<meta name="author" content="Zan Kusterle">
 
 		<title>Liquio</title>
-		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+
+		<style>
+			body {
+				margin: 0px;
+			}
+
+			.container {
+				width: 100%;
+				color: #333;
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			}
+
+			.title {
+				display: inline;
+				text-transform: capitalize;
+				margin: 0;
+				font-weight: normal;
+				font-size: 18px;
+				position: relative;
+				top: -7px;
+			}
+
+			.score-box {
+				display: inline-block;
+				margin-left: 10px;
+				padding: 5px 15px;
+				text-align: center;
+				font-size: 12px;
+				font-weight: bold;
+			}
+
+			.score-box .number {
+				font-size: 15px;
+			}
+		</style>
 	</head>
 
 	<body>
-		<div class="container container-minimal">
+		<div class="container">
 			<%= render @view_module, @view_template, assigns %>
 		</div>
 	</body>

@@ -62,7 +62,7 @@ defmodule Democracy.HtmlPollController do
 	plug :put_layout, "minimal.html" when action in [:embed]
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
-		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url"]},
+		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url", maybe: true]},
 	},
 	def embed(conn, %{:poll => poll}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
