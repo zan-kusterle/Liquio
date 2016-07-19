@@ -111,22 +111,80 @@ defmodule Democracy.HtmlIdentityController do
 		)
 	end)
 
+	defp add_with_data(polls_by_ids, poll, data) do
+		Map.put(polls_by_ids, poll.id, Map.merge(Map.merge(%{
+			:references => [],
+			:score => nil,
+			:reference_for_choice => nil,
+			:approval_score => nil
+		}, poll), data))
+	end
+
 	with_params(%{
 		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
 	def votes(conn, %{:identity => identity}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
+
 		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
 		|> Repo.all
-		|> Repo.preload([:poll, :identity])
+		|> Repo.preload([:poll])
+
+		polls = Enum.map(votes, fn(vote) ->
+			vote.poll
+			|> Map.put(:score, vote.data.score)
+		end)
+		polls_by_ids = Enum.reduce(polls, %{}, fn(poll, acc) ->
+			case poll.kind do
+				"custom" ->
+					references = Reference.for_poll(poll, calculation_opts)
+					|> Repo.preload([:poll, :reference_poll])
+					acc
+					|> add_with_data(poll, %{:score => poll.score, :references => references})
+				"is_reference" ->
+					reference = Repo.get_by!(Reference, approval_poll_id: poll.id)
+					|> Repo.preload([:poll, :reference_poll])
+
+					references = Reference.for_poll(reference.poll, calculation_opts)
+					|> Repo.preload([:poll, :reference_poll])
+					reference_poll_references = Reference.for_poll(reference.reference_poll, calculation_opts)
+					|> Repo.preload([:poll, :reference_poll])
+
+					acc
+					|> add_with_data(reference.poll, %{:references => [%{:reference_poll_id => reference.reference_poll.id}] ++ references})
+					|> add_with_data(reference.reference_poll, %{:references => reference_poll_references, :reference_for_choice => reference.for_choice, :approval_score => poll.score})
+				_ ->
+					acc
+			end
+		end)
+		groups = polls_by_ids |> Map.keys |> Enum.filter(& Enum.count(polls_by_ids[&1].references) >= 0) |> Enum.map(fn id ->
+			traverse_polls(polls_by_ids, id, MapSet.new, 0)
+		end)
+
+		is_human_votes = polls |> Enum.filter(& &1.kind == "is_human") |> Enum.map(fn poll ->
+			identity = Repo.get_by!(Identity, trust_metric_poll_id: poll.id)
+			%{
+				:identity => identity,
+				:poll => poll
+			}
+		end)
 
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("votes.html",
 			title: "Votes | #{identity.name}",
 			identity: identity,
-			votes: votes
+			groups: groups,
+			is_human_votes: is_human_votes
 		)
 	end)
+
+	def traverse_polls(polls_by_ids, id, visited, level) do
+		visited = MapSet.put(visited, id)
+		[polls_by_ids[id] |> Map.put(:level, level)] ++ Enum.flat_map(polls_by_ids[id].references, fn(%{:reference_poll_id => reference_poll_id}) ->
+			traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1)
+		end)
+	end
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, []},

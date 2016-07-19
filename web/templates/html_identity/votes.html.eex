@@ -1,6 +1,12 @@
-Votes TODO
-<br>
-<%= for vote <- @votes do %>
-	<%= "#{vote.poll.title}: #{vote.data.score}" %>
-	<br>
-<% end %>
+<div style="text-align: left;">
+	<%= for group <- @groups do %>
+		<div>
+			<%= for poll <- group do %>
+				<a href="/polls/<%= poll.id %>" style="display: block; margin-left: <%= to_string(poll.level * 50) %>px;">
+					<%= raw "<b>#{poll.reference_for_choice}</b> #{poll.title}: #{poll.score} (#{poll.approval_score})" %>
+				</a>
+			<% end %>
+		</div>
+		<hr>
+	<% end %>
+</div>
