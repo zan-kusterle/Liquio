@@ -1,7 +1,7 @@
 <div class="references">
 	<%= if @poll.choice_type == "probability" do %>
 		<div class="pole">
-			<h3 class="pole-heading">Positive</h3>
+			<h3 class="pole-heading"><%= if @references |> Enum.filter(& &1.for_choice == 1) |> Enum.empty? do %>Nothing <% end %>Positive</h3>
 			<div class="pole-list">
 				<%= for reference <- @references |> Enum.filter(& &1.for_choice == 1) do %>
 					<%= render "reference.html", reference: reference %>
@@ -9,7 +9,7 @@
 			</div>
 		</div>
 		<div class="pole">
-			<h3 class="pole-heading">Negative</h3>
+			<h3 class="pole-heading"><%= if @references |> Enum.filter(& &1.for_choice == 0) |> Enum.empty? do %>Nothing <% end %>Negative</h3>
 			<div class="pole-list">
 				<%= for reference <- @references |> Enum.filter(& &1.for_choice == 0) do %>
 					<%= render "reference.html", reference: reference %>

@@ -1,4 +1,3 @@
-<div class="section-title" style="margin: 0px;">Showing most relevant polls</div>
 <%= for poll <- @polls do %>
 	<div class="poll-item">
 		<a href="/polls/<%= poll.id %>"><%= poll.title %></a>

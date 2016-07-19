@@ -1,5 +1,3 @@
-<h1 class="title-md" style="margin-bottom: 20px;">Create a poll</h1>
-
 <form method="POST" action="/polls" autocomplete="off" class="create-poll">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
