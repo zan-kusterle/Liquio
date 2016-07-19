@@ -1,12 +1,24 @@
 <div style="text-align: left;">
 	<%= for group <- @groups do %>
-		<div>
+		<div style="margin-bottom: 20px;">
 			<%= for poll <- group do %>
-				<a href="/polls/<%= poll.id %>" style="display: block; margin-left: <%= to_string(poll.level * 50) %>px;">
-					<%= raw "<b>#{poll.reference_for_choice}</b> #{poll.title}: #{poll.score} (#{poll.approval_score})" %>
+				<a href="/polls/<%= poll.id %>" style="display: block; margin-bottom: 4px; margin-left: <%= to_string(poll.level * 25) %>px;">
+					<%= if poll.reference_for_choice do %>
+						<b><%= number_format(poll.reference_for_choice) %></b>
+					<% end %>
+					<%= poll.title %>
+					<%= if poll.score do %>
+						<span style="font-size: 20px; font-weight: bold;"><%= number_format_simple(poll.score) %></span>
+					<% end %>
+					<%= if poll.approval_score do %>
+						<%= if poll.approval_score == 1 do %>
+							(approved reference)
+						<% else %>
+							(<%= poll.approval_score * 100 %>%)
+						<% end %>
+					<% end %>
 				</a>
 			<% end %>
 		</div>
-		<hr>
 	<% end %>
 </div>
