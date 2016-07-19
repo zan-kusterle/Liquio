@@ -90,6 +90,7 @@ defmodule Democracy.HtmlIdentityController do
 		|> render("delegations.html",
 			title: "Delegations from | #{identity.name}",
 			identity: identity,
+			direction: "from",
 			delegations: delegations_from
 		)
 	end)
@@ -107,6 +108,7 @@ defmodule Democracy.HtmlIdentityController do
 		|> render("delegations.html",
 			title: "Delegations to | #{identity.name}",
 			identity: identity,
+			direction: "to",
 			delegations: delegations_to
 		)
 	end)

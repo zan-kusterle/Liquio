@@ -1,6 +1,11 @@
-DELEGATIONS TODO
-<br>
 <%= for delegation <- @delegations do %>
-	<%= "#{delegation.from_identity.username} -> #{delegation.to_identity.username}" %>
-	<br>
+	<div>
+		<a href="/identities/<%= delegation.from_identity.id %>"><%= delegation.from_identity.username %></a>
+		to
+		<a href="/identities/<%= delegation.to_identity.id %>"><%= delegation.to_identity.username %></a>:
+		<%= delegation.data.weight %>
+		<%= for topic <- delegation.data.topics do %>
+			<a href="/topics/<%= topic %>">#<%= topic %></a>
+		<% end %>
+	</div>
 <% end %>
