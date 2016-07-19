@@ -1,2 +1,2 @@
-<p class="heading">Votes | <span style="text-transform: capitalize;"><%= @identity.name %></span></p>
+<p class="heading">Votes of <%= @identity.name %></p>
 <a class="heading-a" href="/identities/<%= @identity.id %>">back to identity</a>
