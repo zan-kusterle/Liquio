@@ -22,4 +22,17 @@ defmodule Democracy.NumberFormat do
 		|> String.replace(".0", "")
 		raw(s)
 	end
+
+	def for_choice_format(reference) do
+		if reference.poll.choice_type == "probability" do
+			case reference.for_choice do
+				0.0 -> "Negative"
+				1.0 -> "Positive"
+				x -> number_format(x)
+			end
+		else
+			number_format(reference.for_choice)
+		end
+		
+	end
 end

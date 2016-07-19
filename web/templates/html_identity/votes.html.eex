@@ -3,8 +3,8 @@
 		<div style="margin-bottom: 20px;">
 			<%= for poll <- group do %>
 				<a href="/polls/<%= poll.id %>" style="display: block; margin-bottom: 4px; margin-left: <%= to_string(poll.level * 25) %>px;">
-					<%= if poll.reference_for_choice do %>
-						<b><%= number_format(poll.reference_for_choice) %></b>
+					<%= if poll.reference do %>
+						<b><%= for_choice_format(poll.reference) %></b>
 					<% end %>
 					<%= poll.title %>
 					<%= if poll.score do %>

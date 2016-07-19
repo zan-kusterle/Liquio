@@ -150,7 +150,7 @@ defmodule Democracy.HtmlIdentityController do
 					|> Repo.preload([:poll, :reference_poll])
 
 					unless Enum.find(references, &(&1.reference_poll_id == reference.reference_poll.id and &1.for_choice == reference.for_choice)) do
-						references = references ++ [%{:reference_poll_id => reference.reference_poll.id, :for_choice => reference.for_choice}]
+						references = references ++ [%{:reference_poll_id => reference.reference_poll.id, :for_choice => reference.for_choice, :poll => reference.poll}]
 					end
 
 					acc
@@ -191,12 +191,12 @@ defmodule Democracy.HtmlIdentityController do
 		)
 	end)
 
-	def traverse_polls(polls_by_ids, id, visited, level, for_choice) do
+	def traverse_polls(polls_by_ids, id, visited, level, reference) do
 		visited = MapSet.put(visited, id)
 
-		current = polls_by_ids[id] |> Map.put(:level, level) |> Map.put(:reference_for_choice, for_choice)
-		sub = Enum.flat_map(polls_by_ids[id].references, fn(%{:reference_poll_id => reference_poll_id, :for_choice => for_choice}) ->
-			traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1, for_choice)
+		current = polls_by_ids[id] |> Map.put(:level, level) |> Map.put(:reference, reference)
+		sub = Enum.flat_map(polls_by_ids[id].references, fn(reference = %{:reference_poll_id => reference_poll_id}) ->
+			traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1, reference)
 		end)
 
 		[current] ++ sub
