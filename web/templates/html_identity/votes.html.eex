@@ -13,7 +13,8 @@
 					<% end %>
 					<%= if poll.approval_score do %>
 						<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-						<span style="text-transform: lowercase; font-size: 12px;"><%= score_format(poll.approval_score) %> on reference</span>
+						<a href="/polls/<%= poll.reference.poll.id %>/references/<%= poll.id %>?for_choice=<%= poll.reference.for_choice %>" style="text-transform: lowercase; font-size: 12px;"><%= score_format(poll.approval_score) %> on reference
+						</a>
 					<% end %>
 				</div>
 			<% end %>
@@ -22,8 +23,9 @@
 
 	<%= for vote <- @is_human_votes do %>
 		<div style="margin-bottom: 12px;">
-			Trust to <b><a href="/identities/<%= vote.identity.id %>"><%= vote.identity.username %></a></b>:
-			<%= score_format(vote.poll.score) %>
+			Trust to <b><a href="/identities/<%= vote.identity.id %>"><%= vote.identity.username %></a></b>
+			<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+			<span style="font-size: 15px; font-weight: bold;"><%= score_format(vote.poll.score) %></span>
 		</div>
 	<% end %>
 </div>
