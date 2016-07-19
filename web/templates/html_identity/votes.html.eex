@@ -1,21 +1,19 @@
 <div style="text-align: left;">
 	<%= for group <- @groups do %>
-		<div style="margin-bottom: 20px;">
+		<div>
 			<%= for poll <- group do %>
-				<a href="/polls/<%= poll.id %>" style="display: block; margin-bottom: 4px; margin-left: <%= to_string(poll.level * 25) %>px;">
+				<a href="/polls/<%= poll.id %>" style="display: block; margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
 					<%= if poll.reference do %>
-						<b><%= for_choice_format(poll.reference) %></b>
+						<span style="font-size: 15px; font-weight: bold;""><%= score_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
 					<% end %>
-					<%= poll.title %>
+					<span style="margin-left: 4px; text-transform: capitalize"><%= poll.title %></span>
 					<%= if poll.score do %>
-						<span style="font-size: 20px; font-weight: bold;"><%= number_format_simple(poll.score) %></span>
+						<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+						<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.score, poll.choice_type) %></span>
 					<% end %>
 					<%= if poll.approval_score do %>
-						<%= if poll.approval_score == 1 do %>
-							(approved reference)
-						<% else %>
-							(<%= poll.approval_score * 100 %>%)
-						<% end %>
+						<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+						<span style="text-transform: lowercase; font-size: 12px;"><%= score_format(poll.approval_score) %> on reference</span>
 					<% end %>
 				</a>
 			<% end %>
