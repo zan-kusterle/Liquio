@@ -115,9 +115,8 @@ defmodule Democracy.HtmlIdentityController do
 		Map.put(polls_by_ids, poll.id, Map.merge(Map.merge(%{
 			:references => [],
 			:score => nil,
-			:reference_for_choice => nil,
 			:approval_score => nil
-		}, poll), data))
+		}, Map.get(polls_by_ids, poll.id, poll)), data))
 	end
 
 	with_params(%{
@@ -150,15 +149,28 @@ defmodule Democracy.HtmlIdentityController do
 					reference_poll_references = Reference.for_poll(reference.reference_poll, calculation_opts)
 					|> Repo.preload([:poll, :reference_poll])
 
+					unless Enum.find(references, &(&1.reference_poll_id == reference.reference_poll.id and &1.for_choice == reference.for_choice)) do
+						references = references ++ [%{:reference_poll_id => reference.reference_poll.id, :for_choice => reference.for_choice}]
+					end
+
 					acc
-					|> add_with_data(reference.poll, %{:references => [%{:reference_poll_id => reference.reference_poll.id}] ++ references})
-					|> add_with_data(reference.reference_poll, %{:references => reference_poll_references, :reference_for_choice => reference.for_choice, :approval_score => poll.score})
+					|> add_with_data(reference.poll, %{:references => references})
+					|> add_with_data(reference.reference_poll, %{:references => reference_poll_references, :approval_score => poll.score})
 				_ ->
 					acc
 			end
 		end)
-		groups = polls_by_ids |> Map.keys |> Enum.filter(& Enum.count(polls_by_ids[&1].references) >= 0) |> Enum.map(fn id ->
-			traverse_polls(polls_by_ids, id, MapSet.new, 0)
+		root_ids = polls_by_ids |> Map.keys |> Enum.filter(fn(id) ->
+			num_references = polls_by_ids |> Map.values |> Enum.filter(fn poll ->
+				Enum.find(poll.references, & &1.reference_poll_id == id) != nil
+			end) |> Enum.count
+			num_references == 0
+		end)
+		if Enum.empty?(root_ids) do
+			root_ids = [polls_by_ids |> Map.keys |> Enum.at(0)]
+		end
+		groups = root_ids |> Enum.map(fn id ->
+			traverse_polls(polls_by_ids, id, MapSet.new, 0, nil)
 		end)
 
 		is_human_votes = polls |> Enum.filter(& &1.kind == "is_human") |> Enum.map(fn poll ->
@@ -179,11 +191,15 @@ defmodule Democracy.HtmlIdentityController do
 		)
 	end)
 
-	def traverse_polls(polls_by_ids, id, visited, level) do
+	def traverse_polls(polls_by_ids, id, visited, level, for_choice) do
 		visited = MapSet.put(visited, id)
-		[polls_by_ids[id] |> Map.put(:level, level)] ++ Enum.flat_map(polls_by_ids[id].references, fn(%{:reference_poll_id => reference_poll_id}) ->
-			traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1)
+
+		current = polls_by_ids[id] |> Map.put(:level, level) |> Map.put(:reference_for_choice, for_choice)
+		sub = Enum.flat_map(polls_by_ids[id].references, fn(%{:reference_poll_id => reference_poll_id, :for_choice => for_choice}) ->
+			traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1, for_choice)
 		end)
+
+		[current] ++ sub
 	end
 
 	with_params(%{
