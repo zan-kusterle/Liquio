@@ -55,7 +55,7 @@
 					<% end %>
 				<% end %>
 
-				<%= render_existing @view_module, "before.html", assigns %>
+				<%= render_existing @view_module, "before_#{@view_template}", assigns %>
 
 				<main role="main" class="main">
 					<%= render @view_module, @view_template, assigns %>

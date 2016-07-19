@@ -2,11 +2,11 @@
 	<%= for group <- @groups do %>
 		<div>
 			<%= for poll <- group do %>
-				<a href="/polls/<%= poll.id %>" style="display: block; margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
+				<div style="margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
 					<%= if poll.reference do %>
-						<span style="font-size: 15px; font-weight: bold;""><%= score_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
+						<span style="font-size: 15px; font-weight: bold; margin-right: 4px;"><%= score_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
 					<% end %>
-					<span style="margin-left: 4px; text-transform: capitalize"><%= poll.title %></span>
+					<a href="/polls/<%= poll.id %>" style="text-transform: capitalize"><%= poll.title %></a>
 					<%= if poll.score do %>
 						<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 						<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.score, poll.choice_type) %></span>
@@ -15,8 +15,15 @@
 						<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 						<span style="text-transform: lowercase; font-size: 12px;"><%= score_format(poll.approval_score) %> on reference</span>
 					<% end %>
-				</a>
+				</div>
 			<% end %>
+		</div>
+	<% end %>
+
+	<%= for vote <- @is_human_votes do %>
+		<div style="margin-bottom: 12px;">
+			Trust to <b><a href="/identities/<%= vote.identity.id %>"><%= vote.identity.username %></a></b>:
+			<%= score_format(vote.poll.score) %>
 		</div>
 	<% end %>
 </div>
