@@ -8,7 +8,7 @@
 		</p>
 		<div class="reference-score" style="background-color: <%= score_color @reference.reference_poll %>;">
 			<%= if @reference.reference_poll.choice_type == "probability" do %>
-				<%= round(@reference.reference_poll.results.mean * 100) %>%
+				<%= round((@reference.reference_poll.results.mean || 0) * 100) %>%
 			<% else %>
 				<%= if @reference.reference_poll.results.mean do number_format(@reference.reference_poll.results.mean) else "?" end %>
 			<% end %>

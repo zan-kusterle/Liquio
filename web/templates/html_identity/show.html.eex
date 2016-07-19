@@ -4,11 +4,10 @@
 </div>
 
 <a href="/identities/<%= @identity.id %>/delegations/from"><%= @num_delegations_from %> delegations from</a>
-<br>
+<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 <a href="/identities/<%= @identity.id %>/delegations/to"><%= @num_delegations_to %> delegations to</a>
-<br>
+<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 <a href="/identities/<%= @identity.id %>/votes"><%= @num_votes %> votes</a>
-<br>
 
 <%= if @is_me do %>
 	<form method="POST" action="preferences">
@@ -41,7 +40,8 @@
 	<%= render Democracy.HtmlPollView, "cast_vote.html",
 		to_path: "/identities/#{@identity.id}",
 		poll: %{:id => @identity.trust_metric_poll_id, :choice_type => "probability"},
-		own_vote: @own_is_human_vote
+		own_vote: @own_is_human_vote,
+		allow_numeric: false
 	%>
 
 	<div class="section-title">Delegation to this identity</div>
