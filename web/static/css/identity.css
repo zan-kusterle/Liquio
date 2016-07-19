@@ -25,6 +25,8 @@
 .preference input {
 	margin-top: 4px;
 	margin-left: 3px;
+	width: 100%;
+	text-align: center;
 }
 
 .create-identity input {

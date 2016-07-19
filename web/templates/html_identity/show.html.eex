@@ -14,29 +14,29 @@
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="preference">
-			<label>Vote weight halving days</label>
-			<input name="vote_weight_halving_days" value="<%= @identity.vote_weight_halving_days %>" />
-		</div>
-
-		<div class="preference">
-			<label>Trust metric URL</label>
+			<div class="section-title">Trust metric URL</div>
 			<input name="trust_metric_url" value="<%= @identity.trust_metric_url %>" />
 		</div>
 
 		<div class="preference">
-			<label>Number of fake votes with score zero</label>
-			<input name="soft_quorum_t" style="width: 100px;" value="<%= @identity.soft_quorum_t %>" />
+			<div class="section-title">Number of artificial votes with score 0%. <a href="#">Learn more</a></div>
+			<input name="soft_quorum_t" style="width: 250px;" value="<%= @identity.soft_quorum_t %>" />
 		</div>
 
 		<div class="preference">
-			<label>Include references with score at least</label>
-			<input name="minimum_reference_approval_score" value="<%= @identity.minimum_reference_approval_score %>" />
+			<div class="section-title">Minimum reference approval score</div>
+			<input name="minimum_reference_approval_score" style="width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" />
+		</div>
+
+		<div class="preference">
+			<div class="section-title">Number of days for vote weight to halve</div>
+			<input name="vote_weight_halving_days" style="width: 250px;" value="<%= @identity.vote_weight_halving_days %>" />
 		</div>
 
 		<button type="submit">Update preferences</button>
 	</form>
 <% else %>
-	<div class="section-title">Is this identity human?</div>
+	<div class="section-title">Do you trust this identity? <a href="#">Learn more</a></div>
 	<%= render Democracy.HtmlPollView, "cast_vote.html",
 		to_path: "/identities/#{@identity.id}",
 		poll: %{:id => @identity.trust_metric_poll_id, :choice_type => "probability"},
@@ -44,22 +44,24 @@
 		allow_numeric: false
 	%>
 
-	<div class="section-title">Delegation to this identity</div>
-	<form method="POST" action="/identities/<%= @identity.id %>/delegations">
+	<form method="POST" action="/identities/<%= @identity.id %>/delegations" style="margin-top: -15px;">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="preference">
-			<label>Weight</label>
-			<input name="weight"<%= if @delegation do %> value="<%= @delegation.data.weight %>"<% end %> />
+			<div class="section-title">Relative weight of delegation to this identity</div>
+			<input name="weight"<%= if @delegation do %> value="<%= number_format_simple @delegation.data.weight %>"<% end %> />
 		</div>
 
 		<div class="preference">
-			<label>For topics</label>
-			<input name="topics"<%= if @delegation do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> />
+			<div class="section-title">Delegate only for the following topics</div>
+			<input name="topics"<%= if @delegation do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> placeholder="All topics" />
 		</div>
 
-		<button type="submit">Set delegation</button>
-
-		<button type="submit" name="weight" value="0">Remove delegation</button>
+		<%= if @delegation do %>
+			<button type="submit">Update delegation</button>
+			<button type="submit" name="weight" value="0">Remove delegation</button>
+		<% else %>
+			<button type="submit">Set delegation</button>
+		<% end %>
 	</form>
 <% end %>

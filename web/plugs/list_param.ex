@@ -4,6 +4,7 @@ defmodule Democracy.Plugs.ListParam do
 			value = value
 			|> String.split(",")
 			|> Enum.map(&String.trim/1)
+			|> Enum.filter(& String.length(&1) > 0)
 		end
 		if is_list(value) do
 			{item_handler_module, item_handler_opts} = opts[:item]
@@ -13,8 +14,8 @@ defmodule Democracy.Plugs.ListParam do
 			case Democracy.Plugs.WithParams.first_error_or_result(conn, jobs) do
 				{:ok, value} ->
 					{:ok, value |> Map.values() |> Enum.filter(& &1 != nil)}
-				error ->
-					error
+				{name, {:error, name, status, message}} ->
+					{:error, status, message}
 			end
 		else
 			{:ok, []}
