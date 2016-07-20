@@ -9,7 +9,7 @@ services:
       - "8888:8888"
     depends_on:
      - postgres
-    entrypoint: ./wait-for-postgres.sh postgres /app/bin/democracy foreground
+    entrypoint: /app/wait-for-postgres.sh postgres /app/bin/democracy foreground
 
   postgres:
     image: postgres

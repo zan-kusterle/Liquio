@@ -20,7 +20,7 @@
   "httpotion": {:hex, :httpotion, "3.0.0", "4ce0af28f4254bdd0457d0fe065a83787751e0a5b5f5d27030948253be38df5c", [:mix], [{:ibrowse, "~> 4.2", [hex: :ibrowse, optional: false]}]},
   "ibrowse": {:hex, :ibrowse, "4.2.2", "b32b5bafcc77b7277eff030ed32e1acc3f610c64e9f6aea19822abcadf681b4b", [:rebar3], []},
   "idna": {:hex, :idna, "1.2.0", "ac62ee99da068f43c50dc69acf700e03a62a348360126260e87f2b54eced86b2", [:rebar3], []},
-  "jose": {:hex, :jose, "1.7.3", "325aa7e52b1376e11cb3ea3c8ecfd608cc9bb511d412123bcf81e095f8ed09e7", [:mix, :rebar], [{:base64url, "~> 0.0.1", [hex: :base64url, optional: false]}]},
+  "jose": {:hex, :jose, "1.7.9", "9dc5a14ab62db4e41677fcc97993752562fb57ad0b8ba062589682edd3acb91f", [:mix, :rebar], [{:base64url, "~> 0.0.1", [hex: :base64url, optional: false]}]},
   "metrics": {:hex, :metrics, "1.0.1", "25f094dea2cda98213cecc3aeff09e940299d950904393b2a29d191c346a8486", [:rebar3], []},
   "mimerl": {:hex, :mimerl, "1.0.2", "993f9b0e084083405ed8252b99460c4f0563e41729ab42d9074fd5e52439be88", [:rebar3], []},
   "parallel": {:hex, :parallel, "0.0.3", "d1c9a03f0fd6c85ba174938b9823db51e01a68f9f0e76e3f3e11989cbeb607e7", [:mix], []},
