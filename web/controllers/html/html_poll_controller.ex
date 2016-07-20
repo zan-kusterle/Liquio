@@ -34,7 +34,7 @@ defmodule Democracy.HtmlPollController do
 		:user => {Plugs.CurrentUser, [require: false]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
 	},
-	def show(conn, params = %{:user => user, :poll => poll}) do
+	def show(conn, %{:user => user, :poll => poll}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
