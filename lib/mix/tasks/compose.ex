@@ -31,6 +31,5 @@ defmodule Mix.Tasks.Compose do
 		version = Keyword.fetch!(Mix.Project.config, :version)
 		Mix.shell.info "Version: #{version}"
 		Mix.shell.cmd "sudo -E VERSION=#{version} docker-compose build"
-	end 
-
+	end
 end

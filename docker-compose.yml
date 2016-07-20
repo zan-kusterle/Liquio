@@ -6,16 +6,16 @@ services:
       args:
         VERSION: "${VERSION}"
     ports:
-      - "8888:8888"
+      - "80:80"
     depends_on:
      - postgres
     entrypoint: /app/wait-for-postgres.sh postgres /app/bin/democracy foreground
 
   postgres:
     image: postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: democracy_prod
+    #environment:
+    #  POSTGRES_USER: postgres
+    #  POSTGRES_PASSWORD: postgres
+    #  POSTGRES_DB: democracy_prod
     volumes:
       - ./data:/var/lib/postgresql/data
