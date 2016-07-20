@@ -171,3 +171,8 @@
 	margin: 0 auto;
 	margin-top: 15px;
 }
+
+.inverse-reference {
+	text-transform: capitalize;
+	margin-bottom: 4px;
+}

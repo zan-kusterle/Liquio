@@ -16,11 +16,11 @@ defmodule Democracy.HtmlPollView do
 
 	def chart_svg_polyline(results_with_datetime) do
 		count = Enum.count(results_with_datetime)
-		max_mean = Enum.max([1, Enum.max(Enum.map(results_with_datetime, fn({index, datetime, results}) -> results.mean end))])
+		max_mean = Enum.max([1, Enum.max(Enum.map(results_with_datetime, fn({index, datetime, results}) -> results.mean end))]) || 1
 		Enum.map_join(results_with_datetime, " ", fn({index, datetime, results}) ->
 			ratio = index / (count - 1)
 			x = 20 + 1200 * ratio
-			y = 1 + 118 * (1 - (results.mean / max_mean))
+			y = 1 + 118 * (1 - ((results.mean || 0) / max_mean))
 			"#{round(x)},#{round(y)}"
 		end)
 	end

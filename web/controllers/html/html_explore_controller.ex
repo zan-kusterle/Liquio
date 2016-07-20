@@ -11,14 +11,14 @@ defmodule Democracy.HtmlExploreController do
 	def show(conn, %{"id" => topic}) do
 		conn
 		|> render "index.html",
-			heading: "POLLS WITH TOPIC #{topic}",
+			heading: "Polls with topic #{topic}",
 			polls: Poll.by_topic(topic |> String.downcase) |> Repo.all
 	end
 
 	def search(conn, %{"query" => query}) do
 		conn
 		|> render "index.html",
-			heading: "Showing most relevant results",
+			heading: "Showing most relevant polls",
 			query: query,
 			polls: Poll.search(Poll, query) |> Repo.all
 	end

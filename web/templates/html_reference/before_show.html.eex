@@ -1,0 +1,2 @@
+<p class="heading">Reference approval | <span style="text-transform: capitalize;"><%= @reference.poll.title %></span></p>
+<a class="heading-a" href="/polls/<%= @reference.poll.id %>">back to poll</a>
