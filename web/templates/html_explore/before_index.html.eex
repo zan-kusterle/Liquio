@@ -1,1 +1,1 @@
-<p class="heading">List of all polls</p>
+<p class="heading"><%= @heading %></p>

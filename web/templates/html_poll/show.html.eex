@@ -48,7 +48,7 @@
 <% end %>
 
 <%= unless Enum.empty?(@inverse_references) do %>
-	<div class="section-title">Referenced by</div>
+	<h2 class="references-title">Polls that reference this</h2>
 	<%= for reference <- @inverse_references do %>
 		<a href="/polls/<%= reference.poll.id %>"><%= reference.poll.title %></a>
 	<% end %>
