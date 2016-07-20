@@ -14,6 +14,11 @@ defmodule Democracy.TrustMetric do
 		Application.get_env(:democracy, :default_trust_metric_url)
 	end
 
+	def get!(url) do
+		{:ok, trust_metric_ids} = get(url)
+		trust_metric_ids
+	end
+
 	def get(url) do
 		trust_metric = Repo.get_by(TrustMetric, url: url)
 		if trust_metric do

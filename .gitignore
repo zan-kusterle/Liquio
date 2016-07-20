@@ -1,3 +1,4 @@
+/rel/*
 # App artifacts
 /_build
 /db
