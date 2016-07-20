@@ -22,9 +22,9 @@ defmodule Democracy.Plugs.WithParams do
 						|> halt
 					else
 						conn
-                        |> put_status(status)
-                    	|> Phoenix.Controller.render(Democracy.ErrorView, "error.json", message: "Unable to fetch param #{name}: #{message}")
-                    	|> halt
+						|> put_status(status)
+						|> Phoenix.Controller.render(Democracy.ErrorView, "error.json", message: "Unable to fetch param #{name}: #{message}")
+						|> halt
 					end
 			end
 		else
