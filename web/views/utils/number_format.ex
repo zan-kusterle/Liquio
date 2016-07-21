@@ -7,7 +7,7 @@ defmodule Democracy.NumberFormat do
 
 	def number_format_simple(x) do
 		s = :erlang.float_to_binary(x, [:compact, { :decimals, 2 }])
-		|> String.replace(".0", "")
+		|> String.trim_trailing(".0")
 		raw(s)
 	end
 
