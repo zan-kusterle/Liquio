@@ -9,6 +9,10 @@
 <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 <a href="/identities/<%= @identity.id %>/votes"><%= @num_votes %> votes</a>
 
+<%= unless @is_in_trust_metric do %>
+	<p style="color: #e80606; margin: 0px; margin-top: 5px; font-weight: bold;">NOT IN TRUST METRIC</p>
+<% end %>
+
 <%= if @is_me do %>
 	<form method="POST" action="preferences">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />

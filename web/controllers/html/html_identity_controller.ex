@@ -22,8 +22,11 @@ defmodule Democracy.HtmlIdentityController do
 		:identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
 	},
 	def show(conn, %{:identity => identity}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
+
 		current_identity = Guardian.Plug.current_resource(conn)
 		is_me = current_identity != nil and identity.id == current_identity.id
+		is_in_trust_metric = Enum.member?(calculation_opts[:trust_metric_ids], to_string(identity.id))
 		own_is_human_vote =
 			if current_identity != nil do
 				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: identity.trust_metric_poll_id, is_last: true)
@@ -69,6 +72,7 @@ defmodule Democracy.HtmlIdentityController do
 			title: identity.name,
 			identity: identity,
 			is_me: is_me,
+			is_in_trust_metric: is_in_trust_metric,
 			own_is_human_vote: own_is_human_vote,
 			num_votes: num_votes,
 			is_trusted: true,
