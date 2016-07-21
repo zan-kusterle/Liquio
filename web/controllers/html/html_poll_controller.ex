@@ -36,14 +36,16 @@ defmodule Democracy.HtmlPollController do
 	},
 	def show(conn, %{:user => user, :poll => poll}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
+		poll = prepare_poll(poll, calculation_opts)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "show.html",
 			title: Poll.title(poll),
 			is_logged_in: user != nil,
-			poll: prepare_poll(poll, calculation_opts),
+			poll: poll,
 			references: prepare_references(poll, calculation_opts),
-			inverse_references: Reference.inverse_for_poll(poll, calculation_opts)
+			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
+			is_above_minimum_voting_power: poll.results.total >= calculation_opts[:minimum_voting_power]
 	end)
 
 	with_params(%{

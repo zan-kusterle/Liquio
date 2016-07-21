@@ -14,6 +14,7 @@ defmodule Democracy.Repo.Migrations.CreateIdentity do
 			add :vote_weight_halving_days, :integer
 			add :soft_quorum_t, :float
 			add :minimum_reference_approval_score, :float
+			add :minimum_voting_power, :float
 
 			timestamps
 		end

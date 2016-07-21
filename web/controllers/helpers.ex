@@ -29,8 +29,9 @@ defmodule Democracy.Controllers.Helpers do
 			datetime: Map.get(conn.params, :datetime) || Timex.DateTime.now,
 			trust_metric_ids: get_trust_identity_ids(conn),
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
-			soft_quorum_t: (identity && identity.soft_quorum_t) || 5,
-			minimum_reference_approval_score: (identity && identity.minimum_reference_approval_score) ||  0.5
+			soft_quorum_t: (identity && identity.soft_quorum_t) || 0,
+			minimum_reference_approval_score: (identity && identity.minimum_reference_approval_score) ||  0.5,
+			minimum_voting_power: (identity && identity.minimum_voting_power) ||  1,
 		}
 	end
 

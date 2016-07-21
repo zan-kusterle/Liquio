@@ -67,7 +67,9 @@ defmodule Democracy.Result do
 		if datetime == nil do
 			datetime = Timex.DateTime.now
 		end
-
+		if poll.kind == "custom" do
+			soft_quorum_t = 0
+		end
 		mean_fn = if poll.choice_type == "quantity" do
 			&median/2
 		else

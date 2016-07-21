@@ -19,6 +19,11 @@
 		</div>
 
 		<div class="preference">
+			<div class="section-title">Minimum voting power</div>
+			<input name="minimum_voting_power" style="width: 250px;" value="<%= @identity.minimum_voting_power %>" />
+		</div>
+
+		<div class="preference">
 			<div class="section-title">Number of artificial votes with score 0%. <a href="#">Learn more</a></div>
 			<input name="soft_quorum_t" style="width: 250px;" value="<%= @identity.soft_quorum_t %>" />
 		</div>

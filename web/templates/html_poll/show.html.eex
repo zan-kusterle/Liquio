@@ -9,7 +9,7 @@
 <h1 class="title"><%= raw(@poll.title) %></h1>
 
 <div class="score-with-links">
-	<%= render "score.html", poll: @poll %>
+	<%= render "score.html", poll: @poll, is_above_minimum_voting_power: @is_above_minimum_voting_power %>
 
 	<div class="links">
 		<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-pie-chart" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
