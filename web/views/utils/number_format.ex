@@ -51,6 +51,6 @@ defmodule Democracy.NumberFormat do
 		end
 
 		s = (:erlang.float_to_binary(value, [:compact, { :decimals, 2 }])
-		|> String.replace(".0", ""))  <> suffix
+		|> String.trim_trailing(".0", ""))  <> suffix
 	end
 end
