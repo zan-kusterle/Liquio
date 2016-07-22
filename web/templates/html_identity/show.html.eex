@@ -28,13 +28,13 @@
 		</div>
 
 		<div class="preference">
-			<div class="section-title">Number of artificial votes with score 0%. <a href="#">Learn more</a></div>
-			<input name="soft_quorum_t" style="width: 250px;" value="<%= @identity.soft_quorum_t %>" />
+			<div class="section-title">Minimum reference approval score</div>
+			<input name="minimum_reference_approval_score" style="width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" />
 		</div>
 
 		<div class="preference">
-			<div class="section-title">Minimum reference approval score</div>
-			<input name="minimum_reference_approval_score" style="width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" />
+			<div class="section-title">Number of artificial votes with score 0% in reference approval polls. <a href="#">Learn more</a></div>
+			<input name="soft_quorum_t" style="width: 250px;" value="<%= @identity.soft_quorum_t %>" />
 		</div>
 
 		<div class="preference">
