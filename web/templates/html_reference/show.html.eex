@@ -4,7 +4,8 @@
 <%= render Democracy.HtmlPollView, "cast_vote.html",
 	to_path: "/polls/#{@reference.poll.id}/references/#{@reference.reference_poll.id}?for_choice=#{@reference.for_choice}",
 	poll: %{:id => @reference.approval_poll_id, :choice_type => "probability"},
-	own_vote: @own_vote
+	own_vote: @own_vote,
+	allow_numeric: false
 %>
 
 <%= render Democracy.HtmlPollView, "score.html", poll: @reference.approval_poll %>

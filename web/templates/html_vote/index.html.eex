@@ -7,7 +7,7 @@
 
 <%= if @poll.kind == "custom" do %>
 	<div class="section-title" style="margin-top: 0px;">Propose new reference with URL</div>
-	<form action="references" target="_blank">
+	<form action="references">
 		<input name="reference_poll_id" type="text" placeholder="Poll URL" style="width: 300px;" />
 		<%= if @poll.choice_type == "probability" do %>
 			<button type="submit" name="for_choice" value="1">View positive</button>

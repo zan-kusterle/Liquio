@@ -33,7 +33,7 @@
 		<h2 class="references-title">There are no references here.</h2>
 		<%= if @is_logged_in do %>
 			<div class="section-title" style="margin-top: 0px;">You can enter the URL of reference below, then vote for it to be shown.</div>
-			<form action="/polls/<%= @poll.id %>/references" target="_blank">
+			<form action="/polls/<%= @poll.id %>/references">
 				<input name="reference_poll_id" type="text" placeholder="Poll URL" style="width: 300px;" />
 				<%= if @poll.choice_type == "probability" do %>
 					<button type="submit" name="for_choice" value="1">View positive</button>
