@@ -15,8 +15,8 @@ defmodule Democracy.Controllers.Helpers do
 
 	def handle_errors({:error, changeset}, conn, _func) do
 		conn
-		|> Phoenix.Controller.put_flash(:error, "Couldn't create identity")
-		|> Phoenix.Controller.redirect to: "/"
+		|> Phoenix.Controller.put_flash(:error, "Something went wrong")
+		|> Phoenix.Controller.redirect to: default_redirect(conn)
 	end
 
 	def handle_errors({:ok, item}, _conn, func) do

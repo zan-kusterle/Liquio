@@ -1,16 +1,24 @@
 <form method="POST" action="/polls" autocomplete="off" class="create-poll">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-	<input type="hidden" name="choice_type" value="from_topics" />
-
 	<div class="preference">
-		<label>Title</label>
-		<input name="title" placeholder="Title must explain itself enough for voters to make a decision" />
+		<label class="heading-label">Choice type</label>
+
+		<label for="probability" class="checkbox-label">Probability</label>
+		<input id="probability" type="radio" name="choice_type" value="probability" style="position: relative; top: -1px;" checked />
+
+		<label for="quantity" class="checkbox-label" style="margin-left: 10px;">Quantity</label>
+		<input id="quantity" type="radio" name="choice_type" value="quantity" style="position: relative; top: -1px;" />
 	</div>
 
 	<div class="preference">
-		<label>Topics</label>
-		<input name="topics" placeholder="global warming, science, nature" />
+		<label class="heading-label">Title</label>
+		<input type="text" name="title" placeholder="Title must explain itself enough for voters to make a decision" />
+	</div>
+
+	<div class="preference">
+		<label class="heading-label">Topics</label>
+		<input type="text" name="topics" placeholder="global warming, science, nature" />
 	</div>
 
 	<button type="submit">Create</button>

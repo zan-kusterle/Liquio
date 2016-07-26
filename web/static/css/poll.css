@@ -161,7 +161,7 @@
 	color: #333;
 }
 
-.create-poll input {
+.create-poll input[type="text"] {
 	width: 100%;
 	text-align: center;
 }

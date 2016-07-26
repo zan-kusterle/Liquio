@@ -65,6 +65,9 @@ defmodule Democracy.Identity do
 	end
 
 	defp random_string(length) do
-		:crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
+		chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" |> String.split("")
+		Enum.reduce((1..length), [], fn (_, acc) ->
+			[Enum.random(chars) | acc]
+		end) |> Enum.join("")
 	end
 end

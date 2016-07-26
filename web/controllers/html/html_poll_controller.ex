@@ -9,16 +9,9 @@ defmodule Democracy.HtmlPollController do
 	with_params(%{
 		:title => {Plugs.StringParam, [name: "title"]},
 		:topics => {Plugs.ListParam, [name: "topics", item: {Plugs.StringParam, []}]},
-		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity", "from_topics"]]},
+		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity"]]},
 	},
 	def create(conn, %{:title => title, :topics => topics, :choice_type => choice_type}) do
-		choice_type = if choice_type == "from_topics" and Enum.member?(topics, "quantity") do
-			topics = Enum.filter(topics, & &1 != "quantity")
-			"quantity"
-		else
-			"probability"
-		end
-		
 		poll = Poll.create(choice_type, title, topics)
 		conn
 		|> put_flash(:info, "Done, share the url so others can vote")

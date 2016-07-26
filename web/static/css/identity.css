@@ -16,13 +16,20 @@
 	margin-bottom: 15px;
 }
 
-.preference label {
+.preference .heading-label {
 	font-size: 13px;
 	color: #333;
 	font-weight: bold;
+	width: 100%;
+	display: block;
+	margin-bottom: 5px;
 }
 
-.preference input {
+.preference .checkbox-label {
+	font-size: 13px;
+}
+
+.preference input[type="text"] {
 	margin-top: 4px;
 	margin-left: 3px;
 	width: 100%;

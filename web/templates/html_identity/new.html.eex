@@ -2,13 +2,13 @@
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 	<div class="preference">
-		<label>Username</label>
-		<input name="username" />
+		<label class="heading-label">Username</label>
+		<input type="text" name="username" />
 	</div>
 
 	<div class="preference">
-		<label>Name</label>
-		<input name="name" />
+		<label class="heading-label">Name</label>
+		<input type="text" name="name" />
 	</div>
 
 	<button type="submit">Create</button>

@@ -19,27 +19,27 @@
 
 		<div class="preference">
 			<div class="section-title">Trust metric URL</div>
-			<input name="trust_metric_url" value="<%= @identity.trust_metric_url %>" />
+			<input type="text" name="trust_metric_url" value="<%= @identity.trust_metric_url %>" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Minimum voting power</div>
-			<input name="minimum_voting_power" style="width: 250px;" value="<%= @identity.minimum_voting_power %>" />
+			<input type="text" name="minimum_voting_power" style="width: 250px;" value="<%= @identity.minimum_voting_power %>" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Minimum reference approval score</div>
-			<input name="minimum_reference_approval_score" style="width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" />
+			<input type="text" name="minimum_reference_approval_score" style="width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Number of artificial votes with score 0% in reference approval polls. <a href="#">Learn more</a></div>
-			<input name="soft_quorum_t" style="width: 250px;" value="<%= @identity.soft_quorum_t %>" />
+			<input type="text" name="soft_quorum_t" style="width: 250px;" value="<%= @identity.soft_quorum_t %>" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Number of days for vote weight to halve</div>
-			<input name="vote_weight_halving_days" style="width: 250px;" value="<%= @identity.vote_weight_halving_days %>" />
+			<input type="text" name="vote_weight_halving_days" style="width: 250px;" value="<%= @identity.vote_weight_halving_days %>" />
 		</div>
 
 		<button type="submit">Update preferences</button>
@@ -58,12 +58,12 @@
 
 		<div class="preference">
 			<div class="section-title">Relative weight of delegation to this identity</div>
-			<input name="weight"<%= if @delegation do %> value="<%= number_format_simple @delegation.data.weight %>"<% end %> />
+			<input type="text" name="weight"<%= if @delegation do %> value="<%= number_format_simple @delegation.data.weight %>"<% end %> />
 		</div>
 
 		<div class="preference">
-			<div class="section-title">Delegate only for the following topics</div>
-			<input name="topics"<%= if @delegation do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> placeholder="All topics" />
+			<div class="section-title">Delegate only for the following topics (separated by comma)</div>
+			<input type="text" name="topics"<%= if @delegation do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> placeholder="All topics" />
 		</div>
 
 		<%= if @delegation do %>
