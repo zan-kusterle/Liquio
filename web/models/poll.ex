@@ -72,11 +72,11 @@ defmodule Democracy.Poll do
 	end
 
 	defp capitalize_title(title) do
-		title |> String.split(" ") |> Enum.map(fn(word) ->
+		title |> String.downcase |> String.split(" ") |> Enum.map(fn(word) ->
 			if word in ["the", "is", "a"] do
-				word |> String.downcase
+				word
 			else
-				word |> String.downcase |> String.capitalize
+				word |> String.capitalize
 			end
 		end) |> Enum.join(" ")
 	end
