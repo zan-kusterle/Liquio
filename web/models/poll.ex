@@ -11,7 +11,6 @@ defmodule Democracy.Poll do
 		field :kind, :string
 		field :choice_type, :string
 		field :title, :string
-		field :source_urls, {:array, :string}
 		field :topics, {:array, :string}
 
 		has_many :votes, Vote
@@ -24,7 +23,7 @@ defmodule Democracy.Poll do
 			params = Map.put(params, "title", capitalize_title(params["title"]))
 		end
 		data
-		|> cast(params, ["choice_type", "title", "source_urls", "topics"])
+		|> cast(params, ["choice_type", "title", "topics"])
 		|> validate_required(:title)
 		|> put_change(:kind, "custom")
 	end
@@ -39,7 +38,6 @@ defmodule Democracy.Poll do
 			:kind => "custom",
 			:choice_type => choice_type,
 			:title => capitalize_title(title),
-			:source_urls => [],
 			:topics => topics,
 		})
 	end

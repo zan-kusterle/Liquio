@@ -6,7 +6,6 @@ defmodule Democracy.Repo.Migrations.CreatePoll do
 			add :kind, :string, null: false
 			add :choice_type, :string, null: false
 			add :title, :string
-			add :source_urls, {:array, :string}
 			add :topics, {:array, :string}
 			add :is_binary, :boolean
 
