@@ -13,7 +13,6 @@
 	margin-top: 11px;
 	font-size: 26px;
 	font-weight: normal;
-	text-transform: capitalize;
 	color: #333;
 }
 
@@ -146,7 +145,6 @@
 	width: 316px;
 	padding: 7px 5px 5px 0px;
 	line-height: 16px;
-	text-transform: capitalize;
 	margin: 0px;
 }
 
@@ -173,6 +171,5 @@
 }
 
 .inverse-reference {
-	text-transform: capitalize;
 	margin-bottom: 4px;
 }

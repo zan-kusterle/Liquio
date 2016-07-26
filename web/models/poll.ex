@@ -20,6 +20,9 @@ defmodule Democracy.Poll do
 	end
 	
 	def changeset(data, params) do
+		if Map.has_key?(params, "title") and is_bitstring(params["title"]) do
+			params = Map.put(params, "title", capitalize_title(params["title"]))
+		end
 		data
 		|> cast(params, ["choice_type", "title", "source_urls", "topics"])
 		|> validate_required(:title)
@@ -35,15 +38,10 @@ defmodule Democracy.Poll do
 		Repo.insert!(%Poll{
 			:kind => "custom",
 			:choice_type => choice_type,
-			:title => title,
+			:title => capitalize_title(title),
 			:source_urls => [],
 			:topics => topics,
 		})
-	end
-
-	def preload(poll) do
-		poll
-		|> Map.put(:title, Poll.title(poll))
 	end
 
 	def search(query, search_term) do
@@ -71,6 +69,16 @@ defmodule Democracy.Poll do
 			true ->
 				poll.title
 		end
+	end
+
+	defp capitalize_title(title) do
+		title |> String.split(" ") |> Enum.map(fn(word) ->
+			if word in ["the", "is", "a"] do
+				word |> String.downcase
+			else
+				word |> String.downcase |> String.capitalize
+			end
+		end) |> Enum.join(" ")
 	end
 
 	def is_custom(poll) do poll.kind == "custom" end

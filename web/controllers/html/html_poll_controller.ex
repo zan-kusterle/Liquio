@@ -33,9 +33,9 @@ defmodule Democracy.HtmlPollController do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "show.html",
-			title: Poll.title(poll),
+			title: poll.title,
 			is_logged_in: user != nil,
-			poll: poll,
+			poll: poll |> Map.put(:title, Poll.title(poll)),
 			references: prepare_references(poll, calculation_opts),
 			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
 			is_above_minimum_voting_power: poll.results.total >= calculation_opts[:minimum_voting_power]
@@ -50,16 +50,16 @@ defmodule Democracy.HtmlPollController do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "details.html",
-			title: Poll.title(poll),
+			title: poll.title,
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
-			poll: prepare_poll(poll, calculation_opts),
+			poll: prepare_poll(poll, calculation_opts) |> Map.put(:title, Poll.title(poll)),
 			contributions: prepare_contributions(poll, calculation_opts),
 			results_with_datetime: prepare_results_with_datetime(poll, 30, calculation_opts)
 	end)
 
 	plug :put_layout, "minimal.html" when action in [:embed]
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
 		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url", maybe: true]},
 	},
 	def embed(conn, %{:poll => poll}) do
@@ -74,7 +74,6 @@ defmodule Democracy.HtmlPollController do
 	defp prepare_poll(poll, calculate_opts) do
 		poll
 		|> Map.put(:results, Result.calculate(poll, calculate_opts))
-		|> Map.put(:title, Poll.title(poll))
 	end
 
 	defp prepare_references(poll, calculate_opts) do
