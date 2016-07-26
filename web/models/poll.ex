@@ -73,7 +73,7 @@ defmodule Democracy.Poll do
 
 	defp capitalize_title(title) do
 		title |> String.downcase |> String.split(" ") |> Enum.map(fn(word) ->
-			if word in ["the", "is", "a"] do
+			if word in ["a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "up", "and", "as", "but", "or", "nor"] do
 				word
 			else
 				word |> String.capitalize
