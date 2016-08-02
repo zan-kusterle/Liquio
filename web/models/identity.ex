@@ -25,6 +25,10 @@ defmodule Democracy.Identity do
 	end
 	
 	def changeset(data, params) do
+		if Map.has_key?(params, "name") and is_bitstring(params["name"]) do
+			params = Map.put(params, "name", capitalize_name(params["name"]))
+		end
+
 		data
 		|> cast(params, ["username", "name"])
 		|> validate_required(:username)
@@ -69,5 +73,9 @@ defmodule Democracy.Identity do
 		Enum.reduce((1..length), [], fn (_, acc) ->
 			[Enum.random(chars) | acc]
 		end) |> Enum.join("")
+	end
+
+	defp capitalize_name(name) do
+		name |> String.downcase |> String.split(" ") |> Enum.map(&String.capitalize/1) |> Enum.join(" ")
 	end
 end

@@ -29,7 +29,6 @@ defmodule Democracy.Poll do
 	end
 
 	def create(changeset) do
-		# TODO: Store snapshot of source urls content. In case content changes on the url later users can be warned and given the option to view both versions.
 		Repo.insert(changeset)
 	end
 
@@ -82,7 +81,6 @@ defmodule Democracy.Poll do
 	def is_custom(poll) do poll.kind == "custom" end
 
 	def get_random() do
-		# TODO: More likely to choose popular polls
 		from(p in Poll,
 		select: p,
 		where: p.kind == "custom",
