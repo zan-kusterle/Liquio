@@ -1,12 +1,13 @@
-FROM alpine:edge
+FROM bitwalker/alpine-erlang:4.0
 
-RUN apk --update add erlang erlang-sasl erlang-crypto erlang-syntax-tools && rm -rf /var/cache/apk/*
+EXPOSE 80
+ENV PORT=80
 
-RUN mkdir -p /app
+ENV MIX_ENV=prod
 ARG VERSION=0.0.1
-COPY rel/democracy/releases/${VERSION}/democracy.tar.gz /app/democracy.tar.gz
-COPY scripts/wait-for-postgres.sh /app/wait-for-postgres.sh
-WORKDIR /app
-RUN tar xvzf democracy.tar.gz
-ENV PORT 80
-CMD ["/app/bin/democracy", "foreground"]
+ADD rel/democracy/releases/${VERSION}/democracy.tar.gz ./
+RUN tar -xzvf democracy.tar.gz
+
+USER default
+
+CMD ./bin/democracy foreground
