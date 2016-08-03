@@ -11,7 +11,7 @@
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 		<input type="hidden" name="redirect" value="<%= @to_path %>" />
-		<input type="text" class="score-input" name="score"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.score) %>"<% end %> />
+		<input type="text" class="score-input" name="score"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.score, 10) %>"<% end %> />
 	</form>
 <% end %>
 <%= if @poll.choice_type == "probability" do %>

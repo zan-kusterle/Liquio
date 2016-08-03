@@ -5,8 +5,8 @@ defmodule Democracy.NumberFormat do
 		raw(format_number(x))
 	end
 
-	def number_format_simple(x) do
-		s = :erlang.float_to_binary(x, [:compact, { :decimals, 2 }])
+	def number_format_simple(x, decimals \\ 2) do
+		s = :erlang.float_to_binary(x, [:compact, { :decimals, decimals }])
 		|> String.trim_trailing(".0")
 		raw(s)
 	end
@@ -40,17 +40,31 @@ defmodule Democracy.NumberFormat do
 	end
 
 	def format_number(x) do
-		x = x * 1.0
-		{value, suffix} = cond do
-			x > 999999999.999999 ->
-				{x / 1000000000, " x 10<sup>9</sup>"}
-			x > 999999.999999 ->
-				{x / 1000000, " x 10<sup>6</sup>"}
-			true ->
-				{x, ""}
+		abs_x = abs(x)
+		if abs_x > 0 do
+			s = format_greater_than_zero(abs_x)
+			if x < 0 do "-#{s}" else s end
+		else
+			"0"
 		end
+	end
 
-		s = (:erlang.float_to_binary(value, [:compact, { :decimals, 2 }])
-		|> String.trim_trailing(".0"))  <> suffix
+	defp format_greater_than_zero(x) do
+		log_x = :math.log10(x)
+		if log_x >= 6 or log_x <= -4 do
+			power = Float.floor(log_x)
+			base = x / :math.pow(10, power)
+			"#{round_simple(base, 2)} x 10<sup>#{round_simple(power, 0)}</sup>"
+		else
+			n = Float.floor(2 - log_x)
+			if n < 0 do
+				n = 0
+			end
+			round_simple x, n
+		end
+	end
+
+	defp round_simple(x, decimals) do
+		:erlang.float_to_binary(x, [:compact, { :decimals, decimals }]) |> String.trim_trailing(".0")
 	end
 end
