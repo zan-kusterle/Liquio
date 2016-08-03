@@ -48,7 +48,7 @@ defmodule Democracy.Poll do
 	end
 
 	def all() do
-		from(p in Poll, where: p.kind == "custom")
+		from(p in Poll, where: p.kind == "custom", order_by: [desc: p.id])
 	end
 
 	def by_topic(topic) do

@@ -12,6 +12,9 @@
 		<% else %>
 			<title>Liquio</title>
 		<% end %>
+
+		<link rel="icon" href="/favicon.ico" />
+
 		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
 	</head>
 
