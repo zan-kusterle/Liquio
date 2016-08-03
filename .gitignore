@@ -1,3 +1,4 @@
+/data/*
 /rel/*
 # App artifacts
 /_build

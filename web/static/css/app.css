@@ -51,6 +51,10 @@ input[type="text"], input[type="password"], input[type="search"], input[type="da
 	-webkit-appearance:none;
 }
 
+input[type="search"] {
+	padding: 6px;
+}
+
 hr {
 	margin: 20px 0px;
 	border: 0;
