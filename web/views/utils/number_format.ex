@@ -52,11 +52,15 @@ defmodule Democracy.NumberFormat do
 	defp format_greater_than_zero(x) do
 		log_x = :math.log10(x)
 		if log_x >= 6 or log_x <= -4 do
-			power = Float.floor(log_x)
+			power = if x > 1 do
+				Float.floor(log_x / 3) * 3
+			else
+				Float.floor(log_x)
+			end
 			base = x / :math.pow(10, power)
-			"#{round_simple(base, 2)} x 10<sup>#{round_simple(power, 0)}</sup>"
+			"#{format_greater_than_zero(base)} x 10<sup>#{round_simple(power, 0)}</sup>"
 		else
-			n = Float.floor(2 - log_x)
+			n = Float.floor(2 - log_x) + 1
 			if n < 0 do
 				n = 0
 			end
