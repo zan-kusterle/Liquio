@@ -69,13 +69,20 @@ defmodule Democracy.Poll do
 	end
 
 	defp capitalize_title(title) do
-		title |> String.downcase |> String.split(" ") |> Enum.map(fn(word) ->
-			if word in ["a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "up", "and", "as", "but", "or", "nor"] do
-				word
-			else
-				word |> String.capitalize
+		title |> String.split(" ") |> Enum.map(fn(word) ->
+			cond do
+				is_acronymn(word) ->
+					word
+				String.downcase(word) in ["a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "up", "and", "as", "but", "or", "nor"] ->
+					String.downcase(word)
+				true ->
+					String.capitalize(word)
 			end
 		end) |> Enum.join(" ")
+	end
+
+	defp is_acronymn(w) do
+		w == String.upcase(w) and String.length(w) >= 2
 	end
 
 	def is_custom(poll) do poll.kind == "custom" end
