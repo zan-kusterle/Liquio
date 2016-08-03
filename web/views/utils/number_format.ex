@@ -60,7 +60,7 @@ defmodule Democracy.NumberFormat do
 			if n < 0 do
 				n = 0
 			end
-			round_simple x, n
+			round_simple x, round(n)
 		end
 	end
 
