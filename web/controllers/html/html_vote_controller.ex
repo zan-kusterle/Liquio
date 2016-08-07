@@ -18,7 +18,7 @@ defmodule Democracy.HtmlVoteController do
 	end)
 
 	with_params(%{
-		:user => {Plugs.CurrentUser, [require: false]},
+		:user => {Plugs.CurrentUser, [require: true]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
 		:score => {Plugs.NumberParam, [name: "score", maybe: true]}
 	},

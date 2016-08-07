@@ -1,6 +1,5 @@
 /data/*
 /rel/*
-!/rel/relx.config
 # App artifacts
 /_build
 /db

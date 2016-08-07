@@ -2,7 +2,7 @@ defmodule Democracy.HtmlDelegationController do
 	use Democracy.Web, :controller
 
 	with_params(%{
-		:from_identity => {Plugs.CurrentUser, []},
+		:from_identity => {Plugs.CurrentUser, [require: true]},
 		:to_identity => {Plugs.ItemParam, [name: "html_identity_id", schema: Identity]},
 		:weight => {Plugs.NumberParam, [name: "weight", error: "Delegation weight must be a number"]},
 		:topics => {Plugs.ListParam, [name: "topics", maybe: true, item: {Plugs.StringParam, []}]}
