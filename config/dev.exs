@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
-config :democracy, Democracy.Endpoint,
+config :liquio, Democracy.Endpoint,
 	http: [port: 4000],
 	debug_errors: true,
 	code_reloader: true,
@@ -14,7 +14,7 @@ config :democracy, Democracy.Endpoint,
 	watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin", cd: Path.expand("../", __DIR__)]]
 
 # Watch static and templates for browser reloading.
-config :democracy, Democracy.Endpoint,
+config :liquio, Democracy.Endpoint,
 	live_reload: [
 		patterns: [
 			~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
@@ -33,7 +33,7 @@ config :logger, :console, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 # Configure your database
-config :democracy, Democracy.Repo,
+config :liquio, Democracy.Repo,
 	adapter: Ecto.Adapters.Postgres,
 	username: "postgres",
 	password: "postgres",
@@ -41,5 +41,5 @@ config :democracy, Democracy.Repo,
 	hostname: "localhost",
 	pool_size: 10
 
-config :democracy, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
-config :democracy, trust_metric_cache_time_seconds: 5
+config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
+config :liquio, trust_metric_cache_time_seconds: 5

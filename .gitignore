@@ -1,5 +1,6 @@
 /data/*
 /rel/*
+.deliver/releases/
 # App artifacts
 /_build
 /db

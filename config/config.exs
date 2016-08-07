@@ -6,7 +6,7 @@
 use Mix.Config
 
 # Configures the endpoint
-config :democracy, Democracy.Endpoint,
+config :liquio, Democracy.Endpoint,
   url: [host: "localhost"],
   root: Path.dirname(__DIR__),
   secret_key_base: "OXjxWdx9pts7IKCZsEjYzi17TxtdnspYpOWNT9xEkjq1owWJCGF/Rn6C1LzKNkSZ",
@@ -14,7 +14,7 @@ config :democracy, Democracy.Endpoint,
   pubsub: [name: Democracy.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
-config :democracy, ecto_repos: [Democracy.Repo]
+config :liquio, ecto_repos: [Democracy.Repo]
 
 # Configures Elixir's Logger
 config :logger, :console,

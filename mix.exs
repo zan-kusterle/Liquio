@@ -2,7 +2,7 @@ defmodule Democracy.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :democracy,
+    [app: :liquio,
      version: "0.0.1",
      elixir: "~> 1.3",
      elixirc_paths: elixirc_paths(Mix.env),
@@ -19,7 +19,7 @@ defmodule Democracy.Mixfile do
   def application do
     [mod: {Democracy, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :uuid, :httpotion, :timex, :timex_ecto, :guardian, :cors_plug, :comeonin]]
+                    :phoenix_ecto, :postgrex, :uuid, :httpotion, :timex, :timex_ecto, :guardian, :cors_plug, :comeonin, :edeliver]]
   end
 
   # Specifies which paths to compile per environment.
@@ -31,6 +31,8 @@ defmodule Democracy.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [{:phoenix, "~> 1.2.0"},
+     {:exrm, "~> 1.0.8"},
+     {:edeliver, "~> 1.3.0"},
      {:phoenix_pubsub, "~> 1.0"},
      {:cors_plug, "~> 1.1"},
      {:postgrex, ">= 0.0.0"},
@@ -45,7 +47,6 @@ defmodule Democracy.Mixfile do
      {:timex, "~> 2.2.1"},
      {:timex_ecto, "~> 1.1.3"},
      {:comeonin, "~> 2.5"},
-     {:exrm, "~> 1.0"},
    ]
   end
 

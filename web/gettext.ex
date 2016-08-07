@@ -20,5 +20,5 @@ defmodule Democracy.Gettext do
 
   See the [Gettext Docs](http://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :democracy
+  use Gettext, otp_app: :liquio
 end

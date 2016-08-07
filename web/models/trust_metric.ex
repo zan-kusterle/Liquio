@@ -11,7 +11,7 @@ defmodule Democracy.TrustMetric do
 	end
 
 	def default_trust_metric_url() do
-		Application.get_env(:democracy, :default_trust_metric_url)
+		Application.get_env(:liquio, :default_trust_metric_url)
 	end
 
 	def get!(url) do
@@ -22,7 +22,7 @@ defmodule Democracy.TrustMetric do
 	def get(url) do
 		trust_metric = Repo.get_by(TrustMetric, url: url)
 		if trust_metric do
-			cache_time = Application.get_env(:democracy, :trust_metric_cache_time_seconds)
+			cache_time = Application.get_env(:liquio, :trust_metric_cache_time_seconds)
 			Task.async(fn ->
 				if_before_datetime = Timex.DateTime.now
 					|> Timex.to_erlang_datetime
