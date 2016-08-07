@@ -4,9 +4,9 @@ A liquid democracy where anyone can vote on anything. [Available here](https://w
 
 ## Applications
 
-	* Claim verification (Global warming is caused by human activity)
-	* Opinions (We should implement universal basic income)
-	* Predictions (By what year will we create artificial general intelligence)
+  * Claim verification (Global warming is caused by human activity)
+  * Opinions (We should implement universal basic income)
+  * Predictions (By what year will we create artificial general intelligence)
 
 
 ## Trust metrics
