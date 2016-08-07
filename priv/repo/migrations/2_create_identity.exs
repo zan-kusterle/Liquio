@@ -4,7 +4,7 @@ defmodule Democracy.Repo.Migrations.CreateIdentity do
 	def change do
 		create table(:identities) do
 			add :username, :string, null: false, size: 20
-			add :token, :string, null: false
+			add :password_hash, :string, null: false
 
 			add :name, :string, null: false
 
