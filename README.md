@@ -1,6 +1,6 @@
 # Liquio
 
-A liquid democracy where anyone can vote on anything. [Available here](https://www.liqu.io)
+**A liquid democracy where anyone can vote on anything. [Available here.](https://www.liqu.io)**
 
 ## Applications
 
