@@ -1,7 +1,6 @@
 .poll-item {
 	text-align: left;
 	margin-top: 15px;
-	text-transform: capitalize;
 }
 
 .poll-item:first-child {

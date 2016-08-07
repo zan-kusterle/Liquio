@@ -2,13 +2,26 @@ APP="liquio"
 
 BUILD_HOST="130.211.118.70"
 BUILD_USER="zank"
-BUILD_AT="/tmp/edeliver/liquio/builds"
+BUILD_AT="/home/zank/builds"
 
 STAGING_HOSTS="130.211.118.70"
 STAGING_USER="zank"
 DELIVER_TO="/home/zank"
 
-# For *Phoenix* projects, symlink prod.secret.exs to our tmp source
+AUTO_VERSION=commit-count+git-revision+branch-unless-master
+
+pre_erlang_clean_compile() {
+  status "Preparing static assets"
+  __sync_remote "
+    set -e
+    cd '$BUILD_AT'
+    mkdir -p priv/static
+    npm install
+    brunch build
+    MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest
+  "
+}
+
 pre_erlang_get_and_update_deps() {
   local _prod_secret_path="/home/zank/prod.secret.exs"
   if [ "$TARGET_MIX_ENV" = "prod" ]; then
