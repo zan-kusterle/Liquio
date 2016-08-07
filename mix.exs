@@ -19,7 +19,7 @@ defmodule Democracy.Mixfile do
   def application do
     [mod: {Democracy, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :uuid, :httpotion, :timex, :timex_ecto, :guardian, :cors_plug]]
+                    :phoenix_ecto, :postgrex, :uuid, :httpotion, :timex, :timex_ecto, :guardian, :cors_plug, :comeonin]]
   end
 
   # Specifies which paths to compile per environment.
@@ -44,6 +44,7 @@ defmodule Democracy.Mixfile do
      {:httpotion, "~> 3.0.0"},
      {:timex, "~> 2.2.1"},
      {:timex_ecto, "~> 1.1.3"},
+     {:comeonin, "~> 2.5"},
      {:exrm, "~> 1.0"},
    ]
   end

@@ -16,8 +16,8 @@ defmodule Democracy.IdentityView do
 			name: identity.name,
 			trust_metric_poll_id: identity.trust_metric_poll_id
 		}
-		if Map.has_key?(identity, :insecure_token) do
-			v = Map.put(v, :password, identity.insecure_token)
+		if Map.has_key?(identity, :insecure_password) do
+			v = Map.put(v, :password, identity.insecure_password)
 		end
 		if Map.has_key?(identity, :access_token) do
 			v = Map.put(v, :access_token, identity.access_token)

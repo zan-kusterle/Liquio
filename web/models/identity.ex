@@ -5,7 +5,7 @@ defmodule Democracy.Identity do
 
 	schema "identities" do
 		field :username, :string
-		field :token, :string # TODO: Hash and salt tokens
+		field :password_hash, :string
 
 		field :name, :string
 
@@ -64,7 +64,7 @@ defmodule Democracy.Identity do
 		Repo.update(changeset)
 	end
 
-	def generate_token() do
+	def generate_password() do
 		random_string(16)
 	end
 

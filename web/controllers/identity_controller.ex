@@ -8,14 +8,16 @@ defmodule Democracy.IdentityController do
 
 	plug :scrub_params, "identity" when action in [:create]
 	def create(conn, %{"identity" => params}) do
-		token = Identity.generate_token()
-		changeset = Identity.changeset(%Identity{token: token}, params)
+		password = Identity.generate_password()
+		changeset = Identity.changeset(%Identity{
+			password_hash: Comeonin.Bcrypt.hashpwsalt(password)
+		}, params)
 		case Identity.create(changeset) do
 			{:ok, identity} ->
 				conn
 				|> put_status(:created)
 				|> put_resp_header("location", identity_path(conn, :show, identity))
-				|> render("show.json", identity: Map.put(identity, :insecure_token, token))
+				|> render("show.json", identity: Map.put(identity, :insecure_password, password))
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)

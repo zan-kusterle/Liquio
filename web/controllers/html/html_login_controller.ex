@@ -8,7 +8,7 @@ defmodule Democracy.HtmlLoginController do
 
 	def create(conn, %{"username" => username, "password" => password}) do
 		identity = Repo.get_by(Identity, username: username)
-		if identity != nil and identity.token == password do
+		if identity != nil and Comeonin.Bcrypt.checkpw(password, identity.password_hash) do
 			conn
 			|> put_flash(:info, "Hello, #{identity.name}")
 			|> Guardian.Plug.sign_in(identity)
