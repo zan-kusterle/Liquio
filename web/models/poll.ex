@@ -55,19 +55,6 @@ defmodule Democracy.Poll do
 		from(p in Poll, where: p.kind == "custom" and fragment("? = ANY(?)", ^topic, p.topics))
 	end
 
-	def title(poll) do
-		cond do
-			poll.kind == "is_reference" ->
-				reference = Repo.get_by(Reference, approval_poll_id: poll.id) |> Repo.preload([:poll, :reference_poll])
-				"Is poll <u>#{reference.reference_poll.title}</u> relavant as a reference to poll <u>#{reference.poll.title}</u>?"
-			poll.kind == "is_human" ->
-				identity = Repo.get_by(Identity, trust_metric_poll_id: poll.id)
-				"Is identity <u>#{identity.username}</u> human?"
-			true ->
-				poll.title
-		end
-	end
-
 	defp capitalize_title(title) do
 		title |> String.split(" ") |> Enum.map(fn(word) ->
 			cond do

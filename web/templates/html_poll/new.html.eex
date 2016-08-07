@@ -3,12 +3,12 @@
 
 	<div class="preference">
 		<label class="heading-label">Title</label>
-		<input type="text" name="title" placeholder="Title must explain itself enough for voters to make a decision" />
+		<input type="text" name="title" placeholder="Should be unambiguous" />
 	</div>
 
 	<div class="preference">
-		<label class="heading-label">Topics</label>
-		<input type="text" name="topics" placeholder="global warming, science, nature" />
+		<label class="heading-label">Topics (separated by comma)</label>
+		<input type="text" name="topics" placeholder="" />
 	</div>
 	
 	<div class="preference">

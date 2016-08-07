@@ -1,20 +1,22 @@
-# Democracy
+# Liquio
 
-To start your Phoenix app:
+A liquid democracy where anyone can vote on anything. [Available here](https://www.liqu.io)
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Install Node.js dependencies with `npm install`
-  * Start Phoenix endpoint with `mix phoenix.server`
+## Applications
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+	* Claim verification (Global warming is caused by human activity)
+	* Opinions (We should implement universal basic income)
+	* Predictions (By what year will we create artificial general intelligence)
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
 
-## Learn more
+## Trust metrics
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: http://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+A trust metric provides a whitelist of users whose votes are counted in the final result. Everyone can choose his own trust metric. By default, Advogato trust metric is used.
+
+## Delegations
+
+Every user has one unit of voting power by default. Voting power can be delegated to other users. It's possible to delegate only for certain topics (e.g. politics).
+
+## Polls
+
+Each poll has a title which should be as unambiguous as possible to avoid confusion among voters.

@@ -2,11 +2,11 @@ defmodule Democracy.ErrorView do
 	use Democracy.Web, :view
 
 	def render("404.html", _assigns) do
-		"Page not found"
+		"There is nothing here"
 	end
 
 	def render("500.html", _assigns) do
-		"Server internal error"
+		"Ooops, something went wrong"
 	end
 
 	# In case no render clause matches or no

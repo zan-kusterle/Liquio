@@ -25,7 +25,7 @@ defmodule Democracy.HtmlPollController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "id", validator: &Poll.is_custom/1]},
 	},
 	def show(conn, %{:user => user, :poll => poll}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
@@ -35,14 +35,14 @@ defmodule Democracy.HtmlPollController do
 		|> render "show.html",
 			title: poll.title,
 			is_logged_in: user != nil,
-			poll: poll |> Map.put(:title, Poll.title(poll)),
+			poll: poll,
 			references: prepare_references(poll, calculation_opts),
 			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
 			is_above_minimum_voting_power: poll.results.total >= calculation_opts[:minimum_voting_power]
 	end)
 
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
 		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
 	},
 	def details(conn, %{:poll => poll, :datetime => datetime}) do
@@ -52,7 +52,7 @@ defmodule Democracy.HtmlPollController do
 		|> render "details.html",
 			title: poll.title,
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
-			poll: prepare_poll(poll, calculation_opts) |> Map.put(:title, Poll.title(poll)),
+			poll: prepare_poll(poll, calculation_opts),
 			contributions: prepare_contributions(poll, calculation_opts),
 			results_with_datetime: prepare_results_with_datetime(poll, 30, calculation_opts)
 	end)

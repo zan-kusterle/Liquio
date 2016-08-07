@@ -20,13 +20,13 @@
 .score-with-links {
 	margin: 0px auto;
 	margin-top: 30px;
-	width: 400px;
+	width: 340px;
 	height: 64px;
 }
 
 .score-with-links .score-box {
 	float: left;
-	margin-left: 110px;
+	margin-left: 80px;
 }
 
 .score-with-links i {
@@ -63,7 +63,7 @@
 	float: right;
 	line-height: 18px;
 	font-size: 12px;
-	width: 110px;
+	width: 80px;
 	text-align: left;
 	padding-left: 20px;
 	padding-top: 17px;

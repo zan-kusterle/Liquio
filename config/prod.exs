@@ -13,7 +13,9 @@ use Mix.Config
 # which you typically run after static files are built.
 config :democracy, Democracy.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "liqu.io", port: 80]
+  url: [host: "liqu.io", port: 80],
+  cache_static_manifest: "priv/static/manifest.json",
+  server: true
 
 config :democracy, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
 config :democracy, trust_metric_cache_time_seconds: 5 * 60

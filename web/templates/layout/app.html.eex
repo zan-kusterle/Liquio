@@ -24,7 +24,7 @@
 				<div class="header-contents">
 					<a href="/"><img class="logo" src="/images/logo.png"></a>
 
-					<form method="GET" action="/search">
+					<form method="GET" action="/search" class="search-container">
 						<input type="search" class="search" placeholder="Search" name="query"<%= if assigns[:query] do %> value="<%= @query %>"<% end %>>
 					</form>
 

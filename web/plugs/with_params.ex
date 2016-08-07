@@ -15,11 +15,18 @@ defmodule Democracy.Plugs.WithParams do
 					%{conn | params: conn.params |> Map.merge(params)}
 				{:error, name, status, message} ->
 					if :browser in conn.private.phoenix_pipelines do
-						conn
-						|> put_status(status)
-						|> Phoenix.Controller.put_flash(:error, message)
-						|> Phoenix.Controller.redirect(to: Democracy.Controllers.Helpers.default_redirect(conn))
-						|> halt
+						if status == :not_found do
+							conn
+							|> put_status(status)
+							|> Phoenix.Controller.render(Democracy.ErrorView, "404.html")
+							|> halt
+						else
+							conn
+							|> put_status(status)
+							|> Phoenix.Controller.put_flash(:error, message)
+							|> Phoenix.Controller.redirect(to: Democracy.Controllers.Helpers.default_redirect(conn))
+							|> halt
+						end
 					else
 						conn
 						|> put_status(status)
