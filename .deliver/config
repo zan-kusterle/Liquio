@@ -6,6 +6,10 @@ BUILD_AT="/home/zank/builds"
 
 STAGING_HOSTS="130.211.118.70"
 STAGING_USER="zank"
+TEST_AT="/home/zank/staging"
+
+PRODUCTION_HOSTS="130.211.118.70"
+PRODUCTION_USER="zank"
 DELIVER_TO="/home/zank"
 
 AUTO_VERSION=commit-count+git-revision+branch-unless-master
