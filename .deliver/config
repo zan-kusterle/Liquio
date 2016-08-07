@@ -6,7 +6,7 @@ BUILD_AT="/tmp/edeliver/liquio/builds"
 
 STAGING_HOSTS="130.211.118.70"
 STAGING_USER="zank"
-DELIVER_TO="/home/web"
+DELIVER_TO="/home/zank"
 
 # For *Phoenix* projects, symlink prod.secret.exs to our tmp source
 pre_erlang_get_and_update_deps() {
