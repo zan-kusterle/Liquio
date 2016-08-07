@@ -1,5 +1,5 @@
-defmodule Democracy.IdentityController do
-	use Democracy.Web, :controller
+defmodule Liquio.IdentityController do
+	use Liquio.Web, :controller
 
 	def index(conn, %{}) do
 		identities = Repo.all(Identity) |> Repo.preload([:trust_metric_poll_votes])
@@ -21,7 +21,7 @@ defmodule Democracy.IdentityController do
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
-				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
+				|> render(Liquio.ChangesetView, "error.json", changeset: changeset)
 		end
 	end
 

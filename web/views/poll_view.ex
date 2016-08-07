@@ -1,12 +1,12 @@
-defmodule Democracy.PollView do
-	use Democracy.Web, :view
+defmodule Liquio.PollView do
+	use Liquio.Web, :view
 
 	def render("index.json", %{polls: polls}) do
-		%{data: render_many(polls, Democracy.PollView, "poll.json")}
+		%{data: render_many(polls, Liquio.PollView, "poll.json")}
 	end
 
 	def render("show.json", %{poll: poll}) do
-		%{data: render_one(poll, Democracy.PollView, "poll.json")}
+		%{data: render_one(poll, Liquio.PollView, "poll.json")}
 	end
 
 	def render("poll.json", %{poll: poll}) do

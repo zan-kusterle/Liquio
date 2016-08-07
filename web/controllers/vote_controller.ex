@@ -1,5 +1,5 @@
-defmodule Democracy.VoteController do
-	use Democracy.Web, :controller
+defmodule Liquio.VoteController do
+	use Liquio.Web, :controller
 
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]}
@@ -27,7 +27,7 @@ defmodule Democracy.VoteController do
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
-				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
+				|> render(Liquio.ChangesetView, "error.json", changeset: changeset)
 		end
 	end)
 

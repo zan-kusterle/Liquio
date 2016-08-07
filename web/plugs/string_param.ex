@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.StringParam do
+defmodule Liquio.Plugs.StringParam do
 	def handle(conn, value, opts) do
 		clean = if is_bitstring(value) do
 			value = value |> String.trim

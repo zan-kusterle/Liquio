@@ -1,4 +1,4 @@
-defmodule Democracy.HtmlVoteView do
-	use Democracy.Web, :view
+defmodule Liquio.HtmlVoteView do
+	use Liquio.Web, :view
 
 end

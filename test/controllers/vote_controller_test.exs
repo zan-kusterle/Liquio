@@ -1,5 +1,5 @@
-defmodule Democracy.VoteControllerTest do
-	use Democracy.ConnCase
+defmodule Liquio.VoteControllerTest do
+	use Liquio.ConnCase
 	
 	setup %{conn: conn} do
 		{:ok, conn: put_req_header(conn, "accept", "application/json")}

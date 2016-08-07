@@ -1,4 +1,4 @@
-defmodule Democracy.Repo.Migrations.CreateReference do
+defmodule Liquio.Repo.Migrations.CreateReference do
 	use Ecto.Migration
 
 	def change do

@@ -1,7 +1,7 @@
-defmodule Democracy.PollControllerTest do
-	use Democracy.ConnCase
+defmodule Liquio.PollControllerTest do
+	use Liquio.ConnCase
 
-	alias Democracy.Poll
+	alias Liquio.Poll
 	@valid_attrs %{title: "Test title", topics: ["politics"], choice_type: "probability"}
 	@invalid_attrs %{title: nil}
 

@@ -1,10 +1,10 @@
-defmodule Democracy.LayoutView do
-	use Democracy.Web, :view
+defmodule Liquio.LayoutView do
+	use Liquio.Web, :view
 
-	alias Democracy.TrustMetric
+	alias Liquio.TrustMetric
 
 	def is_in_trust_metric?(user) do
-		case TrustMetric.get(user.trust_metric_url || Democracy.TrustMetric.default_trust_metric_url()) do
+		case TrustMetric.get(user.trust_metric_url || Liquio.TrustMetric.default_trust_metric_url()) do
 			{:ok, trust_identity_ids} ->
 				MapSet.member?(trust_identity_ids, to_string(user.id))
 			{:error, message} ->

@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.IdentityParam do
+defmodule Liquio.Plugs.IdentityParam do
 	def handle(conn, value, opts) do
 		if value == "me" do
 			identity = Guardian.Plug.current_resource(conn)
@@ -8,7 +8,7 @@ defmodule Democracy.Plugs.IdentityParam do
 				{:ok, identity}
 			end
 		else
-			Democracy.Plugs.ItemParam.handle(conn, value, opts ++ [schema: Democracy.Identity])
+			Liquio.Plugs.ItemParam.handle(conn, value, opts ++ [schema: Liquio.Identity])
 		end
 	end
 end

@@ -1,5 +1,5 @@
-defmodule Democracy.HtmlDelegationController do
-	use Democracy.Web, :controller
+defmodule Liquio.HtmlDelegationController do
+	use Liquio.Web, :controller
 
 	with_params(%{
 		:from_identity => {Plugs.CurrentUser, [require: true]},

@@ -1,12 +1,12 @@
-defmodule Democracy.Web do
+defmodule Liquio.Web do
 	@moduledoc """
 	A module that keeps using definitions for controllers,
 	views and so on.
 
 	This can be used in your application as:
 
-	use Democracy.Web, :controller
-	use Democracy.Web, :view
+	use Liquio.Web, :controller
+	use Liquio.Web, :view
 
 	The definitions below will be executed for every view,
 	controller, etc, so keep them short and clean, focused
@@ -34,20 +34,20 @@ defmodule Democracy.Web do
 			import Ecto
 			import Ecto.Query, only: [from: 1, from: 2]
 
-			import Democracy.Router.Helpers
-			import Democracy.Gettext
-			import Democracy.Plugs.WithParams, only: [with_params: 2]
+			import Liquio.Router.Helpers
+			import Liquio.Gettext
+			import Liquio.Plugs.WithParams, only: [with_params: 2]
 
-			alias Democracy.Repo
-			alias Democracy.Plugs
-			alias Democracy.Identity
-			alias Democracy.Delegation
-			alias Democracy.Vote
-			alias Democracy.Poll
-			alias Democracy.Reference
-			alias Democracy.Result
+			alias Liquio.Repo
+			alias Liquio.Plugs
+			alias Liquio.Identity
+			alias Liquio.Delegation
+			alias Liquio.Vote
+			alias Liquio.Poll
+			alias Liquio.Reference
+			alias Liquio.Result
 
-			import Democracy.Controllers.Helpers
+			import Liquio.Controllers.Helpers
 		end
 	end
 
@@ -59,10 +59,10 @@ defmodule Democracy.Web do
 			# Use all HTML functionality (forms, tags, etc)
 			use Phoenix.HTML
 
-			import Democracy.Router.Helpers
-			import Democracy.ErrorHelpers
-			import Democracy.Gettext
-			import Democracy.NumberFormat, only: [number_format: 1, number_format_simple: 1, number_format_simple: 2, score_format: 1, score_format: 2, for_choice_format: 2]
+			import Liquio.Router.Helpers
+			import Liquio.ErrorHelpers
+			import Liquio.Gettext
+			import Liquio.NumberFormat, only: [number_format: 1, number_format_simple: 1, number_format_simple: 2, score_format: 1, score_format: 2, for_choice_format: 2]
 		end
 	end
 
@@ -78,9 +78,9 @@ defmodule Democracy.Web do
 
 			import Ecto
 			import Ecto.Query, only: [from: 1, from: 2]
-			import Democracy.Gettext
+			import Liquio.Gettext
 
-			alias Democracy.Repo
+			alias Liquio.Repo
 		end
 	end
 

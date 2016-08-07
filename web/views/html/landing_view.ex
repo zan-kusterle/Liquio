@@ -1,3 +1,3 @@
-defmodule Democracy.LandingView do
-	use Democracy.Web, :view
+defmodule Liquio.LandingView do
+	use Liquio.Web, :view
 end

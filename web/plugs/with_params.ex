@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.WithParams do
+defmodule Liquio.Plugs.WithParams do
 	import Plug.Conn
 
 	def init(default), do: default
@@ -18,19 +18,19 @@ defmodule Democracy.Plugs.WithParams do
 						if status == :not_found do
 							conn
 							|> put_status(status)
-							|> Phoenix.Controller.render(Democracy.ErrorView, "404.html")
+							|> Phoenix.Controller.render(Liquio.ErrorView, "404.html")
 							|> halt
 						else
 							conn
 							|> put_status(status)
 							|> Phoenix.Controller.put_flash(:error, message)
-							|> Phoenix.Controller.redirect(to: Democracy.Controllers.Helpers.default_redirect(conn))
+							|> Phoenix.Controller.redirect(to: Liquio.Controllers.Helpers.default_redirect(conn))
 							|> halt
 						end
 					else
 						conn
 						|> put_status(status)
-						|> Phoenix.Controller.render(Democracy.ErrorView, "error.json", message: "Unable to fetch param #{name}: #{message}")
+						|> Phoenix.Controller.render(Liquio.ErrorView, "error.json", message: "Unable to fetch param #{name}: #{message}")
 						|> halt
 					end
 			end
@@ -61,7 +61,7 @@ defmodule Democracy.Plugs.WithParams do
 	defmacro with_params(list, func) do
 		name = func |> elem(2) |> Enum.at(0) |> elem(0)
 		quote do
-			plug Democracy.Plugs.WithParams, {unquote(name), unquote(list)}
+			plug Liquio.Plugs.WithParams, {unquote(name), unquote(list)}
 			unquote(func)
 		end
 	end

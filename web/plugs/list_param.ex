@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.ListParam do
+defmodule Liquio.Plugs.ListParam do
 	def handle(conn, value, opts) do
 		if is_bitstring(value) do
 			value = value
@@ -11,7 +11,7 @@ defmodule Democracy.Plugs.ListParam do
 			jobs = Enum.map(Enum.with_index(value), fn({x, i}) ->
 				{i, {item_handler_module, x, item_handler_opts}}
 			end)
-			case Democracy.Plugs.WithParams.first_error_or_result(conn, jobs) do
+			case Liquio.Plugs.WithParams.first_error_or_result(conn, jobs) do
 				{:ok, value} ->
 					{:ok, value |> Map.values() |> Enum.filter(& &1 != nil)}
 				{name, {:error, name, status, message}} ->

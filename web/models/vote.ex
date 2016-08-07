@@ -1,5 +1,5 @@
-defmodule Democracy.VoteData do
-	use Democracy.Web, :model
+defmodule Liquio.VoteData do
+	use Liquio.Web, :model
 
 	embedded_schema do
 		field :score, :float
@@ -12,16 +12,16 @@ defmodule Democracy.VoteData do
 	end
 end
 
-defmodule Democracy.Vote do
-	use Democracy.Web, :model
+defmodule Liquio.Vote do
+	use Liquio.Web, :model
 
-	alias Democracy.Repo
-	alias Democracy.Vote
-	alias Democracy.VoteData
+	alias Liquio.Repo
+	alias Liquio.Vote
+	alias Liquio.VoteData
 
 	schema "votes" do
-		belongs_to :poll, Democracy.Poll
-		belongs_to :identity, Democracy.Identity
+		belongs_to :poll, Liquio.Poll
+		belongs_to :identity, Liquio.Identity
 
 		timestamps(inserted_at: :datetime, updated_at: false, usec: true)
 		field :is_last, :boolean

@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.CurrentUser do
+defmodule Liquio.Plugs.CurrentUser do
 	def handle(conn, value, opts) do
 		identity = Guardian.Plug.current_resource(conn)
 		if identity == nil do

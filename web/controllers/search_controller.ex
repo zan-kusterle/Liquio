@@ -1,7 +1,7 @@
-defmodule Democracy.SearchController do
-	use Democracy.Web, :controller
+defmodule Liquio.SearchController do
+	use Liquio.Web, :controller
 
-	alias Democracy.Poll
+	alias Liquio.Poll
 
 	def index(conn, %{"query" => query}) do
 		polls = Poll |> Poll.search(query) |> Repo.all

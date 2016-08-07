@@ -1,4 +1,4 @@
-defmodule Democracy.ModelCase do
+defmodule Liquio.ModelCase do
   @moduledoc """
   This module defines the test case to be used by
   model tests.
@@ -16,20 +16,20 @@ defmodule Democracy.ModelCase do
 
   using do
     quote do
-      alias Democracy.Repo
+      alias Liquio.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query, only: [from: 1, from: 2]
-      import Democracy.ModelCase
+      import Liquio.ModelCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Democracy.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Liquio.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Democracy.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(Liquio.Repo, {:shared, self()})
     end
 
     :ok

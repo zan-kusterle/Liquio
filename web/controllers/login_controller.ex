@@ -1,5 +1,5 @@
-defmodule Democracy.LoginController do
-	use Democracy.Web, :controller
+defmodule Liquio.LoginController do
+	use Liquio.Web, :controller
 
 	plug :scrub_params, "identity" when action in [:create]
 
@@ -10,7 +10,7 @@ defmodule Democracy.LoginController do
 			
 			access_token = Guardian.Plug.current_token(conn)
 			conn
-			|> render(Democracy.IdentityView, "show.json", identity: Map.put(identity, :access_token, access_token))
+			|> render(Liquio.IdentityView, "show.json", identity: Map.put(identity, :access_token, access_token))
 		else
 			conn
 			|> send_resp(:unauthorized, "")

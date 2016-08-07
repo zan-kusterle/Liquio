@@ -1,4 +1,4 @@
-defmodule Democracy.Repo.Migrations.PollSearch do
+defmodule Liquio.Repo.Migrations.PollSearch do
 	use Ecto.Migration
 
 	def up do

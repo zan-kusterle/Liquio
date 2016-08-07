@@ -1,4 +1,4 @@
-defmodule Democracy.Repo.Migrations.CreateTrustMetric do
+defmodule Liquio.Repo.Migrations.CreateTrustMetric do
 	use Ecto.Migration
 
 	def change do

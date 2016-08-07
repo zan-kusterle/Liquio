@@ -1,5 +1,5 @@
-defmodule Democracy.HtmlExploreController do
-	use Democracy.Web, :controller
+defmodule Liquio.HtmlExploreController do
+	use Liquio.Web, :controller
 
 	def index(conn, _) do
 		conn

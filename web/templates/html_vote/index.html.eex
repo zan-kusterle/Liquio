@@ -1,7 +1,7 @@
 <%= unless Enum.empty?(@references) do %>
 	<div style="margin-bottom: 20px;">
 		<div class="section-title" style="margin-top: 0px;">Before voting review the references.</div>
-		<%= render Democracy.HtmlPollView, "references.html", poll: @poll, references: @references %>
+		<%= render Liquio.HtmlPollView, "references.html", poll: @poll, references: @references %>
 	</div>
 <% end %>
 
@@ -37,10 +37,10 @@
 <% end %>
 </div>
 <p class="claim"><%= raw(@poll.title) %></p>
-<%= render Democracy.HtmlPollView, "cast_vote.html",
+<%= render Liquio.HtmlPollView, "cast_vote.html",
 	to_path: "/polls/#{@poll.id}/vote",
 	poll: @poll,
 	own_vote: @own_vote
 %>
 
-<%= render Democracy.HtmlPollView, "score.html", poll: @poll %>
+<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>

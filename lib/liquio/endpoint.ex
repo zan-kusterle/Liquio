@@ -1,4 +1,4 @@
-defmodule Democracy.Endpoint do
+defmodule Liquio.Endpoint do
   use Phoenix.Endpoint, otp_app: :liquio
 
   # Serve at "/" the static files from "priv/static" directory.
@@ -35,5 +35,5 @@ defmodule Democracy.Endpoint do
 
   plug CORSPlug, [origin: "*"]
 
-  plug Democracy.Router
+  plug Liquio.Router
 end

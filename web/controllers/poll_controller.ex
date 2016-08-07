@@ -1,5 +1,5 @@
-defmodule Democracy.PollController do
-	use Democracy.Web, :controller
+defmodule Liquio.PollController do
+	use Liquio.Web, :controller
 
 	plug :scrub_params, "poll" when action in [:create]
 	def create(conn, %{"poll" => params}) do
@@ -14,7 +14,7 @@ defmodule Democracy.PollController do
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
-				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
+				|> render(Liquio.ChangesetView, "error.json", changeset: changeset)
 		end
 	end
 

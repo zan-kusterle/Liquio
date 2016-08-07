@@ -1,5 +1,5 @@
-defmodule Democracy.ErrorView do
-	use Democracy.Web, :view
+defmodule Liquio.ErrorView do
+	use Liquio.Web, :view
 
 	def render("404.html", _assigns) do
 		"There is nothing here"

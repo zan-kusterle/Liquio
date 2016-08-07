@@ -1,12 +1,12 @@
-defmodule Democracy.IdentityView do
-	use Democracy.Web, :view
+defmodule Liquio.IdentityView do
+	use Liquio.Web, :view
 
 	def render("index.json", %{identities: identities}) do
-		%{data: render_many(identities, Democracy.IdentityView, "identity.json")}
+		%{data: render_many(identities, Liquio.IdentityView, "identity.json")}
 	end
 
 	def render("show.json", %{identity: identity}) do
-		%{data: render_one(identity, Democracy.IdentityView, "identity.json")}
+		%{data: render_one(identity, Liquio.IdentityView, "identity.json")}
 	end
 
 	def render("identity.json", %{identity: identity}) do

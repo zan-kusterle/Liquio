@@ -1,5 +1,5 @@
-defmodule Democracy.Router do
-	use Democracy.Web, :router
+defmodule Liquio.Router do
+	use Liquio.Web, :router
 
 	pipeline :browser do
 		plug :accepts, ["html"]
@@ -19,7 +19,7 @@ defmodule Democracy.Router do
 		plug Guardian.Plug.LoadResource
 	end
 
-	scope "/", Democracy do
+	scope "/", Liquio do
 		pipe_through :browser
 
 		get "/", LandingController, :index
@@ -47,7 +47,7 @@ defmodule Democracy.Router do
 		get "/search", HtmlExploreController, :search
 	end
 
-	scope "/api", Democracy do
+	scope "/api", Liquio do
 		pipe_through :api
 
 		resources "/login", LoginController, only: [:create, :delete]

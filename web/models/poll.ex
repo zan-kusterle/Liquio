@@ -1,11 +1,11 @@
-defmodule Democracy.Poll do
-	use Democracy.Web, :model
+defmodule Liquio.Poll do
+	use Liquio.Web, :model
 
-	alias Democracy.Repo
-	alias Democracy.Poll
-	alias Democracy.Vote
-	alias Democracy.Reference
-	alias Democracy.Identity
+	alias Liquio.Repo
+	alias Liquio.Poll
+	alias Liquio.Vote
+	alias Liquio.Reference
+	alias Liquio.Identity
 
 	schema "polls" do
 		field :kind, :string

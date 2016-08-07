@@ -1,4 +1,4 @@
-defmodule Democracy.CalculateResultServer do
+defmodule Liquio.CalculateResultServer do
 	def start_link(uuid) do
 		Agent.start_link(fn -> {Map.new, Map.new, MapSet.new} end, name: uuid)
 	end
@@ -51,13 +51,13 @@ defmodule Democracy.CalculateResultServer do
 	end
 end
 
-defmodule Democracy.Result do
-	use Democracy.Web, :model
+defmodule Liquio.Result do
+	use Liquio.Web, :model
 
-	alias Democracy.Repo
+	alias Liquio.Repo
 
 	schema "results" do
-		belongs_to :poll, Democracy.Poll
+		belongs_to :poll, Liquio.Poll
 		field :trust_metric_key, :string
 		timestamps(inserted_at: :datetime, updated_at: false, usec: true)
 		field :data, :map
@@ -106,7 +106,7 @@ defmodule Democracy.Result do
 	def calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, topics) do
 		uuid = UUID.uuid4(:hex) |> String.to_atom
 
-		Democracy.CalculateResultServer.start_link uuid
+		Liquio.CalculateResultServer.start_link uuid
 
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
 
@@ -118,7 +118,7 @@ defmodule Democracy.Result do
 			calculate_total_weights(identity_id, state, uuid)
 		end)
 
-		Democracy.CalculateResultServer.reset_visited(uuid)
+		Liquio.CalculateResultServer.reset_visited(uuid)
 
 		contributions = trust_votes |> Enum.map(fn({identity_id, {datetime, score}}) ->
 			%{
@@ -129,7 +129,7 @@ defmodule Democracy.Result do
 			}
 		end)
 
-		Democracy.CalculateResultServer.stop uuid
+		Liquio.CalculateResultServer.stop uuid
 
 		contributions
 	end
@@ -182,29 +182,29 @@ defmodule Democracy.Result do
 	def calculate_total_weights(identity_id, state, uuid) do
 		{inverse_delegations, votes, topics, trust_identity_ids} = state
 
-		unless Democracy.CalculateResultServer.visited?(uuid, identity_id) do
+		unless Liquio.CalculateResultServer.visited?(uuid, identity_id) do
 			inverse_delegations |> Map.get(identity_id, []) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
 				cond do
 					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> nil
 					Map.has_key?(votes, from_identity_id) -> nil
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> nil
 					true ->
-						Democracy.CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
+						Liquio.CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
 						calculate_total_weights(from_identity_id, state, uuid)
 				end
 			end)
-			Democracy.CalculateResultServer.add_visited(uuid, identity_id)
+			Liquio.CalculateResultServer.add_visited(uuid, identity_id)
 		end
 	end
 
 	def get_power(identity_id, state, uuid) do
 		{inverse_delegations, votes, topics, trust_identity_ids} = state
 
-		power = Democracy.CalculateResultServer.get_power(uuid, identity_id)
+		power = Liquio.CalculateResultServer.get_power(uuid, identity_id)
 		if power do
 			power
 		else
-			Democracy.CalculateResultServer.add_visited(uuid, identity_id)
+			Liquio.CalculateResultServer.add_visited(uuid, identity_id)
 			receiving = inverse_delegations |> Map.get(identity_id, []) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
 				acc + cond do
 					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> 0
@@ -212,11 +212,11 @@ defmodule Democracy.Result do
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> 0
 					true ->
 						from_power = get_power(from_identity_id, state, uuid)
-						from_power * (from_weight / Democracy.CalculateResultServer.get_total_weight(uuid, from_identity_id))
+						from_power * (from_weight / Liquio.CalculateResultServer.get_total_weight(uuid, from_identity_id))
 				end
 			end)
 			power = 1 + receiving
-			Democracy.CalculateResultServer.put_power(uuid, identity_id, power)
+			Liquio.CalculateResultServer.put_power(uuid, identity_id, power)
 			power
 		end
 	end

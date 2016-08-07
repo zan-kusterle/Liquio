@@ -1,11 +1,11 @@
-defmodule Democracy.ChangesetView do
-  use Democracy.Web, :view
+defmodule Liquio.ChangesetView do
+  use Liquio.Web, :view
 
   @doc """
   Traverses and translates changeset errors.
 
   See `Ecto.Changeset.traverse_errors/2` and
-  `Democracy.ErrorHelpers.translate_error/1` for more details.
+  `Liquio.ErrorHelpers.translate_error/1` for more details.
   """
   def translate_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, &translate_error/1)

@@ -1,4 +1,4 @@
-defmodule Democracy.HtmlReferenceView do
-	use Democracy.Web, :view
+defmodule Liquio.HtmlReferenceView do
+	use Liquio.Web, :view
 
 end

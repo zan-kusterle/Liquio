@@ -1,7 +1,7 @@
-defmodule Democracy.Identity do
-	use Democracy.Web, :model
+defmodule Liquio.Identity do
+	use Liquio.Web, :model
 
-	alias Democracy.Repo
+	alias Liquio.Repo
 
 	schema "identities" do
 		field :username, :string
@@ -9,11 +9,11 @@ defmodule Democracy.Identity do
 
 		field :name, :string
 
-		belongs_to :trust_metric_poll, Democracy.Poll
+		belongs_to :trust_metric_poll, Liquio.Poll
 		has_many :trust_metric_poll_votes, through: [:trust_metric_poll, :votes]
 
-		has_many :delegations_from, Democracy.Delegation, foreign_key: :from_identity_id
-		has_many :delegations_to, Democracy.Delegation, foreign_key: :to_identity_id
+		has_many :delegations_from, Liquio.Delegation, foreign_key: :from_identity_id
+		has_many :delegations_to, Liquio.Delegation, foreign_key: :to_identity_id
 
 		field :trust_metric_url, :string
 		field :vote_weight_halving_days, :integer
@@ -39,7 +39,7 @@ defmodule Democracy.Identity do
 	end
 
 	def create(changeset) do
-		trust_metric_poll = Repo.insert!(%Democracy.Poll{
+		trust_metric_poll = Repo.insert!(%Liquio.Poll{
 			:kind => "is_human",
 			:choice_type => "probability",
 			:title => nil,

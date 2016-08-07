@@ -1,12 +1,12 @@
-defmodule Democracy.VoteView do
-	use Democracy.Web, :view
+defmodule Liquio.VoteView do
+	use Liquio.Web, :view
 
 	def render("index.json", %{votes: votes}) do
-		%{data: render_many(votes, Democracy.VoteView, "vote.json")}
+		%{data: render_many(votes, Liquio.VoteView, "vote.json")}
 	end
 
 	def render("show.json", %{vote: vote}) do
-		%{data: render_one(vote, Democracy.VoteView, "vote.json")}
+		%{data: render_one(vote, Liquio.VoteView, "vote.json")}
 	end
 
 	def render("vote.json", %{vote: vote}) do

@@ -1,5 +1,5 @@
-defmodule Democracy.HtmlReferenceController do
-	use Democracy.Web, :controller
+defmodule Liquio.HtmlReferenceController do
+	use Liquio.Web, :controller
 
 	def index(conn, %{"html_poll_id" => poll_id, "for_choice" => for_choice, "reference_poll_id" => reference_poll_url}) do
 		url = URI.parse(reference_poll_url)

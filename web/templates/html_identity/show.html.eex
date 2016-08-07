@@ -46,7 +46,7 @@
 	</form>
 <% else %>
 	<div class="section-title">Do you trust this identity? <a href="#">Learn more</a></div>
-	<%= render Democracy.HtmlPollView, "cast_vote.html",
+	<%= render Liquio.HtmlPollView, "cast_vote.html",
 		to_path: "/identities/#{@identity.id}",
 		poll: %{:id => @identity.trust_metric_poll_id, :choice_type => "probability"},
 		own_vote: @own_is_human_vote,

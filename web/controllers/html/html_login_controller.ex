@@ -1,5 +1,5 @@
-defmodule Democracy.HtmlLoginController do
-	use Democracy.Web, :controller
+defmodule Liquio.HtmlLoginController do
+	use Liquio.Web, :controller
 
 	def index(conn, _params) do
 		conn

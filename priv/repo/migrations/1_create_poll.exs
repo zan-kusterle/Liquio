@@ -1,4 +1,4 @@
-defmodule Democracy.Repo.Migrations.CreatePoll do
+defmodule Liquio.Repo.Migrations.CreatePoll do
 	use Ecto.Migration
 
 	def change do

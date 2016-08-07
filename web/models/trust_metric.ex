@@ -1,8 +1,8 @@
-defmodule Democracy.TrustMetric do
-	use Democracy.Web, :model
+defmodule Liquio.TrustMetric do
+	use Liquio.Web, :model
 
-	alias Democracy.Repo
-	alias Democracy.TrustMetric
+	alias Liquio.Repo
+	alias Liquio.TrustMetric
 
 	schema "trust_metrics" do
 		field :url, :string

@@ -1,10 +1,10 @@
-defmodule Democracy.Reference do
-	use Democracy.Web, :model
+defmodule Liquio.Reference do
+	use Liquio.Web, :model
 
-	alias Democracy.Repo
-	alias Democracy.Reference
-	alias Democracy.Poll
-	alias Democracy.Result
+	alias Liquio.Repo
+	alias Liquio.Reference
+	alias Liquio.Poll
+	alias Liquio.Result
 
 	schema "references" do
 		belongs_to :poll, Poll

@@ -6,15 +6,15 @@
 use Mix.Config
 
 # Configures the endpoint
-config :liquio, Democracy.Endpoint,
+config :liquio, Liquio.Endpoint,
   url: [host: "localhost"],
   root: Path.dirname(__DIR__),
   secret_key_base: "OXjxWdx9pts7IKCZsEjYzi17TxtdnspYpOWNT9xEkjq1owWJCGF/Rn6C1LzKNkSZ",
   render_errors: [accepts: ~w(html json)],
-  pubsub: [name: Democracy.PubSub,
+  pubsub: [name: Liquio.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
-config :liquio, ecto_repos: [Democracy.Repo]
+config :liquio, ecto_repos: [Liquio.Repo]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -33,8 +33,8 @@ config :phoenix, :generators,
 config :guardian, Guardian,
   allowed_algos: ["HS512"], # optional
   verify_module: Guardian.JWT,  # optional
-  issuer: "Democracy",
+  issuer: "Liquio",
   ttl: { 30, :days },
   verify_issuer: true, # optional
   secret_key: "nCtmk9gVyGfAgab9KMCkQdjXdgGUwTB2SO5piuvoqDoK4t0MEmbpHHzHsiw5GIYR",
-  serializer: Democracy.GuardianSerializer
+  serializer: Liquio.GuardianSerializer

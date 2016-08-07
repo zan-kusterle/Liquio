@@ -1,4 +1,4 @@
-defmodule Democracy.NumberFormat do
+defmodule Liquio.NumberFormat do
 	use Phoenix.HTML
 
 	def number_format(x) do

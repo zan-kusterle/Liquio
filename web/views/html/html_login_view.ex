@@ -1,3 +1,3 @@
-defmodule Democracy.HtmlLoginView do
-	use Democracy.Web, :view
+defmodule Liquio.HtmlLoginView do
+	use Liquio.Web, :view
 end

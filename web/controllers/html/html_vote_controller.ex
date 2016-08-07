@@ -1,5 +1,5 @@
-defmodule Democracy.HtmlVoteController do
-	use Democracy.Web, :controller
+defmodule Liquio.HtmlVoteController do
+	use Liquio.Web, :controller
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},

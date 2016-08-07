@@ -1,6 +1,6 @@
-defmodule Democracy.Plugs.ItemParam do
+defmodule Liquio.Plugs.ItemParam do
 	def handle(conn, value, opts) do
-		item = Democracy.Repo.get(opts[:schema], value)
+		item = Liquio.Repo.get(opts[:schema], value)
 		if item != nil and (opts[:validator] == nil or opts[:validator].(item)) do
 			{:ok, item}
 		else

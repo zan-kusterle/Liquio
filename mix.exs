@@ -1,4 +1,4 @@
-defmodule Democracy.Mixfile do
+defmodule Liquio.Mixfile do
   use Mix.Project
 
   def project do
@@ -17,7 +17,7 @@ defmodule Democracy.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {Democracy, []},
+    [mod: {Liquio, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
                     :phoenix_ecto, :postgrex, :uuid, :httpotion, :timex, :timex_ecto, :guardian, :cors_plug, :comeonin, :edeliver]]
   end

@@ -1,5 +1,5 @@
-defmodule Democracy.ReferenceController do
-	use Democracy.Web, :controller
+defmodule Liquio.ReferenceController do
+	use Liquio.Web, :controller
 
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},

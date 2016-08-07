@@ -1,5 +1,5 @@
-defmodule Democracy.HtmlPollController do
-	use Democracy.Web, :controller
+defmodule Liquio.HtmlPollController do
+	use Liquio.Web, :controller
 
 	def new(conn, _) do
 		conn

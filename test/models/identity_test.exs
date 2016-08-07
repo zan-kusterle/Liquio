@@ -1,7 +1,7 @@
-defmodule Democracy.IdentityTest do
-	use Democracy.ModelCase
+defmodule Liquio.IdentityTest do
+	use Liquio.ModelCase
 
-	alias Democracy.Identity
+	alias Liquio.Identity
 
 	@valid_attrs %{username: "john", name: "John Doe"}
 	@invalid_attrs %{}

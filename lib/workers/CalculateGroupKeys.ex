@@ -1,7 +1,7 @@
-defmodule Democracy.CalculateGroupKeys do
+defmodule Liquio.CalculateGroupKeys do
     use GenServer
 
-    alias Democracy.Poll
+    alias Liquio.Poll
 
     @interval 30
 

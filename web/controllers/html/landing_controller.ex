@@ -1,5 +1,5 @@
-defmodule Democracy.LandingController do
-	use Democracy.Web, :controller
+defmodule Liquio.LandingController do
+	use Liquio.Web, :controller
 	
 	plug :put_layout, "landing.html"
 

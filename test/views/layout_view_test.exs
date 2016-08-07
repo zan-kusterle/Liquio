@@ -1,3 +1,3 @@
-defmodule Democracy.LayoutViewTest do
-	use Democracy.ConnCase, async: true
+defmodule Liquio.LayoutViewTest do
+	use Liquio.ConnCase, async: true
 end

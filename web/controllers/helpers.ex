@@ -1,4 +1,4 @@
-defmodule Democracy.Controllers.Helpers do
+defmodule Liquio.Controllers.Helpers do
 	def default_redirect(conn) do
 		if Map.get(conn.params, "redirect") do
 			conn.params["redirect"]
@@ -43,15 +43,15 @@ defmodule Democracy.Controllers.Helpers do
 			url = if identity != nil and identity.trust_metric_url != nil do
 				identity.trust_metric_url
 			else
-				Democracy.TrustMetric.default_trust_metric_url()
+				Liquio.TrustMetric.default_trust_metric_url()
 			end
 		end
 
-		case Democracy.TrustMetric.get(url) do
+		case Liquio.TrustMetric.get(url) do
 			{:ok, trust_identity_ids} ->
 				trust_identity_ids
 			{:error, message} ->
-				Democracy.TrustMetric.get!(Democracy.TrustMetric.default_trust_metric_url())
+				Liquio.TrustMetric.get!(Liquio.TrustMetric.default_trust_metric_url())
 		end
 	end
 end

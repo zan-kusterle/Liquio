@@ -1,8 +1,8 @@
-defmodule Democracy.GuardianSerializer do
+defmodule Liquio.GuardianSerializer do
 	@behaviour Guardian.Serializer
 
-	alias Democracy.Repo
-	alias Democracy.Identity
+	alias Liquio.Repo
+	alias Liquio.Identity
 
 	def for_token(identity = %Identity{}), do: { :ok, "Identity:#{identity.username}" }
 	def for_token(_), do: { :error, "Unknown resource type" }

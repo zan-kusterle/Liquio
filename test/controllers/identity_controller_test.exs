@@ -1,7 +1,7 @@
-defmodule Democracy.IdentityControllerTest do
-	use Democracy.ConnCase
+defmodule Liquio.IdentityControllerTest do
+	use Liquio.ConnCase
 
-	alias Democracy.Identity
+	alias Liquio.Identity
 	@valid_attrs %{username: "john", name: "John Doe"}
 	@invalid_attrs %{username: "a", name: true}
 

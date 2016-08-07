@@ -1,5 +1,5 @@
-defmodule Democracy.DelegationController do
-	use Democracy.Web, :controller
+defmodule Liquio.DelegationController do
+	use Liquio.Web, :controller
 
 	with_params(%{
 		:from_identity => {Plugs.IdentityParam, [name: "identity_id"]}
@@ -30,7 +30,7 @@ defmodule Democracy.DelegationController do
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
-				|> render(Democracy.ChangesetView, "error.json", changeset: changeset)
+				|> render(Liquio.ChangesetView, "error.json", changeset: changeset)
 		end
 	end)
 
@@ -49,7 +49,7 @@ defmodule Democracy.DelegationController do
 		else
 			conn
 			|> put_status(:not_found)
-			|> render(Democracy.ErrorView, "error.json", message: "Delegation does not exist")
+			|> render(Liquio.ErrorView, "error.json", message: "Delegation does not exist")
 		end
 	end)
 
@@ -66,7 +66,7 @@ defmodule Democracy.DelegationController do
 		else
 			conn
 			|> put_status(:not_found)
-			|> render(Democracy.ErrorView, "error.json", message: "Delegation does not exist")
+			|> render(Liquio.ErrorView, "error.json", message: "Delegation does not exist")
 		end
 	end)
 end

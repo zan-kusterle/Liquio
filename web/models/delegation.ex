@@ -1,5 +1,5 @@
-defmodule Democracy.DelegationData do
-	use Democracy.Web, :model
+defmodule Liquio.DelegationData do
+	use Liquio.Web, :model
 
 	embedded_schema do
 		field :weight, :float, default: 1.0
@@ -16,16 +16,16 @@ defmodule Democracy.DelegationData do
 	end
 end
 
-defmodule Democracy.Delegation do
-	use Democracy.Web, :model
+defmodule Liquio.Delegation do
+	use Liquio.Web, :model
 
-	alias Democracy.DelegationData
-	alias Democracy.Repo
-	alias Democracy.Delegation
+	alias Liquio.DelegationData
+	alias Liquio.Repo
+	alias Liquio.Delegation
 
 	schema "delegations" do
-		belongs_to :from_identity, Democracy.Identity
-		belongs_to :to_identity, Democracy.Identity
+		belongs_to :from_identity, Liquio.Identity
+		belongs_to :to_identity, Liquio.Identity
 
 		timestamps(inserted_at: :datetime, updated_at: false, usec: true)
 		field :is_last, :boolean

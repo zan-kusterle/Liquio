@@ -1,4 +1,4 @@
-defmodule Democracy.ErrorHelpers do
+defmodule Liquio.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -32,9 +32,9 @@ defmodule Democracy.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(Democracy.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(Liquio.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(Democracy.Gettext, "errors", msg, opts)
+      Gettext.dgettext(Liquio.Gettext, "errors", msg, opts)
     end
   end
 end

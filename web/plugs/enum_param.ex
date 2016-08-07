@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.EnumParam do
+defmodule Liquio.Plugs.EnumParam do
 	def handle(conn, value, opts) do
 		if value == nil do
 			if opts[:maybe] do

@@ -1,4 +1,4 @@
-defmodule Democracy.Plugs.DatetimeParam do
+defmodule Liquio.Plugs.DatetimeParam do
 	def handle(conn, value, opts) do
 		if is_bitstring(value) do
 			case Timex.parse(value, "%Y-%m-%d", :strftime) do
