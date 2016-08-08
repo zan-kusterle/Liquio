@@ -1,7 +1,7 @@
 <%= if @poll.topics != nil do %>
 	<h3 class="topics">
 		<%= for topic <- @poll.topics do %>
-			<a href="/topics/<%= topic %>" class="topic">#<%= topic %></a>
+			<a href="<%= html_explore_path(@conn, :show, topic) %>" class="topic">#<%= topic %></a>
 		<% end %>
 	</h3>
 <% end %>
