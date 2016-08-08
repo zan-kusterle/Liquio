@@ -2,6 +2,8 @@ defmodule Liquio.Router do
 	use Liquio.Web, :router
 
 	pipeline :browser do
+		plug BasicAuth, realm: "Invite only", username: "user", password: "cNWuBX05FI"
+
 		plug :accepts, ["html"]
 		plug :fetch_session
 		plug :fetch_flash
