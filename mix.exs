@@ -19,7 +19,7 @@ defmodule Liquio.Mixfile do
   def application do
     [mod: {Liquio, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :uuid, :httpotion, :timex, :timex_ecto, :guardian, :cors_plug, :comeonin, :edeliver]]
+                    :phoenix_ecto, :postgrex, :ssl, :uuid, :httpotion, :timex, :timex_ecto, :guardian, :cors_plug, :comeonin, :edeliver]]
   end
 
   # Specifies which paths to compile per environment.
