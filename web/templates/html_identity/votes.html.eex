@@ -6,7 +6,7 @@
 					<%= if poll.reference do %>
 						<span style="font-size: 15px; font-weight: bold; margin-right: 4px;"><%= for_choice_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
 					<% end %>
-					<a href="/polls/<%= poll.id %>" style="text-transform: capitalize"><%= poll.title %></a>
+					<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
 					<span>&nbsp;-&nbsp;</span>
 					<%= if poll.score do %>
 						<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.score, poll.choice_type) %></span>

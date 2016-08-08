@@ -1,2 +1,2 @@
-<p class="heading">Details | <span style="text-transform: capitalize;"><%= raw(@poll.title) %></span></p>
+<p class="heading">Details | <%= raw(@poll.title) %></p>
 <a class="heading-a" href="/polls/<%= @poll.id %>">back to poll</a>

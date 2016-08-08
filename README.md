@@ -1,7 +1,5 @@
 # Liquio
 
-**A liquid democracy where anyone can vote on anything. [Available here.](https://www.liqu.io)**
-
 ## Applications
 
   * Claim verification (Global warming is caused by human activity)
