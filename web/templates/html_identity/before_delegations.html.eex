@@ -1,2 +1,2 @@
-<p class="heading">Delegations <%= @direction %> <%= @identity.name %></p>
-<a class="heading-a" href="/identities/<%= @identity.id %>">back to identity</a>
+<p class="heading">DELEGATIONS <%= @direction |> String.upcase %> <%= @identity.name %></p>
+<a class="heading-a" href="/identities/<%= @identity.id %>">BACK TO IDENTITY</a>

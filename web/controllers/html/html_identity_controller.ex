@@ -94,7 +94,7 @@ defmodule Liquio.HtmlIdentityController do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("delegations.html",
-			title: "Delegations from | #{identity.name}",
+			title: "Delegations from #{identity.name}",
 			identity: identity,
 			direction: "from",
 			delegations: delegations_from
@@ -112,7 +112,7 @@ defmodule Liquio.HtmlIdentityController do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("delegations.html",
-			title: "Delegations to | #{identity.name}",
+			title: "Delegations to #{identity.name}",
 			identity: identity,
 			direction: "to",
 			delegations: delegations_to
@@ -192,7 +192,7 @@ defmodule Liquio.HtmlIdentityController do
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("votes.html",
-			title: "Votes | #{identity.name}",
+			title: "Votes of #{identity.name}",
 			identity: identity,
 			groups: groups,
 			is_human_votes: is_human_votes
