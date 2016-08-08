@@ -3,7 +3,7 @@
 # Use cases
 
 ## Claim verification
-  * Global warming is caused by human activity
+  * Global Warming Is Caused by Human Activity
   * 9/11 Attacks Were an Inside Job
 
 ## Quantity estimation
