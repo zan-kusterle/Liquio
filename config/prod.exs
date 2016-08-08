@@ -10,7 +10,7 @@ config :liquio, Liquio.Endpoint,
   url: [host: "liqu.io", port: 443],
   cache_static_manifest: "priv/static/manifest.json",
   server: true,
-  root: ".",
+  root: "."
   #force_ssl: [hsts: true]
 
 config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
