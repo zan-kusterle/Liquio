@@ -11,7 +11,7 @@ config :liquio, Liquio.Endpoint,
   cache_static_manifest: "priv/static/manifest.json",
   server: true,
   root: ".",
-  force_ssl: [hsts: true]
+  #force_ssl: [hsts: true]
 
 config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
 config :liquio, trust_metric_cache_time_seconds: 5 * 60
