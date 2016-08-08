@@ -4,21 +4,21 @@ defmodule Liquio.HtmlExploreController do
 	def index(conn, _) do
 		conn
 		|> render "index.html",
-			heading: "All polls",
+			heading: "ALL POLLS",
 			polls: Poll.all |> Repo.all
 	end
 
 	def show(conn, %{"id" => topic}) do
 		conn
 		|> render "index.html",
-			heading: "Polls with topic #{topic}",
+			heading: "POLLS WITH TOPIC #{topic |> String.upcase}",
 			polls: Poll.by_topic(topic |> String.downcase) |> Repo.all
 	end
 
 	def search(conn, %{"query" => query}) do
 		conn
 		|> render "index.html",
-			heading: "Showing most relevant polls",
+			heading: "SHOWING MOST RELEVANT POLLS",
 			query: query,
 			polls: Poll.search(Poll, query) |> Repo.all
 	end
