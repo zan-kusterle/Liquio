@@ -2,9 +2,20 @@
 
 ## Possible uses
 
-  * Claim verification (Global warming is caused by human activity)
-  * Opinions (We should implement universal basic income)
-  * Predictions (Year when we will have artificial general intelligence)
+### Claim verification
+  * Global warming is caused by human activity
+  * 9/11 Attacks Were an Inside Job
+
+### Quantity estimation
+  * Sea Level Rise Since Year 1900 in Centimeters
+  * Median Tax Rate in the USA
+  * Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California
+
+### Opinions
+  * We should implement universal basic income
+
+### Predictions
+  * Year when we will have artificial general intelligence
 
 
 ## Trust metrics
