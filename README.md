@@ -1,10 +1,10 @@
 ![liquio logo](web/static/assets/images/logo.png)
 
-## Applications
+## Possible uses
 
   * Claim verification (Global warming is caused by human activity)
   * Opinions (We should implement universal basic income)
-  * Predictions (By what year will we create artificial general intelligence)
+  * Predictions (Year when we will have artificial general intelligence)
 
 
 ## Trust metrics

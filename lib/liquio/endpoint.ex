@@ -21,6 +21,8 @@ defmodule Liquio.Endpoint do
     plug Phoenix.CodeReloader
   end
 
+  plug Liquio.Plugs.RedirectWww
+
   plug Plug.RequestId
   plug Plug.Logger
 
