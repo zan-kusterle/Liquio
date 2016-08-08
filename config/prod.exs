@@ -5,7 +5,8 @@ config :liquio, Liquio.Endpoint,
   https: [
   	port: 4000,
     keyfile: "/etc/letsencrypt/live/liqu.io/privkey.pem",
-    certfile: "/etc/letsencrypt/live/liqu.io/cert.pem"
+    certfile: "/etc/letsencrypt/live/liqu.io/cert.pem",
+    cacertfile: "/etc/letsencrypt/live/liqu.io/chain.pem"
   ],
   url: [host: "liqu.io", port: 443],
   cache_static_manifest: "priv/static/manifest.json",
