@@ -1,13 +1,17 @@
 defmodule Liquio.Endpoint do
   use Phoenix.Endpoint, otp_app: :liquio
 
-  # Serve at "/" the static files from "priv/static" directory.
-  #
-  # You should set gzip to true if you are running phoenix.digest
-  # when deploying your static files in production.
   plug Plug.Static,
-    at: "/", from: :liquio, gzip: false,
+    at: "/",
+    from: :liquio,
+    gzip: true,
     only: ~w(css fonts images js favicon.ico robots.txt)
+
+  plug Plug.Static,
+    at: "/",
+    from: "/etc/letsencrypt/static",
+    gzip: false,
+    only: ~w(.well-known)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

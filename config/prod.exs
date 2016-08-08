@@ -1,6 +1,7 @@
 use Mix.Config
 
 config :liquio, Liquio.Endpoint,
+  http: [port: 4001],
   https: [
   	port: 4000,
     keyfile: "/etc/letsencrypt/live/liqu.io/privkey.pem",
