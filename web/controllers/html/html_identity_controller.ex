@@ -137,7 +137,7 @@ defmodule Liquio.HtmlIdentityController do
 		|> Repo.all
 		|> Repo.preload([:poll])
 
-		polls = Enum.map(votes, fn(vote) ->
+		polls = votes |> Enum.map(fn(vote) ->
 			vote.poll
 			|> Map.put(:score, vote.data.score)
 		end)
@@ -204,7 +204,11 @@ defmodule Liquio.HtmlIdentityController do
 
 		current = polls_by_ids[id] |> Map.put(:level, level) |> Map.put(:reference, reference)
 		sub = Enum.flat_map(polls_by_ids[id].references, fn(reference = %{:reference_poll_id => reference_poll_id}) ->
-			traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1, reference)
+			if Map.has_key?(polls_by_ids, reference_poll_id) do
+				traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1, reference)
+			else
+				[]
+			end
 		end)
 
 		[current] ++ sub
