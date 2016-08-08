@@ -1,53 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="Poll with results badge">
-		<meta name="author" content="Zan Kusterle">
+<style>
+	body {
+		margin: 0px;
+	}
 
-		<title>Liquio</title>
+	.container {
+		color: #333;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		display: inline-block;				
+	}
 
-		<style>
-			body {
-				margin: 0px;
-			}
+	.title {
+		display: inline-block;
+		text-transform: capitalize;
+		margin: 0;
+		font-weight: normal;
+		font-size: 15px;
+		border: 1px solid #ccc;
+		border-right: none;
+		float: left;
+		line-height: 41px;
+		padding: 0px 15px;
+	}
 
-			.container {
-				color: #333;
-				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-				display: inline-block;
-			}
+	.score-box {
+		display: inline-block;
+		padding: 5px 15px;
+		text-align: center;
+		font-size: 12px;
+		font-weight: bold;
+		float: left;
+	}
 
-			.title {
-				display: inline;
-				text-transform: capitalize;
-				margin: 0;
-				font-weight: normal;
-				font-size: 18px;
-				position: relative;
-				top: -7px;
-			}
+	.score-box .number {
+		font-size: 15px;
+	}
+</style>
 
-			.score-box {
-				display: inline-block;
-				margin-left: 10px;
-				padding: 5px 15px;
-				text-align: center;
-				font-size: 12px;
-				font-weight: bold;
-			}
-
-			.score-box .number {
-				font-size: 15px;
-			}
-		</style>
-	</head>
-
-	<body>
-		<div class="container">
-			<%= render @view_module, @view_template, assigns %>
-		</div>
-	</body>
-</html>
+<div class="container">
+	<%= render @view_module, @view_template, assigns %>
+</div>
