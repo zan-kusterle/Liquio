@@ -1,4 +1,4 @@
-![liquio logo](https://raw.githubusercontent.com/zan-kusterle/Liquio/master/web/static/assets/images/logo.png?token=AFiXQF9MdFwxlnLa5JBOBoKB7nqMNcNPks5XseDlwA%3D%3D)
+![liquio logo](web/static/assets/images/logo.png)
 
 ## Applications
 
