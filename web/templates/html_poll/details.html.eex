@@ -30,9 +30,9 @@
 	<div class="section-title">List of all votes</div>
 	<table class="contributions">
 		<tr class="contribution">
-			<td class="column-name">By identity</td>
-			<td class="column-name">Power</td>
-			<td class="column-name">Score</td>
+			<td class="column-name">From identity</td>
+			<td class="column-name">Voting power</td>
+			<td class="column-name">Choice</td>
 			<td class="column-name">Time</td>
 		</tr>
 		<%= for contribution <- @contributions do %>

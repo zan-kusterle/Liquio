@@ -15,7 +15,7 @@
 						<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 					<% end %>
 					<%= if poll.approval_score do %>
-						<a href="/polls/<%= poll.reference.poll.id %>/references/<%= poll.id %>?for_choice=<%= poll.reference.for_choice %>" style="text-transform: lowercase; font-size: 12px;">
+						<a href="/polls/<%= poll.reference.poll.id %>/references/<%= poll.id %>?for_choice=<%= poll.reference.for_choice %>" style="font-size: 12px;">
 							<b><%= score_format(poll.approval_score) %></b> on reference
 						</a>
 					<% end %>
