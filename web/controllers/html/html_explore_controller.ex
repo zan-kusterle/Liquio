@@ -4,7 +4,7 @@ defmodule Liquio.HtmlExploreController do
 	def index(conn, _) do
 		conn
 		|> render "index.html",
-			heading: "List of all polls",
+			heading: "All polls",
 			polls: Poll.all |> Repo.all
 	end
 
