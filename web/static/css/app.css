@@ -97,7 +97,6 @@ a:hover {
 .header .logo {
 	float: left;
 	width: 85px;
-	-webkit-filter: saturate(200%);
 }
 
 .search {
