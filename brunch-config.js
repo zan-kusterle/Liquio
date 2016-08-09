@@ -26,6 +26,9 @@ exports.config = {
 		cleancss: {
 			keepSpecialComments: 0,
 			removeEmpty: true
+		},
+		less: {
+			dumpLineNumbers: 'comments'
 		}
 	},
 

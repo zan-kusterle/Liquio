@@ -3,7 +3,8 @@
   "dependencies": {
     "brunch": "~2.8.0",
     "css-brunch": "~2.6.0",
-    "clean-css-brunch": "~2.0.0"
+    "clean-css-brunch": "~2.0.0",
+    "less-brunch": "~2.6.0"
   },
   "devDependencies": {}
 }
