@@ -18,7 +18,7 @@ body {
 		width: 100%;
 		background-color: #1f8dd6;
 		text-align: center;
-		@media @tablet {
+		@media @md {
 			text-align: left;
 		}
 
@@ -26,7 +26,7 @@ body {
 			max-width: 900px;
 			margin: 0 auto;
 			padding: 10px 40px;
-			@media @tablet {
+			@media @md {
 				padding: 14px 40px;
 			}
 
@@ -38,7 +38,10 @@ body {
 
 			.search-container {
 				.search {
-					width: 300px;
+					width: 100%;
+					@media @lg {
+						width: 300px;
+					}
 					outline: none;
 					-webkit-appearance: none;
 					padding: 6px 12px;
@@ -65,7 +68,11 @@ body {
 				font-size: 12px;
 				line-height: 20px;
 				margin-top: 10px;
-				@media @tablet {
+				@media @md {
+					font-size: 14px;
+					line-height: 22px;
+				}
+				@media @lg {
 					text-align: right;
 					font-size: 14px;
 					line-height: 32px;
@@ -78,7 +85,7 @@ body {
 					display: inline-block;
 					text-decoration: none;
 					margin-left: 15px;
-					@media @tablet {
+					@media @md {
 						margin-left: 30px;
 					}
 				}
@@ -112,7 +119,10 @@ body {
 		overflow-y: auto;
 		padding-top: 40px;
 		top: 117px;
-		@media @tablet {
+		@media @md {
+			top: 97px;
+		}
+		@media @lg {
 			top: 65px;
 		}
 
