@@ -8,6 +8,8 @@
 			<%= for topic <- delegation.data.topics do %>
 				<a href="<%= html_explore_path(@conn, :show, topic) %>">#<%= topic %></a>
 			<% end %>
+		<% else %>
+			(all topics)
 		<% end %>
 	</div>
 <% end %>

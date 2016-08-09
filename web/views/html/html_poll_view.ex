@@ -5,7 +5,8 @@ defmodule Liquio.HtmlPollView do
 		if poll.choice_type == "probability" do
 			score = poll.results.mean
 			cond do
-				score == nil or score < 0.5 -> "rgb(255, 164, 164)"
+				score == nil -> "#ddd"
+				score < 0.25 -> "rgb(255, 164, 164)"
 				score < 0.75 -> "rgb(249, 226, 110)"
 				true -> "rgb(140, 232, 140)"
 			end
