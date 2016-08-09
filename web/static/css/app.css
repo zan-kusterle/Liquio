@@ -84,7 +84,7 @@ a:hover {
 
 .header {
 	height: 62px;
-	background-color: white;
+	background-color: #1f8dd6;
 	padding-right: 14px;
 }
 
@@ -97,6 +97,7 @@ a:hover {
 .header .logo {
 	float: left;
 	width: 85px;
+	-webkit-filter: saturate(200%);
 }
 
 .search {
@@ -108,10 +109,15 @@ a:hover {
 	color: #555;
 	float: left;
 	border-color: #eee;
+	border: none !important;
+	padding-left: 12px !important;
+	border-radius: 2px !important;
 }
-
-.search:focus {
-	border-color: #ccc;
+.search::-webkit-input-placeholder {
+	color: #ccc;
+}
+.search:focus::-webkit-input-placeholder {
+	color: #ddd;
 }
 
 .header .actions {
@@ -123,14 +129,16 @@ a:hover {
 
 .header .actions a {
 	margin-left: 30px;
-	color: #4aa5f3;
+	color: white;
+	opacity: 0.85;
 	float: left;
 	display: block;
 }
 
 .header .actions a:hover {
 	text-decoration: none;
-	color: #337ab7;
+	color: white !important;
+	opacity: 1;
 }
 
 .header .actions a:first-child {
