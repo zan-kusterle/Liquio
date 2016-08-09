@@ -1,107 +1,194 @@
-
-.headline {
-	background: linear-gradient(#333333, #59c1da);
-	padding-top: 80px;
-	padding-bottom: 50px;
-}
-
-.headline-thin {
-	background: linear-gradient(#327d96, #1186ac);
-	padding-top: 40px;
-	padding-bottom: 30px;
-}
-
-.headline-thin img {
-	width: 180px;
-}
-
-h1 {
-	font-size: 30px;
-	font-weight: 700;
-	color: black;
-	opacity: 0.7;
-	margin: 0px;
-	margin-top: 15px;
-}
-
-.cta {
-	margin: 40px 5px 0px;
-	font-weight: 700;
-	padding: 15px 55px;
-	color: #fff !important;
-	text-align: center;
-	text-decoration: none;
-	display: inline-block;
-	background: #0aabe1;
-	border-radius: 2px;
-	-webkit-transition: .3s ease;
-	-moz-transition: .3s ease;
-	-ms-transition: .3s ease;
-	-o-transition: .3s ease;
-	transition: .3s ease;
-	width: 270px;
-}
-
-.cta:hover {
-	background: #255c6f;
-	color: white !important;
-}
-
-.features {
-	width: 1100px;
-	margin: 0 auto;
-	padding-top: 20px;
-}
-
-.features-row {
-	margin-top: 20px;
-}
-
-.feature {
-	width: 300px;
-	margin: 0 30px;
-	display: inline-block;
-	vertical-align: top;
-}
-
-.feature h3 {
-	font-weight: 600;
-	color: #0aabe1;
-	margin: 0px;
-}
-
-.feature p {
-	font-size: 15px;
-	color: #798289;
-	line-height: 1.6;
-	text-align: justify;
-	margin: 0px;
-	margin-top: 10px;
-}
-
-.learn {
-	width: 100%;
-	margin-top: 50px;
-}
-
-.learn a {
-	text-decoration: none;
-	color: #333;
-	font-weight: bold;
-	display: block;
-	margin-top: 15px;
-}
-
-.learn a:hover {
-	color: #000;
-}
-
-.guide {
-	margin-top: 20px;
-}
-
 .landing-container {
-	text-align: center;
-	font-family: 'Raleway', sans-serif;
 	-webkit-font-smoothing: antialiased;
+}
+
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+body {
+	line-height: 1.7em;
+	color: #7f8c8d;
+	font-size: 13px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label {
+	color: #34495e;
+}
+
+.l-box {
+	padding: 1em;
+}
+
+.content .l-box {
+	text-align: justify;
+}
+
+.l-box-lrg {
+	padding: 2em;
+	border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.is-center {
+	text-align: center;
+}
+
+.logo {
+	-webkit-filter: saturate(200%);
+}
+
+
+
+
+.explore-polls {
+	padding: 1em 3em;
+	border-radius: 5px;
+	background: white;
+	color: #1f8dd6;
+	font-size: 120%;
+}
+
+
+.examples-list {
+	list-style: none;
+	color: white;
+	line-height: 1.4em;
+	font-size: 14px;
+	padding-left: 0px;
+}
+
+.examples-list li {
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+/*
+ * -- SPLASH STYLES --
+ * This is the blue top section that appears on the page.
+ */
+
+.splash-container {
+	
+}
+
+.splash {
+	background: #1f8dd6;
+	z-index: 1;
+	width: 100%;
+	margin: auto;
+	text-align: center;
+	text-transform: uppercase;
+	padding-top: 100px;
+	padding-bottom: 100px;
+}
+
+/* This is the main heading that appears on the blue section */
+.splash-head {
+	font-size: 20px;
+	font-weight: bold;
+	color: white;
+	border: 3px solid white;
+	padding: 1em 1.6em;
+	font-weight: 100;
+	border-radius: 5px;
+	line-height: 1em;
+	width: 50%;
+	margin: 0 auto;
+}
+
+/* This is the subheading that appears on the blue section */
+.splash-subhead {
+	color: white;
+	letter-spacing: 0.05em;
+	opacity: 0.8;
+}
+
+/*
+ * -- CONTENT STYLES --
+ * This represents the content area (everything below the blue section)
+ */
+.content-wrapper {
+	width: 100%;
+	background: white;
+	padding-top: 2em;
+}
+
+/* This is the class used for the main content headers (<h2>) */
+.content-head {
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	margin: 0;
+}
+
+/* This is a modifier class used when the content-head is inside a ribbon */
+.content-head-ribbon {
+	color: white;
+}
+
+/* This is the class used for the content sub-headers (<h3>) */
+.content-subhead {
+	color: #1f8dd6;
+}
+	.content-subhead i {
+		margin-right: 7px;
+	}
+
+/* This is the class used for the dark-background areas. */
+.ribbon {
+	background: #2d3e50;
+	color: #aaa;
+}
+
+/* This is the class used for the footer */
+.footer {
+	background: #111;
+}
+
+.footer a {
+	color: #d3e7e8;
+}
+
+/*
+ * -- TABLET (AND UP) MEDIA QUERIES --
+ * On tablets and other medium-sized devices, we want to customize some
+ * of the mobile styles.
+ */
+@media (min-width: 48em) {
+	body {
+		font-size: 16px;
+	}
+
+	.content {
+		padding: 1em;
+	}
+
+	.splash-head {
+		font-size: 250%;
+	}
+
+	.l-box-lrg {
+		border: none;
+	}
+}
+
+/*
+ * -- DESKTOP (AND UP) MEDIA QUERIES --
+ * On desktops and other large devices, we want to over-ride some
+ * of the mobile and tablet styles.
+ */
+@media (min-width: 78em) {
+	.splash-head {
+		font-size: 300%;
+	}
 }

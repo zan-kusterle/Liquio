@@ -1,59 +1,103 @@
-<div class="headline">
-	<img src="/images/logo.png"></img>
-	<h1>A liquid democracy where anyone can vote on anything.</h1>
-
-	<div class="ctas">
-		<a href="/explore" class="cta">EXPLORE POLLS</a>
-	</div>
+<div class="splash">
+	<img src="/images/logo.png" alt="Liquio" class="logo"></img>
+	<p class="splash-subhead">
+		A liquid democracy where anyone can vote on anything.
+	</p>
+	<p>
+		<a href="/explore" class="pure-button explore-polls">Explore polls</a>
+	</p>
 </div>
-<div class="features">
-	<div class="features-row">
-		<div class="feature">
-			<h3>DELEGATIONS</h3>
-			<p>
-				You always have the power to vote on anything. But in cases when you don't know enough about the subject you can delegate your vote to other people. You can also choose which subjects you want to delegate to whom.
-			</p>
-		</div>
 
-		<div class="feature">
-			<h3>REFERENCES</h3>
-			<p>
-				References explain why people vote a certain way. Someone who is not familiar with the subject can quickly learn more about it by exploring evidence.
-			</p>
-		</div>
+<div class="content-wrapper">
+	<div class="content">
+		<h2 class="content-head is-center">Simple, yet powerful.</h2>
 
-		<div class="feature">
-			<h3>TRUST METRICS</h3>
-			<p>
-				Trust metrics try to prevent one person from having multiple identities. Developers can create a number of trust metrics and everyone can decide themselves which one to trust.
-			</p>
+		<div class="pure-g">
+			<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+
+				<h3 class="content-subhead">
+					<i class="fa fa-users"></i>
+					Delegations
+				</h3>
+				<p>
+					Not everyone is an expert at everything. That's why you can delegate your vote to people you trust.
+				</p>
+			</div>
+			<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+				<h3 class="content-subhead">
+					<i class="fa fa-quote-left"></i>
+					References
+				</h3>
+				<p>
+					References aim to help voters make better informed decisions. They also help people not familiar with the subject to quickly learn about it.
+				</p>
+			</div>
+			<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+				<h3 class="content-subhead">
+					<i class="fa fa-cogs"></i>
+					Trust Metrics
+				</h3>
+				<p>
+					Trust metrics attempt to prevent single person from having multiple identities. Everyone can choose their own trust metric and anyone can create a new one.
+				</p>
+			</div>
+			<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+				<h3 class="content-subhead">
+					<i class="fa fa-eye"></i>
+					Transparency
+				</h3>
+				<p>
+					The source code is available under permissive MIT license. All the data is publicly available through the API.
+				</p>
+			</div>
 		</div>
 	</div>
-	
-	<div class="features-row">
-		<div class="feature">
-			<h3>RANGE VOTING</h3>
-			<p>
-				A simple yet powerful voting system. People express how strongly they agree by voting with a score between 0% and 100%. You can read more about it <a href="http://www.rangevoting.org/" target="_blank">here</a>.
-			</p>
-		</div>
 
-		<div class="feature">
-			<h3>INSIGHTS</h3>
-			<p>
-				View how results change over time, between different demographics or between age groups. You can also view results at specific points in time.
-			</p>
-		</div>
+	<div class="ribbon l-box-lrg pure-g">
+		<div class="pure-u-1 is-center">
+			<h2 class="content-head content-head-ribbon">How is this useful?</h2>
 
-		<div class="feature">
-			<h3>TRANSPARENCY</h3>
 			<p>
-				The source code, the API and all the data are publicly available under MIT license. 
+				Have a look at some simple examples below:
 			</p>
+
+			<div class="pure-g">
+				<div class="l-box pure-u-1 pure-u-md-1-3">
+					<h3 class="content-subhead">
+						Fact Verification
+					</h3>
+					<ul class="examples-list">
+						<li>Global Warming Is Caused by Human Activity</li>
+						<li>9/11 Attacks Were an Inside Job</li>
+						<li>Sea Level Rise Since Year 1900 in Centimeters</li>
+						<li>Median Tax Rate in the USA</li>
+					</ul>
+				</div>
+				<div class="l-box pure-u-1 pure-u-md-1-3">
+					<h3 class="content-subhead">
+						Opinions
+					</h3>
+					<ul class="examples-list">
+						<li>We Should Implement Universal Basic Income</li>
+						<li>Number of Refugees We Should Allow in the EU</li>
+					</ul>
+				</div>
+				<div class="l-box pure-u-1 pure-u-md-1-3">
+					<h3 class="content-subhead">
+						Predictions
+					</h3>
+					<ul class="examples-list">
+						<li>Year When We Will Have Artificial General Intelligence</li>
+						<li>Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California</li>
+						<li>Year When We Will Completely Cure Cancer</li>
+						<li>Difference in Sea Level From Year 2000 Until Year 2050 in Centimeters</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	</div>
-</div>
-<div class="learn">
-	<a href="/learn">Learn more</a>
-	<a href="https://github.com/zan-kusterle/Liquio" target="_blank">View on Github</a>
+
+	<div class="footer l-box is-center">
+		Liquio is still in early development. Feedback and contributions are welcome. You can view the source code on <a href="https://github.com/zan-kusterle/Liquio" target="_blank">Github</a>.
+	</div>
 </div>
