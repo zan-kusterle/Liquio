@@ -26,8 +26,20 @@ body {
 			max-width: 900px;
 			margin: 0 auto;
 			padding: 10px 40px;
+			padding-bottom: 0px;
 			@media @md {
 				padding: 14px 40px;
+				padding-bottom: 0px;
+			}
+			@media @lg {
+				padding-bottom: 14px;
+			}
+
+			.pure-g .pure-u-1 {
+				height: 40px;
+				@media @lg {
+					height: 30px;
+				}
 			}
 
 			.logo {
@@ -36,17 +48,13 @@ body {
 				}
 			}
 
-			.search-container {
+			.search-container {				
 				.search {
 					width: 100%;
-					@media @lg {
-						width: 300px;
-					}
 					outline: none;
 					-webkit-appearance: none;
 					padding: 6px 12px;
 					font-size: 14px;
-					height: 30px;
 					color: #555;
 					border: none;
 					border-radius: 2px;
@@ -59,15 +67,12 @@ body {
 				}
 			}
 
-			
-
 			.actions {
 				color: rgb(51, 122, 183);
-
 				text-align: center;
 				font-size: 12px;
 				line-height: 20px;
-				margin-top: 10px;
+				margin-top: 0px;
 				@media @md {
 					font-size: 14px;
 					line-height: 22px;
