@@ -63,7 +63,7 @@
 
 		<div class="preference">
 			<div class="section-title">Delegate only for the following topics (separated by comma)</div>
-			<input type="text" name="topics"<%= if @delegation do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> placeholder="All topics" />
+			<input type="text" name="topics"<%= if @delegation != nil and @delegation.data.topics != nil do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> placeholder="All topics" />
 		</div>
 
 		<%= if @delegation do %>
