@@ -1,7 +1,12 @@
 exports.config = {
 	files: {
 		stylesheets: {
-			joinTo: "css/app.css"
+			joinTo: "css/app.css",
+			order: {
+				before: [
+					'web/static/css/lib/pure.css'
+				]
+			}
 		}
 	},
 
