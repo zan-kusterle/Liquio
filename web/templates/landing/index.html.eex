@@ -29,7 +29,7 @@
 					References
 				</h3>
 				<p>
-					References aim to help voters make better informed decisions. They also help people not familiar with the subject to quickly learn about it.
+					References aim to help voters make more informed decisions. They also allow people not familiar with the subject to quickly learn about it.
 				</p>
 			</div>
 			<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
@@ -38,7 +38,7 @@
 					Trust Metrics
 				</h3>
 				<p>
-					Trust metrics attempt to prevent single person from having multiple identities. Everyone can choose their own trust metric and anyone can create a new one.
+					Trust metrics attempt to prevent a single person from having multiple identities. Everyone can choose their own trust metric or create a new one.
 				</p>
 			</div>
 			<div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
@@ -79,7 +79,7 @@
 					</h3>
 					<ul class="examples-list">
 						<li>We Should Implement Universal Basic Income</li>
-						<li>Number of Refugees We Should Allow in the EU</li>
+						<li>Number of Refugees We Should Let Inside the EU</li>
 					</ul>
 				</div>
 				<div class="l-box pure-u-1 pure-u-md-1-3">
@@ -98,6 +98,6 @@
 	</div>
 
 	<div class="footer l-box is-center">
-		Liquio is still in early development. Feedback and contributions are welcome. You can view the source code on <a href="https://github.com/zan-kusterle/Liquio" target="_blank">Github</a>.
+		Liquio is still in early development. You can view the source code on <a href="https://github.com/zan-kusterle/Liquio" target="_blank">Github</a>. Feedback and contributions are welcome.
 	</div>
 </div>
