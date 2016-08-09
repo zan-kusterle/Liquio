@@ -1,5 +1,22 @@
 defmodule Liquio.Plugs.ListParam do
 	def handle(conn, value, opts) do
+		case handle_simple(conn, value, opts) do
+			{:ok, value} ->
+				if opts[:maybe] == true and Enum.empty?(value) do
+					{:ok, nil}
+				else
+					{:ok, value}
+				end
+			{:error, status, message} ->
+				if opts[:maybe] == true do
+					{:ok, nil}
+				else
+					{:error, status, message}
+				end
+		end
+	end
+
+	defp handle_simple(conn, value, opts) do
 		if is_bitstring(value) do
 			value = value
 			|> String.split(",")
