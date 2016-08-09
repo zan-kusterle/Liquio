@@ -2,7 +2,7 @@
   "repository": {},
   "dependencies": {
     "brunch": "~2.8.0",
-    "css-brunch": "~1.7.0",
+    "css-brunch": "~2.6.0",
     "clean-css-brunch": "~2.0.0"
   },
   "devDependencies": {}
