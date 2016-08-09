@@ -5,7 +5,11 @@
 	-webkit-font-smoothing: antialiased;
 	color: #7f8c8d;
 	line-height: 1.7em;
+
 	font-size: 13px;
+	@media @tablet {
+		font-size: 16px;
+	}
 
 	p {
 		margin: 0px;
@@ -46,6 +50,9 @@
 	.content {
 		width: 100%;
 		padding: 3em 1em 2em 1em;
+		@media @tablet {
+			padding: 3em 2em 2em 2em;
+		}
 
 		.heading {
 			font-weight: 400;
@@ -60,6 +67,9 @@
 
 		.box {
 			padding: 1em 1em;
+			@media @tablet {
+				padding: 1em 1.5em;
+			}
 
 			.subheading {
 				color: #1f8dd6;
@@ -118,20 +128,6 @@
 
 		a {
 			color: #d3e7e8;
-		}
-	}
-}
-
-@media @tablet {
-	.landing-container {
-		font-size: 16px;
-
-		.content {
-			padding: 3em 2em 2em 2em;
-
-			.box {
-				padding: 1em 1.5em;
-			}
 		}
 	}
 }
