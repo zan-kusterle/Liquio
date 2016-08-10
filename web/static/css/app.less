@@ -116,6 +116,57 @@ body {
 		}
 	}
 
+	a {
+		color: #333;
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: #337ab7;
+	}
+
+	table {
+		border-collapse: collapse
+	}
+
+	button {
+		outline: none;
+		border-radius: 0px;
+		border: 1px solid #ddd;
+		padding: 6px 12px;
+		font-size: 14px;
+		background-color: #fff;
+	}
+
+	button:hover {
+		background-color: #e3e3e3;
+	}
+
+	button.active {
+		background-color: #ddd;
+		border: 1px solid #777;
+	}
+
+	input[type="text"], input[type="password"], input[type="search"], input[type="date"] {
+		border-radius: 0px;
+		box-shadow: none;
+		font-size: 14px;
+		background-color: #fff;
+		background-image: none;
+		outline: none;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+		border: 1px solid #ddd;
+		padding: 6px 12px;
+		height: 31px;
+		-webkit-appearance:none;
+	}
+
+	hr {
+		margin: 20px 0px;
+		border: 0;
+		border-top: 1px solid #ddd;
+	}
+
 	.main-wrap {
 		position: absolute;
 		left: 0px;
@@ -123,12 +174,12 @@ body {
 		bottom: 0px;
 		overflow-y: auto;
 		padding-top: 40px;
-		top: 117px;
+		top: 130px;
 		@media @md {
-			top: 97px;
+			top: 94px;
 		}
 		@media @lg {
-			top: 65px;
+			top: 58px;
 		}
 
 		.alert {
@@ -171,57 +222,6 @@ body {
 			max-width: 900px;
 			margin-left: auto;
 			margin-right: auto;
-
-			table {
-				border-collapse: collapse
-			}
-
-			button {
-				outline: none;
-				border-radius: 0px;
-				border: 1px solid #ddd;
-				padding: 6px 12px;
-				font-size: 14px;
-				background-color: #fff;
-			}
-
-			button:hover {
-				background-color: #e3e3e3;
-			}
-
-			button.active {
-				background-color: #ddd;
-				border: 1px solid #777;
-			}
-
-			input[type="text"], input[type="password"], input[type="search"], input[type="date"] {
-				border-radius: 0px;
-				box-shadow: none;
-				font-size: 14px;
-				background-color: #fff;
-				background-image: none;
-				outline: none;
-				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-				border: 1px solid #ddd;
-				padding: 6px 12px;
-				height: 31px;
-				-webkit-appearance:none;
-			}
-
-			hr {
-				margin: 20px 0px;
-				border: 0;
-				border-top: 1px solid #ddd;
-			}
-
-			a {
-				color: #333;
-				text-decoration: none;
-			}
-
-			a:hover {
-				color: #337ab7;
-			}
 		}
 	}
 }

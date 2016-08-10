@@ -4,7 +4,8 @@ exports.config = {
 			joinTo: "css/app.css",
 			order: {
 				before: [
-					'web/static/css/lib/pure.css'
+					'web/static/css/lib/pure.css',
+					'web/static/css/app.less'
 				]
 			}
 		}
