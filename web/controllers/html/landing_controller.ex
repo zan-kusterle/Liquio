@@ -18,9 +18,9 @@ defmodule Liquio.LandingController do
 				Poll.force_get("quantity", "number of refugees EU should let inside", ["politics", "eu", "refugees"])
 			],
 			:predictions => [
-				Poll.force_get("probability", "year when we will have artificial general intelligence", ["science", "artificial intelligence"]),
+				Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"]),
 				Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"]),
-				Poll.force_get("probability", "year when we will completely cure cancer", ["science", "medicine", "cancer"]),
+				Poll.force_get("quantity", "year when we will completely cure cancer", ["science", "medicine", "cancer"]),
 				Poll.force_get("quantity", "difference in sea level from year 2000 until year 2050 in centimeters", ["science", "nature", "global warming"])
 			]
 		}
