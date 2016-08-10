@@ -1,6 +1,6 @@
-<div class="references">
+<div class="references pure-g">
 	<%= if @poll.choice_type == "probability" do %>
-		<div class="pole">
+		<div class="pole pure-u-1 pure-u-md-1-2">
 			<h3 class="pole-heading"><%= if @references |> Enum.filter(& &1.for_choice == 1) |> Enum.empty? do %>Nothing <% end %>Positive</h3>
 			<div class="pole-list">
 				<%= for reference <- @references |> Enum.filter(& &1.for_choice == 1) do %>
@@ -8,7 +8,7 @@
 				<% end %>
 			</div>
 		</div>
-		<div class="pole">
+		<div class="pole pure-u-1 pure-u-md-1-2">
 			<h3 class="pole-heading"><%= if @references |> Enum.filter(& &1.for_choice == 0) |> Enum.empty? do %>Nothing <% end %>Negative</h3>
 			<div class="pole-list">
 				<%= for reference <- @references |> Enum.filter(& &1.for_choice == 0) do %>
