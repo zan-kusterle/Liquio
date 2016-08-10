@@ -67,10 +67,9 @@
 						Fact Verification
 					</h3>
 					<ul>
-						<li>Global Warming Is Caused by Human Activity</li>
-						<li>9/11 Attacks Were an Inside Job</li>
-						<li>Sea Level Rise Since Year 1900 in Centimeters</li>
-						<li>Median Tax Rate in the USA</li>
+						<%= for poll <- @examples[:facts] do %>
+							<li><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
+						<% end %>
 					</ul>
 				</div>
 
@@ -79,8 +78,9 @@
 						Opinions
 					</h3>
 					<ul>
-						<li>We Should Implement Universal Basic Income</li>
-						<li>Number of Refugees EU Should Let Inside</li>
+						<%= for poll <- @examples[:opinions] do %>
+							<li><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
+						<% end %>
 					</ul>
 				</div>
 
@@ -89,10 +89,9 @@
 						Predictions
 					</h3>
 					<ul>
-						<li>Year When We Will Have Artificial General Intelligence</li>
-						<li>Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California</li>
-						<li>Year When We Will Completely Cure Cancer</li>
-						<li>Difference in Sea Level From Year 2000 Until Year 2050 in Centimeters</li>
+						<%= for poll <- @examples[:predictions] do %>
+							<li><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
+						<% end %>
 					</ul>
 				</div>
 			</div>

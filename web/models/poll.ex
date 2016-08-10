@@ -41,6 +41,22 @@ defmodule Liquio.Poll do
 		})
 	end
 
+	def force_get(choice_type, title, topics) do
+		poll = from(p in Poll, where:
+			p.kind == "custom" and
+			p.choice_type == ^choice_type and
+			p.title == ^capitalize_title(title) and
+			p.topics == ^topics
+		)
+		|> Ecto.Query.first
+		|> Repo.one
+		if poll == nil do
+			Poll.create(choice_type, title, topics)
+		else
+			poll
+		end
+	end
+
 	def search(query, search_term) do
 		from(p in query,
 		where: fragment("? % ?", p.title, ^search_term),
