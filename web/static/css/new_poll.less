@@ -1,0 +1,41 @@
+.new-poll {
+	text-align: left;
+
+	input[type="text"] {
+		width: calc(~"100% - 240px") !important;
+		border-radius: 2px;
+		box-shadow: none;
+	}
+
+	.choice-type {
+		> label {
+			vertical-align: top;
+		}
+
+		.choices {
+			display: inline-block;
+
+			label {
+				display: block;
+				margin-right: 0px;
+				width: 100% !important;
+				text-align: left !important;
+
+				.choice-type-details {
+					font-size: 12px;
+				}
+			}
+		}
+	}
+
+	.create {
+		padding-left: 4px;
+
+		.notes {
+			margin: 0;
+			margin-top: 6px;
+			font-size: 12px;
+			font-style: italic;
+		}
+	}
+}

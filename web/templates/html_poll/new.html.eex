@@ -1,25 +1,35 @@
-<form method="POST" action="/polls" autocomplete="off" class="create-poll">
+<form method="POST" action="/polls" autocomplete="off" class="pure-form pure-form-aligned new-poll">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-	<div class="preference">
-		<label class="heading-label">Title</label>
-		<input type="text" name="title" placeholder="Should be unambiguous" />
-	</div>
+	<fieldset>
+		<div class="pure-control-group">
+			<label for="title">Title</label>
+			<input id="title" name="title" type="text" placeholder="Be as unambiguous as possible">
+		</div>
 
-	<div class="preference">
-		<label class="heading-label">Topics (separated by comma)</label>
-		<input type="text" name="topics" placeholder="" />
-	</div>
-	
-	<div class="preference">
-		<label class="heading-label">Choice type</label>
+		<div class="pure-control-group">
+			<label for="topics">Topics</label>
+			<input id="topics" name="topics" type="text" placeholder="Politics, economics">
+		</div>
 
-		<label for="probability" class="checkbox-label">Probability</label>
-		<input id="probability" type="radio" name="choice_type" value="probability" style="position: relative; top: -1px;" checked />
+		<div class="pure-control-group choice-type">
+			<label>Choice Type</label>
+			<div class="choices">
+				<label for="option-two" class="pure-radio">
+					<input id="option-two" type="radio" name="choice_type" value="probability" checked>
+					Probability <span class="choice-type-details">- vote with probability between 0 and 1, mean result</span>
+				</label>
+				<label for="option-three" class="pure-radio">
+					<input id="option-three" type="radio" name="choice_type" value="quantity">
+					Quantity <span class="choice-type-details">- vote with any number, median result</span>
+				</label>
+			</div>
+		</div>
 
-		<label for="quantity" class="checkbox-label" style="margin-left: 10px;">Quantity</label>
-		<input id="quantity" type="radio" name="choice_type" value="quantity" style="position: relative; top: -1px;" />
-	</div>
+		<div class="pure-controls create">
+			<button type="submit" class="pure-button pure-button-primary">Create</button>
 
-	<button type="submit">Create</button>
+			<p class="notes">All polls are immutable. This means you can't modify or delete them once they're created.</p>
+		</div>
+	</fieldset>
 </form>
