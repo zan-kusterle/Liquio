@@ -81,7 +81,7 @@ defmodule Liquio.Poll do
 				true ->
 					String.capitalize(word)
 			end
-		end) |> Enum.join(" ")
+		end) |> Enum.join(" ") |> String.capitalize
 	end
 
 	defp is_acronymn(w) do
