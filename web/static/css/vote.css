@@ -8,15 +8,17 @@
 	padding: 12px 18px;
 	font-size: 18px;
 	margin: 0 5px;
-	margin-top: 10px;
 	width: 120px;
 }
 
 .cast-vote {
 	display: inline-block;
+	vertical-align: top;
 }
 
 .remove-vote {
+	background: none;
+	outline: none;
 	border: none;
 	font-size: 10px;
 	color: #337ab7;
@@ -38,9 +40,7 @@
 }
 
 .score-input {
-	height: 47px;
-	position: relative;
-	top: -1px;
+	height: 46px;
 	text-align: center;
 	font-size: 18px;
 	width: 160px;
