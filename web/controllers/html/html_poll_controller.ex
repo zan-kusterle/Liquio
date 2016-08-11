@@ -24,17 +24,15 @@ defmodule Liquio.HtmlPollController do
 	end
 
 	with_params(%{
-		:user => {Plugs.CurrentUser, [require: false]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "id", validator: &Poll.is_custom/1]},
 	},
-	def show(conn, %{:user => user, :poll => poll}) do
+	def show(conn, %{:poll => poll}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		poll = prepare_poll(poll, calculation_opts)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "show.html",
 			title: poll.title,
-			is_logged_in: user != nil,
 			poll: poll,
 			references: prepare_references(poll, calculation_opts),
 			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),

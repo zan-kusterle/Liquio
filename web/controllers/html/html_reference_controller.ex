@@ -14,7 +14,7 @@ defmodule Liquio.HtmlReferenceController do
 	end
 
 	with_params(%{
-		:user => {Plugs.CurrentUser, [require: false]},
+		:user => {Plugs.CurrentUser, [require: true]},
     	:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
     	:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
 		:for_choice => {Plugs.NumberParam, [name: "for_choice", error: "For choice must be a number"]},
