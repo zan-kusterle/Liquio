@@ -14,7 +14,7 @@
 <% end %>
 
 <%= if @is_me do %>
-	<form method="POST" action="preferences">
+	<form method="POST" action="preferences" class="pure-form">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="preference">
@@ -42,7 +42,7 @@
 			<input type="text" name="vote_weight_halving_days" style="width: 250px;" value="<%= @identity.vote_weight_halving_days %>" />
 		</div>
 
-		<button type="submit">Update preferences</button>
+		<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
 	</form>
 <% else %>
 	<div class="section-title">Do you trust this identity? <a href="#">Learn more</a></div>
