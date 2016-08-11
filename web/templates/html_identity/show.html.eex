@@ -53,7 +53,7 @@
 		allow_numeric: false
 	%>
 
-	<form method="POST" action="/identities/<%= @identity.id %>/delegations" style="margin-top: -15px;">
+	<form method="POST" action="/identities/<%= @identity.id %>/delegations" class="pure-form" style="margin-top: -15px;">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="preference">
@@ -67,10 +67,10 @@
 		</div>
 
 		<%= if @delegation do %>
-			<button type="submit">Update delegation</button>
-			<button type="submit" name="weight" value="0">Remove delegation</button>
+			<button type="submit" class="pure-button pure-button-primary">Update delegation</button>
+			<button type="submit" name="weight" value="0" class="pure-button delete-button">Remove delegation</button>
 		<% else %>
-			<button type="submit">Set delegation</button>
+			<button type="submit" class="pure-button pure-button-primary">Set delegation</button>
 		<% end %>
 	</form>
 <% end %>

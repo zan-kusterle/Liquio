@@ -29,7 +29,7 @@
 		<div class="pure-controls create">
 			<button type="submit" class="pure-button pure-button-primary">Create</button>
 
-			<p class="notes">All polls are immutable. This means you can't modify or delete them once they're created.</p>
+			<p class="notes">You won't be able to modify or delete poll after it's live.</p>
 		</div>
 	</fieldset>
 </form>
