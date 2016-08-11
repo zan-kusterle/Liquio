@@ -53,17 +53,18 @@
 		allow_numeric: false
 	%>
 
+	<div class="section-title" style="font-size: 20px;">Delegation to this identity</div>
 	<form method="POST" action="/identities/<%= @identity.id %>/delegations" class="pure-form" style="margin-top: -15px;">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="preference">
-			<div class="section-title">Relative weight of delegation to this identity</div>
-			<input type="text" name="weight"<%= if @delegation do %> value="<%= number_format_simple @delegation.data.weight %>"<% end %> />
+			<div class="section-title">Relative weight</div>
+			<input type="text" name="weight" style="max-width: 150px;"<%= if @delegation do %> value="<%= number_format_simple @delegation.data.weight %>"<% end %> placeholder="1" />
 		</div>
 
 		<div class="preference">
-			<div class="section-title">Delegate only for the following topics (separated by comma)</div>
-			<input type="text" name="topics"<%= if @delegation != nil and @delegation.data.topics != nil do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> placeholder="All topics" />
+			<div class="section-title">Topics (separated by comma)</div>
+			<input type="text" name="topics" style="max-width: 400px;"<%= if @delegation != nil and @delegation.data.topics != nil do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> placeholder="All topics" />
 		</div>
 
 		<%= if @delegation do %>

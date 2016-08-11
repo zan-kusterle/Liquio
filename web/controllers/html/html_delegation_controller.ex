@@ -4,7 +4,7 @@ defmodule Liquio.HtmlDelegationController do
 	with_params(%{
 		:from_identity => {Plugs.CurrentUser, [require: true]},
 		:to_identity => {Plugs.ItemParam, [name: "html_identity_id", schema: Identity]},
-		:weight => {Plugs.NumberParam, [name: "weight", error: "Delegation weight must be a number"]},
+		:weight => {Plugs.NumberParam, [name: "weight", maybe: true, error: "Delegation weight must be a number"]},
 		:topics => {Plugs.ListParam, [name: "topics", maybe: true, item: {Plugs.StringParam, [downcase: true]}]}
 	},
 	def create(conn, %{:from_identity => from_identity, :to_identity => to_identity, :weight => weight, :topics => topics}) do
@@ -16,7 +16,7 @@ defmodule Liquio.HtmlDelegationController do
 			Delegation.set(Delegation.changeset(%Delegation{}, %{
 				from_identity_id: from_identity.id,
 				to_identity_id: to_identity.id,
-				weight: weight,
+				weight: weight || 1.0,
 				topics: topics
 			})) |> handle_errors(conn, fn(delegation) ->
 				conn
