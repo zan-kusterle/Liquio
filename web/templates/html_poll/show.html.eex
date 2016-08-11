@@ -14,11 +14,7 @@
 
 <div class="links">
 	<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-pie-chart" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
-	<%= if @is_logged_in do %>
-		<a href="/polls/<%= @poll.id %>/vote"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
-	<% else %>
-		<a href="/login"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
-	<% end %>
+	<a href="/polls/<%= @poll.id %>/vote"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
 </div>
 
 <%= unless Enum.empty?(@references) do %>
