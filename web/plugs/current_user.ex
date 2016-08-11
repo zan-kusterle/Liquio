@@ -3,7 +3,7 @@ defmodule Liquio.Plugs.CurrentUser do
 		identity = Guardian.Plug.current_resource(conn)
 		if identity == nil do
 			if opts[:require] do
-				{:error, :unauthorized, "No current user"}
+				{:error, :unauthorized, "You need to login first."}
 			else
 				{:ok, nil}
 			end

@@ -15,17 +15,22 @@ defmodule Liquio.Plugs.WithParams do
 					%{conn | params: conn.params |> Map.merge(params)}
 				{:error, name, status, message} ->
 					if :browser in conn.private.phoenix_pipelines do
-						if status == :not_found do
-							conn
-							|> put_status(status)
-							|> Phoenix.Controller.render(Liquio.ErrorView, "404.html")
-							|> halt
-						else
-							conn
-							|> put_status(status)
-							|> Phoenix.Controller.put_flash(:error, message)
-							|> Phoenix.Controller.redirect(to: Liquio.Controllers.Helpers.default_redirect(conn))
-							|> halt
+						case status do
+							:not_found ->
+								conn
+								|> put_status(status)
+								|> Phoenix.Controller.render(Liquio.ErrorView, "404.html")
+								|> halt
+							:unauthorized ->
+								conn
+								|> Phoenix.Controller.put_flash(:error, message)
+								|> Phoenix.Controller.redirect(to: "/login")
+								|> halt
+							_ ->
+								conn
+								|> Phoenix.Controller.put_flash(:error, message)
+								|> Phoenix.Controller.redirect(to: Liquio.Controllers.Helpers.default_redirect(conn))
+								|> halt
 						end
 					else
 						conn
