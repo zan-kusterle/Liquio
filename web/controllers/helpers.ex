@@ -26,7 +26,7 @@ defmodule Liquio.Controllers.Helpers do
 	def get_calculation_opts_from_conn(conn) do
 		identity = Guardian.Plug.current_resource(conn)
 		%{
-			datetime: Map.get(conn.params, :datetime) || Timex.DateTime.now,
+			datetime: if Map.has_key?(conn.params, :datetime) do Timex.DateTime.shift(conn.params.datetime, days: 1) else Timex.DateTime.now end,
 			trust_metric_ids: get_trust_identity_ids(conn),
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
 			soft_quorum_t: (identity && identity.soft_quorum_t) || 0,

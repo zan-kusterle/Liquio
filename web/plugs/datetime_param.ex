@@ -3,7 +3,7 @@ defmodule Liquio.Plugs.DatetimeParam do
 		if is_bitstring(value) do
 			case Timex.parse(value, "%Y-%m-%d", :strftime) do
 				{:ok, datetime} ->
-					{:ok, Timex.DateTime.shift(datetime, days: 1)}
+					{:ok, datetime}
 				{:error, _} ->
 					{:ok, Timex.DateTime.now}
 			end
