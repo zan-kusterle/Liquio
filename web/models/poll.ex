@@ -72,7 +72,7 @@ defmodule Liquio.Poll do
 	end
 
 	defp capitalize_title(title) do
-		title |> String.split(" ") |> Enum.map(fn(word) ->
+		title = title |> String.split(" ") |> Enum.map(fn(word) ->
 			cond do
 				is_acronymn(word) ->
 					word
@@ -81,7 +81,9 @@ defmodule Liquio.Poll do
 				true ->
 					String.capitalize(word)
 			end
-		end) |> Enum.join(" ") |> String.capitalize
+		end) |> Enum.join(" ")
+		{a, b} = String.split_at(title, 1)
+		(a |> String.upcase) <> b
 	end
 
 	defp is_acronymn(w) do
