@@ -32,9 +32,12 @@ defmodule Liquio.Controllers.Helpers do
 				datetime = param_datetime
 			end
 		end
+		{trust_metric_url, trust_identity_ids} = get_trust_identity_ids(conn)
+		
 		%{
 			datetime: datetime,
-			trust_metric_ids: get_trust_identity_ids(conn),
+			trust_metric_url: trust_metric_url,
+			trust_metric_ids: trust_identity_ids,
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
 			soft_quorum_t: (identity && identity.soft_quorum_t) || 0,
 			minimum_reference_approval_score: (identity && identity.minimum_reference_approval_score) ||  0.5,
@@ -56,9 +59,10 @@ defmodule Liquio.Controllers.Helpers do
 
 		case Liquio.TrustMetric.get(url) do
 			{:ok, trust_identity_ids} ->
-				trust_identity_ids
+				{url, trust_identity_ids}
 			{:error, message} ->
-				Liquio.TrustMetric.get!(Liquio.TrustMetric.default_trust_metric_url())
+				url = Liquio.TrustMetric.default_trust_metric_url()
+				{url, Liquio.TrustMetric.get!(url)}
 		end
 	end
 end
