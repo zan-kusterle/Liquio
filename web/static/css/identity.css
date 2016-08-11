@@ -31,8 +31,7 @@
 }
 
 .preference input[type="text"] {
-	margin-top: 4px;
-	margin-left: 3px;
+	margin: 4px auto 0px auto;
 	width: 100%;
 	text-align: center;
 }
