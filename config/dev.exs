@@ -37,7 +37,7 @@ config :liquio, Liquio.Repo,
 	adapter: Ecto.Adapters.Postgres,
 	username: "postgres",
 	password: "postgres",
-	database: "democracy_dev",
+	database: "liquio_dev",
 	hostname: "localhost",
 	pool_size: 10
 
