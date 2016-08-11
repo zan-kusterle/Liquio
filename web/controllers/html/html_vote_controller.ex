@@ -2,7 +2,7 @@ defmodule Liquio.HtmlVoteController do
 	use Liquio.Web, :controller
 
 	with_params(%{
-		:user => {Plugs.CurrentUser, [require: false]},
+		:user => {Plugs.CurrentUser, [require: true]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
 	},
 	def index(conn, %{:poll => poll, :user => user}) do

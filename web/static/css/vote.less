@@ -1,3 +1,5 @@
+@import "base";
+
 .claim {
 	font-size: 20px;
 	margin: 0px;
@@ -5,10 +7,13 @@
 }
 
 .true-choice, .false-choice {
-	padding: 12px 18px;
+	padding: 12px 0px;
 	font-size: 18px;
 	margin: 0 5px;
-	width: 120px;
+	width: 85px;
+	@media @md {
+		width: 120px;
+	}
 }
 
 .cast-vote {
@@ -43,5 +48,8 @@
 	height: 46px;
 	text-align: center;
 	font-size: 18px;
-	width: 160px;
+	width: 80px;
+	@media @md {
+		width: 160px;
+	}
 }
