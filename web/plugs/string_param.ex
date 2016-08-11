@@ -3,7 +3,11 @@ defmodule Liquio.Plugs.StringParam do
 		clean = if is_bitstring(value) do
 			value = value |> String.trim
 			if String.length(value) > 0 do
-				value
+				if opts[:downcase] do
+					value |> String.downcase
+				else
+					value
+				end
 			else
 				nil
 			end

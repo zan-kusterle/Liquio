@@ -5,7 +5,7 @@ defmodule Liquio.HtmlDelegationController do
 		:from_identity => {Plugs.CurrentUser, [require: true]},
 		:to_identity => {Plugs.ItemParam, [name: "html_identity_id", schema: Identity]},
 		:weight => {Plugs.NumberParam, [name: "weight", error: "Delegation weight must be a number"]},
-		:topics => {Plugs.ListParam, [name: "topics", maybe: true, item: {Plugs.StringParam, []}]}
+		:topics => {Plugs.ListParam, [name: "topics", maybe: true, item: {Plugs.StringParam, [downcase: true]}]}
 	},
 	def create(conn, %{:from_identity => from_identity, :to_identity => to_identity, :weight => weight, :topics => topics}) do
 		if weight == 0 do

@@ -4,12 +4,12 @@
 	<fieldset>
 		<div class="pure-control-group">
 			<label for="title">Title</label>
-			<input id="title" name="title" type="text" placeholder="Be as unambiguous as possible">
+			<input id="title" name="title" type="text" placeholder="Be as unambiguous as possible" class="pure-input-2-3">
 		</div>
 
 		<div class="pure-control-group">
 			<label for="topics">Topics</label>
-			<input id="topics" name="topics" type="text" placeholder="Politics, economics">
+			<input id="topics" name="topics" type="text" placeholder="Politics, economics" class="pure-input-2-3">
 		</div>
 
 		<div class="pure-control-group choice-type">
