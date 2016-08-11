@@ -15,14 +15,19 @@ defmodule Liquio.HtmlPollView do
 		end
 	end
 
-	def chart_svg_polyline(results_with_datetime) do
-		count = Enum.count(results_with_datetime)
-		max_mean = Enum.max([1, Enum.max(Enum.map(results_with_datetime, fn({index, datetime, results}) -> results.mean end))]) || 1
-		Enum.map_join(results_with_datetime, " ", fn({index, datetime, results}) ->
-			ratio = index / (count - 1)
-			x = 20 + 1200 * ratio
-			y = 1 + 118 * (1 - ((results.mean || 0) / max_mean))
-			"#{round(x)},#{round(y)}"
+	def chart_svg_polyline(points) do
+		Enum.map_join(Enum.zip([nil] ++ points, points), " ", fn({previous_point, point}) ->
+			if point == nil do
+				""
+			else
+				{x, y} = point
+				d = "#{round(x * 1200 + 20)},#{round((1 - y) * 118 + 1)}"
+				if previous_point == nil do
+					"M" <> d
+				else
+					"L" <> d
+				end
+			end
 		end)
 	end
 end

@@ -8,7 +8,7 @@
 <%= render "score.html", poll: @poll %>
 
 <svg viewBox="0 0 1220 140" class="score-by-time">
-	<polyline fill="none" stroke="#4aa5f3" stroke-width="2" points="<%= chart_svg_polyline @results_with_datetime %>"></polyline>
+	<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= chart_svg_polyline @chart_points %>"></path>
 	
 	<line x1="20" y1="120" x2="1300" y2="120" style="stroke:#aaa;stroke-width:1"></line><line x1="20" y1="120" x2="20" y2="0" style="stroke:#aaa;stroke-width:1"></line>
 	<text x="-85" y="13" fill="#333" transform="rotate(270)">SCORE</text>
