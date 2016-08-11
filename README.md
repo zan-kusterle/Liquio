@@ -1,23 +1,5 @@
 ![liquio logo](web/static/assets/images/logo.png)
 
-# Use cases
-
-## Claim verification
-  * Global Warming Is Caused by Human Activity
-  * 9/11 Attacks Were an Inside Job
-
-## Quantity estimation
-  * Sea Level Rise Since Year 1900 in Centimeters
-  * Median Tax Rate in the USA
-  * Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California
-
-## Opinions
-  * We Should Implement Universal Basic Income
-
-## Predictions
-  * Year When We Will Have Artificial General Intelligence
-
-
 # Trust Metrics
 
 In it's essence, a trust metric provides whitelist of users whose votes are counted in the final result. Everyone can choose their own trust metric and anyone can create new trust metrics. By default a trust metric that uses Advogato algorithm is used.
