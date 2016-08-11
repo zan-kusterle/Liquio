@@ -15,7 +15,7 @@ defmodule Liquio.DelegationController do
 
 	plug :scrub_params, "delegation" when action in [:create]
 	with_params(%{
-		:user => {Plugs.CurrentUser, []},
+		:user => {Plugs.CurrentUser, [require: true]},
 	},
 	def create(conn, %{:user => user, "delegation" => params}) do
 		params = params |> Map.put("from_identity_id", user.id)
@@ -54,7 +54,7 @@ defmodule Liquio.DelegationController do
 	end)
 
 	with_params(%{
-		:user => {Plugs.CurrentUser, []},
+		:user => {Plugs.CurrentUser, [require: true]},
 		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
 	},
 	def delete(conn, %{:user => user, :to_identity => to_identity}) do

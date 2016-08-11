@@ -215,7 +215,7 @@ defmodule Liquio.HtmlIdentityController do
 	end
 
 	with_params(%{
-		:user => {Plugs.CurrentUser, []},
+		:user => {Plugs.CurrentUser, [require: true]},
 		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url", maybe: true]},
 		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", maybe: true, whole: true]},
 		:soft_quorum_t => {Plugs.NumberParam, [name: "soft_quorum_t", maybe: true]},
