@@ -45,7 +45,6 @@ defmodule Liquio.HtmlPollController do
 	},
 	def details(conn, %{:poll => poll, :datetime => datetime}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
-		IO.inspect datetime
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render "details.html",
