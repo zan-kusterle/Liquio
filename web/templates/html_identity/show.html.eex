@@ -14,7 +14,9 @@
 <% end %>
 
 <%= if @is_me do %>
-	<form method="POST" action="preferences" class="pure-form">
+	<div class="section-title" style="font-size: 20px;">Your preferences</div>
+
+	<form method="POST" action="preferences" class="pure-form" style="margin-top: -15px;">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="preference">
