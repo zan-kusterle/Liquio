@@ -157,13 +157,17 @@ defmodule Liquio.Result do
 	def median(contributions, soft_quorum_t) do
 		contributions = contributions |> Enum.sort(&(&1.score > &2.score))
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
-			if current_power + contribution.voting_power > total_power / 2 do
-				{ :halt, contribution.score }
-			else
-				{ :cont, current_power + contribution.voting_power }
-			end
-		end)
+		if total_power > 0 do
+			Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
+				if current_power + contribution.voting_power > total_power / 2 do
+					{ :halt, contribution.score }
+				else
+					{ :cont, current_power + contribution.voting_power }
+				end
+			end)
+		else
+			nil
+		end
 	end
 
 	def moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do
