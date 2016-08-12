@@ -1,15 +1,11 @@
-<form method="POST" action="/identities" autocomplete="off" class="pure-form create-identity">
+<form method="POST" action="/identities" autocomplete="off" class="pure-form pure-form-stacked create-identity">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-	<div class="preference">
-		<label class="heading-label">Username</label>
-		<input type="text" name="username" />
-	</div>
+	<label for="username">Username</label>
+	<input id="username" type="text" name="username" />
 
-	<div class="preference">
-		<label class="heading-label">Name</label>
-		<input type="text" name="name" />
-	</div>
+	<label for="name">Name</label>
+	<input id="name" type="text" name="name" />
 
 	<button type="submit" class="pure-button pure-button-primary">Create</button>
 
