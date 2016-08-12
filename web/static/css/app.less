@@ -18,7 +18,7 @@ body {
 		width: 100%;
 		background-color: #1f8dd6;
 		text-align: center;
-		@media @md {
+		@media @lg {
 			text-align: left;
 		}
 
@@ -48,7 +48,10 @@ body {
 				}
 			}
 
-			.search-container {				
+			.search-container {
+				max-width: 500px;
+				margin: 0 auto;
+				
 				.search {
 					width: 100%;
 					outline: none;
@@ -73,13 +76,11 @@ body {
 				font-size: 12px;
 				line-height: 20px;
 				margin-top: 0px;
-				@media @md {
+				@media @sm {
 					font-size: 14px;
-					line-height: 22px;
 				}
 				@media @lg {
 					text-align: right;
-					font-size: 14px;
 					line-height: 32px;
 					margin-top: 0px;
 				}
@@ -90,7 +91,7 @@ body {
 					display: inline-block;
 					text-decoration: none;
 					margin-left: 10px;
-					@media @md {
+					@media @sm {
 						margin-left: 30px;
 					}
 				}
@@ -153,9 +154,6 @@ body {
 		overflow-y: auto;
 		padding-top: 40px;
 		top: 130px;
-		@media @md {
-			top: 94px;
-		}
 		@media @lg {
 			top: 58px;
 		}
@@ -201,7 +199,7 @@ body {
 			margin-left: auto;
 			margin-right: auto;
 			padding: 30px 20px 30px 20px;
-			@media @md {
+			@media @sm {
 				padding: 40px 35px 40px 35px;
 			}
 		}
