@@ -8,8 +8,16 @@ defmodule Liquio.Plugs.NumberParam do
 			end
 		else
 			if opts[:whole] == true do
-				{x, _} = Integer.parse(value)
-				{:ok, x}
+				case Integer.parse(value) do
+					{value, _} ->
+						{:ok, value}
+					:error ->
+						if opts[:maybe] == true do
+							{:ok, nil}
+						else
+							{:error, :endbad_request, opts[:error]}
+						end
+				end
 			else
 				case Float.parse(value) do
 					{value, _} ->
