@@ -97,7 +97,11 @@ defmodule Liquio.HtmlPollController do
 		count = Enum.count(results_with_datetime)
 		means = Enum.map(results_with_datetime, fn({index, datetime, results}) -> results.mean end)
 		|> Enum.filter(& &1 != nil)
-		max_mean = Enum.max([1, Enum.max(means)]) || 1
+		max_mean = if Enum.empty?(means) do
+			1
+		else
+			Enum.max([1, Enum.max(means)])
+		end
 		points = Enum.map(results_with_datetime, fn({index, datetime, results}) ->
 			if results.mean do
 				{index / (count - 1), results.mean / max_mean}
