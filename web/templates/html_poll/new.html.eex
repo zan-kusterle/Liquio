@@ -1,35 +1,32 @@
-<form method="POST" action="/polls" autocomplete="off" class="pure-form pure-form-aligned new-poll">
+<form method="POST" action="/polls" autocomplete="off" class="pure-form pure-g new-poll">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-	<fieldset>
-		<div class="pure-control-group">
-			<label for="title">Title</label>
-			<input id="title" name="title" type="text" placeholder="Be as unambiguous as possible" class="pure-input-2-3">
-		</div>
+	<label for="title" class="pure-u-1 pure-u-sm-1-6 row-label">Title</label>
+	<div class="pure-u-1 pure-u-sm-5-6 row-input">
+		<input id="title" name="title" type="text" placeholder="Be as unambiguous as possible" class="pure-input-1" />
+	</div>
 
-		<div class="pure-control-group">
-			<label for="topics">Topics</label>
-			<input id="topics" name="topics" type="text" placeholder="Politics, economics" class="pure-input-2-3">
-		</div>
+	<label for="topics" class="pure-u-1 pure-u-sm-1-6 row-label">Topics</label>
+	<div class="pure-u-1 pure-u-sm-5-6 row-input">
+		<input id="topics" name="topics" type="text" placeholder="Politics, economics" class="pure-input-1" />
+	</div>
 
-		<div class="pure-control-group choice-type">
-			<label>Choice Type</label>
-			<div class="choices">
-				<label for="option-two" class="pure-radio">
-					<input id="option-two" type="radio" name="choice_type" value="probability" checked>
-					Probability <span class="choice-type-details">- vote with probability between 0 and 1, mean result</span>
-				</label>
-				<label for="option-three" class="pure-radio">
-					<input id="option-three" type="radio" name="choice_type" value="quantity">
-					Quantity <span class="choice-type-details">- vote with any number, median result</span>
-				</label>
-			</div>
-		</div>
+	<label class="pure-u-1 pure-u-sm-1-6 row-label">Choice Type</label>
+	<div class="pure-u-1 pure-u-sm-5-6 row-input choices">
+		<label for="option-two" class="pure-radio">
+			<input id="option-two" type="radio" name="choice_type" value="probability" checked>
+			Probability <span class="choice-type-details">- vote with a probability between 0 and 1, mean result</span>
+		</label>
+		<label for="option-three" class="pure-radio">
+			<input id="option-three" type="radio" name="choice_type" value="quantity">
+			Quantity <span class="choice-type-details">- vote with any number, median result</span>
+		</label>
+	</div>
 
-		<div class="pure-controls create">
-			<button type="submit" class="pure-button pure-button-primary">Create</button>
+	<div class="pure-u-sm-1-6"></div>
+	<div class="pure-u-1 pure-u-sm-5-6 row-input create">
+		<button type="submit" class="pure-button pure-button-primary">Create</button>
 
-			<p class="notes">You won't be able to modify or delete poll after it's live.</p>
-		</div>
-	</fieldset>
+		<p class="notes">You won't be able to modify or delete poll after it's live.</p>
+	</div>
 </form>
