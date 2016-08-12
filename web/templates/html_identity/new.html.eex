@@ -12,4 +12,6 @@
 	</div>
 
 	<button type="submit" class="pure-button pure-button-primary">Create</button>
+
+	<p class="notes">All the data associated with your identity will be visible to everyone!</p>
 </form>
