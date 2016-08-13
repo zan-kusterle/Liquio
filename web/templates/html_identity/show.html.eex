@@ -41,7 +41,7 @@
 
 		<div class="preference">
 			<div class="section-title">Number of days for vote weight to halve</div>
-			<input type="text" name="vote_weight_halving_days" style="max-width: 250px;" value="<%= @calculation_opts.vote_weight_halving_days %>" />
+			<input type="text" name="vote_weight_halving_days" style="max-width: 250px;" value="<%= @calculation_opts.vote_weight_halving_days %>" placeholder="Never" />
 		</div>
 
 		<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
