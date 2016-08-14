@@ -14,7 +14,7 @@ config :liquio, Liquio.Endpoint,
   root: ".",
   force_ssl: [hsts: true, subdomains: true]
 
-config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
+config :liquio, default_trust_metric_url: "https://trust-metric.liqu.io"
 config :liquio, trust_metric_cache_time_seconds: 5 * 60
 
 config :logger, level: :info
