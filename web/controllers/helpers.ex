@@ -45,7 +45,7 @@ defmodule Liquio.Controllers.Helpers do
 		}
 	end
 
-	defp get_trust_identity_ids(conn) do
+	def get_trust_identity_ids(conn) do
 		identity = Guardian.Plug.current_resource(conn)
 
 		url = Map.get(conn.params, :trust_metric_url)
