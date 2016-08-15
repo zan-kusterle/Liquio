@@ -19,9 +19,12 @@ defmodule Liquio.Poll do
 	end
 	
 	def changeset(data, params) do
-		if Map.has_key?(params, "title") and is_bitstring(params["title"]) do
-			params = Map.put(params, "title", capitalize_title(params["title"]))
-		end
+		params =
+			if Map.has_key?(params, "title") and is_bitstring(params["title"]) do
+				Map.put(params, "title", capitalize_title(params["title"]))
+			else
+				params
+			end
 		data
 		|> cast(params, ["choice_type", "title", "topics"])
 		|> validate_required(:title)

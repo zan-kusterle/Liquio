@@ -1,5 +1,5 @@
 defmodule Liquio.Plugs.CurrentUser do
-	def handle(conn, value, opts) do
+	def handle(conn, _value, opts) do
 		identity = Guardian.Plug.current_resource(conn)
 		if identity == nil do
 			if opts[:require] do

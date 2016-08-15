@@ -3,7 +3,7 @@ defmodule Liquio.Plugs.RedirectWww do
 
 	def init(opts), do: opts
 
-	def call(conn, opts) do
+	def call(conn, _opts) do
 		if conn.host |> String.starts_with?("www.") do
 			port = if conn.port != 80 and conn.port != 443 do ":#{conn.port}" else "" end
 			query = if String.length(Map.get(conn, :query_string, "")) > 0 do "?#{conn.query_string}" else "" end

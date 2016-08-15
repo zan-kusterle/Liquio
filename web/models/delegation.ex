@@ -7,8 +7,10 @@ defmodule Liquio.DelegationData do
 	end
 
 	def changeset(data, params) do
-		if is_integer(params["weight"]) do
-			params = Map.put(params, "weight", params["weight"] * 1.0)
+		params = if is_integer(params["weight"]) do
+			Map.put(params, "weight", params["weight"] * 1.0)
+		else
+			params
 		end
 		data
 		|> cast(params, ["weight", "topics"])

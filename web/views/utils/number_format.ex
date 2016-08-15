@@ -60,10 +60,7 @@ defmodule Liquio.NumberFormat do
 			base = x / :math.pow(10, power)
 			"#{format_greater_than_zero(base)} x 10<sup>#{round_simple(power, 0)}</sup>"
 		else
-			n = Float.floor(2 - log_x) + 1
-			if n < 0 do
-				n = 0
-			end
+			n = max(0, Float.floor(2 - log_x) + 1)
 			round_simple x, round(n)
 		end
 	end

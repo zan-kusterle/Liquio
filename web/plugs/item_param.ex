@@ -1,5 +1,5 @@
 defmodule Liquio.Plugs.ItemParam do
-	def handle(conn, value, opts) do
+	def handle(_conn, value, opts) do
 		case Integer.parse(value) do
 			{value, _} ->
 				item = Liquio.Repo.get(opts[:schema], value)

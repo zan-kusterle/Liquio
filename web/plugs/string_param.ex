@@ -1,5 +1,5 @@
 defmodule Liquio.Plugs.StringParam do
-	def handle(conn, value, opts) do
+	def handle(_conn, value, opts) do
 		clean = if is_bitstring(value) do
 			value = value |> String.trim
 			if String.length(value) > 0 do

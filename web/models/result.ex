@@ -8,7 +8,7 @@ defmodule Liquio.CalculateResultServer do
 	end
 
 	def get_power(uuid, identity_id) do
-		Agent.get(uuid, fn({powers, weights, done_ids}) ->
+		Agent.get(uuid, fn({powers, _weights, _done_ids}) ->
 			Map.get(powers, identity_id)
 		end)
 	end
@@ -20,7 +20,7 @@ defmodule Liquio.CalculateResultServer do
 	end
 
 	def get_total_weight(uuid, identity_id) do
-		Agent.get(uuid, fn({powers, weights, done_ids}) ->
+		Agent.get(uuid, fn({_powers, weights, _done_ids}) ->
 			Map.get(weights, identity_id)
 		end)
 	end
@@ -33,7 +33,7 @@ defmodule Liquio.CalculateResultServer do
 	end
 
 	def visited?(uuid, identity_id) do
-		Agent.get(uuid, fn({powers, weights, done_ids}) ->
+		Agent.get(uuid, fn({_powers, _weights, done_ids}) ->
 			MapSet.member?(done_ids, identity_id)
 		end)
 	end
@@ -45,7 +45,7 @@ defmodule Liquio.CalculateResultServer do
 	end
 
 	def reset_visited(uuid) do
-		Agent.update(uuid, fn({powers, weights, done_ids}) ->
+		Agent.update(uuid, fn({powers, weights, _done_ids}) ->
 			{powers, weights, MapSet.new}
 		end)
 	end
@@ -63,18 +63,10 @@ defmodule Liquio.Result do
 		field :data, :map
 	end
 
-	def calculate(poll, calculate_opts = %{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :vote_weight_halving_days => vote_weight_halving_days, :soft_quorum_t => soft_quorum_t}) do
-		if datetime == nil do
-			datetime = Timex.DateTime.now
-		end
-		if poll.kind == "custom" do
-			soft_quorum_t = 0
-		end
-		mean_fn = if poll.choice_type == "quantity" do
-			&median/2
-		else
-			&mean/2
-		end
+	def calculate(poll, calculate_opts = %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :soft_quorum_t => soft_quorum_t}) do
+		datetime = if datetime == nil do Timex.DateTime.now else datetime end
+		soft_quorum_t = if poll.kind == "custom" do 0 else soft_quorum_t end
+		mean_fn = if poll.choice_type == "quantity" do &median/2 else &mean/2 end
 		
 		poll
 		|> calculate_contributions(calculate_opts)
@@ -90,16 +82,13 @@ defmodule Liquio.Result do
 	end
 
 	def calculate_contributions(poll, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
-		if datetime == nil do
-			datetime = Timex.DateTime.now
-		end
-		if trust_metric_ids == nil do
-			trust_metric_ids = MapSet.new
-		end
+		datetime = if datetime == nil do Timex.DateTime.now else datetime end
+		trust_metric_ids = if trust_metric_ids == nil do MapSet.new else trust_metric_ids end
+		topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
 
 		votes = get_votes(poll.id, datetime)
 		inverse_delegations = get_inverse_delegations(datetime)
-		topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
+
 		calculate_contributions_for_data(votes, inverse_delegations, trust_metric_ids, topics)
 	end
 
@@ -110,11 +99,11 @@ defmodule Liquio.Result do
 
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
 
-		trust_votes = votes |> Enum.filter(fn({identity_id, {datetime, score}}) ->
+		trust_votes = votes |> Enum.filter(fn({identity_id, {_datetime, _score}}) ->
 			MapSet.member?(trust_identity_ids, to_string(identity_id))
 		end)
 
-		Enum.each(trust_votes, fn({identity_id, {datetime, _score}}) ->
+		Enum.each(trust_votes, fn({identity_id, {_datetime, _score}}) ->
 			calculate_total_weights(identity_id, state, uuid)
 		end)
 
@@ -151,10 +140,14 @@ defmodule Liquio.Result do
 	def mean(contributions, soft_quorum_t) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		total_score = Enum.sum(Enum.map(contributions, & &1.score * &1.voting_power))
-		mean = if total_power + soft_quorum_t > 0 do total_score / (total_power + soft_quorum_t) else nil end
+		if total_power + soft_quorum_t > 0 do
+			total_score / (total_power + soft_quorum_t)
+		else
+			nil
+		end
 	end
 
-	def median(contributions, soft_quorum_t) do
+	def median(contributions, _soft_quorum_t) do
 		contributions = contributions |> Enum.sort(&(&1.score > &2.score))
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		if total_power > 0 do

@@ -32,8 +32,11 @@ defmodule Liquio.HtmlIdentityController do
 		own_is_human_vote =
 			if current_identity != nil do
 				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: identity.trust_metric_poll_id, is_last: true)
-				if vote != nil and vote.data == nil do vote = nil end
-				vote
+				if vote == nil or vote.data == nil do
+					nil
+				else
+					vote
+				end
 			else
 				nil
 			end
@@ -158,8 +161,10 @@ defmodule Liquio.HtmlIdentityController do
 					reference_poll_references = Reference.for_poll(reference.reference_poll, calculation_opts)
 					|> Repo.preload([:poll, :reference_poll])
 
-					unless Enum.find(references, &(&1.reference_poll_id == reference.reference_poll.id and &1.for_choice == reference.for_choice)) do
-						references = references ++ [%{:reference_poll_id => reference.reference_poll.id, :for_choice => reference.for_choice, :poll => reference.poll}]
+					references = unless Enum.find(references, &(&1.reference_poll_id == reference.reference_poll.id and &1.for_choice == reference.for_choice)) do
+						references ++ [%{:reference_poll_id => reference.reference_poll.id, :for_choice => reference.for_choice, :poll => reference.poll}]
+					else
+						references
 					end
 
 					acc
@@ -175,8 +180,10 @@ defmodule Liquio.HtmlIdentityController do
 			end) |> Enum.count
 			num_references == 0
 		end)
-		if Enum.empty?(root_ids) do
-			root_ids = [polls_by_ids |> Map.keys |> Enum.at(0)]
+		root_ids = if Enum.empty?(root_ids) do
+			[polls_by_ids |> Map.keys |> Enum.at(0)]
+		else
+			root_ids
 		end
 		groups = root_ids |> Enum.map(fn id ->
 			traverse_polls(polls_by_ids, id, MapSet.new, 0, nil)
@@ -227,7 +234,7 @@ defmodule Liquio.HtmlIdentityController do
 		result = Identity.update_preferences(Identity.update_changeset(user, params
 			|> Map.take([:trust_metric_url, :vote_weight_halving_days, :soft_quorum_t, :minimum_reference_approval_score, :minimum_voting_power])))
 
-		result |> handle_errors(conn, fn user ->
+		result |> handle_errors(conn, fn _user ->
 			conn
 			|> put_flash(:info, "Your preferences have been updated")
 			|> redirect(to: default_redirect conn)

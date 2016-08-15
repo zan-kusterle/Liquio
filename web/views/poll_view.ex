@@ -17,11 +17,15 @@ defmodule Liquio.PollView do
 			title: poll.title,
 			topics: poll.topics,
 		}
-		if Map.has_key?(poll, :results) do
-			v = Map.put(v, :results, poll.results)
+		v = if Map.has_key?(poll, :results) do
+			Map.put(v, :results, poll.results)
+		else
+			v
 		end
-		if Map.has_key?(poll, :contributions) do
-			v = Map.put(v, :contributions, poll.contributions)
+		v = if Map.has_key?(poll, :contributions) do
+			Map.put(v, :contributions, poll.contributions)
+		else
+			v
 		end
 		v
 	end

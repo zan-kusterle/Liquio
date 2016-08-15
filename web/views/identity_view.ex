@@ -16,18 +16,25 @@ defmodule Liquio.IdentityView do
 			name: identity.name,
 			trust_metric_poll_id: identity.trust_metric_poll_id
 		}
-		if Map.has_key?(identity, :insecure_password) do
-			v = Map.put(v, :password, identity.insecure_password)
+		v = if Map.has_key?(identity, :insecure_password) do
+			Map.put(v, :password, identity.insecure_password)
+		else
+			v
 		end
-		if Map.has_key?(identity, :access_token) do
-			v = Map.put(v, :access_token, identity.access_token)
+		v = if Map.has_key?(identity, :access_token) do
+			Map.put(v, :access_token, identity.access_token)
+		else
+			v
 		end
-		if is_list(identity.trust_metric_poll_votes) do
+		v = if is_list(identity.trust_metric_poll_votes) do
 			votes_by_choice = identity.trust_metric_poll_votes
 				|> Enum.filter(&(&1.data != nil and &1.is_last))
 				|> Enum.group_by(& &1.data.score == 1)
-			v = Map.put(v, :trusted_by, Map.get(votes_by_choice, true, []) |> Enum.map(& &1.identity_id))
-			v = Map.put(v, :untrusted_by, Map.get(votes_by_choice, false, []) |> Enum.map(& &1.identity_id))
+			v
+			|> Map.put(:trusted_by, Map.get(votes_by_choice, true, []) |> Enum.map(& &1.identity_id))
+			|> Map.put(:untrusted_by, Map.get(votes_by_choice, false, []) |> Enum.map(& &1.identity_id))
+		else
+			v
 		end
 		v
 	end

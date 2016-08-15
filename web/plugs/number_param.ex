@@ -1,5 +1,5 @@
 defmodule Liquio.Plugs.NumberParam do
-	def handle(conn, value, opts) do
+	def handle(_conn, value, opts) do
 		if value == nil or String.length(value) == 0 do
 			if opts[:maybe] == true do
 				{:ok, nil}

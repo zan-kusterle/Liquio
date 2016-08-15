@@ -17,20 +17,23 @@ defmodule Liquio.Reference do
 
 	def get(poll, reference_poll, for_choice) do
 		reference = Repo.get_by(Reference, poll_id: poll.id, reference_poll_id: reference_poll.id, for_choice: for_choice)
-		if reference == nil do
-			approval_poll = Repo.insert!(%Poll{
-				:kind => "is_reference",
-				:choice_type => "probability",
-				:title => nil,
-				:topics => nil
-			})
-			reference = Repo.insert!(%Reference{
-				:poll => poll,
-				:reference_poll => reference_poll,
-				:approval_poll => approval_poll,
-				:for_choice => for_choice
-			})
-		end
+		reference =
+			if reference == nil do
+				approval_poll = Repo.insert!(%Poll{
+					:kind => "is_reference",
+					:choice_type => "probability",
+					:title => nil,
+					:topics => nil
+				})
+				Repo.insert!(%Reference{
+					:poll => poll,
+					:reference_poll => reference_poll,
+					:approval_poll => approval_poll,
+					:for_choice => for_choice
+				})
+			else
+				reference
+			end
 		reference
 	end
 

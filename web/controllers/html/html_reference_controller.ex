@@ -10,7 +10,7 @@ defmodule Liquio.HtmlReferenceController do
 				reference_poll_url
 			end
 		conn
-		|> redirect to: html_poll_html_reference_path(conn, :show, poll_id, reference_poll_id, for_choice: for_choice)
+		|> redirect(to: html_poll_html_reference_path(conn, :show, poll_id, reference_poll_id, for_choice: for_choice))
 	end
 
 	with_params(%{
@@ -27,10 +27,10 @@ defmodule Liquio.HtmlReferenceController do
 		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render "show.html",
+		|> render("show.html",
 			title: poll.title || "Liquio",
 			reference: reference,
 			for_choice: for_choice,
-			own_vote: Vote.current_by(reference.approval_poll, user)
+			own_vote: Vote.current_by(reference.approval_poll, user))
 	end)
 end

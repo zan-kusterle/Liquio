@@ -52,7 +52,7 @@ defmodule Liquio.Plugs.WithParams do
 		results = Enum.map(handlers, fn({name, {handler, value, opts}}) ->
 			{name, handler.handle(conn, value, opts)}
 		end)
-		error_results = results |> Enum.filter(fn({name, data}) ->
+		error_results = results |> Enum.filter(fn({_name, data}) ->
 			elem(data, 0) == :error
 		end)
 		if Enum.empty?(error_results) do

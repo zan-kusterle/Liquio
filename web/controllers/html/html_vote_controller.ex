@@ -9,12 +9,12 @@ defmodule Liquio.HtmlVoteController do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render "index.html",
+		|> render("index.html",
 			title: poll.title || "Liquio",
 			poll: poll
 				|> Map.put(:results, Result.calculate(poll, calculation_opts)),
 			references:  Reference.for_poll(poll, calculation_opts),
-			own_vote: Vote.current_by(poll, user)
+			own_vote: Vote.current_by(poll, user))
 	end)
 
 	with_params(%{
@@ -39,6 +39,6 @@ defmodule Liquio.HtmlVoteController do
 
 		conn
 		|> put_flash(:info, message)
-		|> redirect to: default_redirect(conn)
+		|> redirect(to: default_redirect(conn))
 	end)
 end

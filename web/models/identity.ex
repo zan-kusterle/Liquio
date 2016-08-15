@@ -25,11 +25,15 @@ defmodule Liquio.Identity do
 	end
 	
 	def changeset(data, params) do
-		if Map.has_key?(params, "username") and is_bitstring(params["username"]) do
-			params = Map.put(params, "username", String.downcase(params["username"]))
+		params = if Map.has_key?(params, "username") and is_bitstring(params["username"]) do
+			Map.put(params, "username", String.downcase(params["username"]))
+		else
+			params
 		end
-		if Map.has_key?(params, "name") and is_bitstring(params["name"]) do
-			params = Map.put(params, "name", capitalize_name(params["name"]))
+		params = if Map.has_key?(params, "name") and is_bitstring(params["name"]) do
+			Map.put(params, "name", capitalize_name(params["name"]))
+		else
+			params
 		end
 
 		data

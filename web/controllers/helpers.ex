@@ -13,10 +13,10 @@ defmodule Liquio.Controllers.Helpers do
 		end
 	end
 
-	def handle_errors({:error, changeset}, conn, _func) do
+	def handle_errors({:error, _changeset}, conn, _func) do
 		conn
 		|> Phoenix.Controller.put_flash(:error, "Something went wrong")
-		|> Phoenix.Controller.redirect to: default_redirect(conn)
+		|> Phoenix.Controller.redirect(to: default_redirect(conn))
 	end
 
 	def handle_errors({:ok, item}, _conn, func) do
@@ -25,13 +25,18 @@ defmodule Liquio.Controllers.Helpers do
 
 	def get_calculation_opts_from_conn(conn) do
 		identity = Guardian.Plug.current_resource(conn)
-		datetime = Timex.DateTime.now
-		if Map.has_key?(conn.params, :datetime) do
-			param_datetime = Timex.DateTime.shift(conn.params.datetime, days: 1)
-			if param_datetime < datetime do
-				datetime = param_datetime
+		now = Timex.DateTime.now
+		datetime =
+			if Map.has_key?(conn.params, :datetime) do
+				param_datetime = Timex.DateTime.shift(conn.params.datetime, days: 1)
+				if param_datetime < now do
+					param_datetime
+				else
+					now
+				end
+			else
+				now
 			end
-		end
 		{trust_metric_url, trust_identity_ids} = get_trust_identity_ids(conn)
 		
 		%{
@@ -49,18 +54,21 @@ defmodule Liquio.Controllers.Helpers do
 		identity = Guardian.Plug.current_resource(conn)
 
 		url = Map.get(conn.params, :trust_metric_url)
-		if url == nil or String.length(url) == 0 do
-			url = if identity != nil and identity.trust_metric_url != nil do
-				identity.trust_metric_url
+		url =
+			if url == nil or String.length(url) == 0 do
+				if identity != nil and identity.trust_metric_url != nil do
+					identity.trust_metric_url
+				else
+					Liquio.TrustMetric.default_trust_metric_url()
+				end
 			else
-				Liquio.TrustMetric.default_trust_metric_url()
+				url
 			end
-		end
 
 		case Liquio.TrustMetric.get(url) do
 			{:ok, trust_identity_ids} ->
 				{url, trust_identity_ids}
-			{:error, message} ->
+			{:error, _reason} ->
 				url = Liquio.TrustMetric.default_trust_metric_url()
 				{url, Liquio.TrustMetric.get!(url)}
 		end

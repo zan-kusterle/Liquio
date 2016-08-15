@@ -11,16 +11,16 @@ defmodule Liquio.HtmlDelegationController do
 		if weight == 0 do
 			Delegation.unset(from_identity, to_identity)
 			conn
-			|> redirect to: default_redirect(conn)
+			|> redirect(to: default_redirect(conn))
 		else
 			Delegation.set(Delegation.changeset(%Delegation{}, %{
 				from_identity_id: from_identity.id,
 				to_identity_id: to_identity.id,
 				weight: weight || 1.0,
 				topics: topics
-			})) |> handle_errors(conn, fn(delegation) ->
+			})) |> handle_errors(conn, fn(_delegation) ->
 				conn
-				|> redirect to: default_redirect(conn)
+				|> redirect(to: default_redirect(conn))
 			end)
 		end
 	end)

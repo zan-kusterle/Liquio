@@ -17,11 +17,13 @@ defmodule Liquio.Plugs.ListParam do
 	end
 
 	defp handle_simple(conn, value, opts) do
-		if is_bitstring(value) do
-			value = value
+		value = if is_bitstring(value) do
+			value
 			|> String.split(",")
 			|> Enum.map(&String.trim/1)
 			|> Enum.filter(& String.length(&1) > 0)
+		else
+			value
 		end
 		if is_list(value) do
 			{item_handler_module, item_handler_opts} = opts[:item]

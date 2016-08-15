@@ -10,7 +10,7 @@ defmodule Liquio.ReferenceView do
 	end
 
 	def render("reference.json", %{reference: reference}) do
-		v = %{
+		%{
 			id: reference.id,
 			poll: Liquio.PollView.render("poll.json", poll: reference.poll),
 			reference_poll: Liquio.PollView.render("poll.json", poll: reference.reference_poll),

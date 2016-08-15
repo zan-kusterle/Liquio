@@ -3,7 +3,7 @@ defmodule Liquio.HtmlPollController do
 
 	def new(conn, _) do
 		conn
-		|> render "new.html"
+		|> render("new.html")
 	end
 
 	with_params(%{
@@ -15,12 +15,12 @@ defmodule Liquio.HtmlPollController do
 		poll = Poll.create(choice_type, title, topics)
 		conn
 		|> put_flash(:info, "Done, share the url so others can vote")
-		|> redirect to: html_poll_path(conn, :show, poll.id)
+		|> redirect(to: html_poll_path(conn, :show, poll.id))
 	end)
 
 	def show(conn, %{"id" => "random"}) do
 		conn
-		|> redirect to: html_poll_path(conn, :show, Poll.get_random().id)
+		|> redirect(to: html_poll_path(conn, :show, Poll.get_random().id))
 	end
 
 	with_params(%{
@@ -31,12 +31,12 @@ defmodule Liquio.HtmlPollController do
 		poll = prepare_poll(poll, calculation_opts)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render "show.html",
+		|> render("show.html",
 			title: poll.title,
 			poll: poll,
 			references: prepare_references(poll, calculation_opts),
 			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
-			is_above_minimum_voting_power: poll.results.total >= calculation_opts[:minimum_voting_power]
+			is_above_minimum_voting_power: poll.results.total >= calculation_opts[:minimum_voting_power])
 	end)
 
 	with_params(%{
@@ -47,12 +47,12 @@ defmodule Liquio.HtmlPollController do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render "details.html",
+		|> render("details.html",
 			title: poll.title,
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
 			poll: prepare_poll(poll, calculation_opts),
 			contributions: prepare_contributions(poll, calculation_opts),
-			chart_points: prepare_chart_points(poll, 30, calculation_opts)
+			chart_points: prepare_chart_points(poll, 30, calculation_opts))
 	end)
 
 	plug :put_layout, "minimal.html" when action in [:embed]
@@ -64,9 +64,9 @@ defmodule Liquio.HtmlPollController do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 
 		conn
-		|> render "embed.html",
+		|> render("embed.html",
 			poll: prepare_poll(poll, calculation_opts),
-			references: prepare_references(poll, calculation_opts)
+			references: prepare_references(poll, calculation_opts))
 	end)
 
 	defp prepare_poll(poll, calculate_opts) do
@@ -95,14 +95,14 @@ defmodule Liquio.HtmlPollController do
 		end)
 
 		count = Enum.count(results_with_datetime)
-		means = Enum.map(results_with_datetime, fn({index, datetime, results}) -> results.mean end)
+		means = Enum.map(results_with_datetime, fn({_index, _datetime, results}) -> results.mean end)
 		|> Enum.filter(& &1 != nil)
 		max_mean = if Enum.empty?(means) do
 			1
 		else
 			Enum.max([1, Enum.max(means)])
 		end
-		points = Enum.map(results_with_datetime, fn({index, datetime, results}) ->
+		points = Enum.map(results_with_datetime, fn({index, _datetime, results}) ->
 			if results.mean do
 				{index / (count - 1), results.mean / max_mean}
 			else
