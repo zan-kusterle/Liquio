@@ -104,7 +104,7 @@ defmodule Liquio.Result do
 		end)
 
 		Enum.each(trust_votes, fn({identity_id, {_datetime, _score}}) ->
-			calculate_total_weights(identity_id, state, uuid)
+			calculate_total_weights(identity_id, state, uuid, MapSet.new)
 		end)
 
 		Liquio.CalculateResultServer.reset_visited(uuid)
@@ -112,7 +112,7 @@ defmodule Liquio.Result do
 		contributions = trust_votes |> Enum.map(fn({identity_id, {datetime, score}}) ->
 			%{
 				identity_id: identity_id,
-				voting_power: get_power(identity_id, state, uuid) / 1,
+				voting_power: get_power(identity_id, state, uuid, MapSet.new) / 1,
 				score: score,
 				datetime: datetime
 			}
@@ -176,7 +176,7 @@ defmodule Liquio.Result do
 		end
 	end
 
-	def calculate_total_weights(identity_id, state, uuid) do
+	def calculate_total_weights(identity_id, state, uuid, path) do
 		{inverse_delegations, votes, topics, trust_identity_ids} = state
 
 		unless Liquio.CalculateResultServer.visited?(uuid, identity_id) do
@@ -185,16 +185,17 @@ defmodule Liquio.Result do
 					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> nil
 					Map.has_key?(votes, from_identity_id) -> nil
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> nil
+					MapSet.member?(path, from_identity_id) -> nil
 					true ->
 						Liquio.CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
-						calculate_total_weights(from_identity_id, state, uuid)
+						calculate_total_weights(from_identity_id, state, uuid, MapSet.put(path, identity_id))
 				end
 			end)
 			Liquio.CalculateResultServer.add_visited(uuid, identity_id)
 		end
 	end
 
-	def get_power(identity_id, state, uuid) do
+	def get_power(identity_id, state, uuid, path) do
 		{inverse_delegations, votes, topics, trust_identity_ids} = state
 
 		power = Liquio.CalculateResultServer.get_power(uuid, identity_id)
@@ -207,8 +208,9 @@ defmodule Liquio.Result do
 					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> 0
 					Map.has_key?(votes, from_identity_id) -> 0
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> 0
+					MapSet.member?(path, from_identity_id) -> 0
 					true ->
-						from_power = get_power(from_identity_id, state, uuid)
+						from_power = get_power(from_identity_id, state, uuid, MapSet.put(path, identity_id))
 						from_power * (from_weight / Liquio.CalculateResultServer.get_total_weight(uuid, from_identity_id))
 				end
 			end)
