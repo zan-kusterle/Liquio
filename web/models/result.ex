@@ -55,6 +55,7 @@ defmodule Liquio.Result do
 	use Liquio.Web, :model
 
 	alias Liquio.Repo
+	alias Liquio.CalculateResultServer
 
 	schema "results" do
 		belongs_to :poll, Liquio.Poll
@@ -95,7 +96,7 @@ defmodule Liquio.Result do
 	def calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, topics) do
 		uuid = UUID.uuid4(:hex) |> String.to_atom
 
-		Liquio.CalculateResultServer.start_link uuid
+		CalculateResultServer.start_link uuid
 
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
 
@@ -106,8 +107,8 @@ defmodule Liquio.Result do
 		Enum.each(trust_votes, fn({identity_id, {_datetime, _score}}) ->
 			calculate_total_weights(identity_id, state, uuid, MapSet.new)
 		end)
-
-		Liquio.CalculateResultServer.reset_visited(uuid)
+		
+		CalculateResultServer.reset_visited(uuid)
 
 		contributions = trust_votes |> Enum.map(fn({identity_id, {datetime, score}}) ->
 			%{
@@ -118,7 +119,7 @@ defmodule Liquio.Result do
 			}
 		end)
 
-		Liquio.CalculateResultServer.stop uuid
+		CalculateResultServer.stop uuid
 
 		contributions
 	end
@@ -171,15 +172,14 @@ defmodule Liquio.Result do
 			rt = reference_datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
 			delta_days = (rt - ct) / (24 * 3600)
 
-			base = :math.pow(0.5, 1 / vote_weight_halving_days)
-			:math.pow(base, delta_days)
+			:math.pow(0.5, delta_days / vote_weight_halving_days)
 		end
 	end
 
 	def calculate_total_weights(identity_id, state, uuid, path) do
 		{inverse_delegations, votes, topics, trust_identity_ids} = state
 
-		unless Liquio.CalculateResultServer.visited?(uuid, identity_id) do
+		unless CalculateResultServer.visited?(uuid, identity_id) do
 			inverse_delegations |> Map.get(identity_id, []) |> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
 				cond do
 					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> nil
@@ -187,22 +187,21 @@ defmodule Liquio.Result do
 					topics != nil and from_topics != nil and MapSet.disjoint?(topics, from_topics) -> nil
 					MapSet.member?(path, from_identity_id) -> nil
 					true ->
-						Liquio.CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
+						CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
 						calculate_total_weights(from_identity_id, state, uuid, MapSet.put(path, identity_id))
 				end
 			end)
-			Liquio.CalculateResultServer.add_visited(uuid, identity_id)
+			CalculateResultServer.add_visited(uuid, identity_id)
 		end
 	end
 
 	def get_power(identity_id, state, uuid, path) do
 		{inverse_delegations, votes, topics, trust_identity_ids} = state
 
-		power = Liquio.CalculateResultServer.get_power(uuid, identity_id)
+		power = CalculateResultServer.get_power(uuid, identity_id)
 		if power do
 			power
 		else
-			Liquio.CalculateResultServer.add_visited(uuid, identity_id)
 			receiving = inverse_delegations |> Map.get(identity_id, []) |> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
 				acc + cond do
 					not MapSet.member?(trust_identity_ids, to_string(from_identity_id)) -> 0
@@ -211,11 +210,11 @@ defmodule Liquio.Result do
 					MapSet.member?(path, from_identity_id) -> 0
 					true ->
 						from_power = get_power(from_identity_id, state, uuid, MapSet.put(path, identity_id))
-						from_power * (from_weight / Liquio.CalculateResultServer.get_total_weight(uuid, from_identity_id))
+						from_power * (from_weight / CalculateResultServer.get_total_weight(uuid, from_identity_id))
 				end
 			end)
 			power = 1 + receiving
-			Liquio.CalculateResultServer.put_power(uuid, identity_id, power)
+			CalculateResultServer.put_power(uuid, identity_id, power)
 			power
 		end
 	end

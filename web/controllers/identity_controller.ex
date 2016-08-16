@@ -33,7 +33,7 @@ defmodule Liquio.IdentityController do
 		render(conn, "show.json", identity: identity)
 	end)
 
-	def update(conn, %{"id" => id, "identity" => params}) do
+	def update(_conn, %{"id" => _id, "identity" => _params}) do
 		# TODO: Update preferences
 	end
 end
