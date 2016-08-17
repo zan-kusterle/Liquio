@@ -124,6 +124,30 @@ defmodule Liquio.Result do
 		contributions
 	end
 
+	def get_power(identity_id, state = {inverse_delegations, votes, topics, trust_identity_ids}, uuid, path) do
+		if power = CalculateResultServer.get_power(uuid, identity_id) do
+			power
+		else
+			receiving = inverse_delegations |> Map.get(identity_id, [])
+			|> Enum.filter(& use_delegation?(&1, state, path))
+			|> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
+				from_power = get_power(from_identity_id, state, uuid, MapSet.put(path, identity_id))
+				from_ratio = from_weight / CalculateResultServer.get_total_weight(uuid, from_identity_id)
+				acc + from_power * from_ratio
+			end)
+			power = 1 + receiving
+			CalculateResultServer.put_power(uuid, identity_id, power)
+			power
+		end
+	end
+
+	def use_delegation?({from_identity_id, _from_weight, from_topics}, {_inverse_delegations, votes, topics, trust_identity_ids}, path) do
+		MapSet.member?(trust_identity_ids, to_string(from_identity_id)) and
+		not Map.has_key?(votes, from_identity_id) and
+		(topics == nil or from_topics == nil or not MapSet.disjoint?(topics, from_topics)) and
+		not MapSet.member?(path, from_identity_id)
+	end
+
 	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t, mean_fn) do
 		contributions = contributions |> Enum.map(fn(contribution) ->
 			contribution
@@ -186,30 +210,6 @@ defmodule Liquio.Result do
 			end)
 			CalculateResultServer.add_visited(uuid, identity_id)
 		end
-	end
-
-	def get_power(identity_id, state = {inverse_delegations, votes, topics, trust_identity_ids}, uuid, path) do
-		if power = CalculateResultServer.get_power(uuid, identity_id) do
-			power
-		else
-			receiving = inverse_delegations |> Map.get(identity_id, [])
-			|> Enum.filter(& use_delegation?(&1, state, path))
-			|> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
-				from_power = get_power(from_identity_id, state, uuid, MapSet.put(path, identity_id))
-				from_ratio = from_weight / CalculateResultServer.get_total_weight(uuid, from_identity_id)
-				acc + from_power * from_ratio
-			end)
-			power = 1 + receiving
-			CalculateResultServer.put_power(uuid, identity_id, power)
-			power
-		end
-	end
-
-	def use_delegation?({from_identity_id, _from_weight, from_topics}, {_inverse_delegations, votes, topics, trust_identity_ids}, path) do
-		MapSet.member?(trust_identity_ids, to_string(from_identity_id)) and
-		not Map.has_key?(votes, from_identity_id) and
-		(topics == nil or from_topics == nil or not MapSet.disjoint?(topics, from_topics)) and
-		not MapSet.member?(path, from_identity_id)
 	end
 
 	def get_inverse_delegations(datetime) do
