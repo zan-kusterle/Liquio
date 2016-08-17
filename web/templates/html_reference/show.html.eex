@@ -9,5 +9,3 @@
 %>
 
 <%= render Liquio.HtmlPollView, "score.html", poll: @reference.approval_poll %>
-
-<a href="/polls/<%= @reference.approval_poll.id %>/details" class="link">Details</a>

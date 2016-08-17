@@ -5,7 +5,7 @@
 		<label for="username">Username</label>
 		<input id="username" type="text" name="username" />
 
-		<label for="name">Name</label>
+		<label for="name">Full name</label>
 		<input id="name" type="text" name="name" />
 	</div>
 
