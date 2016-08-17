@@ -124,13 +124,25 @@ defmodule Liquio.Result do
 		contributions
 	end
 
-	def get_power(identity_id, state = {inverse_delegations, votes, topics, trust_identity_ids}, uuid, path) do
+	def calculate_total_weights(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
+		unless CalculateResultServer.visited?(uuid, identity_id) do
+			inverse_delegations |> Map.get(identity_id, [])
+			|> Enum.filter(& use_delegation?(&1, state, path))
+			|> Enum.each(fn({from_identity_id, from_weight, _from_topics}) ->
+				CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
+				calculate_total_weights(from_identity_id, state, uuid, MapSet.put(path, identity_id))
+			end)
+			CalculateResultServer.add_visited(uuid, identity_id)
+		end
+	end
+
+	def get_power(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
 		if power = CalculateResultServer.get_power(uuid, identity_id) do
 			power
 		else
 			receiving = inverse_delegations |> Map.get(identity_id, [])
 			|> Enum.filter(& use_delegation?(&1, state, path))
-			|> Enum.reduce(0, fn({from_identity_id, from_weight, from_topics}, acc) ->
+			|> Enum.reduce(0, fn({from_identity_id, from_weight, _from_topics}, acc) ->
 				from_power = get_power(from_identity_id, state, uuid, MapSet.put(path, identity_id))
 				from_ratio = from_weight / CalculateResultServer.get_total_weight(uuid, from_identity_id)
 				acc + from_power * from_ratio
@@ -197,18 +209,6 @@ defmodule Liquio.Result do
 			delta_days = (rt - ct) / (24 * 3600)
 
 			:math.pow(0.5, delta_days / vote_weight_halving_days)
-		end
-	end
-
-	def calculate_total_weights(identity_id, state = {inverse_delegations, votes, topics, trust_identity_ids}, uuid, path) do
-		unless CalculateResultServer.visited?(uuid, identity_id) do
-			inverse_delegations |> Map.get(identity_id, [])
-			|> Enum.filter(& use_delegation?(&1, state, path))
-			|> Enum.each(fn({from_identity_id, from_weight, from_topics}) ->
-				CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
-				calculate_total_weights(from_identity_id, state, uuid, MapSet.put(path, identity_id))
-			end)
-			CalculateResultServer.add_visited(uuid, identity_id)
 		end
 	end
 
