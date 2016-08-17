@@ -15,11 +15,19 @@ defmodule Liquio.HtmlExploreController do
 			polls: Poll.by_topic(topic |> String.downcase) |> Repo.all)
 	end
 
-	def search(conn, %{"query" => query}) do
-		conn
-		|> render("index.html",
-			heading: "SHOWING MOST RELEVANT POLLS",
-			query: query,
-			polls: Poll.search(Poll, query) |> Repo.all)
+	def search(conn, %{"query" => query, "t" => type}) do
+		if type == "identity" do
+			conn
+			|> render("identities.html",
+				heading: "SHOWING MOST RELEVANT IDENTITIES",
+				query: query,
+				identities: Identity.search(Identity, query) |> Repo.all)
+		else
+			conn
+			|> render("index.html",
+				heading: "SHOWING MOST RELEVANT POLLS",
+				query: query,
+				polls: Poll.search(Poll, query) |> Repo.all)
+		end
 	end
 end

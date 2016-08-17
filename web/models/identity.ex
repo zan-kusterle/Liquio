@@ -71,6 +71,13 @@ defmodule Liquio.Identity do
 		Repo.update(changeset)
 	end
 
+	def search(query, search_term) do
+		pattern = "%#{search_term}%"
+		from(i in query,
+		where: ilike(i.name, ^pattern) or ilike(i.username, ^pattern),
+		order_by: fragment("similarity(?, ?) DESC", i.username, ^search_term))
+	end
+
 	def generate_password() do
 		random_string(16)
 	end
