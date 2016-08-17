@@ -8,7 +8,16 @@ defmodule Liquio.Router do
 		plug :fetch_session
 		plug :fetch_flash
 		plug :protect_from_forgery
-		#plug :put_secure_browser_headers
+		plug :put_secure_browser_headers
+		
+		plug Guardian.Plug.VerifySession
+		plug Guardian.Plug.LoadResource
+	end
+
+	pipeline :embed do
+		plug :accepts, ["html"]
+		plug :fetch_session
+
 		plug Guardian.Plug.VerifySession
 		plug Guardian.Plug.LoadResource
 	end
@@ -41,7 +50,6 @@ defmodule Liquio.Router do
 			get "/details", HtmlPollController, :details
 			resources "/vote", HtmlVoteController, only: [:index, :create, :delete]
 			resources "/references", HtmlReferenceController, only: [:index, :show]
-			get "/embed", HtmlPollController, :embed
 		end
 
 		get "/explore", HtmlExploreController, :index
@@ -49,6 +57,12 @@ defmodule Liquio.Router do
 		get "/search", HtmlExploreController, :search
 	end
 
+	scope "/", Liquio do
+		pipe_through :embed
+
+		get "/polls/:html_poll_id/embed", HtmlPollController, :embed
+	end
+	
 	scope "/api", Liquio do
 		pipe_through :api
 
