@@ -16,7 +16,8 @@ defmodule Liquio.LandingController do
 			:opinions => [
 				Poll.force_get("probability", "we should implement universal basic income", ["economics", "politics", "universal basic income"]),
 				Poll.force_get("quantity", "number of refugees EU should let inside", ["politics", "eu", "refugees"]),
-				Poll.force_get("quantity", "the ideal age for children to start going to school", ["education", "children"])
+				Poll.force_get("quantity", "the ideal age for children to start going to school", ["education", "children"]),
+				Poll.force_get("probability", "genetically modified foods are safe", ["science", "biology", "gmo"])
 			],
 			:predictions => [
 				Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"]),
