@@ -14,7 +14,7 @@
 	<h2 class="heading">Simple, yet powerful</h2>
 
 	<div class="pure-g">
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
 			<h3 class="subheading">
 				<i class="fa fa-users"></i>
 				Delegations
@@ -24,7 +24,7 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
 			<h3 class="subheading">
 				<i class="fa fa-quote-left"></i>
 				References
@@ -34,7 +34,7 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
 			<h3 class="subheading">
 				<i class="fa fa-cogs"></i>
 				Trust Metrics
@@ -44,7 +44,17 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
+			<h3 class="subheading">
+				<i class="fa fa-cogs"></i>
+				Objectivity
+			</h3>
+			<p>
+				Liquio encourages polls that aren't purely subjective.
+			</p>
+		</div>
+
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
 			<h3 class="subheading">
 				<i class="fa fa-eye"></i>
 				Transparency
@@ -59,41 +69,30 @@
 <div class="content examples">
 	<h2 class="heading">Examples</h2>
 
+	<% {a, b} = Enum.split(@examples, round(Enum.count(@examples) / 2)) %>
 	<div class="pure-g">
 		<div class="pure-u-1">
 			<div class="pure-g">
-				<div class="box pure-u-1 pure-u-md-1-3">
-					<h3 class="subheading">
-						Fact Verification
-					</h3>
-					<ul>
-						<%= for poll <- @examples[:facts] do %>
-							<li><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
-						<% end %>
-					</ul>
-				</div>
-
-				<div class="box pure-u-1 pure-u-md-1-3">
-					<h3 class="subheading">
-						Opinions
-					</h3>
-					<ul>
-						<%= for poll <- @examples[:opinions] do %>
-							<li><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
-						<% end %>
-					</ul>
-				</div>
-
-				<div class="box pure-u-1 pure-u-md-1-3">
-					<h3 class="subheading">
-						Predictions
-					</h3>
-					<ul>
-						<%= for poll <- @examples[:predictions] do %>
-							<li><a href="/polls/<%= poll.id %>"><%= poll.title %></a></li>
-						<% end %>
-					</ul>
-				</div>
+				<%= for examples_column <- [a, b] do %>
+					<div class="box pure-u-1 pure-u-md-1-2">
+						<ul>
+							<%= for poll <- examples_column do %>
+								<li>
+								<a href="/polls/<%= poll.id %>">
+									<p class="title"><%= poll.title %></p>
+									<div class="score" style="background-color: <%= Liquio.HtmlPollView.score_color poll %>;">
+										<%= if poll.choice_type == "probability" do %>
+											<%= round((poll.results.mean || 0) * 100) %>%
+										<% else %>
+											<%= if poll.results.mean do number_format(poll.results.mean) else "?" end %>
+										<% end %>
+									</div>
+								</a>
+							</li>
+							<% end %>
+						</ul>
+					</div>
+				<% end %>
 			</div>
 		</div>
 	</div>

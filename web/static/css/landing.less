@@ -109,7 +109,7 @@
 		}
 
 		.box {
-			text-align: center;
+			text-align: left;
 
 			ul {
 				list-style: none;
@@ -119,21 +119,47 @@
 				padding-left: 0px;
 
 				li {
-					padding: 12px 0px;
-					border-top: 1px solid rgba(255, 255, 255, 0.1);
+					padding: 0px;
+					background-color: rgba(255, 255, 255, 0.1);
+					margin: 30px 0px;
+					padding: 0px;
+					color: black;
+					font-size: 18px;
 
 					a {
+						display: block;
+					}
+
+					.title {
+						color: #333;
+						display: inline-block;
+						font-size: 18px;
+						width: calc(~"100% - 85px");
+						padding: 7px 10px 0px 0px;
+						line-height: 16px;
+						margin: 0px;
+						vertical-align: top;
 						color: white;
 						text-decoration: none;
+						padding: 16px 20px;
+					}
+
+					.score {
+						font-weight: bold;
+						display: inline-block;
+						padding: 8px;
+						text-align: center;
+						font-size: 16px;
+						width: 80px;
+						color: #333;
+						vertical-align: top;
 					}
 
 					a:hover {
-						color: #1f8dd6;
+						.title {
+							color: #1f8dd6;
+						}
 					}
-				}
-
-				li:last-child {
-					border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 				}
 			}
 		}
