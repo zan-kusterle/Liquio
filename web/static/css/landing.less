@@ -120,11 +120,14 @@
 
 				li {
 					padding: 0px;
-					background-color: rgba(255, 255, 255, 0.1);
+					background-color: rgba(255, 255, 255, 0.06);
 					margin: 30px 0px;
 					padding: 0px;
 					color: black;
-					font-size: 18px;
+					font-size: 14px;
+					@media @lg {
+						font-size: 16px;
+					}
 
 					a {
 						display: block;
@@ -133,12 +136,11 @@
 					.title {
 						color: #333;
 						display: inline-block;
-						font-size: 18px;
-						width: calc(~"100% - 85px");
+						width: calc(~"100% - 125px");
 						padding: 7px 10px 0px 0px;
-						line-height: 16px;
+						line-height: 20px;
 						margin: 0px;
-						vertical-align: top;
+						vertical-align: middle;
 						color: white;
 						text-decoration: none;
 						padding: 16px 20px;
@@ -149,10 +151,11 @@
 						display: inline-block;
 						padding: 8px;
 						text-align: center;
-						font-size: 16px;
-						width: 80px;
+						width: 120px;
 						color: #333;
-						vertical-align: top;
+						vertical-align: middle;
+						opacity: 0.75;
+						line-height: 56px;
 					}
 
 					a:hover {
