@@ -91,10 +91,14 @@
 								<a href="/polls/<%= poll.id %>">
 									<p class="title"><%= poll.title %></p>
 									<div class="score" style="background-color: <%= Liquio.HtmlPollView.score_color poll %>;">
-										<%= if poll.choice_type == "probability" do %>
-											<%= round((poll.results.mean || 0) * 100) %>%
+										<%= if poll.results.mean do %>
+											<%= if poll.choice_type == "probability" do %>
+												<%= round(poll.results.mean * 100) %>%
+											<% else %>
+												<%= number_format(poll.results.mean) %>
+											<% end %>
 										<% else %>
-											<%= if poll.results.mean do number_format(poll.results.mean) else "?" end %>
+											?
 										<% end %>
 									</div>
 								</a>
