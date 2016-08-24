@@ -137,14 +137,18 @@
 					.title {
 						color: #333;
 						display: inline-block;
-						width: calc(~"100% - 125px");
-						padding: 7px 10px 0px 0px;
 						line-height: 20px;
 						margin: 0px;
 						vertical-align: middle;
 						color: white;
 						text-decoration: none;
-						padding: 16px 20px;
+						padding: 10px 14px;
+						width: calc(~"100% - 65px");
+						
+						@media @lg {
+							padding: 16px 20px;
+							width: calc(~"100% - 125px");
+						}
 					}
 
 					.score {
@@ -152,17 +156,23 @@
 						display: inline-block;
 						padding: 8px;
 						text-align: center;
-						width: 120px;
 						color: #333;
 						vertical-align: middle;
 						opacity: 0.75;
 						line-height: 56px;
-					}
+						width: 60px;
 
-					a:hover {
-						.title {
-							color: #1f8dd6;
+						@media @lg {
+							width: 120px;
 						}
+					}
+				}
+
+				li:hover {
+					background-color: rgba(255, 255, 255, 0.03);
+
+					.title {
+						color: #1f8dd6;
 					}
 				}
 			}
