@@ -24,6 +24,6 @@ defmodule Liquio.LandingController do
 		examples = Enum.map(examples, fn(poll) ->
 			Map.put(poll, :results, Result.calculate(poll, calculate_opts))
 		end)
-		render conn, "index.html", examples: examples
+		render conn, "index.html", examples: Enum.shuffle(examples)
 	end
 end
