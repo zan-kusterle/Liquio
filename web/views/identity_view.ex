@@ -31,8 +31,8 @@ defmodule Liquio.IdentityView do
 				|> Enum.filter(&(&1.data != nil and &1.is_last))
 				|> Enum.group_by(& &1.data.score == 1)
 			v
-			|> Map.put(:trusted_by, Map.get(votes_by_choice, true, []) |> Enum.map(& &1.identity_id))
-			|> Map.put(:untrusted_by, Map.get(votes_by_choice, false, []) |> Enum.map(& &1.identity_id))
+			|> Map.put(:trusted_by, votes_by_choice |> Map.get(true, []) |> Enum.map(& &1.identity_id))
+			|> Map.put(:untrusted_by, votes_by_choice |> Map.get(false, []) |> Enum.map(& &1.identity_id))
 		else
 			v
 		end

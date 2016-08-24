@@ -56,7 +56,12 @@ defmodule Liquio.Plugs.WithParams do
 			elem(data, 0) == :error
 		end)
 		if Enum.empty?(error_results) do
-			{:ok, Enum.map(results, fn({name, {:ok, value}}) -> {name, value} end) |> Enum.into(%{})}
+			{
+				:ok,
+				results
+				|> Enum.map(fn({name, {:ok, value}}) -> {name, value} end)
+				|> Enum.into(%{})
+			}
 		else
 			{name, {:error, status, message}} = Enum.at(error_results, 0)
 			{:error, name, status, message}

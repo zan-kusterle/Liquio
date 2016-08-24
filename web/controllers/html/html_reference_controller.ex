@@ -15,13 +15,14 @@ defmodule Liquio.HtmlReferenceController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
-    	:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
-    	:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
+		:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
 		:for_choice => {Plugs.NumberParam, [name: "for_choice", error: "For choice must be a number"]},
 	},
 	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll, :for_choice => for_choice}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
-		reference = Reference.get(poll, reference_poll, for_choice)
+		reference = poll
+		|> Reference.get(reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
 		results = Result.calculate(reference.approval_poll, calculation_opts)
 		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))

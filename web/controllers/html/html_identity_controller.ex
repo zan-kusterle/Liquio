@@ -91,7 +91,8 @@ defmodule Liquio.HtmlIdentityController do
 		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
 	def delegations_from(conn, %{:identity => identity}) do
-		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		query = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		delegations_from = query
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
 
@@ -109,7 +110,8 @@ defmodule Liquio.HtmlIdentityController do
 		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
 	def delegations_to(conn, %{:identity => identity}) do
-		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		query = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		delegations_to = query
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
 
@@ -123,71 +125,43 @@ defmodule Liquio.HtmlIdentityController do
 		)
 	end)
 
-	defp add_with_data(polls_by_ids, poll, data) do
-		Map.put(polls_by_ids, poll.id, Map.merge(Map.merge(%{
-			:references => [],
-			:score => nil,
-			:approval_score => nil
-		}, Map.get(polls_by_ids, poll.id, poll)), data))
-	end
-
 	with_params(%{
 		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
 	def votes(conn, %{:identity => identity}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 
-		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
+		query = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
+		votes = query
 		|> Repo.all
 		|> Repo.preload([:poll])
 
-		polls = votes |> Enum.map(fn(vote) ->
+		voted_polls = votes |> Enum.map(fn(vote) ->
 			vote.poll
 			|> Map.put(:score, vote.data.score)
 		end)
-		polls_by_ids = Enum.reduce(polls, %{}, fn(poll, acc) ->
-			case poll.kind do
-				"custom" ->
-					references = Reference.for_poll(poll, calculation_opts)
-					|> Repo.preload([:poll, :reference_poll])
-					acc
-					|> add_with_data(poll, %{:score => poll.score, :references => references})
-				"is_reference" ->
-					reference = Repo.get_by!(Reference, approval_poll_id: poll.id)
-					|> Repo.preload([:poll, :reference_poll])
-
-					references = Reference.for_poll(reference.poll, calculation_opts)
-					|> Repo.preload([:poll, :reference_poll])
-					reference_poll_references = Reference.for_poll(reference.reference_poll, calculation_opts)
-					|> Repo.preload([:poll, :reference_poll])
-
-					references = unless Enum.find(references, &(&1.reference_poll_id == reference.reference_poll.id and &1.for_choice == reference.for_choice)) do
-						references ++ [%{:reference_poll_id => reference.reference_poll.id, :for_choice => reference.for_choice, :poll => reference.poll}]
-					else
-						references
-					end
-
-					acc
-					|> add_with_data(reference.poll, %{:references => references})
-					|> add_with_data(reference.reference_poll, %{:references => reference_poll_references, :approval_score => poll.score})
-				_ ->
-					acc
-			end
-		end)
-		root_ids = polls_by_ids |> Map.keys |> Enum.filter(fn(id) ->
-			num_references = polls_by_ids |> Map.values |> Enum.filter(fn poll ->
-				Enum.find(poll.references, & &1.reference_poll_id == id) != nil
-			end) |> Enum.count
-			num_references == 0
-		end)
-		root_ids = if Enum.empty?(root_ids) do
-			[polls_by_ids |> Map.keys |> Enum.at(0)]
+		polls = Enum.flat_map(voted_polls, & expand_poll(&1, calculation_opts))
+		groups = if Enum.empty?(polls) do
+			[]
 		else
-			root_ids
+			polls_by_ids = for poll <- polls, into: %{} do
+				{poll.id, poll}
+			end
+			root_ids = polls_by_ids |> Map.keys |> Enum.filter(fn(id) ->
+				num_references = polls_by_ids |> Map.values |> Enum.filter(fn poll ->
+					Enum.find(poll.references, & &1.reference_poll_id == id) != nil
+				end) |> Enum.count
+				num_references == 0
+			end)
+			root_ids = if Enum.empty?(root_ids) do
+				[polls_by_ids |> Map.keys |> Enum.at(0)]
+			else
+				root_ids
+			end
+			root_ids |> Enum.map(fn id ->
+				traverse_polls(polls_by_ids, id, MapSet.new, 0, nil)
+			end)
 		end
-		groups = root_ids |> Enum.map(fn id ->
-			traverse_polls(polls_by_ids, id, MapSet.new, 0, nil)
-		end)
 
 		is_human_votes = polls |> Enum.filter(& &1.kind == "is_human") |> Enum.map(fn poll ->
 			identity = Repo.get_by!(Identity, trust_metric_poll_id: poll.id)
@@ -240,4 +214,46 @@ defmodule Liquio.HtmlIdentityController do
 			|> redirect(to: default_redirect conn)
 		end)
 	end)
+
+	defp prepare_poll(poll, data) do
+		Map.merge(Map.merge(%{
+			:references => [],
+			:score => nil,
+			:approval_score => nil
+		}, poll), data)
+	end
+
+	defp expand_poll(poll, calculation_opts) do
+		case poll.kind do
+			"custom" ->
+				references = poll
+				|> Reference.for_poll(calculation_opts)
+				|> Repo.preload([:poll, :reference_poll])
+				[prepare_poll(poll, %{:score => poll.score, :references => references})]
+			"is_reference" ->
+				reference = Reference
+				|> Repo.get_by!(approval_poll_id: poll.id)
+				|> Repo.preload([:poll, :reference_poll])
+
+				references = reference.poll
+				|> Reference.for_poll(calculation_opts)
+				|> Repo.preload([:poll, :reference_poll])
+				reference_poll_references = reference.reference_poll
+				|> Reference.for_poll(calculation_opts)
+				|> Repo.preload([:poll, :reference_poll])
+
+				references = if Enum.find(references, &(&1.reference_poll_id == reference.reference_poll.id and &1.for_choice == reference.for_choice)) == nil do
+					references ++ [%{:reference_poll_id => reference.reference_poll.id, :for_choice => reference.for_choice, :poll => reference.poll}]
+				else
+					references
+				end
+
+				[
+					prepare_poll(reference.poll, %{:references => references}),
+					prepare_poll(reference.reference_poll, %{:references => reference_poll_references, :approval_score => poll.score})
+				]
+			_ ->
+				[]
+		end
+	end
 end

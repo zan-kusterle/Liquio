@@ -47,7 +47,8 @@ defmodule Liquio.Mixfile do
      {:timex, "~> 2.2.1"},
      {:timex_ecto, "~> 1.1.3"},
      {:comeonin, "~> 2.5"},
-     {:basic_auth, "~> 1.0.0"}
+     {:basic_auth, "~> 1.0.0"},
+     {:credo, "~> 0.3", only: [:dev, :test]}
    ]
   end
 

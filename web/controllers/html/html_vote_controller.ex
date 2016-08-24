@@ -24,7 +24,6 @@ defmodule Liquio.HtmlVoteController do
 	},
 	def create(conn, %{:user => user, :poll => poll, :score => score}) do
 		message =
-			# TODO: Use changeset to verify this constraint
 			if score != nil do
 				if poll.choice_type == "probability" and (score < 0 or score > 1) do
 					"Choice must be between 0 and 1."

@@ -45,12 +45,13 @@ defmodule Liquio.Poll do
 	end
 
 	def force_get(choice_type, title, topics) do
-		poll = from(p in Poll, where:
+		query = from(p in Poll, where:
 			p.kind == "custom" and
 			p.choice_type == ^choice_type and
 			p.title == ^capitalize_title(title) and
 			p.topics == ^topics
 		)
+		poll = query
 		|> Ecto.Query.first
 		|> Repo.one
 		if poll == nil do
@@ -96,11 +97,12 @@ defmodule Liquio.Poll do
 	def is_custom(poll) do poll.kind == "custom" end
 
 	def get_random() do
-		from(p in Poll,
+		query = from(p in Poll,
 		select: p,
 		where: p.kind == "custom",
 		order_by: fragment("RANDOM()"),
 		limit: 1)
+		query
 		|> Repo.all()
 		|> List.first
 	end

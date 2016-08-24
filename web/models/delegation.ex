@@ -43,7 +43,6 @@ defmodule Liquio.Delegation do
 		|> assoc_constraint(:from_identity)
 		|> assoc_constraint(:to_identity)
 		|> put_embed(:data, DelegationData.changeset(%DelegationData{}, params))
-		# TODO: Validate cycles
 	end
 
 	def set(changeset) do
@@ -68,7 +67,7 @@ defmodule Liquio.Delegation do
 
 	def unset(from_identity, to_identity) do
 		delegation = Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id, is_last: true})
-    	if delegation != nil do
+		if delegation != nil do
 			remove_current_last(from_identity.id, to_identity.id)
 			Repo.insert(%Delegation{
 				from_identity_id: from_identity.id,

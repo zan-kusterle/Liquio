@@ -6,7 +6,8 @@ defmodule Liquio.NumberFormat do
 	end
 
 	def number_format_simple(x, decimals \\ 2) do
-		s = :erlang.float_to_binary(x, [:compact, { :decimals, decimals }])
+		s = x
+		|> :erlang.float_to_binary([:compact, {:decimals, decimals}])
 		|> String.trim_trailing(".0")
 		raw(s)
 	end
@@ -66,6 +67,8 @@ defmodule Liquio.NumberFormat do
 	end
 
 	defp round_simple(x, decimals) do
-		:erlang.float_to_binary(x, [:compact, { :decimals, decimals }]) |> String.trim_trailing(".0")
+		x
+		|> :erlang.float_to_binary([:compact, {:decimals, decimals}])
+		|> String.trim_trailing(".0")
 	end
 end

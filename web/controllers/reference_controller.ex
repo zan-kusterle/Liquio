@@ -22,7 +22,8 @@ defmodule Liquio.ReferenceController do
 		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url"]},
 	},
 	def show(conn, %{:poll => poll, :reference_poll => reference_poll, :for_choice => for_choice}) do
-		reference = Reference.get(poll, reference_poll, for_choice)
+		reference = poll
+		|> Reference.get(reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
 		results = Result.calculate(reference.approval_poll, get_calculation_opts_from_conn(conn))
 		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))

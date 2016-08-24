@@ -5,7 +5,8 @@ defmodule Liquio.DelegationController do
 		:from_identity => {Plugs.IdentityParam, [name: "identity_id"]}
 	},
 	def index(conn, %{:from_identity => from_identity}) do
-		delegations = from(d in Delegation, where: d.from_identity_id == ^from_identity.id and d.is_last == true and not is_nil(d.data))
+		query = from(d in Delegation, where: d.from_identity_id == ^from_identity.id and d.is_last == true and not is_nil(d.data))
+		delegations = query
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
 
@@ -39,9 +40,10 @@ defmodule Liquio.DelegationController do
 		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
 	},
 	def show(conn, %{:from_identity => from_identity, :to_identity => to_identity}) do
-		delegation = Repo.all(from(d in Delegation, where:
+		query = from(d in Delegation, where:
 			d.from_identity_id == ^from_identity.id and d.to_identity_id == ^to_identity.id
-			and d.is_last == true and not is_nil(d.data))) |> Enum.at(0)
+			and d.is_last == true and not is_nil(d.data))
+		delegation = query |> Repo.all |> Enum.at(0)
 		if delegation do
 			delegation = Repo.preload delegation, [:from_identity, :to_identity]
 			conn

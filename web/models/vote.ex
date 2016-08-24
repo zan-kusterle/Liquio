@@ -13,6 +13,10 @@ defmodule Liquio.VoteData do
 end
 
 defmodule Liquio.Vote do
+	@moduledoc """
+	Describes vote schema and provides functions for finding, adding and removing votes.
+	"""
+
 	use Liquio.Web, :model
 
 	alias Liquio.Repo
@@ -27,6 +31,15 @@ defmodule Liquio.Vote do
 		field :is_last, :boolean
 
 		embeds_one :data, VoteData
+	end
+
+	def current_by(poll, identity) do
+		vote = Repo.get_by(Vote, identity_id: identity.id, poll_id: poll.id, is_last: true)
+		if vote != nil and vote.data != nil do
+			vote
+		else
+			nil
+		end
 	end
 
 	def changeset(data, params) do
@@ -45,7 +58,6 @@ defmodule Liquio.Vote do
 		|> put_change(:is_last, true)
 		Repo.insert(changeset)
 	end
-
 	def set(poll, identity, score) do
 		remove_current_last(poll.id, identity.id)
 		Repo.insert(%Vote{
@@ -68,20 +80,11 @@ defmodule Liquio.Vote do
 		})
 	end
 
-	def remove_current_last(poll_id, identity_id) do
+	defp remove_current_last(poll_id, identity_id) do
 		current_last = Repo.get_by(Vote,
 			poll_id: poll_id, identity_id: identity_id, is_last: true)
 		if current_last do
 			Repo.update! Ecto.Changeset.change current_last, is_last: false
 		end
-	end
-
-	def current_by(poll, identity) do
-		vote = Repo.get_by(Vote, identity_id: identity.id, poll_id: poll.id, is_last: true)
-        if vote != nil and vote.data != nil do
-        	vote
-        else
-        	nil
-        end
 	end
 end

@@ -94,7 +94,7 @@ defmodule Liquio.Result do
 	end
 
 	def calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, topics) do
-		uuid = UUID.uuid4(:hex) |> String.to_atom
+		uuid = String.to_atom(UUID.uuid4(:hex))
 
 		CalculateResultServer.start_link uuid
 
@@ -190,9 +190,9 @@ defmodule Liquio.Result do
 		if total_power > 0 do
 			Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
 				if current_power + contribution.voting_power > total_power / 2 do
-					{ :halt, contribution.score }
+					{:halt, contribution.score}
 				else
-					{ :cont, current_power + contribution.voting_power }
+					{:cont, current_power + contribution.voting_power}
 				end
 			end)
 		else
@@ -217,14 +217,15 @@ defmodule Liquio.Result do
 			FROM delegations
 			WHERE datetime <= '#{Timex.format!(datetime, "{ISO}")}'
 			ORDER BY from_identity_id, to_identity_id, datetime DESC;"
-		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows |> Enum.filter(& Enum.at(&1, 2))
-		inverse_delegations = for {to_identity_id, to_identity_rows} <- rows |> Enum.group_by(&(&1 |> Enum.at(1))), into: %{}, do: {
+		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows
+		rows = rows |> Enum.filter(& Enum.at(&1, 2))
+		inverse_delegations = for {to_identity_id, to_identity_rows} <- Enum.group_by(rows, &(Enum.at(&1, 1))), into: %{}, do: {
 			to_identity_id,
 			to_identity_rows |> Enum.map(fn(row) ->
 				{
 					Enum.at(row, 0),
 					Enum.at(row, 2)["weight"],
-					if Enum.at(row, 2)["topics"] == nil do nil else Enum.at(row, 2)["topics"] |> MapSet.new end
+					if Enum.at(row, 2)["topics"] == nil do nil else MapSet.new(Enum.at(row, 2)["topics"]) end
 				}
 			end)
 		}

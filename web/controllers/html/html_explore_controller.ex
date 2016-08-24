@@ -9,10 +9,11 @@ defmodule Liquio.HtmlExploreController do
 	end
 
 	def show(conn, %{"id" => topic}) do
+		topic_downcase = topic |> String.downcase
 		conn
 		|> render("index.html",
 			heading: "POLLS WITH TOPIC #{topic |> String.upcase}",
-			polls: Poll.by_topic(topic |> String.downcase) |> Repo.all)
+			polls: topic_downcase |> Poll.by_topic |> Repo.all)
 	end
 
 	def search(conn, %{"query" => query, "t" => type}) do
@@ -21,13 +22,13 @@ defmodule Liquio.HtmlExploreController do
 			|> render("identities.html",
 				heading: "SHOWING MOST RELEVANT IDENTITIES",
 				query: query,
-				identities: Identity.search(Identity, query) |> Repo.all)
+				identities: Identity |> Identity.search(query) |> Repo.all)
 		else
 			conn
 			|> render("index.html",
 				heading: "SHOWING MOST RELEVANT POLLS",
 				query: query,
-				polls: Poll.search(Poll, query) |> Repo.all)
+				polls: Poll |> Poll.search(query) |> Repo.all)
 		end
 	end
 end

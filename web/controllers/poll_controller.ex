@@ -36,7 +36,9 @@ defmodule Liquio.PollController do
 		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url"]},
 	},
 	def contributions(conn, %{:poll => poll}) do
-		contributions = Result.calculate_contributions(poll, get_calculation_opts_from_conn(conn)) |> Enum.map(fn(contribution) ->
+		contributions = poll
+		|> Result.calculate_contributions(get_calculation_opts_from_conn(conn))
+		|> Enum.map(fn(contribution) ->
 			%{
 				:datetime => Timex.format!(contribution.datetime, "{ISO}"),
 				:score => contribution.score,

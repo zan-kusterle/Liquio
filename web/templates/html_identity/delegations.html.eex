@@ -1,15 +1,19 @@
-<%= for delegation <- @delegations do %>
-	<div style="margin-bottom: 10px;">
-		<a href="/identities/<%= delegation.from_identity.id %>"><%= delegation.from_identity.username %></a>
-		to
-		<a href="/identities/<%= delegation.to_identity.id %>"><%= delegation.to_identity.username %></a>:
-		<%= delegation.data.weight %>
-		<%= if delegation.data.topics != nil do %>
-			<%= for topic <- delegation.data.topics do %>
-				<a href="<%= html_explore_path(@conn, :show, topic) %>">#<%= topic %></a>
+<%= if Enum.empty?(@delegations) do %>
+	<h2 class="identity-no-items">There are no delegations here.</h2>
+<% else %>
+	<%= for delegation <- @delegations do %>
+		<div style="margin-bottom: 10px;">
+			<a href="/identities/<%= delegation.from_identity.id %>"><%= delegation.from_identity.username %></a>
+			to
+			<a href="/identities/<%= delegation.to_identity.id %>"><%= delegation.to_identity.username %></a>:
+			<%= delegation.data.weight %>
+			<%= if delegation.data.topics != nil do %>
+				<%= for topic <- delegation.data.topics do %>
+					<a href="<%= html_explore_path(@conn, :show, topic) %>">#<%= topic %></a>
+				<% end %>
+			<% else %>
+				(all topics)
 			<% end %>
-		<% else %>
-			(all topics)
-		<% end %>
-	</div>
+		</div>
+	<% end %>
 <% end %>

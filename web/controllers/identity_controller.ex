@@ -2,7 +2,7 @@ defmodule Liquio.IdentityController do
 	use Liquio.Web, :controller
 
 	def index(conn, %{}) do
-		identities = Repo.all(Identity) |> Repo.preload([:trust_metric_poll_votes])
+		identities = Identity |> Repo.all |> Repo.preload([:trust_metric_poll_votes])
 		render(conn, "index.json", identities: identities)
 	end
 
@@ -34,6 +34,5 @@ defmodule Liquio.IdentityController do
 	end)
 
 	def update(_conn, %{"id" => _id, "identity" => _params}) do
-		# TODO: Update preferences
 	end
 end

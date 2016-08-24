@@ -5,8 +5,7 @@ defmodule Liquio.VoteController do
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]}
 	},
 	def index(conn, %{:poll => poll}) do
-		votes = from(v in Vote, where: v.poll_id == ^poll.id and v.is_last and not is_nil(v.data))
-		|> Repo.all
+		votes = Repo.all(from(v in Vote, where: v.poll_id == ^poll.id and v.is_last and not is_nil(v.data)))
 		render(conn, "index.json", votes: votes)
 	end)
 

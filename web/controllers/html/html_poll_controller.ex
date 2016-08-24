@@ -79,7 +79,7 @@ defmodule Liquio.HtmlPollController do
 	end
 
 	defp prepare_contributions(poll, calculate_opts) do
-		Result.calculate_contributions(poll, calculate_opts) |> Enum.map(fn(contribution) ->
+		poll |> Result.calculate_contributions(calculate_opts) |> Enum.map(fn(contribution) ->
 			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
 		end)
 	end
@@ -95,7 +95,8 @@ defmodule Liquio.HtmlPollController do
 		end)
 
 		count = Enum.count(results_with_datetime)
-		means = Enum.map(results_with_datetime, fn({_index, _datetime, results}) -> results.mean end)
+		means = results_with_datetime
+		|> Enum.map(fn({_index, _datetime, results}) -> results.mean end)
 		|> Enum.filter(& &1 != nil)
 		max_mean = if Enum.empty?(means) do
 			1

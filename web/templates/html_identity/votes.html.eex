@@ -1,34 +1,38 @@
 <div style="text-align: left;">
-	<%= for group <- @groups do %>
-		<div>
-			<%= for poll <- group do %>
-				<div style="margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
-					<%= if poll.reference do %>
-						<span style="font-size: 15px; font-weight: bold; margin-right: 4px;"><%= for_choice_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
-					<% end %>
-					<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
-					<span>&nbsp;-&nbsp;</span>
-					<%= if poll.score do %>
-						<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.score, poll.choice_type) %></span>
-					<% end %>
-					<%= if poll.score != nil and poll.approval_score != nil do %>
-						<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-					<% end %>
-					<%= if poll.approval_score do %>
-						<a href="/polls/<%= poll.reference.poll.id %>/references/<%= poll.id %>?for_choice=<%= poll.reference.for_choice %>" style="font-size: 12px;">
-							<b><%= score_format(poll.approval_score) %></b> on reference
-						</a>
-					<% end %>
-				</div>
-			<% end %>
-		</div>
-	<% end %>
+	<%= if Enum.empty?(@groups) and Enum.empty?(@is_human_votes) do %>
+		<h2 class="identity-no-items">There are no votes here.</h2>
+	<% else %>
+		<%= for group <- @groups do %>
+			<div>
+				<%= for poll <- group do %>
+					<div style="margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
+						<%= if poll.reference do %>
+							<span style="font-size: 15px; font-weight: bold; margin-right: 4px;"><%= for_choice_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
+						<% end %>
+						<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
+						<span>&nbsp;-&nbsp;</span>
+						<%= if poll.score do %>
+							<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.score, poll.choice_type) %></span>
+						<% end %>
+						<%= if poll.score != nil and poll.approval_score != nil do %>
+							<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+						<% end %>
+						<%= if poll.approval_score do %>
+							<a href="/polls/<%= poll.reference.poll.id %>/references/<%= poll.id %>?for_choice=<%= poll.reference.for_choice %>" style="font-size: 12px;">
+								<b><%= score_format(poll.approval_score) %></b> on reference
+							</a>
+						<% end %>
+					</div>
+				<% end %>
+			</div>
+		<% end %>
 
-	<%= for vote <- @is_human_votes do %>
-		<div style="margin-bottom: 12px;">
-			Trust to <b><a href="/identities/<%= vote.identity.id %>"><%= vote.identity.username %></a></b>
-			<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-			<span style="font-size: 15px; font-weight: bold;"><%= score_format(vote.poll.score) %></span>
-		</div>
+		<%= for vote <- @is_human_votes do %>
+			<div style="margin-bottom: 12px;">
+				Trust to <b><a href="/identities/<%= vote.identity.id %>"><%= vote.identity.username %></a></b>
+				<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+				<span style="font-size: 15px; font-weight: bold;"><%= score_format(vote.poll.score) %></span>
+			</div>
+		<% end %>
 	<% end %>
 </div>

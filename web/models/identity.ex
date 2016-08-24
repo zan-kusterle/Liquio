@@ -84,9 +84,9 @@ defmodule Liquio.Identity do
 
 	defp random_string(length) do
 		chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" |> String.split("")
-		Enum.reduce((1..length), [], fn (_, acc) ->
+		Enum.join(Enum.reduce((1..length), [], fn (_, acc) ->
 			[Enum.random(chars) | acc]
-		end) |> Enum.join("")
+		end), "")
 	end
 
 	defp capitalize_name(name) do

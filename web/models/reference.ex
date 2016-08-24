@@ -38,7 +38,8 @@ defmodule Liquio.Reference do
 	end
 
 	def for_poll(poll, calculation_opts) do
-		from(d in Reference, where: d.poll_id == ^poll.id, order_by: d.inserted_at)
+		query = from(d in Reference, where: d.poll_id == ^poll.id, order_by: d.inserted_at)
+		query
 		|> Repo.all
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
 		|> Enum.filter(fn(reference) ->
@@ -54,7 +55,8 @@ defmodule Liquio.Reference do
 	end
 
 	def inverse_for_poll(poll, calculation_opts) do
-		from(d in Reference, where: d.reference_poll_id == ^poll.id, order_by: d.inserted_at)
+		query = from(d in Reference, where: d.reference_poll_id == ^poll.id, order_by: d.inserted_at)
+		query
 		|> Repo.all
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
 		|> Enum.filter(fn(reference) ->

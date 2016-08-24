@@ -21,7 +21,8 @@ defmodule Liquio.HtmlLoginController do
 	end
 
 	def delete(conn, _params) do
-		Guardian.Plug.sign_out(conn)
+		conn
+		|> Guardian.Plug.sign_out
 		|> put_flash(:info, "Goodbye")
 		|> redirect(to: html_login_path(conn, :create))
 	end
