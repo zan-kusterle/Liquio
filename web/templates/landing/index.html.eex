@@ -1,6 +1,6 @@
 <style>
 	body {
-		background: #1f8dd6;
+		background: white;
 	}
 </style>
 
@@ -11,10 +11,10 @@
 </div>
 
 <div class="content features">
-	<h2 class="heading">Simple, yet powerful</h2>
+	<h2 class="heading">Key features</h2>
 
 	<div class="pure-g">
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-users"></i>
 				Delegations
@@ -24,7 +24,7 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-quote-left"></i>
 				References
@@ -34,17 +34,17 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-cogs"></i>
-				Trust Metrics
+				Trust metrics
 			</h3>
 			<p>
 				Trust metrics attempt to prevent a single person from having multiple identities. Everyone can choose their own trust metric or create a new one.
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-cogs"></i>
 				Objectivity
@@ -54,10 +54,20 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-5">
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-eye"></i>
 				Transparency
+			</h3>
+			<p>
+				The source code is available under permissive MIT license. All the data is publicly available through the API.
+			</p>
+		</div>
+
+		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+			<h3 class="subheading">
+				<i class="fa fa-eye"></i>
+				Lorem ipsum
 			</h3>
 			<p>
 				The source code is available under permissive MIT license. All the data is publicly available through the API.
