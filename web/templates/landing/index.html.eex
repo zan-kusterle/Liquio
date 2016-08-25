@@ -56,18 +56,18 @@
 
 		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
-				<i class="fa fa-eye"></i>
-				Transparency
+				<i class="fa fa-comment"></i>
+				No moderation
 			</h3>
 			<p>
-				The source code is available under permissive MIT license. All the data is publicly available through the API.
+				Lorem ipsum
 			</p>
 		</div>
 
 		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-eye"></i>
-				Lorem ipsum
+				Transparency
 			</h3>
 			<p>
 				The source code is available under permissive MIT license. All the data is publicly available through the API.
