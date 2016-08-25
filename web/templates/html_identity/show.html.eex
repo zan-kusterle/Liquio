@@ -16,7 +16,7 @@
 <%= if @is_me do %>
 	<div class="section-title" style="text-decoration: underline;">Share the URL of your identity with others, so they can trust or delegate to you.</div>
 
-	<div class="section-title" style="font-size: 20px;">Your preferences</div>
+	<div class="section-title" style="font-size: 20px; margin-top: 90px;">Your preferences</div>
 
 	<form method="POST" action="preferences" class="pure-form" style="margin-top: -15px;">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
@@ -49,7 +49,7 @@
 		<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
 	</form>
 <% else %>
-	<div class="section-title">Do you trust this identity? <a href="#">Learn more</a></div>
+	<div class="section-title" style="font-size: 20px; margin-top: 60px;">I trust this identity</div>
 	<%= render Liquio.HtmlPollView, "cast_vote.html",
 		to_path: "/identities/#{@identity.id}",
 		poll: %{:id => @identity.trust_metric_poll_id, :choice_type => "probability"},
@@ -57,7 +57,7 @@
 		allow_numeric: false
 	%>
 
-	<div class="section-title" style="font-size: 20px;">Delegation to this identity</div>
+	<div class="section-title" style="font-size: 20px; margin-top: 50px;">Delegation to this identity</div>
 	<form method="POST" action="/identities/<%= @identity.id %>/delegations" class="pure-form" style="margin-top: -15px;">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
@@ -67,7 +67,7 @@
 		</div>
 
 		<div class="preference">
-			<div class="section-title">Topics (separated by comma)</div>
+			<div class="section-title">Topics</div>
 			<input type="text" name="topics" style="max-width: 400px;"<%= if @delegation != nil and @delegation.data.topics != nil do %> value="<%= @delegation.data.topics |> Enum.join(", ") %>"<% end %> placeholder="All topics" />
 		</div>
 
