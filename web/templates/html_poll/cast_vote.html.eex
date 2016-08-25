@@ -31,6 +31,8 @@
 	<%= if @own_vote != nil do %>
 		<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
 	<% else %>
-		<p class="vote-help">PRESS ENTER TO VOTE</p>
+		<%= if assigns[:allow_numeric] == nil or @allow_numeric == true do %>
+			<p class="vote-help">PRESS ENTER TO VOTE</p>
+		<% end %>
 	<% end %>
 </form>
