@@ -35,15 +35,25 @@ body {
 				padding-bottom: 14px;
 			}
 
-			.pure-g .pure-u-1 {
-				height: 40px;
-
-				@media @lg {
-					height: 30px;
+			.pure-g {
+				.pure-u-1 {
+					height: 40px;
+					@media @md {
+						height: 40px;
+					}
+					@media @lg {
+						height: 30px;
+					}
 				}
-			}
-			.pure-u-1:last-child {
-				height: 28px;
+				.pure-u-1:last-child {
+					height: 28px;
+					@media @md {
+						height: 40px;
+					}
+					@media @lg {
+						height: 30px;
+					}
+				}
 			}
 
 			.logo {
