@@ -4,7 +4,7 @@ defmodule Liquio.HtmlReferenceController do
 	def index(conn, %{"html_poll_id" => poll_id, "for_choice" => for_choice, "reference_poll_id" => reference_poll_url}) do
 		url = URI.parse(reference_poll_url)
 		reference_poll_id =
-			if url.path |> String.starts_with?("/polls/") do
+			if url.path != nil and url.path |> String.starts_with?("/polls/") do
 				String.replace(url.path, "/polls/", "")
 			else
 				reference_poll_url
