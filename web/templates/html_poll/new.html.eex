@@ -3,12 +3,12 @@
 
 	<label for="title" class="pure-u-1 pure-u-sm-1-6 row-label">Title</label>
 	<div class="pure-u-1 pure-u-sm-5-6 row-input">
-		<input id="title" name="title" type="text" placeholder="Be as unambiguous as possible" class="pure-input-1" />
+		<input id="title" name="title" type="text" required placeholder="Be as unambiguous as possible" class="pure-input-1" />
 	</div>
 
 	<label for="topics" class="pure-u-1 pure-u-sm-1-6 row-label">Topics</label>
 	<div class="pure-u-1 pure-u-sm-5-6 row-input">
-		<input id="topics" name="topics" type="text" placeholder="Politics, economics" class="pure-input-1" />
+		<input id="topics" name="topics" type="text" required placeholder="Politics, economics" class="pure-input-1" />
 	</div>
 
 	<label class="pure-u-1 pure-u-sm-1-6 row-label">Choice Type</label>

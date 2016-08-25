@@ -3,10 +3,10 @@
 
 	<div class="inputs">
 		<label for="username">Username</label>
-		<input id="username" type="text" name="username" />
+		<input id="username" type="text" required name="username" />
 
 		<label for="name">Full name</label>
-		<input id="name" type="text" name="name" />
+		<input id="name" type="text" required name="name" />
 	</div>
 
 	<button type="submit" class="pure-button pure-button-primary">Create</button>
