@@ -1,5 +1,5 @@
 <div class="identity">
-	<h1 class="identity-username"><%= @identity.username %></h1>
+	<h1 class="identity-username">username: <%= @identity.username %></h1>
 	<h1 class="identity-name"><%= @identity.name %></h1>
 </div>
 
