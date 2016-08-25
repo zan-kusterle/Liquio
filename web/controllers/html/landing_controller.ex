@@ -1,6 +1,6 @@
 defmodule Liquio.LandingController do
 	use Liquio.Web, :controller
-		
+
 	plug :put_layout, "landing.html"
 
 	def index(conn, _params) do
@@ -13,14 +13,30 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("quantity", "sea level rise since year 1900 in centimeters", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "difference in sea level from year 2000 until year 2050 in centimeters", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}]
+			},
+			%{
+				poll: Poll.force_get("probability", "Donald Trump Is Wrong That the USA Is the Highest Taxed Nation in the World", ["politics", "usa", "donald trump"]),
+				references: [%{
+					poll: Poll.force_get("probability", "Donald Trump Said the USA Is the Highest Taxed Nation in the World", ["politics", "usa", "donald trump"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "median tax rate in the USA", ["economics", "usa", "median tax"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "median tax rate in the Denmark", ["economics", "denmark", "median tax"]),
+					for_choice: 1.0,
+					references: []
 				}]
 			},
 			%{
 				poll: Poll.force_get("probability", "9/11 attacks were an inside job", ["usa", "9/11 attacks"]),
-				references: []
-			},
-			%{
-				poll: Poll.force_get("quantity", "median tax rate in the USA", ["economics", "usa", "median tax"]),
 				references: []
 			},
 			%{
@@ -49,10 +65,6 @@ defmodule Liquio.LandingController do
 			},
 			%{
 				poll: Poll.force_get("quantity", "year when we will completely cure cancer", ["science", "medicine", "cancer"]),
-				references: []
-			},
-			%{
-				poll: Poll.force_get("quantity", "difference in sea level from year 2000 until year 2050 in centimeters", ["science", "nature", "global warming"]),
 				references: []
 			}
 		]
