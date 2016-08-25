@@ -38,7 +38,7 @@
 <% end %>
 
 <%= if @poll.kind == "custom" do %>
-	<div class="section-title">You can enter the URL of a reference below and then vote to approve it.</div>
+	<div class="section-title">You can add new reference by entering the URL of it's poll below and vote to approve it.</div>
 	
 	<form action="/polls/<%= @poll.id %>/references" class="pure-form pure-g">
 		<%= if @poll.choice_type == "probability" do %>
