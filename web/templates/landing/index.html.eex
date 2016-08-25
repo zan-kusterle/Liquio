@@ -79,32 +79,25 @@
 <div class="content examples">
 	<h2 class="heading">Examples</h2>
 
-	<% {a, b} = Enum.split(@examples, round(Enum.count(@examples) / 2)) %>
 	<div class="pure-g">
 		<div class="pure-u-1">
 			<div class="pure-g">
-				<%= for examples_column <- [a, b] do %>
+				<%= for poll <- @examples do %>
 					<div class="box pure-u-1 pure-u-md-1-2">
-						<ul>
-							<%= for poll <- examples_column do %>
-								<li>
-								<a href="/polls/<%= poll.id %>">
-									<p class="title"><%= poll.title %></p>
-									<div class="score" style="background-color: <%= Liquio.HtmlPollView.score_color poll %>;">
-										<%= if poll.results.mean do %>
-											<%= if poll.choice_type == "probability" do %>
-												<%= round(poll.results.mean * 100) %>%
-											<% else %>
-												<%= number_format(poll.results.mean) %>
-											<% end %>
-										<% else %>
-											?
-										<% end %>
-									</div>
-								</a>
-							</li>
-							<% end %>
-						</ul>
+						<a href="/polls/<%= poll.id %>">
+							<p class="title"><%= poll.title %></p>
+							<div class="score" style="background-color: <%= Liquio.HtmlPollView.score_color poll %>;">
+								<%= if poll.results.mean do %>
+									<%= if poll.choice_type == "probability" do %>
+										<%= round(poll.results.mean * 100) %>%
+									<% else %>
+										<%= number_format(poll.results.mean) %>
+									<% end %>
+								<% else %>
+									?
+								<% end %>
+							</div>
+						</a>
 					</div>
 				<% end %>
 			</div>

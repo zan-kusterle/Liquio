@@ -25,7 +25,7 @@
 	.splash {
 		width: 100%;
 		background: #1f8dd6;
-		padding: 100px 1em 60px 1em;
+		padding: 100px 1em 100px 1em;
 		text-align: center;
 		text-transform: uppercase;
 
@@ -57,7 +57,7 @@
 		width: 100%;
 		padding: 4em 1em 8em 1em;
 		@media @md {
-			padding: 8em 2em 12em 2em;
+			padding: 8em 2em 8em 2em;
 		}
 
 		.pure-g {
@@ -77,9 +77,9 @@
 		}
 
 		.box {
-			padding: 2em 1em;
+			padding: 1.5em 1em;
 			@media @md {
-				padding: 2em 2.5em;
+				padding: 1.5em 2.5em;
 			}
 
 			.subheading {
@@ -117,72 +117,59 @@
 		.box {
 			text-align: left;
 
-			ul {
-				list-style: none;
-				color: white;
-				line-height: 1.4em;
+			a {
+				display: block;
+				background-color: rgba(255, 255, 255, 0.06);
+				text-decoration: none;
+				color: black;
 				font-size: 14px;
-				padding-left: 0px;
+				@media @lg {
+					font-size: 16px;
+				}
 
-				li {
-					padding: 0px;
-					background-color: rgba(255, 255, 255, 0.06);
-					margin: 30px 0px;
-					padding: 0px;
-					color: black;
-					font-size: 14px;
+				.title {
+					color: #333;
+					display: inline-block;
+					line-height: 20px;
+					margin: 0px;
+					vertical-align: middle;
+					color: white;
+					text-decoration: none;
+					padding: 10px 14px;
+					width: calc(~"100% - 85px");
+					
 					@media @lg {
-						font-size: 16px;
-					}
-
-					a {
-						display: block;
-					}
-
-					.title {
-						color: #333;
-						display: inline-block;
-						line-height: 20px;
-						margin: 0px;
-						vertical-align: middle;
-						color: white;
-						text-decoration: none;
-						padding: 10px 14px;
-						width: calc(~"100% - 85px");
-						
-						@media @lg {
-							padding: 16px 20px;
-							width: calc(~"100% - 125px");
-						}
-					}
-
-					.score {
-						font-weight: bold;
-						display: inline-block;
-						padding: 8px;
-						text-align: center;
-						color: #333;
-						vertical-align: middle;
-						opacity: 0.65;
-						line-height: 56px;
-						width: 80px;
-
-						@media @lg {
-							width: 120px;
-						}
+						padding: 16px 20px;
+						width: calc(~"100% - 125px");
 					}
 				}
 
-				li:hover {
-					background-color: rgba(255, 255, 255, 0.03);
+				.score {
+					font-weight: bold;
+					display: inline-block;
+					padding: 8px;
+					text-align: center;
+					color: #333;
+					vertical-align: middle;
+					opacity: 0.65;
+					line-height: 56px;
+					width: 80px;
 
-					.title {
-						color: #1f8dd6;
+					@media @lg {
+						width: 120px;
 					}
+				}
+			}
 
-					.score {
-						opacity: 0.5;
-					}
+			a:hover {
+				background-color: rgba(255, 255, 255, 0.03);
+
+				.title {
+					color: #1f8dd6;
+				}
+
+				.score {
+					opacity: 0.5;
 				}
 			}
 		}
