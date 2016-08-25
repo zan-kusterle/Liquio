@@ -145,7 +145,19 @@ defmodule Liquio.HtmlIdentityController do
 		polls = voted_polls
 		|> Enum.flat_map(& expand_poll(&1, calculation_opts))
 		|> Enum.reduce(%{}, fn(poll, acc) ->
-			merged_poll = Map.merge(poll, Map.get(acc, poll.id, %{}))
+			existing_poll = Map.get(acc, poll.id, %{})
+			merged_poll = Map.merge(existing_poll, poll, fn _k, v1, v2 ->
+				cond do
+					v1 == nil and v2 == nil ->
+						nil
+					v1 == nil ->
+						v2
+					v2 == nil ->
+						v1
+					true ->
+						v1
+				end
+			end)
 			acc |> Map.put(poll.id, merged_poll)
 		end)
 		|> Map.values
