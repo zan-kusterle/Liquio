@@ -3,7 +3,7 @@
 	<h1 class="identity-name"><%= @identity.name %></h1>
 </div>
 
-<a href="/identities/<%= @identity.id %>/delegations/from">made <%= @num_delegations_from %> <%= ngettext("delegation", "delegations", @num_delegations_to) %></a>
+<a href="/identities/<%= @identity.id %>/delegations/from">made <%= @num_delegations_from %> <%= ngettext("delegation", "delegations", @num_delegations_from) %></a>
 <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 <a href="/identities/<%= @identity.id %>/delegations/to">receiving <%= @num_delegations_to %> <%= ngettext("delegation", "delegations", @num_delegations_to) %></a>
 <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
