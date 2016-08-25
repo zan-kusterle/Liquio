@@ -3,11 +3,11 @@
 	<h1 class="identity-name"><%= @identity.name %></h1>
 </div>
 
-<a href="/identities/<%= @identity.id %>/delegations/from"><%= @num_delegations_from %> delegations from</a>
+<a href="/identities/<%= @identity.id %>/delegations/from">made <%= @num_delegations_from %> <%= ngettext("delegation", "delegations", @num_delegations_to) %></a>
 <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-<a href="/identities/<%= @identity.id %>/delegations/to"><%= @num_delegations_to %> delegations to</a>
+<a href="/identities/<%= @identity.id %>/delegations/to">receiving <%= @num_delegations_to %> <%= ngettext("delegation", "delegations", @num_delegations_to) %></a>
 <span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
-<a href="/identities/<%= @identity.id %>/votes"><%= @num_votes %> votes</a>
+<a href="/identities/<%= @identity.id %>/votes">voted on <%= @num_votes %> polls</a>
 
 <%= unless @is_in_trust_metric do %>
 	<p style="color: #e80606; margin: 0px; margin-top: 5px; font-weight: bold;">NOT IN TRUST METRIC</p>
