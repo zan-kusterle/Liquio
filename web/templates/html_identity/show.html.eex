@@ -23,27 +23,27 @@
 
 		<div class="preference">
 			<div class="section-title">Trust metric URL</div>
-			<input type="text" name="trust_metric_url" style="max-width: 500px;" value="<%= @calculation_opts.trust_metric_url %>" />
+			<input type="url" name="trust_metric_url" style="max-width: 500px;" value="<%= @identity.trust_metric_url %>" placeholder="<%= @default_trust_metric_url %>" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Minimum voting power</div>
-			<input type="text" name="minimum_voting_power" style="max-width: 250px;" value="<%= @calculation_opts.minimum_voting_power %>" />
+			<input type="number" step="1" name="minimum_voting_power" style="max-width: 250px;" value="<%= @identity.minimum_voting_power %>" placeholder="1" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Minimum approval score</div>
-			<input type="text" name="minimum_reference_approval_score" style="max-width: 250px;" value="<%= @calculation_opts.minimum_reference_approval_score %>" />
+			<input type="number" step="any" name="minimum_reference_approval_score" style="max-width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" placeholder="0.5" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Number of artificial votes with score 0 in approval polls</div>
-			<input type="text" name="soft_quorum_t" style="max-width: 250px;" value="<%= @calculation_opts.soft_quorum_t %>" />
+			<input type="number" step="1" name="soft_quorum_t" style="max-width: 250px;" value="<%= @identity.soft_quorum_t %>" placeholder="0" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Number of days for vote weight to halve</div>
-			<input type="text" name="vote_weight_halving_days" style="max-width: 250px;" value="<%= @calculation_opts.vote_weight_halving_days %>" placeholder="Never" />
+			<input type="number" step="1" name="vote_weight_halving_days" style="max-width: 250px;" value="<%= @identity.vote_weight_halving_days %>" placeholder="Never" />
 		</div>
 
 		<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
@@ -63,7 +63,7 @@
 
 		<div class="preference">
 			<div class="section-title">Relative weight</div>
-			<input type="text" name="weight" style="max-width: 150px;"<%= if @delegation do %> value="<%= number_format_simple @delegation.data.weight %>"<% end %> placeholder="1" />
+			<input type="number" step="any" name="weight" style="max-width: 150px;"<%= if @delegation do %> value="<%= number_format_simple @delegation.data.weight %>"<% end %> placeholder="1" />
 		</div>
 
 		<div class="preference">

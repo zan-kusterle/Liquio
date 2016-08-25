@@ -77,6 +77,7 @@ defmodule Liquio.HtmlIdentityController do
 			title: identity.name,
 			identity: identity,
 			is_me: is_me,
+			default_trust_metric_url: Liquio.TrustMetric.default_trust_metric_url(),
 			calculation_opts: calculation_opts,
 			is_in_trust_metric: is_in_trust_metric,
 			own_is_human_vote: own_is_human_vote,
