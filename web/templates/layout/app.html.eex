@@ -39,14 +39,7 @@
 								<a href="/explore"><i class="fa fa-eye" aria-hidden="true"></i> Explore</a>
 								<a href="/polls/new"><i class="fa fa-plus" aria-hidden="true"></i> Create</a>
 								<%= if user = Guardian.Plug.current_resource(@conn) do %>
-									<%= if is_in_trust_metric?(@conn) do %>
-										<a href="/identities/<%= user.id %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></a>
-									<% else %>
-										<a href="/identities/<%= user.id %>">
-											<span class="not-in-trust-metric">not in trust metric</span>
-											<span><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></span>
-										</a>
-									<% end %>
+									<a href="/identities/<%= user.id %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></a>
 									<a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
 								<% else %>
 									<a href="/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</a>
