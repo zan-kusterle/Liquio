@@ -20,9 +20,9 @@ defmodule Liquio.LandingController do
 				}]
 			},
 			%{
-				poll: Poll.force_get("probability", "Donald Trump Is Wrong That the USA Is the Highest Taxed Nation in the World", ["politics", "usa", "donald trump"]),
+				poll: Poll.force_get("probability", "Donald Trump is wrong that the USA is the highest taxed nation in the world", ["politics", "usa", "donald trump"]),
 				references: [%{
-					poll: Poll.force_get("probability", "Donald Trump Said the USA Is the Highest Taxed Nation in the World", ["politics", "usa", "donald trump"]),
+					poll: Poll.force_get("probability", "Donald Trump said the USA is the highest taxed nation in the world", ["politics", "usa", "donald trump"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
@@ -30,7 +30,7 @@ defmodule Liquio.LandingController do
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("quantity", "median tax rate in the Denmark", ["economics", "denmark", "median tax"]),
+					poll: Poll.force_get("quantity", "median tax rate in Denmark", ["economics", "denmark", "median tax"]),
 					for_choice: 1.0,
 					references: []
 				}]
@@ -48,10 +48,6 @@ defmodule Liquio.LandingController do
 				references: []
 			},
 			%{
-				poll: Poll.force_get("quantity", "the ideal age for children to start going to school", ["education", "children"]),
-				references: []
-			},
-			%{
 				poll: Poll.force_get("probability", "genetically modified foods are safe", ["science", "biology", "gmo"]),
 				references: []
 			},
@@ -61,10 +57,6 @@ defmodule Liquio.LandingController do
 			},
 			%{
 				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"]),
-				references: []
-			},
-			%{
-				poll: Poll.force_get("quantity", "year when we will completely cure cancer", ["science", "medicine", "cancer"]),
 				references: []
 			}
 		]
@@ -80,7 +72,7 @@ defmodule Liquio.LandingController do
 	def approve_references(examples, identity) do
 		Enum.flat_map(examples, fn(%{:poll => poll, :references => references}) ->
 			Enum.each(references, &(cast_approve_vote(poll, &1, identity)))
-			Liquio.LandingController.approve_references(references, identity)
+			approve_references(references, identity)
 		end)
 	end
 
