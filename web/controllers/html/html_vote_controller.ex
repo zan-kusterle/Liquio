@@ -23,21 +23,28 @@ defmodule Liquio.HtmlVoteController do
 		:score => {Plugs.NumberParam, [name: "score", maybe: true]}
 	},
 	def create(conn, %{:user => user, :poll => poll, :score => score}) do
-		message =
+		calculation_opts = get_calculation_opts_from_conn(conn)
+
+		{level, message} =
 			if score != nil do
 				if poll.choice_type == "probability" and (score < 0 or score > 1) do
-					"Choice must be between 0 and 1."
+					{:error, "Choice must be between 0 (0%) and 1 (100%)."}
 				else
 					Vote.set(poll, user, score)
-					"Your vote is now live."
+					if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
+						{:info, "Your vote is now live. Share the poll with other people."}
+					else
+						{:error, "Your vote is now live. But because you're not in trust metric it will not be counted. Tell others to trust your identity by sharing it's URL to get in trust metric."}
+					end
+					
 				end
 			else
 				Vote.delete(poll, user)
-				"You no longer have a vote in this poll."
+				{:info, "You no longer have a vote in this poll."}
 			end
 
 		conn
-		|> put_flash(:info, message)
+		|> put_flash(level, message)
 		|> redirect(to: default_redirect(conn))
 	end)
 end
