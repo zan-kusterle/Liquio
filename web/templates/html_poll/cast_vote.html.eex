@@ -30,5 +30,7 @@
 	<input type="hidden" name="redirect" value="<%= @to_path %>" />
 	<%= if @own_vote != nil do %>
 		<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
+	<% else %>
+		<p class="vote-help">PRESS ENTER TO VOTE</p>
 	<% end %>
 </form>
