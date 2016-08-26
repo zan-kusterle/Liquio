@@ -28,17 +28,17 @@
 
 		<div class="preference">
 			<div class="section-title">Minimum voting power</div>
-			<input type="number" step="1" min="1" name="minimum_voting_power" style="max-width: 250px;" value="<%= @identity.minimum_voting_power %>" placeholder="1" />
+			<input type="number" step="1" min="1" name="minimum_voting_power" style="max-width: 250px;"<%= if @identity.minimum_voting_power do %> value="<%= round(@identity.minimum_voting_power) %>"<% end %> placeholder="1" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Minimum approval score</div>
-			<input type="number" step="any" min="0" name="minimum_reference_approval_score" style="max-width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" placeholder="0.5" />
+			<input type="number" step="any" min="0" max="1" name="minimum_reference_approval_score" style="max-width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" placeholder="0.5" />
 		</div>
 
 		<div class="preference">
 			<div class="section-title">Number of artificial votes with score 0 in approval polls</div>
-			<input type="number" step="1" min="0" name="soft_quorum_t" style="max-width: 250px;" value="<%= @identity.soft_quorum_t %>" placeholder="0" />
+			<input type="number" step="1" min="0" name="soft_quorum_t" style="max-width: 250px;"<%= if @identity.soft_quorum_t do %> value="<%= round(@identity.soft_quorum_t) %>"<% end%> placeholder="0" />
 		</div>
 
 		<div class="preference">
