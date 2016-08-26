@@ -228,6 +228,12 @@ defmodule Liquio.HtmlIdentityController do
 		:minimum_voting_power => {Plugs.NumberParam, [name: "minimum_voting_power", maybe: true]},
 	},
 	def update(conn, params = %{:user => user}) do
+		params = if params.vote_weight_halving_days >= 1000 do
+			Map.put(params, :vote_weight_halving_days, nil)
+		else
+			params
+		end
+		
 		result = Identity.update_preferences(Identity.update_changeset(user, params
 			|> Map.take([:trust_metric_url, :vote_weight_halving_days, :soft_quorum_t, :minimum_reference_approval_score, :minimum_voting_power])))
 

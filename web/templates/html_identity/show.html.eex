@@ -16,67 +16,55 @@
 <%= if @is_me do %>
 	<div class="section-title" style="text-decoration: underline;">Share the URL of your identity with others, so they can trust or delegate to you.</div>
 
-	<div class="section-title" style="font-size: 20px; margin-top: 90px; margin-bottom: 30px;">Your preferences</div>
+	<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 30px;">Your preferences</div>
 
 	<form method="POST" action="preferences" class="pure-form">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="pure-g preferences">
-			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px; font-size: 18px;">
+			<div class="pure-u-1 pure-u-md-1-4 name">
 				Trust metric URL
 			</div>
-			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; max-width: 500px;">
+			<div class="pure-u-1 pure-u-md-3-4 value" style="text-align: left; padding-left: 10px; max-width: 500px;">
 				<input type="url" name="trust_metric_url" value="<%= @identity.trust_metric_url %>" placeholder="<%= @default_trust_metric_url %>" />
 			</div>
 
-			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px; font-size: 18px; margin-top: 20px;">
+			<div class="pure-u-1 pure-u-md-1-4 name">
 				Polls
 			</div>
-			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
+			<div class="pure-u-1 pure-u-md-3-4 value">
+				<div class="range">
+					<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @identity.minimum_voting_power || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" />
+					<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@identity.minimum_voting_power || 0))}% turnout." %></output>
+				</div>
+
+				<div class="range">
+					<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @identity.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half of their remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" />
+					<output id="vote_weight_halving_days_value">
+						<%= if @identity.vote_weight_halving_days do "Votes will lose half of their remaining power every #{round(@identity.vote_weight_halving_days)} days." else "Votes don't lose power with time." end %>
+					</output>
+				</div>
 			</div>
 
-			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px;">
-				Minimum turnout
-			</div>
-			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
-				<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @identity.minimum_voting_power || 0 %>" min="0" max="1" step="any" style="width: calc(100% - 40px); max-width: 300px;" oninput="minimum_voting_power_value.value = Math.round(100 * minimum_voting_power_range.value)">
-				<output id="minimum_voting_power_value" style="margin-left: 10px;"><%= round(100 * (@identity.minimum_voting_power || 0)) %></output>%
-			</div>
-
-			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px;">
-				Number of days for vote weight to halve
-			</div>
-			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
-				<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @identity.vote_weight_halving_days || 0 %>" min="1" max="1000" step="1" style="width: calc(100% - 40px); max-width: 300px;" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) + ' days'">
-				<output id="vote_weight_halving_days_value" style="margin-left: 10px;">
-					<%= if @identity.vote_weight_halving_days do "#{round(@identity.vote_weight_halving_days)} days" else "Never" end %>
-				</output>
-			</div>
-
-			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px; font-size: 18px; margin-top: 20px;">
+			<div class="pure-u-1 pure-u-md-1-4 name">
 				Reference approvals
 			</div>
-			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
+			<div class="pure-u-1 pure-u-md-3-4 value">
+				<div class="range">
+					<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @identity.soft_quorum_t || 0 %>" min="0" max="1" step="any" oninput="soft_quorum_t_value.value = 'Turnout importance set at ' + Math.round(100 * soft_quorum_t_range.value) + '%.'">
+					<output id="soft_quorum_t_value"><%= "Turnout importance set at #{round(100 * (@identity.soft_quorum_t || 0))}%." %></output>
+				</div>
+
+				<div class="range">
+					<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @identity.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Score at least ' + Math.round(100 * minimum_score_range.value) + '% using above turnout importance.'">
+					<output id="minimum_score_value"><%= "Score at least #{round(100 * (@identity.minimum_reference_approval_score || 0.5))}% using above turnout importance." %></output>
+				</div>
 			</div>
 
-			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px;">
-				Minimum turnout agressivness
+			<div class="pure-u-1 pure-u-md-1-4 name">
 			</div>
-			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
-				<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @identity.soft_quorum_t || 0 %>" min="0" max="1" step="any" style="width: calc(100% - 40px); max-width: 300px;" oninput="soft_quorum_t_value.value = Math.round(100 * soft_quorum_t_range.value)">
-				<output id="soft_quorum_t_value" style="margin-left: 10px;"><%= round(100 * (@identity.soft_quorum_t || 0)) %></output>%
-			</div>
-
-			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px;">
-				Minimum score
-			</div>
-			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
-				<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @identity.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" style="width: calc(100% - 40px); max-width: 300px;" oninput="minimum_score_value.value = Math.round(100 * minimum_score_range.value)">
-					<output id="minimum_score_value" style="margin-left: 10px;"><%= round(100 * (@identity.minimum_reference_approval_score || 0.5)) %></output>%
-			</div>
-
-			<div class="pure-u-1">
-				<button type="submit" class="pure-button pure-button-primary" style="margin-top: 40px;">Update</button>
+			<div class="pure-u-1 pure-u-md-3-4 value">
+				<button type="submit" class="pure-button pure-button-primary">Update</button>
 			</div>
 		</div>		
 	</form>
