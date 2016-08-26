@@ -25,7 +25,7 @@
 	<% end %>
 	<%= render "references.html", poll: @poll, references: @references, minimum_voting_power: @minimum_voting_power %>
 <% else %>
-	<h2 class="references-title">There are no references here.</h2>
+	<h2 class="references-title">There are no references here</h2>
 <% end %>
 
 <%= if @poll.kind == "custom" do %>
@@ -33,7 +33,7 @@
 <% end %>
 
 <%= unless Enum.empty?(@inverse_references) do %>
-	<h2 class="references-title">Inverse References</h2>
+	<h2 class="references-title">Inverse references</h2>
 	<%= for reference <- @inverse_references do %>
 		<div class="inverse-reference">
 			<a href="/polls/<%= reference.poll.id %>"><%= reference.poll.title %></a>
