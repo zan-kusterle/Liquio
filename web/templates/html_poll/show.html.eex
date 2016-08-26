@@ -9,7 +9,7 @@
 <h1 class="title"><%= raw(@poll.title) %></h1>
 
 <div class="score-container">
-	<%= render "score.html", poll: @poll, is_above_minimum_voting_power: @is_above_minimum_voting_power %>
+	<%= render "score.html", poll: @poll, minimum_voting_power: @minimum_voting_power %>
 </div>
 
 <div class="links">
@@ -23,7 +23,7 @@
 	<% else %>
 		<h2 class="references-title">References for quantity</h2>
 	<% end %>
-	<%= render "references.html", poll: @poll, references: @references %>
+	<%= render "references.html", poll: @poll, references: @references, minimum_voting_power: @minimum_voting_power %>
 <% else %>
 	<h2 class="references-title">There are no references here.</h2>
 <% end %>

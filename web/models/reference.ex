@@ -45,7 +45,7 @@ defmodule Liquio.Reference do
 		|> Enum.filter(fn(reference) ->
 			approval_result = Result.calculate(reference.approval_poll, calculation_opts)
 			result = Result.calculate(reference.reference_poll, calculation_opts)
-			approval_result.total > 0 and approval_result.mean >= calculation_opts[:minimum_reference_approval_score] and result.total >= calculation_opts[:minimum_voting_power]
+			approval_result.total > 0 and approval_result.mean >= calculation_opts[:minimum_reference_approval_score]
 		end)
 		|> Enum.map(fn(reference) ->
 			results = Result.calculate(reference.reference_poll, calculation_opts)
@@ -62,7 +62,7 @@ defmodule Liquio.Reference do
 		|> Enum.filter(fn(reference) ->
 			approval_result = Result.calculate(reference.approval_poll, calculation_opts)
 			result = Result.calculate(reference.poll, calculation_opts)
-			approval_result.total > 0 and approval_result.mean >= calculation_opts[:minimum_reference_approval_score] and result.total >= calculation_opts[:minimum_voting_power]
+			approval_result.total > 0 and approval_result.mean >= calculation_opts[:minimum_reference_approval_score]
 		end)
 		|> Enum.map(fn(reference) ->
 			results = Result.calculate(reference.poll, calculation_opts)

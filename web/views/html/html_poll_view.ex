@@ -15,6 +15,10 @@ defmodule Liquio.HtmlPollView do
 		end
 	end
 
+	def default_score_color() do
+		"#ddd"
+	end
+
 	def chart_svg_polyline(points) do
 		Enum.map_join(Enum.zip([nil] ++ points, points), " ", fn({previous_point, point}) ->
 			if point == nil do
