@@ -110,6 +110,7 @@ defmodule Liquio.HtmlPollController do
 				nil
 			end
 		end)
+		|> Enum.filter(& &1 != nil)
 
 		Enum.reverse(points)
 	end

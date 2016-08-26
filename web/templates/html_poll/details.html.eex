@@ -10,6 +10,10 @@
 <div class="section-title">Score for last 30 days</div>
 <svg viewBox="0 0 1220 140" class="score-by-time">
 	<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= chart_svg_polyline @chart_points %>"></path>
+
+	<%= for {x, y} <- Enum.map(@chart_points, & to_svg_point(&1, 0.01, 0.08)) do %>
+		<circle cx="<%= x %>" cy="<%= y %>" r="8" fill="#1f8dd6"></circle>
+	<% end %>
 	
 	<line x1="20" y1="120" x2="1300" y2="120" style="stroke:#aaa;stroke-width:1"></line><line x1="20" y1="120" x2="20" y2="0" style="stroke:#aaa;stroke-width:1"></line>
 	<!--<text x="-85" y="13" fill="#333" transform="rotate(270)">SCORE</text>
