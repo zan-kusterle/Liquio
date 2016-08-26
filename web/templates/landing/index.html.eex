@@ -50,17 +50,17 @@
 				Objectivity
 			</h3>
 			<p>
-				Liquio encourages polls that aren't purely subjective.
+				References and delegations work very well with objective polls. Things like your favourite ice cream flavour don't work.
 			</p>
 		</div>
 
 		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-comment"></i>
-				No moderation
+				No censorship
 			</h3>
 			<p>
-				All subjective logic lives inside a trust metric. Take a look at <a href="https://trust-metric.liqu.io" target="_blank">default trust metric</a>. You can easily change it to anything you like.
+				All subjective logic lives inside a trust metric. The default trust metric lives <a href="https://trust-metric.liqu.io" target="_blank">here</a>. You can always choose a different trust metric.
 			</p>
 		</div>
 
