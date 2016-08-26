@@ -14,7 +14,8 @@ defmodule Liquio.HtmlVoteController do
 			poll: poll
 				|> Map.put(:results, Result.calculate(poll, calculation_opts)),
 			references:  Reference.for_poll(poll, calculation_opts),
-			own_vote: Vote.current_by(poll, user))
+			own_vote: Vote.current_by(poll, user),
+			minimum_voting_power: calculation_opts.minimum_voting_power)
 	end)
 
 	with_params(%{

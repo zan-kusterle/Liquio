@@ -1,7 +1,7 @@
 <%= unless Enum.empty?(@references) do %>
 	<div style="margin-bottom: 20px;">
 		<div class="section-title" style="margin-top: 0px;">Before voting review the references.</div>
-		<%= render Liquio.HtmlPollView, "references.html", poll: @poll, references: @references %>
+		<%= render Liquio.HtmlPollView, "references.html", poll: @poll, references: @references, minimum_voting_power: @minimum_voting_power %>
 	</div>
 <% end %>
 

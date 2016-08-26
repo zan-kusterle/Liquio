@@ -1,4 +1,4 @@
-<% has_data? = @poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @poll.results.total >= @minimum_voting_power) %>
+<% has_data? = @poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @poll.results.total >= @minimum_voting_power > 0) %>
 
 <div class="score-box" style="background-color: <%= if has_data? do score_color(@poll) else default_score_color() end %>;">
 	<div class="number"<%= if @poll.choice_type == "quantity" do %> style="line-height: 24px;"<% end %>>
