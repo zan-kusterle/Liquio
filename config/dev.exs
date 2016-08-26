@@ -41,6 +41,6 @@ config :liquio, Liquio.Repo,
 	hostname: "localhost",
 	pool_size: 10
 
-config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
+config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.html"
 config :liquio, trust_metric_cache_time_seconds: 5
 config :liquio, admin_identity_ids: 1..10

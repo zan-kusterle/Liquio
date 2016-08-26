@@ -11,10 +11,10 @@ defmodule Liquio.Repo.Migrations.CreateIdentity do
 			add :trust_metric_poll_id, references(:polls, on_delete: :nothing), null: false
 
 			add :trust_metric_url, :string
-			add :vote_weight_halving_days, :integer
-			add :soft_quorum_t, :float
-			add :minimum_reference_approval_score, :float
-			add :minimum_voting_power, :float
+			add :minimum_turnout, :float
+			add :vote_weight_halving_days, :float
+			add :approval_turnout_importance, :float
+			add :approval_minimum_score, :float
 
 			timestamps
 		end

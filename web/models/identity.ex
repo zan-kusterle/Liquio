@@ -16,10 +16,10 @@ defmodule Liquio.Identity do
 		has_many :delegations_to, Liquio.Delegation, foreign_key: :to_identity_id
 
 		field :trust_metric_url, :string
-		field :vote_weight_halving_days, :integer
-		field :soft_quorum_t, :float
-		field :minimum_reference_approval_score, :float
-		field :minimum_voting_power, :float
+		field :minimum_turnout, :float
+		field :vote_weight_halving_days, :float
+		field :approval_turnout_importance, :float
+		field :approval_minimum_score, :float
 
 		timestamps
 	end
@@ -60,11 +60,11 @@ defmodule Liquio.Identity do
 
 	def update_changeset(data, params) do
 		data
-		|> cast(params, ["trust_metric_url", "vote_weight_halving_days", "soft_quorum_t", "minimum_reference_approval_score", "minimum_voting_power"])
-		|> validate_number(:vote_weight_halving_days, greater_than: 0)
-		|> validate_number(:soft_quorum_t, greater_than_or_equal_to: 0)
-		|> validate_number(:minimum_reference_approval_score, greater_than_or_equal_to: 0, less_than: 1)
-		|> validate_number(:minimum_voting_power, greater_than: 0)
+		|> cast(params, ["trust_metric_url", "minimum_turnout", "vote_weight_halving_days", "approval_turnout_importance", "approval_minimum_score"])
+		|> validate_number(:minimum_turnout, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
+		|> validate_number(:vote_weight_halving_days, greater_than_or_equal_to: 0)
+		|> validate_number(:approval_turnout_importance, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
+		|> validate_number(:approval_minimum_score, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
 	end
 
 	def update_preferences(changeset) do

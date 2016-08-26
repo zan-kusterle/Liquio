@@ -34,8 +34,8 @@
 			</div>
 			<div class="pure-u-1 pure-u-md-3-4 value">
 				<div class="range">
-					<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @identity.minimum_voting_power || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" />
-					<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@identity.minimum_voting_power || 0))}% turnout." %></output>
+					<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @identity.minimum_turnout || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" />
+					<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@identity.minimum_turnout || 0))}% turnout." %></output>
 				</div>
 
 				<div class="range">
@@ -51,13 +51,13 @@
 			</div>
 			<div class="pure-u-1 pure-u-md-3-4 value">
 				<div class="range">
-					<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @identity.soft_quorum_t || 0 %>" min="0" max="1" step="any" oninput="soft_quorum_t_value.value = 'Turnout importance set at ' + Math.round(100 * soft_quorum_t_range.value) + '%.'">
-					<output id="soft_quorum_t_value"><%= "Turnout importance set at #{round(100 * (@identity.soft_quorum_t || 0))}%." %></output>
+					<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @identity.approval_turnout_importance || 0 %>" min="0" max="1" step="any" oninput="soft_quorum_t_value.value = 'Turnout importance set at ' + Math.round(100 * soft_quorum_t_range.value) + '%.'">
+					<output id="soft_quorum_t_value"><%= "Turnout importance set at #{round(100 * (@identity.approval_turnout_importance || 0))}%." %></output>
 				</div>
 
 				<div class="range">
-					<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @identity.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Score at least ' + Math.round(100 * minimum_score_range.value) + '% using above turnout importance.'">
-					<output id="minimum_score_value"><%= "Score at least #{round(100 * (@identity.minimum_reference_approval_score || 0.5))}% using above turnout importance." %></output>
+					<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @identity.approval_minimum_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Score at least ' + Math.round(100 * minimum_score_range.value) + '% using above turnout importance.'">
+					<output id="minimum_score_value"><%= "Score at least #{round(100 * (@identity.approval_minimum_score || 0.5))}% using above turnout importance." %></output>
 				</div>
 			</div>
 

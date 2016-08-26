@@ -38,15 +38,16 @@ defmodule Liquio.Controllers.Helpers do
 				now
 			end
 		{trust_metric_url, trust_identity_ids} = get_trust_identity_ids(conn)
+		trust_metric_count = MapSet.size(trust_identity_ids)
 		
 		%{
 			datetime: datetime,
 			trust_metric_url: trust_metric_url,
 			trust_metric_ids: trust_identity_ids,
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
-			soft_quorum_t: (identity && identity.soft_quorum_t) || 0,
-			minimum_reference_approval_score: (identity && identity.minimum_reference_approval_score) ||  0.5,
-			minimum_voting_power: (identity && identity.minimum_voting_power) ||  1,
+			soft_quorum_t: ((identity && identity.approval_turnout_importance) || 0) * trust_metric_count / 2,
+			minimum_reference_approval_score: (identity && identity.approval_minimum_score) ||  0.5,
+			minimum_voting_power: ((identity && identity.minimum_turnout) ||  0.01) * trust_metric_count,
 		}
 	end
 
