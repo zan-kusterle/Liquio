@@ -42,7 +42,7 @@
 	<h2 class="heading">Key features</h2>
 
 	<div class="pure-g">
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-users"></i>
 				Delegations
@@ -52,7 +52,7 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-quote-left"></i>
 				References
@@ -62,7 +62,7 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-cogs"></i>
 				Trust metrics
@@ -72,7 +72,7 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-cogs"></i>
 				Objectivity
@@ -82,7 +82,7 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-comment"></i>
 				No censorship
@@ -92,7 +92,7 @@
 			</p>
 		</div>
 
-		<div class="box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 			<h3 class="subheading">
 				<i class="fa fa-eye"></i>
 				Transparency

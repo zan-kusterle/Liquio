@@ -53,27 +53,53 @@
 		}
 	}
 
+	.heading {
+		font-weight: 400;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		margin: 0;
+		text-align: center;
+		line-height: 1.4em;
+		font-size: 1.5em;
+		margin-bottom: 20px;
+	}
+
+	.content {
+		width: 100%;
+		padding: 4em 1em;
+		@media @md {
+			padding: 6em 2em;
+		}
+
+		.pure-g {
+			max-width: 1200px;
+			margin: 0 auto;
+
+			> div {
+				font-size: 14px;
+				padding: 1em;
+				@media @md {
+					font-size: 15px;
+				}
+				@media @lg {
+					padding: 1.5em;
+				}
+			}
+		}
+	}
+
 	.examples {
 		background: white;
+
+		.heading {
+			color: #34495e;
+		}
 		
 		.example {
-			padding: 0.5em 1em;
-			@media @md {
-				padding: 1.5em 1.5em;
-			}
-			@media @lg {
-				padding: 1.5em 2.5em;
-			}
-
-
 			a {
 				display: block;
 				height: 100px;
 				text-decoration: none;
-				font-size: 14px;
-				@media @lg {
-					font-size: 16px;
-				}
 
 				.title {
 					display: block;
@@ -82,15 +108,14 @@
 					margin: 0px;
 					color: #555;
 					text-decoration: none;
-					padding: 0px 14px;
-					width: calc(~"100% - 80px");
 					line-height: 100px;
 					border: 1px solid #ddd;
 					border-right: none;
 					background-color: rgba(0, 0, 0, 0.08);
-
+					padding: 0px 15px;
+					width: calc(~"100% - 80px");
 					@media @lg {
-						padding: 0px 20px;
+						padding: 0px 25px;
 						width: calc(~"100% - 120px");
 					}
 
@@ -109,9 +134,8 @@
 					text-align: center;
 					color: #333;
 					vertical-align: middle;
-					width: 80px;
 					line-height: 86px;
-
+					width: 80px;
 					@media @lg {
 						width: 120px;
 					}
@@ -124,49 +148,6 @@
 				.title {
 					background-color: rgba(0, 0, 0, 0.05);
 					color: #1f8dd6;
-				}
-			}
-		}
-	}
-
-	.content {
-		width: 100%;
-		padding: 4em 1em 8em 1em;
-		@media @md {
-			padding: 6em 2em 6em 2em;
-		}
-
-		.pure-g {
-			max-width: 1200px;
-			margin: 0 auto;
-		}
-
-		.heading {
-			font-weight: 400;
-			text-transform: uppercase;
-			letter-spacing: 0.1em;
-			margin: 0;
-			text-align: center;
-			line-height: 1.4em;
-			font-size: 1.5em;
-			margin-bottom: 20px;
-		}
-
-		.box {
-			padding: 0.5em 1em;
-			@media @md {
-				padding: 1.5em 1.5em;
-			}
-			@media @lg {
-				padding: 1.5em 2.5em;
-			}
-
-			.subheading {
-				color: #1f8dd6;
-				margin: 0px;
-
-				i {
-					margin-right: 7px;
 				}
 			}
 		}
@@ -189,18 +170,21 @@
 			color: white;
 		}
 
-		.subheading {
-			opacity: 0.9;
-			.fa {
-				color: white;
-			}
-		}
-
-		.box {
+		.feature {
 			text-align: justify;
-			font-size: 14px;
-			@media @md {
-				font-size: 15px;
+
+			.subheading {
+				color: #1f8dd6;
+				margin: 0px;
+				opacity: 0.9;
+
+				.fa {
+					color: white;
+				}
+
+				i {
+					margin-right: 7px;
+				}
 			}
 		}
 	}
