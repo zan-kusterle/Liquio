@@ -16,37 +16,69 @@
 <%= if @is_me do %>
 	<div class="section-title" style="text-decoration: underline;">Share the URL of your identity with others, so they can trust or delegate to you.</div>
 
-	<div class="section-title" style="font-size: 20px; margin-top: 90px;">Your preferences</div>
+	<div class="section-title" style="font-size: 20px; margin-top: 90px; margin-bottom: 30px;">Your preferences</div>
 
-	<form method="POST" action="preferences" class="pure-form" style="margin-top: -15px;">
+	<form method="POST" action="preferences" class="pure-form">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-		<div class="preference">
-			<div class="section-title">Trust metric URL</div>
-			<input type="url" name="trust_metric_url" style="max-width: 500px;" value="<%= @identity.trust_metric_url %>" placeholder="<%= @default_trust_metric_url %>" />
-		</div>
+		<div class="pure-g preferences">
+			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px; font-size: 18px;">
+				Trust metric URL
+			</div>
+			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; max-width: 500px;">
+				<input type="url" name="trust_metric_url" value="<%= @identity.trust_metric_url %>" placeholder="<%= @default_trust_metric_url %>" />
+			</div>
 
-		<div class="preference">
-			<div class="section-title">Minimum voting power</div>
-			<input type="number" step="1" min="1" name="minimum_voting_power" style="max-width: 250px;"<%= if @identity.minimum_voting_power do %> value="<%= round(@identity.minimum_voting_power) %>"<% end %> placeholder="1" />
-		</div>
+			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px; font-size: 18px; margin-top: 20px;">
+				Polls
+			</div>
+			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
+			</div>
 
-		<div class="preference">
-			<div class="section-title">Minimum approval score</div>
-			<input type="number" step="any" min="0" max="1" name="minimum_reference_approval_score" style="max-width: 250px;" value="<%= @identity.minimum_reference_approval_score %>" placeholder="0.5" />
-		</div>
+			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px;">
+				Minimum turnout
+			</div>
+			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
+				<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @identity.minimum_voting_power || 0 %>" min="0" max="1" step="any" style="width: calc(100% - 40px); max-width: 300px;" oninput="minimum_voting_power_value.value = Math.round(100 * minimum_voting_power_range.value)">
+				<output id="minimum_voting_power_value" style="margin-left: 10px;"><%= round(100 * (@identity.minimum_voting_power || 0)) %></output>%
+			</div>
 
-		<div class="preference">
-			<div class="section-title">Number of artificial votes with score 0 in approval polls</div>
-			<input type="number" step="1" min="0" name="soft_quorum_t" style="max-width: 250px;"<%= if @identity.soft_quorum_t do %> value="<%= round(@identity.soft_quorum_t) %>"<% end%> placeholder="0" />
-		</div>
+			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px;">
+				Number of days for vote weight to halve
+			</div>
+			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
+				<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @identity.vote_weight_halving_days || 0 %>" min="1" max="1000" step="1" style="width: calc(100% - 40px); max-width: 300px;" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) + ' days'">
+				<output id="vote_weight_halving_days_value" style="margin-left: 10px;">
+					<%= if @identity.vote_weight_halving_days do "#{round(@identity.vote_weight_halving_days)} days" else "Never" end %>
+				</output>
+			</div>
 
-		<div class="preference">
-			<div class="section-title">Number of days for vote weight to halve</div>
-			<input type="number" step="1" min="1" name="vote_weight_halving_days" style="max-width: 250px;" value="<%= @identity.vote_weight_halving_days %>" placeholder="Never" />
-		</div>
+			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px; font-size: 18px; margin-top: 20px;">
+				Reference approvals
+			</div>
+			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
+			</div>
 
-		<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
+			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px;">
+				Minimum turnout agressivness
+			</div>
+			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
+				<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @identity.soft_quorum_t || 0 %>" min="0" max="1" step="any" style="width: calc(100% - 40px); max-width: 300px;" oninput="soft_quorum_t_value.value = Math.round(100 * soft_quorum_t_range.value)">
+				<output id="soft_quorum_t_value" style="margin-left: 10px;"><%= round(100 * (@identity.soft_quorum_t || 0)) %></output>%
+			</div>
+
+			<div class="pure-u-1 pure-u-md-1-3 name" style="text-align: right; padding-right: 10px; line-height: 36px;">
+				Minimum score
+			</div>
+			<div class="pure-u-1 pure-u-md-2-3 value" style="text-align: left; padding-left: 10px; line-height: 36px;">
+				<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @identity.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" style="width: calc(100% - 40px); max-width: 300px;" oninput="minimum_score_value.value = Math.round(100 * minimum_score_range.value)">
+					<output id="minimum_score_value" style="margin-left: 10px;"><%= round(100 * (@identity.minimum_reference_approval_score || 0.5)) %></output>%
+			</div>
+
+			<div class="pure-u-1">
+				<button type="submit" class="pure-button pure-button-primary" style="margin-top: 40px;">Update</button>
+			</div>
+		</div>		
 	</form>
 <% else %>
 	<div class="section-title" style="font-size: 20px; margin-top: 60px;">I trust this identity</div>
@@ -58,7 +90,7 @@
 	%>
 
 	<div class="section-title" style="font-size: 20px; margin-top: 50px;">Delegation to this identity</div>
-	<form method="POST" action="/identities/<%= @identity.id %>/delegations" class="pure-form" style="margin-top: -15px;">
+	<form method="POST" action="/identities/<%= @identity.id %>/delegations" class="pure-form">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<div class="preference">
