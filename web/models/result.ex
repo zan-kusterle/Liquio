@@ -71,13 +71,14 @@ defmodule Liquio.Result do
 		
 		poll
 		|> calculate_contributions(calculate_opts)
-		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t, mean_fn)
+		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t, mean_fn, calculate_opts.trust_metric_ids)
 	end
 
 	def empty() do
 		%{
 			:mean => nil,
 			:total => 0,
+			:turnout_ratio => 0,
 			:count => 0
 		}
 	end
@@ -160,7 +161,7 @@ defmodule Liquio.Result do
 		not MapSet.member?(path, from_identity_id)
 	end
 
-	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t, mean_fn) do
+	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t, mean_fn, trust_metric_ids) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		contributions = contributions |> Enum.map(fn(contribution) ->
 			contribution
@@ -170,6 +171,7 @@ defmodule Liquio.Result do
 		%{
 			:mean => mean_fn.(contributions, soft_quorum_t),
 			:total => round(total_power),
+			:turnout_ratio => total_power / MapSet.size(trust_metric_ids),
 			:count => Enum.count(contributions)
 		}
 	end

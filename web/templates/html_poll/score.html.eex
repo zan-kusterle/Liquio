@@ -12,5 +12,5 @@
 			?
 		<% end %>
 	</div>
-	<div class="subtext"><%= @poll.results.total %> voting power</div>
+	<div class="subtext"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</div>
 </div>
