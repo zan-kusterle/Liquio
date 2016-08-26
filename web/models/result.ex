@@ -161,11 +161,11 @@ defmodule Liquio.Result do
 	end
 
 	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t, mean_fn) do
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		contributions = contributions |> Enum.map(fn(contribution) ->
 			contribution
 			|> Map.put(:voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
 		end)
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 
 		%{
 			:mean => mean_fn.(contributions, soft_quorum_t),
