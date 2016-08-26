@@ -167,7 +167,8 @@ body {
 		-webkit-appearance: none;
 		
 		/*fix for FF unable to apply focus style bug */
-		border: 1px solid white;
+		border: none;
+		background: none;
 		
 		/*required for proper track sizing in FF*/
 		width: 300px;
@@ -175,9 +176,12 @@ body {
 	input[type=range]::-webkit-slider-runnable-track {
 		width: 300px;
 		height: 5px;
-		background: #ddd;
 		border: none;
 		border-radius: 3px;
+		background: white;
+		@media @md {
+			background: #ccc
+		}
 	}
 	input[type=range]::-webkit-slider-thumb {
 		-webkit-appearance: none;
@@ -198,9 +202,12 @@ body {
 	input[type=range]::-moz-range-track {
 		width: 300px;
 		height: 5px;
-		background: #ddd;
 		border: none;
 		border-radius: 3px;
+		background: white;
+		@media @md {
+			background: #ccc
+		}
 	}
 	input[type=range]::-moz-range-thumb {
 		border: none;
@@ -235,8 +242,11 @@ body {
 		border-radius: 10px;
 	}
 	input[type=range]::-ms-fill-upper {
-		background: #ddd;
 		border-radius: 10px;
+		background: white;
+		@media @md {
+			background: #ccc
+		}
 	}
 	input[type=range]::-ms-thumb {
 		border: none;

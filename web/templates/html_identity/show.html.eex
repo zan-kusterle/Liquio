@@ -39,9 +39,9 @@
 				</div>
 
 				<div class="range">
-					<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @identity.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half of their remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" />
+					<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @identity.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" />
 					<output id="vote_weight_halving_days_value">
-						<%= if @identity.vote_weight_halving_days do "Votes will lose half of their remaining power every #{round(@identity.vote_weight_halving_days)} days." else "Votes don't lose power with time." end %>
+						<%= if @identity.vote_weight_halving_days do "Votes will lose half remaining power every #{round(@identity.vote_weight_halving_days)} days." else "Votes don't lose power with time." end %>
 					</output>
 				</div>
 			</div>
