@@ -60,11 +60,15 @@ defmodule Liquio.TrustMetric do
 
 	defp usernames_from_html(html) do
 		html
-		|> Floki.find("a")
-		|> Floki.attribute("href")
-		|> Enum.map(fn(url) ->
-			url |> String.replace("https://liqu.io/identities/", "")
+		|> Floki.find(".identity")
+		|> Floki.attribute("id")
+		|> Enum.flat_map(fn(string) ->
+			case Integer.parse(string) do
+				{x, ""} ->
+					[to_string(x)]
+				_ ->
+					[]
+			end
 		end)
-		|> Enum.filter(& String.length(&1) < 255)
 	end
 end
