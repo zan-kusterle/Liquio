@@ -66,7 +66,7 @@ defmodule Liquio.LandingController do
 		if identity != nil and Application.get_env(:liquio, :admin_identity_ids) |> Enum.member?(identity.id) do
 			approve_references(examples, identity)
 		end
-		examples = Enum.map(examples, fn(%{:poll => poll, :references => references}) ->
+		examples = Enum.map(examples, fn(%{:poll => poll}) ->
 			Map.put(poll, :results, Result.calculate(poll, calculate_opts))
 		end)
 
