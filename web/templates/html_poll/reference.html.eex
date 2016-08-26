@@ -1,4 +1,4 @@
-<% has_data? = @reference.reference_poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @reference.reference_poll.results.total >= @minimum_voting_power > 0)  %>
+<% has_data? = @reference.reference_poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @reference.reference_poll.results.total >= @minimum_voting_power)  %>
 
 <a href="/polls/<%= @reference.reference_poll.id %>" class="reference-a">
 	<div class="reference">
