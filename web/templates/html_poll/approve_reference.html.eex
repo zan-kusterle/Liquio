@@ -3,7 +3,7 @@
 <form action="/polls/<%= @poll.id %>/references" class="pure-form pure-g">
 	<%= if @poll.choice_type == "probability" do %>
 		<div class="pure-u-1 pure-u-md-3-5" style="padding: 4px 6px;">
-			<input name="reference_poll_id" type="text" required placeholder="Poll URL" class="pure-input-1" />
+			<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1" />
 		</div>
 		<div class="pure-u-1 pure-u-md-2-5" style="padding: 4px 6px;">
 			<button type="submit" name="for_choice" value="1" class="pure-button" style="width: 48%;">View positive</button>
@@ -11,7 +11,7 @@
 		</div>
 	<% else %>
 		<div class="pure-u-1 pure-u-md-1-2" style="padding: 4px 6px;">
-			<input name="reference_poll_id" type="text" required placeholder="Poll URL" class="pure-input-1" />
+			<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1" />
 		</div>
 		<div class="pure-u-1 pure-u-md-1-3" style="padding: 4px 6px;">
 			<input name="for_choice" type="number" step="any" required placeholder="Evidence for choice" class="pure-input-1" />
