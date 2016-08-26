@@ -60,13 +60,17 @@ defmodule Liquio.LandingController do
 				}]
 			}
 		]
+		polls = %{
+			:not_the_best_idea => Poll.force_get("probability", "rate vanilla ice cream flavor", ["joke"])
+		}
 		if identity != nil and Application.get_env(:liquio, :admin_identity_ids) |> Enum.member?(identity.id) do
 			approve_references(examples, identity)
 		end
 		examples = Enum.map(examples, fn(%{:poll => poll, :references => references}) ->
 			Map.put(poll, :results, Result.calculate(poll, calculate_opts))
 		end)
-		render conn, "index.html", examples: examples
+
+		render conn, "index.html", examples: examples, polls: polls
 	end
 
 	def approve_references(examples, identity) do

@@ -58,7 +58,7 @@
 				References
 			</h3>
 			<p>
-				Helping voters to make better decisions. People not familiar with the subject can also quickly learn more about it.
+				Helping voters make more accurate decisions. People not familiar with the subject can also quickly learn more about it.
 			</p>
 		</div>
 
@@ -78,7 +78,7 @@
 				Objectivity
 			</h3>
 			<p>
-				References and delegations work very well with objective polls. Things like your favourite ice cream flavor won't work.
+				References and delegations work well with polls that are not subjective. <a href="/polls/<%= @polls.not_the_best_idea.id %>">Rate vanilla ice cream flavor</a> &mdash; not the best idea.
 			</p>
 		</div>
 
@@ -88,7 +88,7 @@
 				No censorship
 			</h3>
 			<p>
-				A trust metric contains all subjective logic. The default trust metric lives <a href="https://trust-metric.liqu.io" target="_blank">here</a>. You can always choose a different one.
+				Trust metrics contain all subjective logic. The default trust metric lives <a href="https://trust-metric.liqu.io" target="_blank">here</a>. You can always choose a different one.
 			</p>
 		</div>
 
