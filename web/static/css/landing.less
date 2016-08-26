@@ -57,7 +57,7 @@
 		width: 100%;
 		padding: 4em 1em 8em 1em;
 		@media @md {
-			padding: 8em 2em 8em 2em;
+			padding: 6em 2em 6em 2em;
 		}
 
 		.pure-g {
@@ -97,7 +97,8 @@
 	}
 
 	.features {
-		background: white;
+		background: #2d3e50;
+		color: #ddd;
 
 		a {
 			color: #7f8c8d;
@@ -109,24 +110,30 @@
 		}
 
 		.heading {
-			color: #34495e;
+			color: white;
+		}
+
+		.subheading {
+			opacity: 0.9;
+			.fa {
+				color: white;
+			}
 		}
 
 		.box {
 			text-align: justify;
 			font-size: 14px;
 			@media @md {
-				font-size: 16px;
+				font-size: 15px;
 			}
 		}
 	}
 
 	.examples {
-		background: #2d3e50;
-		color: #aaa;
+		background: white;
 
 		.heading {
-			color: white;
+			color: #34495e;
 		}
 
 		.box {
@@ -134,10 +141,10 @@
 
 			a {
 				display: block;
-				background-color: rgba(255, 255, 255, 0.06);
+				background-color: rgba(0, 0, 0, 0.08);
 				text-decoration: none;
-				color: black;
 				font-size: 14px;
+				border: 1px solid #ddd;
 				@media @lg {
 					font-size: 16px;
 				}
@@ -148,14 +155,14 @@
 					line-height: 20px;
 					margin: 0px;
 					vertical-align: middle;
-					color: white;
+					color: #555;
 					text-decoration: none;
 					padding: 10px 14px;
 					width: calc(~"100% - 85px");
 					
 					@media @lg {
 						padding: 16px 20px;
-						width: calc(~"100% - 125px");
+						width: calc(~"100% - 120px");
 					}
 				}
 
@@ -166,7 +173,6 @@
 					text-align: center;
 					color: #333;
 					vertical-align: middle;
-					opacity: 0.65;
 					line-height: 76px;
 					width: 80px;
 
@@ -177,14 +183,14 @@
 			}
 
 			a:hover {
-				background-color: rgba(255, 255, 255, 0.03);
+				background-color: rgba(0, 0, 0, 0.05);
 
 				.title {
 					color: #1f8dd6;
 				}
 
 				.score {
-					opacity: 0.5;
+					opacity: 0.8;
 				}
 			}
 		}
