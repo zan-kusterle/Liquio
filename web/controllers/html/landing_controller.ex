@@ -61,7 +61,7 @@ defmodule Liquio.LandingController do
 			}
 		]
 		polls = %{
-			:not_the_best_idea => Poll.force_get("probability", "rate vanilla ice cream flavor", ["joke"])
+			:not_the_best_idea => Poll.force_get("probability", "vanilla ice cream flavor rating", ["joke"])
 		}
 		if identity != nil and Application.get_env(:liquio, :admin_identity_ids) |> Enum.member?(identity.id) do
 			approve_references(examples, identity)

@@ -78,7 +78,7 @@
 				Objectivity
 			</h3>
 			<p>
-				References and delegations work well with polls that are not subjective. <a href="/polls/<%= @polls.not_the_best_idea.id %>">Rate vanilla ice cream flavor</a> &mdash; not the best idea.
+				References and delegations work well with polls that are not subjective. <a href="/polls/<%= @polls.not_the_best_idea.id %>">Vanilla Ice Cream Flavor Rating</a> &mdash; not the best idea.
 			</p>
 		</div>
 
