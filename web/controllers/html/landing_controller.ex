@@ -8,16 +8,8 @@ defmodule Liquio.LandingController do
 		identity = Guardian.Plug.current_resource(conn)
 		examples = [
 			%{
-				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"]),
-				references: [%{
-					poll: Poll.force_get("quantity", "sea level rise since year 1900 in centimeters", ["science", "nature", "global warming"]),
-					for_choice: 1.0,
-					references: []
-				}, %{
-					poll: Poll.force_get("quantity", "difference in sea level from year 2000 until year 2050 in centimeters", ["science", "nature", "global warming"]),
-					for_choice: 1.0,
-					references: []
-				}]
+				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"]),
+				references: []
 			},
 			%{
 				poll: Poll.force_get("probability", "Donald Trump is wrong that the USA is the highest taxed nation in the world", ["politics", "usa", "donald trump"]),
@@ -36,6 +28,10 @@ defmodule Liquio.LandingController do
 				}]
 			},
 			%{
+				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"]),
+				references: []
+			},
+			%{
 				poll: Poll.force_get("probability", "9/11 attacks were an inside job", ["usa", "9/11 attacks"]),
 				references: []
 			},
@@ -52,12 +48,16 @@ defmodule Liquio.LandingController do
 				references: []
 			},
 			%{
-				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"]),
-				references: []
-			},
-			%{
-				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"]),
-				references: []
+				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"]),
+				references: [%{
+					poll: Poll.force_get("quantity", "sea level rise since year 1900 in centimeters", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "difference in sea level from year 2000 until year 2050 in centimeters", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}]
 			}
 		]
 		if identity != nil and Application.get_env(:liquio, :admin_identity_ids) |> Enum.member?(identity.id) do
@@ -66,7 +66,7 @@ defmodule Liquio.LandingController do
 		examples = Enum.map(examples, fn(%{:poll => poll, :references => references}) ->
 			Map.put(poll, :results, Result.calculate(poll, calculate_opts))
 		end)
-		render conn, "index.html", examples: Enum.shuffle(examples)
+		render conn, "index.html", examples: examples
 	end
 
 	def approve_references(examples, identity) do
