@@ -7,7 +7,7 @@ defmodule Liquio.HtmlLoginController do
 	end
 
 	def create(conn, %{"username" => username, "password" => password}) do
-		identity = Repo.get_by(Identity, username: username)
+		identity = Repo.get_by(Identity, username: String.downcase(username))
 		if identity != nil and Comeonin.Bcrypt.checkpw(password, identity.password_hash) do
 			conn
 			|> put_flash(:info, "Hello, #{identity.name}")

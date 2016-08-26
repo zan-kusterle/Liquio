@@ -1,6 +1,6 @@
 <form method="POST" class="pure-form pure-form-stacked login">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-	<input name="username" type="text" placeholder="Username" />
+	<input name="username" type="text" placeholder="Username" style="text-transform: lowercase;" />
 	<input name="password" type="password" placeholder="Password" />
 	<button type="submit" class="pure-button pure-button-primary">Login</button>
 </form>
