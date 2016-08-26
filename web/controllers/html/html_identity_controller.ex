@@ -193,7 +193,7 @@ defmodule Liquio.HtmlIdentityController do
 				:poll => poll
 			}
 		end)
-
+		
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("votes.html",
@@ -233,7 +233,7 @@ defmodule Liquio.HtmlIdentityController do
 
 		result |> handle_errors(conn, fn _user ->
 			conn
-			|> put_flash(:info, "Your preferences have been updated")
+			|> put_flash(:info, "Using your new preferences when calculating results")
 			|> redirect(to: default_redirect conn)
 		end)
 	end)

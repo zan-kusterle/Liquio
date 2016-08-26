@@ -6,7 +6,7 @@
 			<div>
 				<%= for poll <- group do %>
 					<div style="margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
-						<%= if poll.reference do %>
+						<%= if poll.reference != nil do %>
 							<span style="font-size: 15px; font-weight: bold; margin-right: 4px;"><%= for_choice_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
 						<% end %>
 						<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
@@ -19,7 +19,7 @@
 						<%= if poll.score != nil and poll.approval_score != nil do %>
 							<span>&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 						<% end %>
-						<%= if poll.approval_score do %>
+						<%= if poll.reference != nil and poll.approval_score != nil do %>
 							<a href="/polls/<%= poll.reference.poll.id %>/references/<%= poll.id %>?for_choice=<%= poll.reference.for_choice %>" style="font-size: 12px; margin-left: 0px;">
 								<b><%= score_format(poll.approval_score) %></b> on reference
 							</a>
