@@ -1,52 +1,41 @@
-<div class="section-title" style="margin-top: 0px;">View results at specific time</div>
-<form class="pure-form">
-	<input type="date" name="datetime" placeholder="YYYY-MM-DD" class="time-input" <%= if String.length(@datetime_text) > 0 do %>value=<%= @datetime_text %><% end %> />
-	<button class="pure-button set-time">Set time</button>
-</form>
+<div class="details">
+	<div class="section-title" style="margin-top: 0px;">View results at specific time</div>
+	<form class="pure-form">
+		<input type="date" name="datetime" placeholder="YYYY-MM-DD" class="time-input" <%= if String.length(@datetime_text) > 0 do %>value=<%= @datetime_text %><% end %> />
+		<button class="pure-button set-time">Set time</button>
+	</form>
 
-<div class="section-title">Aggregate score</div>
-<%= render "score.html", poll: @poll %>
+	<div class="section-title">Aggregate score</div>
+	<%= render "score.html", poll: @poll %>
 
-<div class="section-title" style="margin-top: 25px;">Score for last 30 days</div>
-<svg viewBox="0 0 1220 140" class="score-by-time">
-	<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= chart_svg_polyline @chart_points %>"></path>
+	<div class="section-title" style="margin-top: 25px;">Score for last 30 days</div>
+	<svg viewBox="0 0 1220 140" class="score-by-time">
+		<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= chart_svg_polyline @chart_points %>"></path>
 
-	<%= for {x, y} <- Enum.map(@chart_points, &to_svg_point/1) do %>
-		<circle cx="<%= x %>" cy="<%= y %>" r="8" fill="#1f8dd6"></circle>
-	<% end %>
-	
-	<line x1="20" y1="120" x2="1300" y2="120" style="stroke:#aaa;stroke-width:1"></line><line x1="20" y1="120" x2="20" y2="0" style="stroke:#aaa;stroke-width:1"></line>
-	<!--<text x="-85" y="13" fill="#333" transform="rotate(270)">SCORE</text>
-	<text x="40" y="140" fill="#333">JAN</text>
-	<text x="140" y="140" fill="#333">FEB</text>
-	<text x="240" y="140" fill="#333">MAR</text>
-	<text x="340" y="140" fill="#333">APR</text>
-	<text x="440" y="140" fill="#333">MAY</text>
-	<text x="540" y="140" fill="#333">JUN</text>
-	<text x="640" y="140" fill="#333">JUL</text>
-	<text x="740" y="140" fill="#333">AUG</text>
-	<text x="840" y="140" fill="#333">SEP</text>
-	<text x="940" y="140" fill="#333">OCT</text>
-	<text x="1040" y="140" fill="#333">NOV</text>
-	<text x="1140" y="140" fill="#333">DEC</text>-->
-</svg>
-
-<%= unless Enum.empty? @contributions do %>
-	<div class="section-title">All votes</div>
-	<table class="contributions">
-		<tr class="contribution">
-			<td class="column-name">From identity</td>
-			<td class="column-name">Voting power</td>
-			<td class="column-name">Choice</td>
-			<td class="column-name">Time</td>
-		</tr>
-		<%= for contribution <- @contributions do %>
-			<tr class="contribution">
-				<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
-				<td><%= number_format(contribution.voting_power) %></td>
-				<td><%= score_format(contribution.score, @poll.choice_type) %></td>
-				<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
-			</tr>
+		<%= for {x, y} <- Enum.map(@chart_points, &to_svg_point/1) do %>
+			<circle cx="<%= x %>" cy="<%= y %>" r="8" fill="#1f8dd6"></circle>
 		<% end %>
-	</table>
-<% end %>
+		
+		<line x1="20" y1="120" x2="1300" y2="120" style="stroke:#aaa;stroke-width:1"></line><line x1="20" y1="120" x2="20" y2="0" style="stroke:#aaa;stroke-width:1"></line>
+	</svg>
+
+	<%= unless Enum.empty? @contributions do %>
+		<div class="section-title">All votes</div>
+		<table class="contributions">
+			<tr class="contribution">
+				<td class="column-name">From identity</td>
+				<td class="column-name">Voting power</td>
+				<td class="column-name">Choice</td>
+				<td class="column-name">Time</td>
+			</tr>
+			<%= for contribution <- @contributions do %>
+				<tr class="contribution">
+					<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
+					<td><%= number_format(contribution.voting_power) %></td>
+					<td><%= score_format(contribution.score, @poll.choice_type) %></td>
+					<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
+				</tr>
+			<% end %>
+		</table>
+	<% end %>
+</div>
