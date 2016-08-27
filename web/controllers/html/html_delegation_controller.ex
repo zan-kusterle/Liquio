@@ -15,7 +15,7 @@ defmodule Liquio.HtmlDelegationController do
 			|> redirect(to: default_redirect(conn))
 		else
 			current_delegation = Delegation.get_by(from_identity, to_identity)
-			current_weight = if current_delegation.data do current_delegation.data.weight else nil end
+			current_weight = if current_delegation != nil and current_delegation.data != nil do current_delegation.data.weight else nil end
 
 			weight = weight || 1.0
 			changeset = Delegation.changeset(%Delegation{}, %{
