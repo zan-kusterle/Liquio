@@ -30,7 +30,7 @@ defmodule Liquio.HtmlDelegationController do
 			|> Repo.all
 			|> Enum.map(& &1.data.weight)
 			|> Enum.sum
-			next_total = (total_weights - current_weight + weight)
+			next_total = (total_weights - (current_weight || 0) + weight)
 			ratio = weight / next_total
 
 			changeset
