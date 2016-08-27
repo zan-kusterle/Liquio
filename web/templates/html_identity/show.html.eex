@@ -19,12 +19,14 @@
 </div>
 
 <%= unless @is_in_trust_metric do %>
-	<p style="color: #e80606; margin: 0px; margin-top: 5px; font-weight: bold;">NOT IN TRUST METRIC</p>
+	<p style="color: #e80606; margin: 0px; margin-top: 50px; font-weight: bold;">NOT IN TRUST METRIC</p>
+
+	<%= if @is_me do %>
+		<div class="section-title" style="margin-top: 5px;">Share the URL of your identity with others.<br>If they want they can trust you or delegate you their voting power.</div>
+	<% end %>
 <% end %>
 
 <%= if @is_me do %>
-	<div class="section-title">Share the URL of your identity with others. If they want they can trust you or delegate votes to you.</div>
-
 	<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 30px;">Calculation preferences</div>
 
 	<form method="POST" action="preferences" class="pure-form">
