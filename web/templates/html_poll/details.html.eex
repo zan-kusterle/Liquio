@@ -11,7 +11,7 @@
 <svg viewBox="0 0 1220 140" class="score-by-time">
 	<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= chart_svg_polyline @chart_points %>"></path>
 
-	<%= for {x, y} <- Enum.map(@chart_points, & to_svg_point(&1, 0.01, 0.08)) do %>
+	<%= for {x, y} <- Enum.map(@chart_points, &to_svg_point/1) do %>
 		<circle cx="<%= x %>" cy="<%= y %>" r="8" fill="#1f8dd6"></circle>
 	<% end %>
 	
@@ -32,7 +32,7 @@
 </svg>
 
 <%= unless Enum.empty? @contributions do %>
-	<div class="section-title">List of all votes</div>
+	<div class="section-title">All votes</div>
 	<table class="contributions">
 		<tr class="contribution">
 			<td class="column-name">From identity</td>

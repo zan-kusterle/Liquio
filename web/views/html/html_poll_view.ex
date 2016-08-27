@@ -24,20 +24,13 @@ defmodule Liquio.HtmlPollView do
 			if point == nil do
 				""
 			else
-				{x, y} = point
-				d = "#{round(x * 1200 + 20)},#{round((1 - y) * 118 + 1)}"
-				if previous_point == nil do
-					"M" <> d
-				else
-					"L" <> d
-				end
+				(if previous_point == nil do "M" else "L" end) <>
+				(point |> to_svg_point |> Tuple.to_list |> Enum.join(","))
 			end
 		end)
 	end
 
-	def to_svg_point({x, y}, sx, sy) do
-		x = max(sx, min(1 - sx, x))
-		y = max(sy, min(1 - sy, y))
-		{round(x * 1200 + 20), round((1 - y) * 118 + 1)}
+	def to_svg_point({x, y}) do
+		{round(x * 1180 + 30), round((1 - y) * 100 + 10)}
 	end
 end
