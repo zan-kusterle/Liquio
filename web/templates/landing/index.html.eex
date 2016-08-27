@@ -18,7 +18,7 @@
 				<%= for poll <- @examples do %>
 					<div class="example pure-u-1 pure-u-md-1-2">
 						<a href="/polls/<%= poll.id %>">
-							<p class="title"><span><%= poll.title %><br><span style="font-size: 12px; color: #888; text-transform: uppercase;"><%= raw poll.tagline %></span></span></p>
+							<p class="title"><span><b><%= poll.title %></b><br><span style="font-size: 12px; color: #888; text-transform: uppercase;"><%= raw poll.tagline %></span></span></p>
 							<div class="score" style="background-color: <%= Liquio.HtmlPollView.score_color poll %>;">
 								<%= if poll.results.mean do %>
 									<%= if poll.choice_type == "probability" do %>
