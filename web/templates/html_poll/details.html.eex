@@ -44,7 +44,7 @@
 			<tr class="contribution">
 				<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
 				<td><%= number_format(contribution.voting_power) %></td>
-				<td><%= number_format(contribution.score) %></td>
+				<td><%= score_format(contribution.score, @poll.choice_type) %></td>
 				<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
 			</tr>
 		<% end %>
