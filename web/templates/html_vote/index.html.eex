@@ -9,9 +9,7 @@
 	<%= render Liquio.HtmlPollView, "approve_reference.html", poll: @poll %>
 <% end %>
 
-<hr style="margin: 50px 0px;">
-
-<div class="section-title">
+<div class="section-title" style="margin-top: 100px;">
 <%= if @poll.choice_type == "probability" do %>
 	<%= if @own_vote do %>
 		Your current score is <%= round(@own_vote.data.score * 100) %>%.
@@ -22,7 +20,7 @@
 	<%= if @own_vote do %>
 		Your current estimate for the quantity below is <%= number_format_simple(@own_vote.data.score) %>.
 	<% else %>
-		After reviewing references, enter your best estimate for the quantity below:
+		After reviewing references, enter your best estimate of below quantity:
 	<% end %>
 <% end %>
 </div>

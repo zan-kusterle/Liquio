@@ -5,9 +5,11 @@
 		<div class="pure-u-1 pure-u-md-3-5" style="padding: 4px 6px;">
 			<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1" />
 		</div>
-		<div class="pure-u-1 pure-u-md-2-5" style="padding: 4px 6px;">
-			<button type="submit" name="for_choice" value="1" class="pure-button" style="width: 48%;">View positive</button>
-			<button type="submit" name="for_choice" value="0" class="pure-button" style="width: 48%;">View negative</button>
+		<div class="pure-u-1 pure-u-md-1-5" style="padding: 4px 6px;">
+			<button type="submit" name="for_choice" value="1" class="pure-button" style="width: 100%;">View positive</button>
+		</div>
+		<div class="pure-u-1 pure-u-md-1-5" style="padding: 4px 6px;">
+			<button type="submit" name="for_choice" value="0" class="pure-button" style="width: 100%;">View negative</button>
 		</div>
 	<% else %>
 		<div class="pure-u-1 pure-u-md-1-2" style="padding: 4px 6px;">
