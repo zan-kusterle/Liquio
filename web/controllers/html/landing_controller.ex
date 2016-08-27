@@ -37,7 +37,7 @@ defmodule Liquio.LandingController do
 			},
 			%{
 				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
-				|> Map.put(:tagline, "estimation of anything"),
+				|> Map.put(:tagline, "estimate anything"),
 				references: []
 			},
 			%{
