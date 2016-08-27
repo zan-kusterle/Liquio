@@ -15,7 +15,7 @@ defmodule Liquio.HtmlDelegationController do
 			|> redirect(to: default_redirect(conn))
 		else
 			current_delegation = Delegation.get_by(from_identity, to_identity)
-			current_weight = if current_delegation != nil and current_delegation.data != nil do current_delegation.data.weight else nil end
+			current_weight = if current_delegation != nil and current_delegation.data != nil do current_delegation.data.weight else 0 end
 
 			weight = weight || 1.0
 			changeset = Delegation.changeset(%Delegation{}, %{
@@ -30,14 +30,14 @@ defmodule Liquio.HtmlDelegationController do
 			|> Repo.all
 			|> Enum.map(& &1.data.weight)
 			|> Enum.sum
-			next_total = (total_weights - (current_weight || 0) + weight)
+			next_total = (total_weights - current_weight + weight)
 			ratio = weight / next_total
 
 			changeset
 			|> Delegation.set
 			|> handle_errors(conn, fn(_delegation) ->
 				conn
-				|> put_flash(:info, "You now delegate #{round(100 * ratio)}% of your power for those topics.")
+				|> put_flash(:info, "You now delegate #{round(100 * ratio)}% of your power to this identity.")
 				|> redirect(to: default_redirect(conn))
 			end)
 		end
