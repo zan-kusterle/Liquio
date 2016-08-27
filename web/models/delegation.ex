@@ -85,4 +85,8 @@ defmodule Liquio.Delegation do
 			Repo.update! Ecto.Changeset.change current_last, is_last: false
 		end
 	end
+
+	def get_by(from_identity, to_identity) do
+		Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id, is_last: true})
+	end
 end
