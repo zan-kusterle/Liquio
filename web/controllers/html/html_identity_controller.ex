@@ -85,7 +85,8 @@ defmodule Liquio.HtmlIdentityController do
 			is_trusted: true,
 			delegation: delegation,
 			num_delegations_to: num_delegations_to,
-			num_delegations_from: num_delegations_from)
+			num_delegations_from: num_delegations_from,
+			num_inverse_trusts: 10)
 	end)
 
 	with_params(%{
