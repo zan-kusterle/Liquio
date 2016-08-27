@@ -37,7 +37,7 @@ defmodule Liquio.HtmlPollView do
 
 	def to_svg_point({x, y}, sx, sy) do
 		x = max(sx, min(1 - sx, x))
-		y = max(sy, min(1 - sy, x))
+		y = max(sy, min(1 - sy, y))
 		{round(x * 1200 + 20), round((1 - y) * 118 + 1)}
 	end
 end
