@@ -48,6 +48,8 @@ defmodule Liquio.Controllers.Helpers do
 			soft_quorum_t: ((identity && identity.approval_turnout_importance) || 0) * trust_metric_count / 2,
 			minimum_reference_approval_score: (identity && identity.approval_minimum_score) ||  0.5,
 			minimum_voting_power: ((identity && identity.minimum_turnout) ||  0.01) * trust_metric_count,
+			minimum_turnout: (identity && identity.minimum_turnout) ||  0.01,
+			approval_turnout_importance: (identity && identity.approval_turnout_importance) || 0,
 		}
 	end
 

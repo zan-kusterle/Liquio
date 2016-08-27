@@ -40,14 +40,14 @@
 			</div>
 			<div class="pure-u-1 pure-u-md-3-4 value">
 				<div class="range">
-					<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @identity.minimum_turnout || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" />
-					<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@identity.minimum_turnout || 0))}% turnout." %></output>
+					<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @calculation_opts.minimum_turnout || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" />
+					<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@calculation_opts.minimum_turnout || 0))}% turnout." %></output>
 				</div>
 
 				<div class="range">
-					<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @identity.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" />
+					<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @calculation_opts.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" />
 					<output id="vote_weight_halving_days_value">
-						<%= if @identity.vote_weight_halving_days do "Votes will lose half remaining power every #{round(@identity.vote_weight_halving_days)} #{ngettext("day", "days", round(@identity.vote_weight_halving_days))}." else "Votes don't lose power with time." end %>
+						<%= if @calculation_opts.vote_weight_halving_days do "Votes will lose half remaining power every #{round(@calculation_opts.vote_weight_halving_days)} #{ngettext("day", "days", round(@calculation_opts.vote_weight_halving_days))}." else "Votes don't lose power with time." end %>
 					</output>
 				</div>
 			</div>
@@ -57,13 +57,13 @@
 			</div>
 			<div class="pure-u-1 pure-u-md-3-4 value">
 				<div class="range">
-					<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @identity.approval_turnout_importance || 0 %>" min="0" max="1" step="any" oninput="soft_quorum_t_value.value = 'Turnout importance set at ' + Math.round(100 * soft_quorum_t_range.value) + '%.'">
-					<output id="soft_quorum_t_value"><%= "Turnout importance set at #{round(100 * (@identity.approval_turnout_importance || 0))}%." %></output>
+					<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @calculation_opts.approval_turnout_importance %>" min="0" max="1" step="any" oninput="soft_quorum_t_value.value = 'Turnout importance set at ' + Math.round(100 * soft_quorum_t_range.value) + '%.'">
+					<output id="soft_quorum_t_value"><%= "Turnout importance set at #{round(100 * @calculation_opts.approval_turnout_importance)}%." %></output>
 				</div>
 
 				<div class="range">
-					<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @identity.approval_minimum_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Score at least ' + Math.round(100 * minimum_score_range.value) + '% using above turnout importance.'">
-					<output id="minimum_score_value"><%= "Score at least #{round(100 * (@identity.approval_minimum_score || 0.5))}% using above turnout importance." %></output>
+					<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @calculation_opts.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Score at least ' + Math.round(100 * minimum_score_range.value) + '% using above turnout importance.'">
+					<output id="minimum_score_value"><%= "Score at least #{round(100 * @calculation_opts.minimum_reference_approval_score)}% using above turnout importance." %></output>
 				</div>
 			</div>
 
