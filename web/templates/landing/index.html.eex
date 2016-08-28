@@ -10,14 +10,12 @@
 </div>
 
 <div class="content examples">
-	<h2 class="heading">Featured</h2>
+	<h2 class="heading">Featured polls</h2>
 
 	<div class="pure-g">
 		<%= for poll <- @examples do %>
 			<div class="example pure-u-1 pure-u-md-1-2">
-				<div class="wrap">
-					<a class="liquio-inline" href="/polls/<%= poll.id %>"><b style="margin-right: 10px;"><%= poll.title %></b><iframe src="/polls/<%= poll.id %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"></iframe></a>
-				</div>
+				<a class="liquio-inline" href="/polls/<%= poll.id %>"><b style="margin-right: 10px;"><%= poll.title %></b><iframe src="/polls/<%= poll.id %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"></iframe></a>
 			</div>
 		<%= end %>
 	</div>

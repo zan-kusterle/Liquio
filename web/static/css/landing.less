@@ -96,46 +96,32 @@
 		}
 		
 		.example {
-			.wrap {
-				display: block;
-				text-align: left;
-				margin: 0;
-				
+			.liquio-inline {
 				border: 1px solid #ddd;
 				background-color: rgba(0,0,0,.08);
 				width: 100%;
-				padding: 18px;
+				padding: 20px 30px;
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 				
 				font-size: 13px;
 				-webkit-font-smoothing: subpixel-antialiased;
 				-moz-osx-font-smoothing: grayscale;
 
-				span {
-					display: block;
-					font-size: 12px; color: #888; text-transform: uppercase;
-				}
+				display: block;
+				color: #555;
+				text-decoration: none;
+				font-size: 15px;
+				line-height: 22px;
 
-				.liquio-inline {
-					display: block;
-					color: #555;
-					text-decoration: none;
-					font-weight: bold;
-					line-height: 28px;
-
-					iframe {
-						margin-top: 2px;
-						margin-bottom: 4px;
-					}
+				iframe {
+					margin: 5px 0px;
 				}
 			}
 
-			.wrap:hover {
+			.liquio-inline:hover {
 				opacity: 0.8;
 				background-color: rgba(0, 0, 0, 0.05);
-				.liquio-inline {
-					color: #1f8dd6;
-				}
+				color: #1f8dd6;
 			}
 		}
 	}
