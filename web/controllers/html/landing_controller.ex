@@ -49,6 +49,7 @@ defmodule Liquio.LandingController do
 		examples = Enum.map(examples, fn(%{:poll => poll}) ->
 			Map.put(poll, :results, Result.calculate(poll, calculate_opts))
 		end)
+		|> Enum.sort(& &1.results.total > &2.results.total)
 
 		render conn, "index.html", examples: examples, polls: polls
 	end
