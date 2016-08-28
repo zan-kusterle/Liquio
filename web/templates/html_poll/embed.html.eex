@@ -3,44 +3,52 @@
 		margin: 0px;
 		color: #333;
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	}
 
-	.results {
-		display: block;
+	.area {
+		font-weight: bold;
+		font-size: 13px;
+
 		width: 120px;
 		height: 45px;
-		font-size: 12px;
-		font-weight: bold;
-		text-align: center;
-		padding-top: 3px;
-		cursor: default;
+		position: relative;
 	}
 
-	.results .score {
-		display: block;
-		font-size: 15px;
-		width: 100%;
-		margin: 0px;
+	.bubble {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 120px;
+		height: 45px;
+		display: table;
 	}
 
-	.results .turnout {
-		display: block;
-		width: 100%;
-		margin: 0px;
+	.bubble p {
+		display: table-cell; 
+		vertical-align: middle; 
+		text-align: center; 
 	}
 </style>
 
-<div class="results" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;">
-	<p class="score">
-		<%= if @poll.results.mean != nil do %>
-			<%= if @poll.choice_type == "probability" do %>
-				<%= round(@poll.results.mean * 100) %>%
+<title>Liquio Inline</title>
+
+<div class="area" style="background: <%= score_color(@poll) %>;">
+	<div class="bubble">
+		<p>
+			<%= if @poll.results.mean != nil do %>
+				<%= if @poll.choice_type == "probability" do %>
+					<%= round(@poll.results.mean * 100) %>%
+				<% else %>
+					<%= number_format(@poll.results.mean) %>
+				<% end %>
 			<% else %>
-				<%= number_format(@poll.results.mean) %>
+				?
 			<% end %>
-		<% else %>
-			?
-		<% end %>
-	</p>
-	<p class="turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</p>
+			<br>
+			<span class="turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</span>
+		</p>
+	  </div>
 </div>
