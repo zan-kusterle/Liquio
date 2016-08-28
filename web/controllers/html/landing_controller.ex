@@ -8,19 +8,23 @@ defmodule Liquio.LandingController do
 		identity = Guardian.Plug.current_resource(conn)
 		examples = [
 			%{
-				poll: Poll.force_get("probability", "genetically modified foods are safe", ["science", "biology", "gmo"]),
+				poll: Poll.force_get("probability", "genetically modified foods are dangerous", ["science", "biology", "gmo"])
+				|> Map.put(:fa_icon, "leaf"),
 				references: []
 			},
 			%{
-				poll: Poll.force_get("quantity", "number of refugees EU should let inside", ["politics", "eu", "refugees"]),
+				poll: Poll.force_get("quantity", "number of refugees EU should let inside", ["politics", "eu", "refugees"])
+				|> Map.put(:fa_icon, "question"),
 				references: []
 			},
 			%{
-				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"]),
+				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"])
+				|> Map.put(:fa_icon, "bolt"),
 				references: []
 			},
 			%{
-				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"]),
+				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"])
+				|> Map.put(:fa_icon, "sun-o"),
 				references: [%{
 					poll: Poll.force_get("quantity", "sea level rise since year 1900 in centimeters", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
@@ -32,11 +36,13 @@ defmodule Liquio.LandingController do
 				}]
 			},
 			%{
-				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"]),
+				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
+				|> Map.put(:fa_icon, "legal"),
 				references: []
 			},
 			%{
-				poll: Poll.force_get("probability", "the theory of evolution is true", ["science", "biology", "evolution"]),
+				poll: Poll.force_get("probability", "the theory of evolution is true", ["science", "biology", "evolution"])
+				|> Map.put(:fa_icon, "hourglass-end"),
 				references: []
 			}			
 		]
