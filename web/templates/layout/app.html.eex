@@ -51,21 +51,23 @@
 			</div>
 			
 			<div class="main-wrap">
-				<%= if get_flash(@conn, :error) != nil do %>
-					<p class="alert alert-error" role="alert"><%= get_flash(@conn, :error) %></p>
-				<% else %>
-					<%= if get_flash(@conn, :info) != nil do %>
-						<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>					
+				<div class="scrollable">
+					<%= if get_flash(@conn, :error) != nil do %>
+						<p class="alert alert-error" role="alert"><%= get_flash(@conn, :error) %></p>
+					<% else %>
+						<%= if get_flash(@conn, :info) != nil do %>
+							<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>					
+						<% end %>
 					<% end %>
-				<% end %>
 
-				<%= render_existing @view_module, "before_#{@view_template}", assigns %>
+					<%= render_existing @view_module, "before_#{@view_template}", assigns %>
 
-				<main role="main" class="main">
-					<%= render @view_module, @view_template, assigns %>
-				</main>
+					<main role="main" class="main">
+						<%= render @view_module, @view_template, assigns %>
+					</main>
 
-				<%= render_existing @view_module, "after_#{@view_template}", assigns %>
+					<%= render_existing @view_module, "after_#{@view_template}", assigns %>
+				</div>
 			</div>
 		</div>
 	</body>
