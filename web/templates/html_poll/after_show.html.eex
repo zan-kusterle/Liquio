@@ -2,6 +2,6 @@
 <div class="inline-toolbox">
 	<div class="toggle">Inline it on the web</div>
 	<p class="code">
-		&lt;a class="liquio-inline" href="<%= url %>"&gt;&lt;b&gt;<%= @poll.title %>&lt;/b&gt;&lt;iframe src="<%= url %>/embed" width="120px" height="45px" scrolling="no" frameBorder="0" style="vertical-align: middle; margin-left: 10px; margin-right: 4px;"&gt;&lt;/iframe&gt;&lt;/a&gt;
+		&lt;a class="liquio-inline" href="<%= url %>"&gt;&lt;b style="margin-left: 10px;"&gt;<%= @poll.title %>&lt;/b&gt;&lt;iframe src="<%= url %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px;"&gt;&lt;/iframe&gt;&lt;/a&gt;
 	</p>
 </div>

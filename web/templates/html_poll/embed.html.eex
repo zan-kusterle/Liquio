@@ -1,17 +1,16 @@
 <style>
 	body {
 		margin: 0px;
+		
 		color: #333;
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-
+		font-weight: bold;
+		font-size: 13px;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
 
 	.area {
-		font-weight: bold;
-		font-size: 13px;
-
 		width: 120px;
 		height: 45px;
 		position: relative;

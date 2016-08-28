@@ -15,22 +15,10 @@
 	<div class="pure-g">
 		<%= for poll <- @examples do %>
 			<div class="example pure-u-1 pure-u-md-1-2">
-				<a href="/polls/<%= poll.id %>">
-					<p class="title"><span><b><%= poll.title %></b><br><span style="font-size: 12px; color: #888; text-transform: uppercase;"><%= raw poll.tagline %></span></span></p>
-					<div class="score" style="background-color: <%= Liquio.HtmlPollView.score_color poll %>;">
-						<%= if poll.results.mean do %>
-							<%= if poll.choice_type == "probability" do %>
-								<%= round(poll.results.mean * 100) %>%
-							<% else %>
-								<%= number_format(poll.results.mean) %>
-							<% end %>
-						<% else %>
-							?
-						<% end %>
-					</div>
-				</a>
+				<span style="font-size: 12px; color: #888; text-transform: uppercase;"><%= raw poll.tagline %></span><br>
+				<a class="liquio-inline" href="https://liqu.io/polls/<%= poll.id %>"><b style="margin-right: 10px;"><%= poll.title %></b><iframe src="https://liqu.io/polls/46/embed" width="120px" height="45px" scrolling="no" frameBorder="0" style="vertical-align: middle; margin-right: 4px;"></iframe></a>
 			</div>
-		<% end %>
+		<%= end %>
 	</div>
 </div>
 
