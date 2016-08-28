@@ -1,6 +1,6 @@
 <% url = "https://liqu.io/polls/#{@poll.id}" %>
 <div class="inline-toolbox">
-	<div class="toggle">embed with html</div>
+	<div class="toggle">EMBED WITH HTML</div>
 	<p class="code" style="max-width: 90%; padding: 5px 80px;">
 		&lt;a class="liquio-inline" href="<%= url %>"&gt;&lt;b style="vertical-align: middle; margin-right: 15px;"&gt;<%= @poll.title %>&lt;/b&gt;&lt;iframe src="<%= url %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"&gt;&lt;/iframe&gt;&lt;/a&gt;
 	</p>
