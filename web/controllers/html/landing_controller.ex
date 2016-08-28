@@ -36,7 +36,7 @@ defmodule Liquio.LandingController do
 				references: []
 			},
 			%{
-				poll: Poll.force_get("probability", "evolution is a fact", ["science", "biology", "evolution"]),
+				poll: Poll.force_get("probability", "the theory of evolution is true", ["science", "biology", "evolution"]),
 				references: []
 			}			
 		]
