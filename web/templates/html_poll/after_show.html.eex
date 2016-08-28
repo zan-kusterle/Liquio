@@ -1,0 +1,6 @@
+<div class="inline-toolbox">
+	<div class="toggle">Inline it on the web</div>
+	<p class="code">
+		&lt;a class="liquio-inline" href="https://liqu.io/polls/<%= @poll.id %>"&gt;&lt;b&gt;<%= @poll.title %>&lt;/b&gt;&lt;iframe src="http://localhost:4000/polls/1/embed" width="120px" height="45px" scrolling="no" frameBorder="0" style="vertical-align: middle; margin-left: 10px; margin-right: 4px;"&gt;&lt;/iframe&gt;&lt;/a&gt;
+	</p>
+</div>

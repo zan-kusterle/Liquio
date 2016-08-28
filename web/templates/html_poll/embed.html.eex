@@ -1,5 +1,46 @@
-<h1 class="title">
-	<%= @poll.title || @poll.id %>
-</h1>
+<style>
+	body {
+		margin: 0px;
+		color: #333;
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
 
-<%= render "score.html", poll: @poll %>
+	.results {
+		display: block;
+		width: 120px;
+		height: 45px;
+		font-size: 12px;
+		font-weight: bold;
+		text-align: center;
+		padding-top: 3px;
+		cursor: default;
+	}
+
+	.results .score {
+		display: block;
+		font-size: 15px;
+		width: 100%;
+		margin: 0px;
+	}
+
+	.results .turnout {
+		display: block;
+		width: 100%;
+		margin: 0px;
+	}
+</style>
+
+<div class="results" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;">
+	<p class="score">
+		<%= if @poll.results.mean != nil do %>
+			<%= if @poll.choice_type == "probability" do %>
+				<%= round(@poll.results.mean * 100) %>%
+			<% else %>
+				<%= number_format(@poll.results.mean) %>
+			<% end %>
+		<% else %>
+			?
+		<% end %>
+	</p>
+	<p class="turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</p>
+</div>

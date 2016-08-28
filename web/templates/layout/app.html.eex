@@ -64,6 +64,8 @@
 				<main role="main" class="main">
 					<%= render @view_module, @view_template, assigns %>
 				</main>
+
+				<%= render_existing @view_module, "after_#{@view_template}", assigns %>
 			</div>
 		</div>
 	</body>
