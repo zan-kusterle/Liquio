@@ -96,30 +96,37 @@
 		}
 		
 		.example {
-			a {
+			.wrap {
 				display: block;
 				text-align: left;
 				margin: 0;
-				color: #555;
-				text-decoration: none;
-				line-height: 26px;
+				
 				border: 1px solid #ddd;
 				background-color: rgba(0,0,0,.08);
 				width: 100%;
-				padding: 16px 20px;
-				color: #333;
+				padding: 16px 20px 24px 20px;
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-				font-weight: bold;
+				
 				font-size: 13px;
 				-webkit-font-smoothing: subpixel-antialiased;
 				-moz-osx-font-smoothing: grayscale;
+
+				span {
+					display: block;
+				}
+
+				.liquio-inline {
+					color: #555;
+					text-decoration: none;
+					font-weight: bold;
+					line-height: 32px;
+				}
 			}
 
-			a:hover {
+			.wrap:hover {
 				opacity: 0.8;
-
-				.title {
-					background-color: rgba(0, 0, 0, 0.05);
+				background-color: rgba(0, 0, 0, 0.05);
+				.liquio-inline {
 					color: #1f8dd6;
 				}
 			}
