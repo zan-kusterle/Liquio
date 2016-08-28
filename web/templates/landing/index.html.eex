@@ -15,7 +15,7 @@
 	<div class="list">
 		<%= for poll <- @examples do %>
 			<div class="example">
-				<a class="liquio-inline" href="/polls/<%= poll.id %>"><b style="vertical-align: middle; margin-right: 10px;"><%= poll.title %></b><iframe src="/polls/<%= poll.id %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"></iframe></a>
+				<a class="liquio-inline" href="/polls/<%= poll.id %>"><b style="vertical-align: middle; margin-right: 15px;"><%= poll.title %></b><iframe src="/polls/<%= poll.id %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"></iframe></a>
 			</div>
 		<%= end %>
 	</div>
