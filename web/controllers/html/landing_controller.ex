@@ -42,7 +42,7 @@ defmodule Liquio.LandingController do
 			},
 			%{
 				poll: Poll.force_get("probability", "evolution is a fact", ["science", "biology", "evolution"])
-				|> Map.put(:tagline, "separating myth and reality"),
+				|> Map.put(:tagline, "separating myth from reality"),
 				references: []
 			}			
 		]
