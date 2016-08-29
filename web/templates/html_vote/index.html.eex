@@ -4,7 +4,7 @@
 		<%= render Liquio.HtmlPollView, "references.html", poll: @poll, references: @references, minimum_voting_power: @minimum_voting_power %>
 	</div>
 <% else %>
-	<h2 class="references-title" style="margin-top: 0;">There are no references here. Before voting please add references that explain your decision.</h2>
+	<h2 class="references-title" style="margin-top: 0;">There are no references here. Add references that explain your choice before voting.</h2>
 <% end %>
 
 <%= if @poll.kind == "custom" do %>
