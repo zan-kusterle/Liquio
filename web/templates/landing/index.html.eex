@@ -15,7 +15,7 @@
 	<div class="list">
 		<%= for poll <- @examples do %>
 			<div class="example">
-				<a class="liquio-inline" href="/polls/<%= poll.id %>">
+				<a class="liquio-inline" href="/polls/<%= poll.id %>" style="text-decoration: none; display: inline-block;">
 					<i class="fa fa-<%= poll.fa_icon %>" aria-hidden="true" style="margin-right: 15px;"></i>
 					<span style="vertical-align: middle; margin-right: 20px;"><%= poll.title %></span>
 					<iframe src="/polls/<%= poll.id %>/embed" seamless="seamless" scrolling="no" frameBorder="0" width="125px" height="50px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"></iframe>

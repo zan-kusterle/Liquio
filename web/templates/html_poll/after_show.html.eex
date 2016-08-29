@@ -2,12 +2,12 @@
 <div class="inline-toolbox">
 	<div class="toggle">EMBED WITH HTML</div>
 
-	<a class="liquio-inline" href="/polls/<%= @poll.id %>">
+	<a class="liquio-inline" href="/polls/<%= @poll.id %>" style="text-decoration: none; display: inline-block;">
 		<span style="vertical-align: middle; margin-right: 15px;"><%= @poll.title %></span>
 		<iframe src="/polls/<%= @poll.id %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"></iframe>
 	</a>
 
 	<p class="code">
-		&lt;a class="liquio-inline" href="<%= url %>"&gt;<br>&lt;span style="vertical-align: middle; margin-right: 15px;"&gt;<%= @poll.title %>&lt;/span&gt;<br>&lt;iframe src="<%= url %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"&gt;&lt;/iframe&gt;<br>&lt;/a&gt;
+		&lt;a class="liquio-inline" href="<%= url %>" style="text-decoration: none; display: inline-block;"&gt;<br>&lt;span style="vertical-align: middle; margin-right: 15px;"&gt;<%= @poll.title %>&lt;/span&gt;<br>&lt;iframe src="<%= url %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"&gt;&lt;/iframe&gt;<br>&lt;/a&gt;
 	</p>
 </div>
