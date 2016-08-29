@@ -30,7 +30,31 @@ defmodule Liquio.LandingController do
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("quantity", "difference in sea level from year 2000 until year 2050 in centimeters", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("quantity", "global temperature rise in celcius since 1950", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "ocean temperature rise in celcius since 1950", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "ice lost in cubic kilometers since 2000", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "glacial retreats around the world", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "relative difference in the acidity of surface ocean waters since 1900", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("probability", "Glaciers are retreating almost everywhere around the world", ["science", "nature", "global warming"]),
+					for_choice: 1.0,
+					references: []
+				}, %{
+					poll: Poll.force_get("quantity", "sea level rise estimate from year 2000 until year 2050 in centimeters", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}]

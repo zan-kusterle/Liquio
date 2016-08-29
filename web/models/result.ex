@@ -180,7 +180,7 @@ defmodule Liquio.Result do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		total_score = Enum.sum(Enum.map(contributions, & &1.score * &1.voting_power))
 		if total_power + soft_quorum_t > 0 do
-			total_score / (total_power + soft_quorum_t)
+			1.0 * total_score / (total_power + soft_quorum_t)
 		else
 			nil
 		end
@@ -192,7 +192,7 @@ defmodule Liquio.Result do
 		if total_power > 0 do
 			Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
 				if current_power + contribution.voting_power > total_power / 2 do
-					{:halt, contribution.score}
+					{:halt, 1.0 * contribution.score}
 				else
 					{:cont, current_power + contribution.voting_power}
 				end
