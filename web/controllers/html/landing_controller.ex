@@ -61,7 +61,7 @@ defmodule Liquio.LandingController do
 			},
 			%{
 				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
-				|> Map.put(:fa_icon, "legal"),
+				|> Map.put(:fa_icon, "bank"),
 				references: []
 			},
 			%{
@@ -81,7 +81,7 @@ defmodule Liquio.LandingController do
 			|> Map.put(:results, Result.calculate(example.poll, calculate_opts))
 			|> Map.put(:num_references, Enum.count(example.references))
 		end)
-		|> Enum.sort(& &1.results.total + 0.1 * &1.num_references > &2.results.total + 0.1 * &2.num_references)
+		|> Enum.sort(& &1.results.turnout_ratio + 0.1 * &1.num_references > &2.results.turnout_ratio + 0.1 * &2.num_references)
 
 		render conn, "index.html", examples: examples, polls: polls
 	end
