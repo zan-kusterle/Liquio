@@ -76,10 +76,12 @@ defmodule Liquio.LandingController do
 		if identity != nil and Application.get_env(:liquio, :admin_identity_ids) |> Enum.member?(identity.id) do
 			approve_references(examples, identity)
 		end
-		examples = Enum.map(examples, fn(%{:poll => poll}) ->
-			Map.put(poll, :results, Result.calculate(poll, calculate_opts))
+		examples = Enum.map(examples, fn(example) ->
+			example.poll
+			|> Map.put(:results, Result.calculate(example.poll, calculate_opts))
+			|> Map.put(:num_references, Enum.count(example.references))
 		end)
-		|> Enum.sort(& &1.results.total > &2.results.total)
+		|> Enum.sort(& &1.results.total + 0.1 * &1.num_references > &2.results.total + 0.1 * &2.num_references)
 
 		render conn, "index.html", examples: examples, polls: polls
 	end
