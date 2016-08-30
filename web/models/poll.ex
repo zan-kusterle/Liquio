@@ -40,10 +40,13 @@ defmodule Liquio.Poll do
 		Repo.insert(changeset)
 	end
 
-	def create(choice_type, title, topics) do
+	def create(choice_type, title, topics, choice_unit, time_unit, is_choice_time_difference) do
 		Repo.insert!(%Poll{
 			:kind => "custom",
 			:choice_type => choice_type,
+			:choice_unit => choice_unit,
+			:time_unit => time_unit,
+			:is_choice_time_difference => is_choice_time_difference,
 			:title => capitalize_title(title),
 			:topics => topics,
 		})

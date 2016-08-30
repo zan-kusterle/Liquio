@@ -23,7 +23,26 @@
 		</label>
 		<label for="time_quantity" class="pure-radio">
 			<input id="time_quantity" type="radio" name="choice_type" value="time_quantity">
-			Time quantity <span class="choice-type-details">- vote with any number and a time, median result</span>
+			Time quantity <span class="choice-type-details">- vote with multiple time and number pairs, median result</span>
+		</label>
+	</div>
+
+	<label for="choice_unit" class="pure-u-1 pure-u-sm-1-6 row-label">Unit</label>
+	<div class="pure-u-1 pure-u-sm-5-6 row-input">
+		<input id="choice_unit" type="text" name="choice_unit" />
+	</div>
+
+	<label for="time_unit" class="pure-u-1 pure-u-sm-1-6 row-label">Time unit</label>
+	<div class="pure-u-1 pure-u-sm-5-6 row-input">
+		<select id="time_unit" name="time_unit">
+			<option value="day">day</option>
+			<option value="week">week</option>
+			<option value="month">month</option>
+			<option value="year">year</option>
+		</select>
+		<label for="is_choice_time_difference" class="pure-checkbox">
+			<input id="is_choice_time_difference" type="checkbox" name="is_choice_time_difference" value="1">
+			Choice represents relative difference since previous time unit
 		</label>
 	</div>
 
