@@ -10,8 +10,9 @@ defmodule Liquio.Poll do
 	schema "polls" do
 		field :kind, :string
 		field :choice_type, :string
-		field :choice_derivative, :integer
-		field :choice_derivative_unit, :string
+		field :choice_unit, :string
+		field :time_unit, :string
+		field :is_choice_time_difference, :boolean
 		field :title, :string
 		field :topics, {:array, :string}
 
@@ -28,10 +29,11 @@ defmodule Liquio.Poll do
 				params
 			end
 		data
-		|> cast(params, ["choice_type", "title", "topics"])
+		|> cast(params, ["choice_type", "choice_unit", "time_unit", "title", "topics"])
 		|> validate_required(:title)
+		|> validate_required(:choice_type)
+		|> validate_required(:topics)
 		|> put_change(:kind, "custom")
-		|> put_change(:choice_derivative, 0)
 	end
 
 	def create(changeset) do
@@ -42,7 +44,6 @@ defmodule Liquio.Poll do
 		Repo.insert!(%Poll{
 			:kind => "custom",
 			:choice_type => choice_type,
-			:choice_derivative => 0,
 			:title => capitalize_title(title),
 			:topics => topics,
 		})

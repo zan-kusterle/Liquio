@@ -10,6 +10,8 @@ defmodule Liquio.HtmlPollController do
 		:title => {Plugs.StringParam, [name: "title"]},
 		:topics => {Plugs.ListParam, [name: "topics", maybe: true, item: {Plugs.StringParam, [downcase: true]}]},
 		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity", "time_quantity"]]},
+		:choice_unit => {Plugs.EnumParam, [name: "choice_unit", values: ["year", "month", "day"]]},
+		:time_unit => {Plugs.EnumParam, [name: "time_unit", values: ["year", "month", "day"]]},
 	},
 	def create(conn, %{:title => title, :topics => topics, :choice_type => choice_type}) do
 		poll = Poll.create(choice_type, title, topics)
