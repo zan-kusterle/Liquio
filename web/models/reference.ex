@@ -22,6 +22,7 @@ defmodule Liquio.Reference do
 				approval_poll = Repo.insert!(%Poll{
 					:kind => "is_reference",
 					:choice_type => "probability",
+					:choice_derivative => 0,
 					:title => nil,
 					:topics => nil
 				})

@@ -26,23 +26,23 @@ defmodule Liquio.LandingController do
 				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"])
 				|> Map.put(:fa_icon, "sun-o"),
 				references: [%{
-					poll: Poll.force_get("time_quantity", "sea level in meters", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth sea level", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "global temperature in celcius", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth temperature", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "ocean temperature in celcius", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth ocean temperature", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "global ice in cubic meters", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth ice volume", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "acidity of the surface ocean waters", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "surface ocean waters acidity", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
@@ -50,11 +50,7 @@ defmodule Liquio.LandingController do
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("probability", "not enough global temperature historical data available to know the cause of global warming", ["science", "nature", "global warming"]),
-					for_choice: 0.0,
-					references: []
-				}, %{
-					poll: Poll.force_get("time_quantity", "global ice volume in cubic meters", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("probability", "not enough earth temperature historical data available to know the cause of global warming", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					references: []
 				}, %{

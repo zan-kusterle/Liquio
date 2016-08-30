@@ -3,6 +3,7 @@ defmodule Liquio.VoteData do
 
 	embedded_schema do
 		field :score, :float
+		field :time, Timex.Ecto.DateTime
 	end
 
 	def changeset(data, params) do
