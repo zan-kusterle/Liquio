@@ -1,7 +1,7 @@
 <% has_data? = @poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @poll.results.total >= @minimum_voting_power) %>
 
 <div class="score-box" style="background-color: <%= if has_data? do score_color(@poll) else default_score_color() end %>;">
-	<div class="number"<%= if @poll.choice_type == "quantity" do %> style="line-height: 24px;"<% end %>>
+	<div class="number">
 		<%= if has_data? do %>
 			<%= if @poll.choice_type == "probability" do %>
 				<%= round(@poll.results.mean * 100) %><span class="percent">%</span>
@@ -12,5 +12,11 @@
 			?
 		<% end %>
 	</div>
+	<%= if @poll.choice_unit != nil do %>
+		<div class="units">
+			<%= raw(@poll.choice_unit) %>
+			<%= if @poll.time_unit != nil do %> / <%= raw @poll.time_unit %><% end %>
+		</div>
+	<% end %>
 	<div class="subtext"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</div>
 </div>
