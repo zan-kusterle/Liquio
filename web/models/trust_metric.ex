@@ -15,8 +15,10 @@ defmodule Liquio.TrustMetric do
 	end
 
 	def get!(url) do
-		{:ok, trust_metric_ids} = get(url)
-		trust_metric_ids
+		case get(url) do
+			{:ok, ids} -> ids
+			_ -> []
+		end
 	end
 
 	def get(url) do

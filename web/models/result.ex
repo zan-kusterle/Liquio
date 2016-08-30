@@ -67,7 +67,7 @@ defmodule Liquio.Result do
 	def calculate(poll, calculate_opts = %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :soft_quorum_t => soft_quorum_t}) do
 		datetime = if datetime == nil do Timex.DateTime.now else datetime end
 		soft_quorum_t = if poll.kind == "custom" do 0 else soft_quorum_t end
-		mean_fn = if poll.choice_type == "quantity" do &median/2 else &mean/2 end
+		mean_fn = if poll.choice_type == "probability" do &mean/2 else &median/2 end
 		
 		poll
 		|> calculate_contributions(calculate_opts)

@@ -6,7 +6,7 @@
 			<%= if assigns[:for_choice] do %>
 				<span class="for-choice-text"><%= number_format(@for_choice) %></span>
 			<% end %>
-			<%= @reference.reference_poll.title %>
+			<%= raw(@reference.reference_poll.title) %>
 		</p><div class="reference-score" style="background-color: <%= if has_data? do score_color(@reference.reference_poll) else default_score_color() end %>;">
 			<%= if has_data? do %>
 				<%= if @reference.reference_poll.choice_type == "probability" do %>

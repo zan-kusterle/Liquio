@@ -13,13 +13,17 @@
 
 	<label class="pure-u-1 pure-u-sm-1-6 row-label">Choice Type</label>
 	<div class="pure-u-1 pure-u-sm-5-6 row-input choices">
-		<label for="option-two" class="pure-radio">
-			<input id="option-two" type="radio" name="choice_type" value="probability" checked>
+		<label for="probability" class="pure-radio">
+			<input id="probability" type="radio" name="choice_type" value="probability" checked>
 			Probability <span class="choice-type-details">- vote with a probability between 0 and 1, mean result</span>
 		</label>
-		<label for="option-three" class="pure-radio">
-			<input id="option-three" type="radio" name="choice_type" value="quantity">
+		<label for="quantity" class="pure-radio">
+			<input id="quantity" type="radio" name="choice_type" value="quantity">
 			Quantity <span class="choice-type-details">- vote with any number, median result</span>
+		</label>
+		<label for="time_quantity" class="pure-radio">
+			<input id="time_quantity" type="radio" name="choice_type" value="time_quantity">
+			Time quantity <span class="choice-type-details">- vote with any number and a time, median result</span>
 		</label>
 	</div>
 

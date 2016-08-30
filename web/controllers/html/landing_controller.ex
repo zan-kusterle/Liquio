@@ -26,27 +26,23 @@ defmodule Liquio.LandingController do
 				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"])
 				|> Map.put(:fa_icon, "sun-o"),
 				references: [%{
-					poll: Poll.force_get("quantity", "sea level rise since year 1900 in centimeters", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "sea level in meters", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("quantity", "global temperature rise in celcius since 1950", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "global temperature in celcius", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("quantity", "ocean temperature rise in celcius since 1950", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "ocean temperature in celcius", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("quantity", "ice lost in cubic kilometers since 2000", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "global ice in cubic meters", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("quantity", "glacial retreats around the world", ["science", "nature", "global warming"]),
-					for_choice: 1.0,
-					references: []
-				}, %{
-					poll: Poll.force_get("quantity", "relative difference in the acidity of surface ocean waters since 1900", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "acidity of the surface ocean waters", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
@@ -54,15 +50,11 @@ defmodule Liquio.LandingController do
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("quantity", "sea level rise estimate from year 2000 until year 2050 in centimeters", ["science", "nature", "global warming"]),
-					for_choice: 1.0,
-					references: []
-				}, %{
 					poll: Poll.force_get("probability", "not enough global temperature historical data available to know the cause of global warming", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("probability", "arctic ice volume increased by 50% since 2012 until 2016", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "global ice volume in cubic meters", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					references: []
 				}, %{
