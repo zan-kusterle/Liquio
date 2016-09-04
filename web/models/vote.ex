@@ -2,14 +2,14 @@ defmodule Liquio.VoteData do
 	use Liquio.Web, :model
 
 	embedded_schema do
-		field :score, :float
+		field :choice, :float
 		field :time, Timex.Ecto.DateTime
 	end
 
 	def changeset(data, params) do
 		data
-		|> cast(params, ["score"])
-		|> validate_required(:score)
+		|> cast(params, ["choice"])
+		|> validate_required(:choice)
 	end
 end
 
@@ -59,14 +59,14 @@ defmodule Liquio.Vote do
 		|> put_change(:is_last, true)
 		Repo.insert(changeset)
 	end
-	def set(poll, identity, score) do
+	def set(poll, identity, choice) do
 		remove_current_last(poll.id, identity.id)
 		Repo.insert(%Vote{
 			:poll_id => poll.id,
 			:identity_id => identity.id,
 			:is_last => true,
 			:data => %VoteData{
-				:score => score
+				:choice => choice
 			}
 		})
 	end

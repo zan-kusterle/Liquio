@@ -26,17 +26,17 @@ defmodule Liquio.HtmlVoteController do
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
-		:score => {Plugs.NumberParam, [name: "score", maybe: true]}
+		:choice => {Plugs.NumberParam, [name: "choice", maybe: true]}
 	},
-	def create(conn, %{:user => user, :poll => poll, :score => score}) do
+	def create(conn, %{:user => user, :poll => poll, :choice => choice}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 
 		{level, message} =
-			if score != nil do
-				if poll.choice_type == "probability" and (score < 0 or score > 1) do
+			if choice != nil do
+				if poll.choice_type == "probability" and (choice < 0 or choice > 1) do
 					{:error, "Choice must be between 0 (0%) and 1 (100%)."}
 				else
-					Vote.set(poll, user, score)
+					Vote.set(poll, user, choice)
 					if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 						{:info, "Your vote is now live. Share the poll with other people."}
 					else

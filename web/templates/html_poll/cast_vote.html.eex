@@ -2,27 +2,23 @@
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 		<input type="hidden" name="redirect" value="<%= @to_path %>" />
-		<button type="submit" name="score" value="0.0" class="pure-button false-choice<%= if @own_vote != nil and @own_vote.data.score == 0.0 do %> pure-button-active<% end %>">
+		<button type="submit" name="choice" value="0.0" class="pure-button false-choice<%= if @own_vote != nil and @own_vote.data.choice == 0.0 do %> pure-button-active<% end %>">
 			FALSE
 		</button>
 	</form>
 <% end %>
 <%= if @poll.choice_type == "time_quantity" do %>
-	<%= for %{:time => time, :choice => choice} <- @own_vote do %>
-		<%= time %> &mdash; <%= choice %>
-		<br>
-	<% end %>
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="pure-form cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 		<input type="hidden" name="redirect" value="<%= @to_path %>" />
-		<input type="text" class="score-input" name="score" />
+		<textarea class="score-input" name="choice" style="height: 150px; resize: vertical;"><%= @own_vote |> Enum.map(& "#{&1.time}: #{&1.choice}") |> Enum.join("\n") %></textarea>
 	</form>
 <% else %>
 	<%= if assigns[:allow_numeric] == nil or @allow_numeric == true do %>
 		<form action="/polls/<%= @poll.id %>/vote" method="POST" class="pure-form cast-vote">
 			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 			<input type="hidden" name="redirect" value="<%= @to_path %>" />
-			<input type="text" class="score-input" name="score"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.score, 10) %>"<% end %> />
+			<input type="text" class="score-input" name="choice"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.choice, 10) %>"<% end %> />
 		</form>
 	<% end %>
 <% end %>
@@ -30,25 +26,22 @@
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 		<input type="hidden" name="redirect" value="<%= @to_path %>" />
-		<button type="submit" name="score" value="1.0" class="pure-button true-choice<%= if @own_vote != nil and @own_vote.data.score == 1.0 do %> pure-button-active<% end %>">
+		<button type="submit" name="choice" value="1.0" class="pure-button true-choice<%= if @own_vote != nil and @own_vote.data.choice == 1.0 do %> pure-button-active<% end %>">
 			TRUE
 		</button>
 	</form>
 <% end %>
 
 <br>
-<%= if @poll.choice_type == "time_quantity" do %>
-	<p class="vote-help" style="margin-top: 5px; margin-bottom: 20px;">PRESS ENTER TO ADD ANOTHER VOTE</p>
-<% else %>
-	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
-		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-		<input type="hidden" name="redirect" value="<%= @to_path %>" />
-		<%= if @own_vote != nil do %>
-			<button type="submit" name="score" value="null" class="remove-vote">REMOVE VOTE</button>
-		<% else %>
-			<%= if assigns[:allow_numeric] == nil or @allow_numeric == true do %>
-				<p class="vote-help">PRESS ENTER TO VOTE</p>
-			<% end %>
+
+<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
+	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+	<input type="hidden" name="redirect" value="<%= @to_path %>" />
+	<%= if @own_vote != nil do %>
+		<button type="submit" name="choice" value="null" class="remove-vote">REMOVE VOTE</button>
+	<% else %>
+		<%= if assigns[:allow_numeric] == nil or @allow_numeric == true do %>
+			<p class="vote-help">PRESS ENTER TO VOTE</p>
 		<% end %>
-	</form>
-<% end %>
+	<% end %>
+</form>

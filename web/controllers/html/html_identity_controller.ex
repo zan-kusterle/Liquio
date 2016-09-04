@@ -142,7 +142,7 @@ defmodule Liquio.HtmlIdentityController do
 
 		voted_polls = votes |> Enum.map(fn(vote) ->
 			vote.poll
-			|> Map.put(:score, vote.data.score)
+			|> Map.put(:choice, vote.data.choice)
 		end)
 		polls = voted_polls
 		|> Enum.flat_map(& expand_poll(&1, calculation_opts))
@@ -248,7 +248,7 @@ defmodule Liquio.HtmlIdentityController do
 	defp prepare_poll(poll, data) do
 		Map.merge(Map.merge(%{
 			:references => [],
-			:score => nil,
+			:choice => nil,
 			:approval_score => nil
 		}, poll), data)
 	end
@@ -259,7 +259,7 @@ defmodule Liquio.HtmlIdentityController do
 				references = poll
 				|> Reference.for_poll(calculation_opts)
 				|> Repo.preload([:poll, :reference_poll])
-				[prepare_poll(poll, %{:score => poll.score, :references => references})]
+				[prepare_poll(poll, %{:choice => poll.choice, :references => references})]
 			"is_reference" ->
 				reference = Reference
 				|> Repo.get_by!(approval_poll_id: poll.id)
@@ -280,7 +280,7 @@ defmodule Liquio.HtmlIdentityController do
 
 				[
 					prepare_poll(reference.poll, %{:references => references}),
-					prepare_poll(reference.reference_poll, %{:references => reference_poll_references, :approval_score => poll.score})
+					prepare_poll(reference.reference_poll, %{:references => reference_poll_references, :approval_score => poll.choice})
 				]
 			_ ->
 				[prepare_poll(poll, %{})]

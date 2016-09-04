@@ -101,21 +101,21 @@ defmodule Liquio.Result do
 
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
 
-		trust_votes = votes |> Enum.filter(fn({identity_id, {_datetime, _score}}) ->
+		trust_votes = votes |> Enum.filter(fn({identity_id, {_datetime, _choice}}) ->
 			MapSet.member?(trust_identity_ids, to_string(identity_id))
 		end)
 
-		Enum.each(trust_votes, fn({identity_id, {_datetime, _score}}) ->
+		Enum.each(trust_votes, fn({identity_id, {_datetime, _choice}}) ->
 			calculate_total_weights(identity_id, state, uuid, MapSet.new)
 		end)
 		
 		CalculateResultServer.reset_visited(uuid)
 
-		contributions = trust_votes |> Enum.map(fn({identity_id, {datetime, score}}) ->
+		contributions = trust_votes |> Enum.map(fn({identity_id, {datetime, choice}}) ->
 			%{
 				identity_id: identity_id,
 				voting_power: get_power(identity_id, state, uuid, MapSet.new) / 1,
-				score: score,
+				choice: choice,
 				datetime: datetime
 			}
 		end)
@@ -178,7 +178,7 @@ defmodule Liquio.Result do
 
 	def mean(contributions, soft_quorum_t) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		total_score = Enum.sum(Enum.map(contributions, & &1.score * &1.voting_power))
+		total_score = Enum.sum(Enum.map(contributions, & &1.choice * &1.voting_power))
 		if total_power + soft_quorum_t > 0 do
 			1.0 * total_score / (total_power + soft_quorum_t)
 		else
@@ -187,12 +187,12 @@ defmodule Liquio.Result do
 	end
 
 	def median(contributions, _soft_quorum_t) do
-		contributions = contributions |> Enum.sort(&(&1.score > &2.score))
+		contributions = contributions |> Enum.sort(&(&1.choice > &2.choice))
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		if total_power > 0 do
 			Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
 				if current_power + contribution.voting_power > total_power / 2 do
-					{:halt, 1.0 * contribution.score}
+					{:halt, 1.0 * contribution.choice}
 				else
 					{:cont, current_power + contribution.voting_power}
 				end
@@ -244,7 +244,7 @@ defmodule Liquio.Result do
 			{date, {h, m, s, _}} = Enum.at(row, 1)
 			data = {
 				Timex.datetime({date, {h, m, s}}),
-				Enum.at(row, 2)["score"]
+				Enum.at(row, 2)["choice"]
 			}
 			{Enum.at(row, 0), data}
 		end

@@ -41,7 +41,7 @@ defmodule Liquio.PollController do
 		|> Enum.map(fn(contribution) ->
 			%{
 				:datetime => Timex.format!(contribution.datetime, "{ISO}"),
-				:score => contribution.score,
+				:choice => contribution.choice,
 				:voting_power => contribution.voting_power,
 				:identity_id => contribution.identity_id
 			}

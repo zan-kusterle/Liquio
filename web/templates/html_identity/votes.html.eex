@@ -10,9 +10,9 @@
 							<span style="font-size: 15px; font-weight: bold; margin-right: 4px;"><%= for_choice_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
 						<% end %>
 						<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
-						<%= if poll.score != nil do %>
+						<%= if poll.choice != nil do %>
 							<span>&mdash;</span>
-							<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.score, poll.choice_type) %></span>
+							<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.choice, poll.choice_type) %></span>
 						<% end %>
 						<%= if poll.reference != nil and poll.approval_score != nil do %>
 							<span>&mdash;</span>
@@ -29,7 +29,7 @@
 			<div style="margin-bottom: 12px;">
 				<a href="/identities/<%= vote.identity.id %>">Trust to <b><%= vote.identity.username %></b></a>
 				<span>&mdash;</span>
-				<span style="font-size: 15px; font-weight: bold;"><%= score_format(vote.poll.score) %></span>
+				<span style="font-size: 15px; font-weight: bold;"><%= score_format(vote.poll.choice) %></span>
 			</div>
 		<% end %>
 	<% end %>

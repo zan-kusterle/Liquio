@@ -5,19 +5,11 @@
 		<button class="pure-button set-time">Set time</button>
 	</form>
 
-	<div class="section-title">Aggregate score</div>
+	<div class="section-title">Aggregate choice</div>
 	<%= render "score.html", poll: @poll %>
 
 	<div class="section-title" style="margin-top: 25px;">Score for last 30 days</div>
-	<svg viewBox="0 0 1220 140" class="score-by-time">
-		<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= chart_svg_polyline @chart_points %>"></path>
-
-		<%= for {x, y} <- Enum.map(@chart_points, &to_svg_point/1) do %>
-			<circle cx="<%= x %>" cy="<%= y %>" r="8" fill="#1f8dd6"></circle>
-		<% end %>
-		
-		<line x1="20" y1="120" x2="1300" y2="120" style="stroke:#aaa;stroke-width:1"></line><line x1="20" y1="120" x2="20" y2="0" style="stroke:#aaa;stroke-width:1"></line>
-	</svg>
+	<%= render "chart.html", chart_points: @chart_points %>
 
 	<%= unless Enum.empty? @contributions do %>
 		<div class="section-title">All votes</div>

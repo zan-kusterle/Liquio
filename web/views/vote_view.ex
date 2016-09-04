@@ -14,7 +14,7 @@ defmodule Liquio.VoteView do
 			id: vote.id,
 			identity: %{id: vote.identity_id},
 			poll: %{id: vote.poll_id},
-			score: if vote.data do vote.data.score else nil end
+			score: if vote.data do vote.data.choice else nil end
 		}
 	end
 end
