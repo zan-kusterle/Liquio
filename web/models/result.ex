@@ -56,6 +56,7 @@ defmodule Liquio.Result do
 
 	alias Liquio.Repo
 	alias Liquio.CalculateResultServer
+	alias Liquio.AggregateContributions
 
 	schema "results" do
 		belongs_to :poll, Liquio.Poll
@@ -67,11 +68,10 @@ defmodule Liquio.Result do
 	def calculate(poll, calculate_opts = %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :soft_quorum_t => soft_quorum_t}) do
 		datetime = if datetime == nil do Timex.DateTime.now else datetime end
 		soft_quorum_t = if poll.kind == "custom" do 0 else soft_quorum_t end
-		mean_fn = if poll.choice_type == "probability" do &mean/2 else &median/2 end
-		
+
 		poll
 		|> calculate_contributions(calculate_opts)
-		|> aggregate_contributions(datetime, vote_weight_halving_days, soft_quorum_t, mean_fn, calculate_opts.trust_metric_ids)
+		|> AggregateContributions.aggregate(datetime, vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculate_opts.trust_metric_ids)
 	end
 
 	def empty() do
@@ -161,59 +161,6 @@ defmodule Liquio.Result do
 		not MapSet.member?(path, from_identity_id)
 	end
 
-	def aggregate_contributions(contributions, datetime, vote_weight_halving_days, soft_quorum_t, mean_fn, trust_metric_ids) do
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		contributions = contributions |> Enum.map(fn(contribution) ->
-			contribution
-			|> Map.put(:voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
-		end)
-
-		%{
-			:mean => mean_fn.(contributions, soft_quorum_t),
-			:total => round(total_power),
-			:turnout_ratio => total_power / MapSet.size(trust_metric_ids),
-			:count => Enum.count(contributions)
-		}
-	end
-
-	def mean(contributions, soft_quorum_t) do
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		total_score = Enum.sum(Enum.map(contributions, & &1.choice * &1.voting_power))
-		if total_power + soft_quorum_t > 0 do
-			1.0 * total_score / (total_power + soft_quorum_t)
-		else
-			nil
-		end
-	end
-
-	def median(contributions, _soft_quorum_t) do
-		contributions = contributions |> Enum.sort(&(&1.choice > &2.choice))
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		if total_power > 0 do
-			Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
-				if current_power + contribution.voting_power > total_power / 2 do
-					{:halt, 1.0 * contribution.choice}
-				else
-					{:cont, current_power + contribution.voting_power}
-				end
-			end)
-		else
-			nil
-		end
-	end
-
-	def moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do
-		if vote_weight_halving_days == nil do
-			1
-		else
-			ct = contribution.datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
-			rt = reference_datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
-			delta_days = (rt - ct) / (24 * 3600)
-
-			:math.pow(0.5, delta_days / vote_weight_halving_days)
-		end
-	end
-
 	def get_inverse_delegations(datetime) do
 		query = "SELECT DISTINCT ON (from_identity_id, to_identity_id) from_identity_id, to_identity_id, data
 			FROM delegations
@@ -282,5 +229,70 @@ defmodule Liquio.Result do
 				:random.uniform
 			}
 		}
+	end
+end
+
+defmodule Liquio.AggregateContributions do
+	def aggregate(contributions, datetime, vote_weight_halving_days, soft_quorum_t, choice_type, trust_metric_ids) do
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
+		contributions = contributions |> Enum.map(fn(contribution) ->
+			contribution
+			|> Map.put(:voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
+		end)
+
+		mean = case choice_type do
+			"probability" ->
+				mean(contributions, soft_quorum_t)
+			"quantity" ->
+				median(contributions)
+			"time_quantity" ->
+				0
+		end
+
+		%{
+			:mean => mean,
+			:total => round(total_power),
+			:turnout_ratio => total_power / MapSet.size(trust_metric_ids),
+			:count => Enum.count(contributions)
+		}
+	end
+
+	def mean(contributions, soft_quorum_t) do
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
+		IO.inspect contributions
+		total_score = Enum.sum(Enum.map(contributions, & &1.choice["main"] * &1.voting_power))
+		if total_power + soft_quorum_t > 0 do
+			1.0 * total_score / (total_power + soft_quorum_t)
+		else
+			nil
+		end
+	end
+
+	def median(contributions) do
+		contributions = contributions |> Enum.sort(&(&1.choice > &2.choice))
+		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
+		if total_power > 0 do
+			Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
+				if current_power + contribution.voting_power > total_power / 2 do
+					{:halt, 1.0 * contribution.choice}
+				else
+					{:cont, current_power + contribution.voting_power}
+				end
+			end)
+		else
+			nil
+		end
+	end
+
+	def moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do
+		if vote_weight_halving_days == nil do
+			1
+		else
+			ct = contribution.datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
+			rt = reference_datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
+			delta_days = (rt - ct) / (24 * 3600)
+
+			:math.pow(0.5, delta_days / vote_weight_halving_days)
+		end
 	end
 end

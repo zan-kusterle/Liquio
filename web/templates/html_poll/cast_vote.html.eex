@@ -2,7 +2,7 @@
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 		<input type="hidden" name="redirect" value="<%= @to_path %>" />
-		<button type="submit" name="choice" value="0.0" class="pure-button false-choice<%= if @own_vote != nil and @own_vote.data.choice == 0.0 do %> pure-button-active<% end %>">
+		<button type="submit" name="choice" value="0.0" class="pure-button false-choice<%= if @own_vote != nil and @own_vote.data.choice["main"] == 0.0 do %> pure-button-active<% end %>">
 			FALSE
 		</button>
 	</form>
@@ -18,7 +18,7 @@
 		<form action="/polls/<%= @poll.id %>/vote" method="POST" class="pure-form cast-vote">
 			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 			<input type="hidden" name="redirect" value="<%= @to_path %>" />
-			<input type="text" class="score-input" name="choice"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.choice, 10) %>"<% end %> />
+			<input type="text" class="score-input" name="choice"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.choice["main"], 10) %>"<% end %> />
 		</form>
 	<% end %>
 <% end %>
@@ -26,7 +26,7 @@
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 		<input type="hidden" name="redirect" value="<%= @to_path %>" />
-		<button type="submit" name="choice" value="1.0" class="pure-button true-choice<%= if @own_vote != nil and @own_vote.data.choice == 1.0 do %> pure-button-active<% end %>">
+		<button type="submit" name="choice" value="1.0" class="pure-button true-choice<%= if @own_vote != nil and @own_vote.data.choice["main"] == 1.0 do %> pure-button-active<% end %>">
 			TRUE
 		</button>
 	</form>

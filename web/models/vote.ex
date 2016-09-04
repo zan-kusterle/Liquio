@@ -2,8 +2,7 @@ defmodule Liquio.VoteData do
 	use Liquio.Web, :model
 
 	embedded_schema do
-		field :choice, :float
-		field :time, Timex.Ecto.DateTime
+		field :choice, {:map, :float}
 	end
 
 	def changeset(data, params) do

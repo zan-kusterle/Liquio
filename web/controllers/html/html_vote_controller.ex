@@ -36,7 +36,7 @@ defmodule Liquio.HtmlVoteController do
 				if poll.choice_type == "probability" and (choice < 0 or choice > 1) do
 					{:error, "Choice must be between 0 (0%) and 1 (100%)."}
 				else
-					Vote.set(poll, user, choice)
+					Vote.set(poll, user, %{:main => choice})
 					if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 						{:info, "Your vote is now live. Share the poll with other people."}
 					else
