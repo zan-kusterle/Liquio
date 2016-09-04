@@ -7,11 +7,7 @@ defmodule Liquio.HtmlVoteController do
 	},
 	def index(conn, %{:poll => poll, :user => user}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
-		own_vote = if poll.choice_type == "time_quantity" do
-			[%{time: 2000, choice: 1}, %{time: 2001, choice: 2}]
-		else
-			Vote.current_by(poll, user)
-		end
+		own_vote = Vote.current_by(poll, user)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("index.html",

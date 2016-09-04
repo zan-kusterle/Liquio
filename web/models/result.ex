@@ -54,9 +54,9 @@ end
 defmodule Liquio.Result do
 	use Liquio.Web, :model
 
-	alias Liquio.Repo
 	alias Liquio.CalculateResultServer
 	alias Liquio.AggregateContributions
+	alias Liquio.ResultsData
 
 	schema "results" do
 		belongs_to :poll, Liquio.Poll
@@ -72,6 +72,7 @@ defmodule Liquio.Result do
 		poll
 		|> calculate_contributions(calculate_opts)
 		|> AggregateContributions.aggregate(datetime, vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculate_opts.trust_metric_ids)
+		|> AggregateContributions.by_key("main")
 	end
 
 	def empty() do
@@ -88,8 +89,8 @@ defmodule Liquio.Result do
 		trust_metric_ids = if trust_metric_ids == nil do MapSet.new else trust_metric_ids end
 		topics = if poll.topics == nil do nil else poll.topics |> MapSet.new end
 
-		votes = get_votes(poll.id, datetime)
-		inverse_delegations = get_inverse_delegations(datetime)
+		votes = ResultsData.get_votes(poll.id, datetime)
+		inverse_delegations = ResultsData.get_inverse_delegations(datetime)
 
 		calculate_contributions_for_data(votes, inverse_delegations, trust_metric_ids, topics)
 	end
@@ -125,7 +126,7 @@ defmodule Liquio.Result do
 		contributions
 	end
 
-	def calculate_total_weights(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
+	defp calculate_total_weights(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
 		unless CalculateResultServer.visited?(uuid, identity_id) do
 			inverse_delegations |> Map.get(identity_id, [])
 			|> Enum.filter(& use_delegation?(&1, state, path))
@@ -137,7 +138,7 @@ defmodule Liquio.Result do
 		end
 	end
 
-	def get_power(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
+	defp get_power(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
 		if power = CalculateResultServer.get_power(uuid, identity_id) do
 			power
 		else
@@ -154,12 +155,16 @@ defmodule Liquio.Result do
 		end
 	end
 
-	def use_delegation?({from_identity_id, _from_weight, from_topics}, {_inverse_delegations, votes, topics, trust_identity_ids}, path) do
+	defp use_delegation?({from_identity_id, _from_weight, from_topics}, {_inverse_delegations, votes, topics, trust_identity_ids}, path) do
 		MapSet.member?(trust_identity_ids, to_string(from_identity_id)) and
 		not Map.has_key?(votes, from_identity_id) and
 		(topics == nil or from_topics == nil or not MapSet.disjoint?(topics, from_topics)) and
 		not MapSet.member?(path, from_identity_id)
 	end
+end
+
+defmodule Liquio.ResultsData do
+	alias Liquio.Repo
 
 	def get_inverse_delegations(datetime) do
 		query = "SELECT DISTINCT ON (from_identity_id, to_identity_id) from_identity_id, to_identity_id, data
@@ -198,12 +203,6 @@ defmodule Liquio.Result do
 		votes
 	end
 
-	def calculate_random(filename) do
-		{trust_identity_ids, votes, inverse_delegations} = :erlang.binary_to_term(File.read! filename)
-
-		calculate_contributions_for_data(votes, inverse_delegations, trust_identity_ids, nil)
-	end
-
 	def create_random(filename, num_identities, num_votes, num_delegations_per_identity) do
 		trust_identity_ids = Enum.to_list 1..num_identities
 		votes = get_random_votes trust_identity_ids, num_votes
@@ -213,7 +212,7 @@ defmodule Liquio.Result do
 		IO.binwrite file, :erlang.term_to_binary({trust_identity_ids |> MapSet.new, votes, inverse_delegations})
 	end
 
-	def get_random_inverse_delegations(identity_ids, num_delegations) do
+	defp get_random_inverse_delegations(identity_ids, num_delegations) do
 		for to_identity_id <- identity_ids, into: %{}, do: {to_identity_id,
 			identity_ids
 			|> Enum.slice(max(0, to_identity_id - num_delegations - 1), min(to_identity_id - 1, num_delegations))
@@ -221,7 +220,7 @@ defmodule Liquio.Result do
 		}
 	end
 
-	def get_random_votes(identity_ids, num_votes) do
+	defp get_random_votes(identity_ids, num_votes) do
 		for identity_id <- identity_ids |> Enum.take_random(num_votes), into: %{}, do: {
 			identity_id,
 			{
@@ -235,32 +234,52 @@ end
 defmodule Liquio.AggregateContributions do
 	def aggregate(contributions, datetime, vote_weight_halving_days, soft_quorum_t, choice_type, trust_metric_ids) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		contributions = contributions |> Enum.map(fn(contribution) ->
-			contribution
-			|> Map.put(:voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
+		contributions_by_key = contributions
+		|> Enum.flat_map(fn(contribution) ->
+			power = contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days)
+			Enum.map(contribution.choice, fn({key, choice}) ->
+				%{
+					:key => key,
+					:choice => choice,
+					:voting_power => power
+				}
+			end)
 		end)
+		|> Enum.group_by(& &1.key)
+		|> Enum.map(fn({key, contributions_for_key}) ->
+			mean =
+				if choice_type == "probability" do
+					mean(contributions_for_key, soft_quorum_t)
+				else
+					median(contributions_for_key)
+				end
 
-		mean = case choice_type do
-			"probability" ->
-				mean(contributions, soft_quorum_t)
-			"quantity" ->
-				median(contributions)
-			"time_quantity" ->
-				0
-		end
-
-		%{
-			:mean => mean,
-			:total => round(total_power),
-			:turnout_ratio => total_power / MapSet.size(trust_metric_ids),
-			:count => Enum.count(contributions)
-		}
+			{
+				key,
+				%{
+					:mean => mean,
+					:total => round(total_power),
+					:turnout_ratio => total_power / MapSet.size(trust_metric_ids),
+					:count => Enum.count(contributions_for_key)
+				}
+			}
+		end)
+		|> Enum.into(%{})
 	end
 
-	def mean(contributions, soft_quorum_t) do
+	def by_key(aggregations_by_key, key) do
+		Map.get(aggregations_by_key, key, %{
+			:key => nil,
+			:mean => nil,
+			:total => 0,
+			:turnout_ratio => 0,
+			:count => 0
+		})
+	end
+
+	defp mean(contributions, soft_quorum_t) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		IO.inspect contributions
-		total_score = Enum.sum(Enum.map(contributions, & &1.choice["main"] * &1.voting_power))
+		total_score = Enum.sum(Enum.map(contributions, & &1.choice * &1.voting_power))
 		if total_power + soft_quorum_t > 0 do
 			1.0 * total_score / (total_power + soft_quorum_t)
 		else
@@ -268,7 +287,7 @@ defmodule Liquio.AggregateContributions do
 		end
 	end
 
-	def median(contributions) do
+	defp median(contributions) do
 		contributions = contributions |> Enum.sort(&(&1.choice > &2.choice))
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		if total_power > 0 do
@@ -284,7 +303,7 @@ defmodule Liquio.AggregateContributions do
 		end
 	end
 
-	def moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do
+	defp moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do
 		if vote_weight_halving_days == nil do
 			1
 		else

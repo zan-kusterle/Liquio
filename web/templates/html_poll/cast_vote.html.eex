@@ -11,7 +11,8 @@
 	<form action="/polls/<%= @poll.id %>/vote" method="POST" class="pure-form cast-vote">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 		<input type="hidden" name="redirect" value="<%= @to_path %>" />
-		<textarea class="score-input" name="choice" style="height: 150px; resize: vertical;"><%= @own_vote |> Enum.map(& "#{&1.time}: #{&1.choice}") |> Enum.join("\n") %></textarea>
+		<textarea class="score-input" name="choice" style="height: 150px; resize: vertical;" placeholder="2010: 10
+2011: 12"><%= if @own_vote != nil do %><%= @own_vote.data.choice |> Enum.map(fn({k, v}) -> "#{k}: #{number_format_simple v}" end) |> Enum.join("\n") %><% end %></textarea>
 	</form>
 <% else %>
 	<%= if assigns[:allow_numeric] == nil or @allow_numeric == true do %>

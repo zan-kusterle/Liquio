@@ -6,10 +6,9 @@ defmodule Liquio.NumberFormat do
 	end
 
 	def number_format_simple(x, decimals \\ 2) do
-		s = x
+		x
 		|> :erlang.float_to_binary([:compact, {:decimals, decimals}])
 		|> String.trim_trailing(".0")
-		raw(s)
 	end
 
 	def for_choice_format(for_choice, choice_type) do
