@@ -2,7 +2,11 @@
 	<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= chart_svg_polyline @chart_points %>"></path>
 
 	<%= for {x, y} <- Enum.map(@chart_points, &to_svg_point/1) do %>
-		<circle cx="<%= x %>" cy="<%= y %>" r="8" fill="#1f8dd6"></circle>
+		<circle id="1" cx="<%= x %>" cy="<%= y %>" r="8" fill="#1f8dd6"></circle>
+
+		<text text-anchor="middle" x="<%= x %>" y="<%= y + 40 %>" font-size="24" fill="black" visibility="hidden">83
+			<set attributeName="visibility" from="hidden" to="visible" begin="1.mouseover" end="1.mouseout"/>
+		</text>
 	<% end %>
 	
 	<line x1="20" y1="120" x2="1300" y2="120" style="stroke:#aaa;stroke-width:1"></line><line x1="20" y1="120" x2="20" y2="0" style="stroke:#aaa;stroke-width:1"></line>
