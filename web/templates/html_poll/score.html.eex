@@ -1,6 +1,7 @@
 <%= if @poll.choice_type == "time_quantity" do %>
-	<%= render "chart.html", points: @poll.results |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}) %>
+	<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}) %>
 <% else %>
+	<% IO.inspect @poll.choice_type %>
 	<% has_data? = @poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @poll.results.total >= @minimum_voting_power) %>
 
 	<div class="score-box" style="background-color: <%= if has_data? do score_color(@poll) else default_score_color() end %>;">

@@ -1,61 +1,65 @@
-<svg viewBox="0 0 1060 200" class="score-by-time">
-	<%
-		xs = Enum.map(@points, & Timex.to_unix(elem(&1, 0)))
-		ys = Enum.map(@points, & elem(&1, 1))
-		ws = Enum.map(@points, & elem(&1, 2))
-		min_x = Enum.min(xs)
-		max_x = Enum.max(xs)
-		min_y = Enum.min(ys)
-		max_y = Enum.max(ys)
-
-		if min_y > 0 do
-			min_y = 0
-		end
-		if max_y < 0 do
-			max_y = 0
-		end
-		zero_y =
-			cond do
-				min_y < 0 and max_y > 0 ->
-					-min_y / (max_y - min_y)
-				max_y > 0 ->
-					0
-				min_y < 0 ->
-					1
-			end
-
-		normalized_points = Enum.map(@points, fn({x, y, w}) ->
-			nx = (Timex.to_unix(x) - min_x) / (max_x - min_x)
-			ny = (y - min_y) / (max_y - min_y)
-			{nx, ny, w, x, y}
-		end)
-	%>
-
-	<line x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" shape-rendering="crispEdges" style="stroke: #ccc; stroke-width: 1;"></line>
-
-	<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= svg_path normalized_points %>"></path>
-
-	<%= for {nx, ny, w, x, y} <- normalized_points do %>
+<%= if Enum.empty?(@points) do %>
+	<div class="chart-no-data">No data available.</div>
+<% else %>
+	<svg viewBox="0 0 1060 200" class="chart">
 		<%
-			uuid = String.to_atom(UUID.uuid4(:hex))
+			xs = Enum.map(@points, & Timex.to_unix(elem(&1, 0)))
+			ys = Enum.map(@points, & elem(&1, 1))
+			ws = Enum.map(@points, & elem(&1, 2))
+			min_x = Enum.min(xs)
+			max_x = Enum.max(xs)
+			min_y = Enum.min(ys)
+			max_y = Enum.max(ys)
 
-			rw = round(w * 10 + 5)
-
-			{tooltip_offset_mult, tooltip_alignment_baseline} =
-				if ny > 0.5 do
-					{1, "before-edge"}
-				else
-					{-1, "after-edge"}
+			if min_y > 0 do
+				min_y = 0
+			end
+			if max_y < 0 do
+				max_y = 0
+			end
+			zero_y =
+				cond do
+					min_y < 0 and max_y > 0 ->
+						-min_y / (max_y - min_y)
+					max_y > 0 ->
+						0
+					min_y < 0 ->
+						1
 				end
+
+			normalized_points = Enum.map(@points, fn({x, y, w}) ->
+				nx = (Timex.to_unix(x) - min_x) / (max_x - min_x)
+				ny = (y - min_y) / (max_y - min_y)
+				{nx, ny, w, x, y}
+			end)
 		%>
 
-		<circle id="<%= uuid %>" cx="<%= svg_x nx %>" cy="<%= svg_y ny %>" r="<%= rw %>" fill="#1f8dd6"></circle>
+		<line x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" shape-rendering="crispEdges" style="stroke: #ccc; stroke-width: 1;"></line>
 
-		<text text-anchor="middle" x="<%= svg_x nx, 40 %>" y="<%= svg_y(ny) + (rw + 4) * tooltip_offset_mult %>" fill="#333" visibility="hidden">
-			<tspan x="<%= svg_x nx, 40 %>" alignment-baseline="<%= tooltip_alignment_baseline %>" font-size="18"><%= "#{Timex.format!(x, "{D}/{M}/{YYYY}")}" %></tspan>
-			<tspan x="<%= svg_x nx, 40 %>" alignment-baseline="<%= tooltip_alignment_baseline %>" dy="<%= 20 * tooltip_offset_mult %>" font-size="22"><%= "#{number_format_simple y}" %></tspan>
-			
-			<set attributeName="visibility" from="hidden" to="visible" begin="<%= uuid %>.mouseover" end="<%= uuid %>.mouseout"/>
-		</text>
-	<% end %>
-</svg>
+		<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= svg_path normalized_points %>"></path>
+
+		<%= for {nx, ny, w, x, y} <- normalized_points do %>
+			<%
+				uuid = String.to_atom(UUID.uuid4(:hex))
+
+				rw = round(w * 10 + 5)
+
+				{tooltip_offset_mult, tooltip_alignment_baseline} =
+					if ny > 0.5 do
+						{1, "before-edge"}
+					else
+						{-1, "after-edge"}
+					end
+			%>
+
+			<circle id="<%= uuid %>" cx="<%= svg_x nx %>" cy="<%= svg_y ny %>" r="<%= rw %>" fill="#1f8dd6"></circle>
+
+			<text text-anchor="middle" x="<%= svg_x nx, 40 %>" y="<%= svg_y(ny) + (rw + 4) * tooltip_offset_mult %>" fill="#333" visibility="hidden">
+				<tspan x="<%= svg_x nx, 40 %>" alignment-baseline="<%= tooltip_alignment_baseline %>" font-size="18"><%= "#{Timex.format!(x, "{D}/{M}/{YYYY}")}" %></tspan>
+				<tspan x="<%= svg_x nx, 40 %>" alignment-baseline="<%= tooltip_alignment_baseline %>" dy="<%= 20 * tooltip_offset_mult %>" font-size="22"><%= "#{number_format_simple y}" %></tspan>
+				
+				<set attributeName="visibility" from="hidden" to="visible" begin="<%= uuid %>.mouseover" end="<%= uuid %>.mouseout"/>
+			</text>
+		<% end %>
+	</svg>
+<% end %>

@@ -1,22 +1,24 @@
-<% has_data? = @reference.reference_poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @reference.reference_poll.results.total >= @minimum_voting_power)  %>
+<% poll = @reference.reference_poll %>
 
-<a href="/polls/<%= @reference.reference_poll.id %>" class="reference-a">
+<a href="/polls/<%= poll.id %>" class="reference-a">
 	<div class="reference">
 		<p class="reference-text">
 			<%= if assigns[:for_choice] do %>
 				<span class="for-choice-text"><%= number_format(@for_choice) %></span>
 			<% end %>
-			<%= raw(@reference.reference_poll.title) %>
-		</p><div class="reference-score" style="background-color: <%= if has_data? do score_color(@reference.reference_poll) else default_score_color() end %>;">
-			<%= if has_data? do %>
-				<%= if @reference.reference_poll.choice_type == "probability" do %>
-					<%= round(@reference.reference_poll.results.mean * 100) %>%
+			<%= poll.title %>
+		</p><%= if poll.choice_type == "time_quantity" do %><div class="reference-score" style="background-color: <%= default_score_color %>;">graph</div>
+		<% else %><% has_data? = poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or poll.results.total >= @minimum_voting_power) %><div class="reference-score" style="background-color: <%= if has_data? do score_color(poll) else default_score_color() end %>;">
+				<%= if has_data? do %>
+					<%= if poll.choice_type == "probability" do %>
+						<%= round(poll.results.mean * 100) %>%
+					<% else %>
+						<%= number_format(poll.results.mean) %>
+					<% end %>
 				<% else %>
-					<%= number_format(@reference.reference_poll.results.mean) %>
+					?
 				<% end %>
-			<% else %>
-				?
-			<% end %>
-		</div>
+			</div>
+		<% end %>
 	</div>
 </a>

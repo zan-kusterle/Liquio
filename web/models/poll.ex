@@ -124,15 +124,16 @@ defmodule Liquio.Poll do
 		|> AggregateContributions.aggregate(calculation_opts.datetime, calculation_opts.vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculation_opts.trust_metric_ids)
 
 		if poll.choice_type == "time_quantity" do
-			Enum.map(results, fn({time_key, time_results}) ->
+			results_with_datetime = Enum.map(results.by_keys, fn({time_key, time_results}) ->
 				{year, ""} = Integer.parse(time_key)
 				%{
 					:datetime => Timex.to_date({year, 1, 1}),
 					:results => time_results
 				}
 			end)
+			results |> Map.put(:by_datetime, results_with_datetime)
 		else
-			AggregateContributions.by_key(results, "main")
+			AggregateContributions.by_key(results.by_keys, "main")
 		end
 	end
 
