@@ -46,8 +46,4 @@ defmodule Liquio.HtmlPollView do
 		margin = 15
 		round((1 - y) * (height - 2 * margin) + margin)
 	end
-
-	def to_svg_point({x, y}) do
-		{round(x * 1180 + 30), round((1 - y) * 100 + 10)}
-	end
 end
