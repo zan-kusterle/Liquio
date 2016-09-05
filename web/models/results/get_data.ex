@@ -47,7 +47,7 @@ defmodule Liquio.Results.GetData do
 		IO.binwrite file, :erlang.term_to_binary({trust_identity_ids |> MapSet.new, votes, inverse_delegations})
 	end
 
-	defp get_random_inverse_delegations(identity_ids, num_delegations) do
+	def get_random_inverse_delegations(identity_ids, num_delegations) do
 		for to_identity_id <- identity_ids, into: %{}, do: {to_identity_id,
 			identity_ids
 			|> Enum.slice(max(0, to_identity_id - num_delegations - 1), min(to_identity_id - 1, num_delegations))
@@ -55,7 +55,7 @@ defmodule Liquio.Results.GetData do
 		}
 	end
 
-	defp get_random_votes(identity_ids, num_votes) do
+	def get_random_votes(identity_ids, num_votes) do
 		for identity_id <- identity_ids |> Enum.take_random(num_votes), into: %{}, do: {
 			identity_id,
 			{
