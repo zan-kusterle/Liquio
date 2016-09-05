@@ -280,7 +280,7 @@ defmodule Liquio.HtmlIdentityController do
 
 				[
 					prepare_poll(reference.poll, %{:references => references}),
-					prepare_poll(reference.reference_poll, %{:references => reference_poll_references, :approval_score => poll.choice})
+					prepare_poll(reference.reference_poll, %{:references => reference_poll_references, :approval_score => poll.choice["main"]})
 				]
 			_ ->
 				[prepare_poll(poll, %{})]
