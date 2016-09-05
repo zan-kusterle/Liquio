@@ -1,16 +1,20 @@
-<% has_data? = @poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @poll.results.total >= @minimum_voting_power) %>
+<%= if @poll.choice_type == "time_quantity" do %>
+	<%= render "chart.html", points: @poll.results |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}) %>
+<% else %>
+	<% has_data? = @poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @poll.results.total >= @minimum_voting_power) %>
 
-<div class="score-box" style="background-color: <%= if has_data? do score_color(@poll) else default_score_color() end %>;">
-	<div class="number">
-		<%= if has_data? do %>
-			<%= if @poll.choice_type == "probability" do %>
-				<%= round(@poll.results.mean * 100) %><span class="percent">%</span>
+	<div class="score-box" style="background-color: <%= if has_data? do score_color(@poll) else default_score_color() end %>;">
+		<div class="number">
+			<%= if has_data? do %>
+				<%= if @poll.choice_type == "probability" do %>
+					<%= round(@poll.results.mean * 100) %><span class="percent">%</span>
+				<% else %>
+					<%= number_format(@poll.results.mean) %>
+				<% end %>
 			<% else %>
-				<%= number_format(@poll.results.mean) %>
+				?
 			<% end %>
-		<% else %>
-			?
-		<% end %>
+		</div>
+		<div class="subtext"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</div>
 	</div>
-	<div class="subtext"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</div>
-</div>
+<% end %>

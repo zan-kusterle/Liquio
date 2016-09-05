@@ -9,7 +9,26 @@
 		max_y = Enum.max(ys)
 		min_w = Enum.min(ws)
 		max_w = Enum.max(ws)
+
+		if min_y > 0 do
+			min_y = 0
+		end
+		if max_y < 0 do
+			max_y = 0
+		end
+		zero_y =
+			cond do
+				min_y < 0 and max_y > 0 ->
+					-min_y / (max_y - min_y)
+				max_y > 0 ->
+					0
+				min_y < 0 ->
+					1
+			end
 	%>
+
+	<line x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" shape-rendering="crispEdges" style="stroke: #ccc; stroke-width: 1;"></line>
+
 	<%= for {x, y, w} <- @points do %>
 		<%
 			nx = (Timex.to_unix(x) - min_x) / (max_x - min_x)
@@ -17,20 +36,21 @@
 			nw = if min_w == max_w do 1 else (w - min_w) / (max_w - min_w) end
 			uuid = String.to_atom(UUID.uuid4(:hex))
 
-			rx = nx * 1000 + 30
-			ry = (1 - ny) * 140 + 30
-			rw = nw * 8 + 4
+			tooltip_offset =
+				if ny > 0.5 do
+					40
+				else
+					-40
+				end
 		%>
 
-		<circle id="<%= uuid %>" cx="<%= rx %>" cy="<%= ry %>" r="<%= rw %>" fill="#1f8dd6"></circle>
+		<circle id="<%= uuid %>" cx="<%= svg_x nx %>" cy="<%= svg_y ny %>" r="<%= nw * 8 + 4 %>" fill="#1f8dd6"></circle>
 
-		<text text-anchor="middle" x="<%= rx %>" y="<%= ry + 40 %>" fill="#333" visibility="hidden">
-			<tspan x="<%= rx %>" dy="0em" font-size="18"><%= "#{Timex.format!(x, "{D}/{M}/{YYYY}")}" %></tspan>
-			<tspan x="<%= rx %>" dy="1.4em" font-size="22"><%= "#{number_format_simple y}" %></tspan>
+		<text text-anchor="middle" x="<%= svg_x nx, 40 %>" y="<%= svg_y(ny) + tooltip_offset %>" fill="#333" visibility="hidden">
+			<tspan x="<%= svg_x nx, 40 %>" dy="0" font-size="18"><%= "#{Timex.format!(x, "{D}/{M}/{YYYY}")}" %></tspan>
+			<tspan x="<%= svg_x nx, 40 %>" dy="20" font-size="22"><%= "#{number_format_simple y}" %></tspan>
 			
 			<set attributeName="visibility" from="hidden" to="visible" begin="<%= uuid %>.mouseover" end="<%= uuid %>.mouseout"/>
 		</text>
 	<% end %>
-
-	<line x1="0" y1="200" x2="1060" y2="200" style="stroke:#aaa;stroke-width:1"></line>
 </svg>

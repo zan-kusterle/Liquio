@@ -1,6 +1,6 @@
 defmodule Liquio.HtmlPollController do
 	use Liquio.Web, :controller
-	
+
 	def new(conn, _) do
 		conn
 		|> render("new.html")
@@ -51,8 +51,7 @@ defmodule Liquio.HtmlPollController do
 			title: poll.title,
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
 			poll: prepare_poll(poll, calculation_opts),
-			contributions: prepare_contributions(poll, calculation_opts),
-			chart_points: prepare_chart_points(poll, 30, calculation_opts))
+			contributions: prepare_contributions(poll, calculation_opts))
 	end)
 
 	plug :put_layout, "minimal.html" when action in [:embed]
@@ -82,36 +81,5 @@ defmodule Liquio.HtmlPollController do
 		poll |> Poll.calculate_contributions(calculate_opts) |> Enum.map(fn(contribution) ->
 			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
 		end)
-	end
-
-	defp prepare_chart_points(poll, num_units, calculate_opts) do
-		results_with_datetime = Enum.map(0..num_units, fn(shift_units) ->
-			datetime = Timex.shift(calculate_opts[:datetime], days: -shift_units)
-			{
-				num_units - shift_units,
-				datetime,
-				Poll.calculate(poll, Map.put(calculate_opts, :datetime, datetime))
-			}
-		end)
-
-		count = Enum.count(results_with_datetime)
-		means = results_with_datetime
-		|> Enum.map(fn({_index, _datetime, results}) -> results.mean end)
-		|> Enum.filter(& &1 != nil)
-		max_mean = if Enum.empty?(means) do
-			1
-		else
-			Enum.max([1, Enum.max(means)])
-		end
-		points = Enum.map(results_with_datetime, fn({index, _datetime, results}) ->
-			if results.mean do
-				{index / (count - 1), results.mean / max_mean}
-			else
-				nil
-			end
-		end)
-		|> Enum.filter(& &1 != nil)
-
-		Enum.reverse(points)
 	end
 end
