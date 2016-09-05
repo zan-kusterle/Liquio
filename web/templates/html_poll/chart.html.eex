@@ -7,8 +7,6 @@
 		max_x = Enum.max(xs)
 		min_y = Enum.min(ys)
 		max_y = Enum.max(ys)
-		min_w = Enum.min(ws)
-		max_w = Enum.max(ws)
 
 		if min_y > 0 do
 			min_y = 0
@@ -31,24 +29,26 @@
 
 	<%= for {x, y, w} <- @points do %>
 		<%
-			nx = (Timex.to_unix(x) - min_x) / (max_x - min_x)
-			ny = (y - min_y) / (max_y - min_y)
-			nw = if min_w == max_w do 1 else (w - min_w) / (max_w - min_w) end
 			uuid = String.to_atom(UUID.uuid4(:hex))
 
-			tooltip_offset =
+			nx = (Timex.to_unix(x) - min_x) / (max_x - min_x)
+			ny = (y - min_y) / (max_y - min_y)
+
+			rw = round(w * 10 + 5)
+
+			{tooltip_offset_mult, tooltip_alignment_baseline} =
 				if ny > 0.5 do
-					40
+					{1, "before-edge"}
 				else
-					-40
+					{-1, "after-edge"}
 				end
 		%>
 
-		<circle id="<%= uuid %>" cx="<%= svg_x nx %>" cy="<%= svg_y ny %>" r="<%= nw * 8 + 4 %>" fill="#1f8dd6"></circle>
+		<circle id="<%= uuid %>" cx="<%= svg_x nx %>" cy="<%= svg_y ny %>" r="<%= rw %>" fill="#1f8dd6"></circle>
 
-		<text text-anchor="middle" x="<%= svg_x nx, 40 %>" y="<%= svg_y(ny) + tooltip_offset %>" fill="#333" visibility="hidden">
-			<tspan x="<%= svg_x nx, 40 %>" dy="0" font-size="18"><%= "#{Timex.format!(x, "{D}/{M}/{YYYY}")}" %></tspan>
-			<tspan x="<%= svg_x nx, 40 %>" dy="20" font-size="22"><%= "#{number_format_simple y}" %></tspan>
+		<text text-anchor="middle" x="<%= svg_x nx, 40 %>" y="<%= svg_y(ny) + (rw + 4) * tooltip_offset_mult %>" fill="#333" visibility="hidden">
+			<tspan x="<%= svg_x nx, 40 %>" alignment-baseline="<%= tooltip_alignment_baseline %>" font-size="18"><%= "#{Timex.format!(x, "{D}/{M}/{YYYY}")}" %></tspan>
+			<tspan x="<%= svg_x nx, 40 %>" alignment-baseline="<%= tooltip_alignment_baseline %>" dy="<%= 20 * tooltip_offset_mult %>" font-size="22"><%= "#{number_format_simple y}" %></tspan>
 			
 			<set attributeName="visibility" from="hidden" to="visible" begin="<%= uuid %>.mouseover" end="<%= uuid %>.mouseout"/>
 		</text>
