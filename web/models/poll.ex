@@ -118,26 +118,31 @@ defmodule Liquio.Poll do
 	end
 
 	def calculate(poll, calculation_opts) do
-		%{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :soft_quorum_t => soft_quorum_t, :vote_weight_halving_days => vote_weight_halving_days} = calculation_opts
-		soft_quorum_t = if poll.kind == "custom" do 0 else soft_quorum_t end
-		topics = if poll.topics == nil do nil else MapSet.new(poll.topics) end
+		soft_quorum_t = if poll.kind == "custom" do 0 else calculation_opts.soft_quorum_t end
 
-		votes = GetData.get_votes(poll.id, datetime)
-		inverse_delegations = GetData.get_inverse_delegations(datetime)
-		
-		CalculateContributions.calculate(votes, inverse_delegations, trust_metric_ids, topics)
-		|> AggregateContributions.aggregate(datetime, vote_weight_halving_days, soft_quorum_t, poll.choice_type, trust_metric_ids)
-		|> AggregateContributions.by_key("main")
+		results = Poll.calculate_contributions(poll, calculation_opts)
+		|> AggregateContributions.aggregate(calculation_opts.datetime, calculation_opts.vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculation_opts.trust_metric_ids)
+
+		if poll.choice_type == "time_quantity" do
+			Enum.map(results, fn({time_key, time_results}) ->
+				{year, ""} = Integer.parse(time_key)
+				%{
+					:datetime => Timex.to_date({year, 1, 1}),
+					:results => time_results
+				}
+			end)
+		else
+			AggregateContributions.by_key(results, "main")
+		end
 	end
 
 	def calculate_contributions(poll, calculation_opts) do
-		%{:datetime => datetime, :trust_metric_ids => trust_metric_ids} = calculation_opts
 		topics = if poll.topics == nil do nil else MapSet.new(poll.topics) end
 
-		votes = GetData.get_votes(poll.id, datetime)
-		inverse_delegations = GetData.get_inverse_delegations(datetime)
+		votes = GetData.get_votes(poll.id, calculation_opts.datetime)
+		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 
-		CalculateContributions.calculate(votes, inverse_delegations, trust_metric_ids, topics)
+		CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, topics)
 	end
 
 	def empty_result() do

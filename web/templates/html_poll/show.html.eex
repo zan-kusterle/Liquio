@@ -9,12 +9,12 @@
 <h1 class="title"><%= @poll.title %></h1>
 
 <div class="score-container">
-	<%= render "score.html", poll: @poll, minimum_voting_power: @minimum_voting_power %>
+	<%= if @poll.choice_type == "time_quantity" do %>
+		<%= render "chart.html", points: @poll.results |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}) %>
+	<% else %>
+		<%= render "score.html", poll: @poll, minimum_voting_power: @minimum_voting_power %>
+	<% end %>
 </div>
-
-<%= if @poll.choice_type == "time_quantity" do %>
-	<%= render "chart.html", chart_points: [] %>
-<% end %>
 
 <div class="links">
 	<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-pie-chart" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>

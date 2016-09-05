@@ -1,6 +1,6 @@
 defmodule Liquio.HtmlPollController do
 	use Liquio.Web, :controller
-
+	
 	def new(conn, _) do
 		conn
 		|> render("new.html")
