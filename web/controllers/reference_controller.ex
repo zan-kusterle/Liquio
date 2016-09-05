@@ -25,7 +25,7 @@ defmodule Liquio.ReferenceController do
 		reference = poll
 		|> Reference.get(reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
-		results = Result.calculate(reference.approval_poll, get_calculation_opts_from_conn(conn))
+		results = Poll.calculate(reference.approval_poll, get_calculation_opts_from_conn(conn))
 		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 		conn
 		|> render("show.json", reference: reference)

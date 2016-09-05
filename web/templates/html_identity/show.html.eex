@@ -37,7 +37,7 @@
 				Trust metric URL
 			</div>
 			<div class="pure-u-1 pure-u-md-3-4 value">
-				<input type="url" name="trust_metric_url" value="<%= @identity.trust_metric_url %>" placeholder="<%= @default_trust_metric_url %>" />
+				<input type="url" name="trust_metric_url" value="<%= @calculation_opts.trust_metric_url %>" />
 			</div>
 
 			<div class="pure-u-1 pure-u-md-1-4 name">

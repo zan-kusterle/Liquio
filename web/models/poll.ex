@@ -6,6 +6,9 @@ defmodule Liquio.Poll do
 	alias Liquio.Vote
 	alias Liquio.Reference
 	alias Liquio.Identity
+	alias Liquio.Results.GetData
+	alias Liquio.Results.CalculateContributions
+	alias Liquio.Results.AggregateContributions
 
 	schema "polls" do
 		field :kind, :string
@@ -113,5 +116,32 @@ defmodule Liquio.Poll do
 		query
 		|> Repo.all()
 		|> List.first
+	end
+
+	def calculate(poll, calculation_opts) do
+		%{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :soft_quorum_t => soft_quorum_t, :vote_weight_halving_days => vote_weight_halving_days} = calculation_opts
+		soft_quorum_t = if poll.kind == "custom" do 0 else soft_quorum_t end
+		topics = if poll.topics == nil do nil else MapSet.new(poll.topics) end
+
+		votes = GetData.get_votes(poll.id, datetime)
+		inverse_delegations = GetData.get_inverse_delegations(datetime)
+		
+		CalculateContributions.calculate(votes, inverse_delegations, trust_metric_ids, topics)
+		|> AggregateContributions.aggregate(datetime, vote_weight_halving_days, soft_quorum_t, poll.choice_type, trust_metric_ids)
+		|> AggregateContributions.by_key("main")
+	end
+
+	def calculate_contributions(poll, calculation_opts) do
+		%{:datetime => datetime, :trust_metric_ids => trust_metric_ids} = calculation_opts
+		topics = if poll.topics == nil do nil else MapSet.new(poll.topics) end
+
+		votes = GetData.get_votes(poll.id, datetime)
+		inverse_delegations = GetData.get_inverse_delegations(datetime)
+
+		CalculateContributions.calculate(votes, inverse_delegations, trust_metric_ids, topics)
+	end
+
+	def empty_result() do
+		AggregateContributions.empty()
 	end
 end

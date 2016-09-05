@@ -4,7 +4,6 @@ defmodule Liquio.Reference do
 	alias Liquio.Repo
 	alias Liquio.Reference
 	alias Liquio.Poll
-	alias Liquio.Result
 
 	schema "references" do
 		belongs_to :poll, Poll
@@ -43,11 +42,11 @@ defmodule Liquio.Reference do
 		|> Repo.all
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
 		|> Enum.filter(fn(reference) ->
-			approval_result = Result.calculate(reference.approval_poll, calculation_opts)
+			approval_result = Poll.calculate(reference.approval_poll, calculation_opts)
 			approval_result.total > 0 and approval_result.mean >= calculation_opts[:minimum_reference_approval_score]
 		end)
 		|> Enum.map(fn(reference) ->
-			results = Result.calculate(reference.reference_poll, calculation_opts)
+			results = Poll.calculate(reference.reference_poll, calculation_opts)
 			Map.put(reference, :reference_poll, Map.put(reference.reference_poll, :results, results))
 		end)
 		|> Enum.sort(&(&1.reference_poll.results.total > &2.reference_poll.results.total))
@@ -59,11 +58,11 @@ defmodule Liquio.Reference do
 		|> Repo.all
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
 		|> Enum.filter(fn(reference) ->
-			approval_result = Result.calculate(reference.approval_poll, calculation_opts)
+			approval_result = Poll.calculate(reference.approval_poll, calculation_opts)
 			approval_result.total > 0 and approval_result.mean >= calculation_opts[:minimum_reference_approval_score]
 		end)
 		|> Enum.map(fn(reference) ->
-			results = Result.calculate(reference.poll, calculation_opts)
+			results = Poll.calculate(reference.poll, calculation_opts)
 			Map.put(reference, :poll, Map.put(reference.poll, :results, results))
 		end)
 		|> Enum.sort(&(&1.poll.results.total > &2.poll.results.total))

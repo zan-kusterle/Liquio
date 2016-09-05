@@ -13,7 +13,7 @@ defmodule Liquio.HtmlVoteController do
 		|> render("index.html",
 			title: poll.title || "Liquio",
 			poll: poll
-				|> Map.put(:results, Result.calculate(poll, calculation_opts)),
+				|> Map.put(:results, Poll.calculate(poll, calculation_opts)),
 			references:  Reference.for_poll(poll, calculation_opts),
 			own_vote: own_vote,
 			minimum_voting_power: calculation_opts.minimum_voting_power)

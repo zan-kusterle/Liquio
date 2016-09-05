@@ -24,7 +24,7 @@ defmodule Liquio.HtmlReferenceController do
 		reference = poll
 		|> Reference.get(reference_poll, for_choice)
 		|> Repo.preload([:approval_poll, :reference_poll, :poll])
-		results = Result.calculate(reference.approval_poll, calculation_opts)
+		results = Poll.calculate(reference.approval_poll, calculation_opts)
 		reference = Map.put(reference, :approval_poll, Map.put(reference.approval_poll, :results, results))
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")

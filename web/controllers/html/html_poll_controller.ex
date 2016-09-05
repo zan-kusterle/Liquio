@@ -74,7 +74,7 @@ defmodule Liquio.HtmlPollController do
 
 	defp prepare_poll(poll, calculate_opts) do
 		poll
-		|> Map.put(:results, Result.calculate(poll, calculate_opts))
+		|> Map.put(:results, Poll.calculate(poll, calculate_opts))
 	end
 
 	defp prepare_references(poll, calculate_opts) do
@@ -82,7 +82,7 @@ defmodule Liquio.HtmlPollController do
 	end
 
 	defp prepare_contributions(poll, calculate_opts) do
-		poll |> Result.calculate_contributions(calculate_opts) |> Enum.map(fn(contribution) ->
+		poll |> Poll.calculate_contributions(calculate_opts) |> Enum.map(fn(contribution) ->
 			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
 		end)
 	end
@@ -93,7 +93,7 @@ defmodule Liquio.HtmlPollController do
 			{
 				num_units - shift_units,
 				datetime,
-				Result.calculate(poll, Map.put(calculate_opts, :datetime, datetime))
+				Poll.calculate(poll, Map.put(calculate_opts, :datetime, datetime))
 			}
 		end)
 

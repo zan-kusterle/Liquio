@@ -6,7 +6,7 @@ defmodule Liquio.PollController do
 		changeset = Poll.changeset(%Poll{}, params)
 		case Poll.create(changeset) do
 			{:ok, poll} ->
-				poll = Map.put(poll, :results, Result.empty())
+				poll = Map.put(poll, :results, Poll.empty_result())
 				conn
 				|> put_status(:created)
 				|> put_resp_header("location", poll_path(conn, :show, poll))
@@ -25,7 +25,7 @@ defmodule Liquio.PollController do
 		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url"]},
 	},
 	def show(conn, %{:poll => poll}) do
-		results = Result.calculate(poll, get_calculation_opts_from_conn(conn))
+		results = Poll.calculate(poll, get_calculation_opts_from_conn(conn))
 		conn
 		|> render("show.json", poll: poll |> Map.put(:results, results))
 	end)
@@ -37,7 +37,7 @@ defmodule Liquio.PollController do
 	},
 	def contributions(conn, %{:poll => poll}) do
 		contributions = poll
-		|> Result.calculate_contributions(get_calculation_opts_from_conn(conn))
+		|> Poll.calculate_contributions(get_calculation_opts_from_conn(conn))
 		|> Enum.map(fn(contribution) ->
 			%{
 				:datetime => Timex.format!(contribution.datetime, "{ISO}"),
