@@ -40,16 +40,19 @@
 <div class="area" style="background: <%= score_color(@poll) %>;">
 	<div class="bubble">
 		<p>
-			<%= if @poll.results.mean != nil do %>
-				<%= if @poll.choice_type == "probability" do %>
-					<%= round(@poll.results.mean * 100) %>%
-				<% else %>
-					<%= number_format(@poll.results.mean) %>
-				<% end %>
+			<%= if @poll.choice_type == "time_quantity" do %>
 			<% else %>
-				?
+				<%= if @poll.results.mean != nil do %>
+					<%= if @poll.choice_type == "probability" do %>
+						<%= round(@poll.results.mean * 100) %>%
+					<% else %>
+						<%= number_format(@poll.results.mean) %>
+					<% end %>
+				<% else %>
+					?
+				<% end %>
+				<br>
 			<% end %>
-			<br>
 			<span class="turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</span>
 		</p>
 	</div>
