@@ -23,16 +23,21 @@
 				min_y < 0 ->
 					1
 			end
+
+		normalized_points = Enum.map(@points, fn({x, y, w}) ->
+			nx = (Timex.to_unix(x) - min_x) / (max_x - min_x)
+			ny = (y - min_y) / (max_y - min_y)
+			{nx, ny, w, x, y}
+		end)
 	%>
 
 	<line x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" shape-rendering="crispEdges" style="stroke: #ccc; stroke-width: 1;"></line>
 
-	<%= for {x, y, w} <- @points do %>
+	<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= svg_path normalized_points %>"></path>
+
+	<%= for {nx, ny, w, x, y} <- normalized_points do %>
 		<%
 			uuid = String.to_atom(UUID.uuid4(:hex))
-
-			nx = (Timex.to_unix(x) - min_x) / (max_x - min_x)
-			ny = (y - min_y) / (max_y - min_y)
 
 			rw = round(w * 10 + 5)
 

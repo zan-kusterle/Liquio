@@ -19,13 +19,13 @@ defmodule Liquio.HtmlPollView do
 		"#ddd"
 	end
 
-	def chart_svg_polyline(points) do
+	def svg_path(points) do
 		Enum.map_join(Enum.zip([nil] ++ points, points), " ", fn({previous_point, point}) ->
 			if point == nil do
 				""
 			else
-				(if previous_point == nil do "M" else "L" end) <>
-				(point |> to_svg_point |> Tuple.to_list |> Enum.join(","))
+				{x, y, _, _, _} = point
+				(if previous_point == nil do "M" else "L" end) <> "#{svg_x x},#{svg_y y}"
 			end
 		end)
 	end
