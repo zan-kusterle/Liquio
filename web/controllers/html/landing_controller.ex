@@ -26,19 +26,19 @@ defmodule Liquio.LandingController do
 				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"])
 				|> Map.put(:fa_icon, "sun-o"),
 				references: [%{
-					poll: Poll.force_get("time_quantity", "earth sea level", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth sea level yearly differences in cm", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "earth temperature", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth temperature in ℃", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "earth ocean temperature", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth ocean temperature in ℃", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "earth ice volume", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth ice volume yearly differences in m³", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
@@ -58,7 +58,7 @@ defmodule Liquio.LandingController do
 					for_choice: 0.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "artic ice volume", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "artic ice volume yearly differences in m³", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					range: {2012, 2016},
 					references: []
@@ -104,7 +104,7 @@ defmodule Liquio.LandingController do
 
 		current_vote = Vote.current_by(reference.approval_poll, identity)
 		if current_vote == nil do
-			Vote.set(reference.approval_poll, identity, 1.0)
+			Vote.set(reference.approval_poll, identity, %{:main => 1.0})
 		end
 	end
 end

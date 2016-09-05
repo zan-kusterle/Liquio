@@ -27,24 +27,6 @@
 		</label>
 	</div>
 
-	<label for="choice_unit" class="pure-u-1 pure-u-sm-1-6 row-label">Unit</label>
-	<div class="pure-u-1 pure-u-sm-5-6 row-input">
-		<input id="choice_unit" type="text" name="choice_unit" />
-	</div>
-
-	<label for="time_unit" class="pure-u-1 pure-u-sm-1-6 row-label">Time unit</label>
-	<div class="pure-u-1 pure-u-sm-5-6 row-input">
-		<select id="time_unit" name="time_unit">
-			<option value="day">day</option>
-			<option value="month">month</option>
-			<option value="year">year</option>
-		</select>
-		<label for="is_choice_time_difference" class="pure-checkbox">
-			<input id="is_choice_time_difference" type="checkbox" name="is_choice_time_difference" value="1">
-			Choice represents relative difference since previous time unit
-		</label>
-	</div>
-
 	<div class="pure-u-sm-1-6"></div>
 	<div class="pure-u-1 pure-u-sm-5-6 row-input create">
 		<button type="submit" class="pure-button pure-button-primary">Create</button>

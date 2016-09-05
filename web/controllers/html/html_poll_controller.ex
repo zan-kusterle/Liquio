@@ -9,13 +9,10 @@ defmodule Liquio.HtmlPollController do
 	with_params(%{
 		:title => {Plugs.StringParam, [name: "title"]},
 		:topics => {Plugs.ListParam, [name: "topics", maybe: true, item: {Plugs.StringParam, [downcase: true]}]},
-		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity", "time_quantity"]]},
-		:choice_unit => {Plugs.StringParam, [name: "choice_unit", maybe: true]},
-		:time_unit => {Plugs.EnumParam, [name: "time_unit", maybe: true, values: ["year", "month", "week", "day"]]},
-		:is_choice_time_difference => {Plugs.BooleanParam, [name: "is_choice_time_difference"]},
+		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity", "time_quantity"]]}
 	},
-	def create(conn, %{:title => title, :topics => topics, :choice_type => choice_type, :choice_unit => choice_unit, :time_unit => time_unit, :is_choice_time_difference => is_choice_time_difference}) do
-		poll = Poll.create(choice_type, title, topics, choice_unit, time_unit, is_choice_time_difference)
+	def create(conn, %{:title => title, :topics => topics, :choice_type => choice_type}) do
+		poll = Poll.create(choice_type, title, topics)
 		conn
 		|> put_flash(:info, "Done, share the url so others can vote")
 		|> redirect(to: html_poll_path(conn, :show, poll.id))

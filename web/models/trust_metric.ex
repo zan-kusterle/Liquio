@@ -17,7 +17,7 @@ defmodule Liquio.TrustMetric do
 	def get!(url) do
 		case get(url) do
 			{:ok, ids} -> ids
-			_ -> []
+			_ -> MapSet.new
 		end
 	end
 

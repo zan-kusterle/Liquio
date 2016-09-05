@@ -13,9 +13,6 @@ defmodule Liquio.Poll do
 	schema "polls" do
 		field :kind, :string
 		field :choice_type, :string
-		field :choice_unit, :string
-		field :time_unit, :string
-		field :is_choice_time_difference, :boolean
 		field :title, :string
 		field :topics, {:array, :string}
 
@@ -32,7 +29,7 @@ defmodule Liquio.Poll do
 				params
 			end
 		data
-		|> cast(params, ["choice_type", "choice_unit", "time_unit", "title", "topics"])
+		|> cast(params, ["choice_type", "title", "topics"])
 		|> validate_required(:title)
 		|> validate_required(:choice_type)
 		|> validate_required(:topics)
@@ -43,13 +40,10 @@ defmodule Liquio.Poll do
 		Repo.insert(changeset)
 	end
 
-	def create(choice_type, title, topics, choice_unit, time_unit, is_choice_time_difference) do
+	def create(choice_type, title, topics) do
 		Repo.insert!(%Poll{
 			:kind => "custom",
 			:choice_type => choice_type,
-			:choice_unit => choice_unit,
-			:time_unit => time_unit,
-			:is_choice_time_difference => is_choice_time_difference,
 			:title => capitalize_title(title),
 			:topics => topics,
 		})
@@ -91,7 +85,7 @@ defmodule Liquio.Poll do
 			cond do
 				is_acronymn(word) ->
 					word
-				String.downcase(word) in ["a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "up", "and", "as", "but", "or", "nor"] ->
+				String.downcase(word) in ["a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "up", "and", "as", "but", "or", "nor"] or is_unit(String.downcase(word)) ->
 					String.downcase(word)
 				true ->
 					String.capitalize(word)
@@ -103,6 +97,11 @@ defmodule Liquio.Poll do
 
 	defp is_acronymn(w) do
 		w == String.upcase(w) and String.length(w) >= 2
+	end
+
+	def is_unit(w) do
+		# TODO: also check if previous word is "in"
+		String.length(w) <= 2
 	end
 
 	def is_custom(poll) do poll.kind == "custom" end
