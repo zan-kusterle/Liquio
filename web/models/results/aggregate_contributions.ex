@@ -5,23 +5,31 @@ defmodule Liquio.Results.AggregateContributions do
 
 		by_keys = contributions
 		|> Enum.flat_map(fn(contribution) ->
-			power = contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days)
 			Enum.map(contribution.choice, fn({key, choice}) ->
 				%{
 					:key => key,
 					:choice => choice,
-					:voting_power => power
+					:voting_power => contribution.voting_power
 				}
 			end)
 		end)
 		|> Enum.group_by(& &1.key)
 		|> Enum.map(fn({key, contributions_for_key}) ->
 			key_total_power = Enum.sum(Enum.map(contributions_for_key, & &1.voting_power))
+
+			adjusted_contributions =
+				if vote_weight_halving_days == nil do
+					contributions_for_key
+				else
+					contributions_for_key |> Enum.map(fn(contribution) ->
+						Map.put(contribution, :voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
+					end)
+				end
 			mean =
 				if choice_type == "probability" do
-					mean(contributions_for_key, soft_quorum_t)
+					mean(adjusted_contributions, soft_quorum_t)
 				else
-					median(contributions_for_key)
+					median(adjusted_contributions)
 				end
 
 			{
@@ -84,14 +92,10 @@ defmodule Liquio.Results.AggregateContributions do
 	end
 
 	defp moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do
-		if vote_weight_halving_days == nil do
-			1
-		else
-			ct = contribution.datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
-			rt = reference_datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
-			delta_days = (rt - ct) / (24 * 3600)
+		ct = contribution.datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
+		rt = reference_datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
+		delta_days = (rt - ct) / (24 * 3600)
 
-			:math.pow(0.5, delta_days / vote_weight_halving_days)
-		end
+		:math.pow(0.5, delta_days / vote_weight_halving_days)
 	end
 end
