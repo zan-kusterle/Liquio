@@ -8,7 +8,7 @@
 
 			min_y = min(0, min_y)
 			max_y = max(0, max_y)
-			
+
 			zero_y =
 				cond do
 					min_y < 0 and max_y > 0 ->
@@ -26,7 +26,7 @@
 			end)
 		%>
 
-		<line x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" shape-rendering="crispEdges" style="stroke: #ccc; stroke-width: 1;"></line>
+		<line x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" style="stroke: #aaa; stroke-width: 1;"></line>
 
 		<path fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= svg_path normalized_points %>"></path>
 
