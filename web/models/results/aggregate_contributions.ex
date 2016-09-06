@@ -38,7 +38,7 @@ defmodule Liquio.Results.AggregateContributions do
 
 		%{
 			:total => total_power,
-			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / MapSet.size(trust_metric_ids) end,
+			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(contributions),
 			:by_keys => by_keys
 		}
