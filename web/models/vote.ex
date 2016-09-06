@@ -2,7 +2,6 @@ defmodule Liquio.VoteData do
 	use Liquio.Web, :model
 
 	embedded_schema do
-		field :score, :float
 		field :choice, {:map, :float}
 	end
 
