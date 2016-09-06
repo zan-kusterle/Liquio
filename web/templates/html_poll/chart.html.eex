@@ -45,8 +45,8 @@
 
 				tooltip_text_anchor =
 					cond do
-						nx < 0.1 -> "start"
-						nx > 0.9 -> "end"
+						nx < 0.05 -> "start"
+						nx > 0.95 -> "end"
 						true -> "middle"
 					end
 			%>
