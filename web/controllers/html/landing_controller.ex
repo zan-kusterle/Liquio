@@ -81,7 +81,7 @@ defmodule Liquio.LandingController do
 			|> Map.put(:results, Poll.calculate(example.poll, calculate_opts))
 			|> Map.put(:num_references, Enum.count(example.references))
 		end)
-		|> Enum.sort(& &1.results.turnout_ratio + 0.1 * &1.num_references > &2.results.turnout_ratio + 0.1 * &2.num_references)
+		|> Enum.sort_by(& &1.results.turnout_ratio + 0.1 * &1.num_references, &>=/2)
 
 		render conn, "index.html", examples: examples, polls: polls
 	end
