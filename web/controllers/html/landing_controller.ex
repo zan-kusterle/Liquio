@@ -4,8 +4,6 @@ defmodule Liquio.LandingController do
 	plug :put_layout, "landing.html"
 
 	def index(conn, _params) do
-		calculate_opts = get_calculation_opts_from_conn(conn)
-		identity = Guardian.Plug.current_resource(conn)
 		examples = [
 			%{
 				poll: Poll.force_get("probability", "genetically modified foods are dangerous", ["science", "biology", "gmo"])
@@ -73,6 +71,9 @@ defmodule Liquio.LandingController do
 		polls = %{
 			:not_the_best_idea => Poll.force_get("probability", "vanilla ice cream flavor rating", ["joke"])
 		}
+
+		calculate_opts = get_calculation_opts_from_conn(conn)
+		identity = Guardian.Plug.current_resource(conn)
 		if identity != nil and Application.get_env(:liquio, :admin_identity_ids) |> Enum.member?(identity.id) do
 			approve_references(examples, identity)
 		end

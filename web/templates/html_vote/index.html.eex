@@ -26,7 +26,7 @@
 		<% end %>
 	<% else %>
 		<%= if @own_vote do %>
-			Your current estimate for the quantity below is <%= number_format_simple(@own_vote.data.score) %>.
+			Your current estimate for the quantity below is <%= number_format_simple(@own_vote.data.choice["main"]) %>.
 		<% else %>
 			After reviewing references, enter your best estimate of below quantity:
 		<% end %>
