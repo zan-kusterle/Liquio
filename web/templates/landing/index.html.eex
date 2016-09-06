@@ -5,7 +5,7 @@
 </style>
 
 <div class="splash">
-	<img src="/images/logo_vector.svg" alt="Liquio" class="logo"></img>
+	<img src="/images/logo.svg" alt="Liquio" class="logo"></img>
 	<p class="tagline">A liquid democracy where anyone can vote on anything.</p>
 </div>
 
