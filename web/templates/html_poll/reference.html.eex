@@ -1,5 +1,5 @@
 <% poll = @reference.reference_poll %>
-
+<% has_data? = (assigns[:minimum_voting_power] == nil and poll.results.total > 0) or poll.results.total >= @minimum_voting_power %>
 <a href="/polls/<%= poll.id %>" class="reference-a">
 	<div class="reference">
 		<p class="reference-text">
@@ -7,8 +7,8 @@
 				<span class="for-choice-text"><%= number_format(@for_choice) %></span>
 			<% end %>
 			<%= poll.title %>
-		</p><%= if poll.choice_type == "time_quantity" do %><div class="reference-score" style="background-color: <%= default_score_color %>;">graph</div>
-		<% else %><% has_data? = poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or poll.results.total >= @minimum_voting_power) %><div class="reference-score" style="background-color: <%= if has_data? do score_color(poll) else default_score_color() end %>;">
+		</p><%= if poll.choice_type == "time_quantity" do %><div class="reference-score" style="background-color: <%= default_score_color %>;"><%= if has_data? do %>graph<% else %>?<% end %></div>
+		<% else %><div class="reference-score" style="background-color: <%= if has_data? do score_color(poll) else default_score_color() end %>;">
 				<%= if has_data? do %>
 					<%= if poll.choice_type == "probability" do %>
 						<%= round(poll.results.mean * 100) %>%
