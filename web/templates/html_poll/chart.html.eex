@@ -3,20 +3,12 @@
 <% else %>
 	<svg viewBox="0 0 1060 200" class="chart">
 		<%
-			xs = Enum.map(@points, & Timex.to_unix(elem(&1, 0)))
-			ys = Enum.map(@points, & elem(&1, 1))
-			ws = Enum.map(@points, & elem(&1, 2))
-			min_x = Enum.min(xs)
-			max_x = Enum.max(xs)
-			min_y = Enum.min(ys)
-			max_y = Enum.max(ys)
+			{min_x, max_x} = Enum.min_max(Enum.map(@points, & Timex.to_unix(elem(&1, 0))))
+			{min_y, max_y} = Enum.min_max(Enum.map(@points, & elem(&1, 1)))
 
-			if min_y > 0 do
-				min_y = 0
-			end
-			if max_y < 0 do
-				max_y = 0
-			end
+			min_y = min(0, min_y)
+			max_y = max(0, max_y)
+			
 			zero_y =
 				cond do
 					min_y < 0 and max_y > 0 ->
