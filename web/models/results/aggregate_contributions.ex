@@ -9,7 +9,8 @@ defmodule Liquio.Results.AggregateContributions do
 				%{
 					:key => key,
 					:choice => choice,
-					:voting_power => contribution.voting_power
+					:voting_power => contribution.voting_power,
+					:datetime => contribution.datetime
 				}
 			end)
 		end)
