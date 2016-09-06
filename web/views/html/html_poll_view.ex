@@ -33,7 +33,7 @@ defmodule Liquio.HtmlPollView do
 	def svg_x(x) do
 		width = 1060
 		margin = 15
-		sx = round(x * (width - 2 * margin) + margin)
+		round(x * (width - 2 * margin) + margin)
 	end
 
 	def svg_y(y) do

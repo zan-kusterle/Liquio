@@ -38,7 +38,7 @@ defmodule Liquio.LandingController do
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "earth ice volume yearly differences in m³", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth ice volume yearly differences in km³", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
@@ -58,7 +58,7 @@ defmodule Liquio.LandingController do
 					for_choice: 0.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "artic ice volume yearly differences in m³", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "artic ice volume yearly differences in km³", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					range: {2012, 2016},
 					references: []
