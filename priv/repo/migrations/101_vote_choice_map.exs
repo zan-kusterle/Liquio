@@ -10,8 +10,14 @@ defmodule Liquio.Repo.Migrations.VoteChoiceMap do
 			if vote.data != nil do
 				choice = vote.data.score
 				if is_number(choice) do
-					new_data = %VoteData{:choice => %{:main => choice}}
-					Repo.update! Ecto.Changeset.change vote, data: new_data
+					new_data = vote.data
+					|> Ecto.Changeset.change
+					|> Ecto.Changeset.put_change(:choice, %{:main => choice})
+
+					vote
+					|> Ecto.Changeset.change
+					|> Ecto.Changeset.put_embed(:data, new_data)
+					|> Repo.update!
 				end
 			end
 		end)
