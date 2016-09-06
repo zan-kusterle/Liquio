@@ -57,12 +57,7 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "climate models used to model global warming are proven to be unreliable", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					references: []
-				}, %{
-					poll: Poll.force_get("time_quantity", "artic ice volume yearly differences in km³", ["science", "nature", "global warming"]),
-					for_choice: 0.0,
-					range: {2012, 2016},
-					references: []
-				},]
+				}]
 			},
 			%{
 				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
