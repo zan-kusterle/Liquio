@@ -3,13 +3,14 @@ defmodule Liquio.Repo.Migrations.VoteChoiceMap do
 
 	alias Liquio.Repo
 	alias Liquio.Vote
+	alias Liquio.VoteData
 
 	def up do
 		Vote |> Repo.all |> Enum.map(fn(vote) ->
 			if vote.data != nil do
 				choice = vote.data.score
 				if is_number(choice) do
-					new_data = %{:choice => %{:main => choice}}
+					new_data = %VoteData{:choice => %{:main => choice}}
 					Repo.update! Ecto.Changeset.change vote, data: new_data
 				end
 			end
