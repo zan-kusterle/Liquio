@@ -1,6 +1,7 @@
 defmodule Liquio.Results.AggregateContributions do
 	def aggregate(contributions, datetime, vote_weight_halving_days, soft_quorum_t, choice_type, trust_metric_ids) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
+		trust_metric_size = MapSet.size(trust_metric_ids)
 
 		by_keys = contributions
 		|> Enum.flat_map(fn(contribution) ->
@@ -28,7 +29,7 @@ defmodule Liquio.Results.AggregateContributions do
 				%{
 					:mean => mean,
 					:total => round(key_total_power),
-					:turnout_ratio => key_total_power / MapSet.size(trust_metric_ids),
+					:turnout_ratio => if trust_metric_size == 0 do 0 else key_total_power / trust_metric_size end,
 					:count => Enum.count(contributions_for_key)
 				}
 			}
@@ -37,7 +38,7 @@ defmodule Liquio.Results.AggregateContributions do
 
 		%{
 			:total => total_power,
-			:turnout_ratio => total_power / MapSet.size(trust_metric_ids),
+			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / MapSet.size(trust_metric_ids) end,
 			:count => Enum.count(contributions),
 			:by_keys => by_keys
 		}
