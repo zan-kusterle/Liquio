@@ -40,7 +40,7 @@ defmodule Liquio.LandingController do
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "surface ocean waters acidity", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth surface ocean waters acidity in pH", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
