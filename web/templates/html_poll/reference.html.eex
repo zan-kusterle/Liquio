@@ -7,7 +7,7 @@
 				<span class="for-choice-text"><%= number_format(@for_choice) %></span>
 			<% end %>
 			<%= poll.title %>
-		</p><%= if poll.choice_type == "time_quantity" do %><div class="reference-score" style="background-color: <%= default_score_color %>;"><%= if has_data? do %>graph<% else %>?<% end %></div>
+		</p><%= if poll.choice_type == "time_quantity" do %><div class="reference-score" style="background-color: <%= default_score_color %>;<%= if has_data? do %> font-size: 0px;<% end %>"><%= if has_data? do %><%= render "chart.html", points: poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}), tooltips: false %><% else %>?<% end %></div>
 		<% else %><div class="reference-score" style="background-color: <%= if has_data? do score_color(poll) else default_score_color() end %>;">
 				<%= if has_data? do %>
 					<%= if poll.choice_type == "probability" do %>

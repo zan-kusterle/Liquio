@@ -1,7 +1,11 @@
 <%= if @poll.choice_type == "time_quantity" do %>
-	<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}) %>
-	<%= if @poll.results.total > 0 do %>
-		<div class="chart-turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</div>
+	<%= if Enum.empty?(@poll.results.by_datetime) do %>
+		<div class="chart-no-data">No data available.</div>
+	<% else %>
+		<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}) %>
+		<%= if @poll.results.total > 0 do %>
+			<div class="chart-turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</div>
+		<% end %>
 	<% end %>
 <% else %>
 	<% has_data? = @poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @poll.results.total >= @minimum_voting_power) %>
