@@ -29,7 +29,7 @@
 			<div style="margin-bottom: 12px;">
 				<a href="/identities/<%= vote.identity.id %>">Trust to <b><%= vote.identity.username %></b></a>
 				<span>&mdash;</span>
-				<span style="font-size: 15px; font-weight: bold;"><%= score_format(vote.poll.choice) %></span>
+				<span style="font-size: 15px; font-weight: bold;"><%= score_format(vote.poll.choice["main"]) %></span>
 			</div>
 		<% end %>
 	<% end %>
