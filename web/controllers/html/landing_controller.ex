@@ -6,21 +6,6 @@ defmodule Liquio.LandingController do
 	def index(conn, _params) do
 		examples = [
 			%{
-				poll: Poll.force_get("probability", "genetically modified foods are dangerous", ["science", "biology", "gmo"])
-				|> Map.put(:fa_icon, "leaf"),
-				references: []
-			},
-			%{
-				poll: Poll.force_get("quantity", "number of refugees EU should let inside", ["politics", "eu", "refugees"])
-				|> Map.put(:fa_icon, "question"),
-				references: []
-			},
-			%{
-				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"])
-				|> Map.put(:fa_icon, "bolt"),
-				references: []
-			},
-			%{
 				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"])
 				|> Map.put(:fa_icon, "sun-o"),
 				references: [%{
@@ -60,15 +45,25 @@ defmodule Liquio.LandingController do
 					for_choice: 0.0,
 					references: []
 				}]
-			},
-			%{
-				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
-				|> Map.put(:fa_icon, "bank"),
+			}, %{
+				poll: Poll.force_get("probability", "genetically modified foods are dangerous", ["science", "biology", "gmo"])
+				|> Map.put(:fa_icon, "leaf"),
 				references: []
-			},
-			%{
+			}, %{
+				poll: Poll.force_get("quantity", "number of refugees EU should let inside", ["politics", "eu", "refugees"])
+				|> Map.put(:fa_icon, "question"),
+				references: []
+			}, %{
+				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"])
+				|> Map.put(:fa_icon, "bolt"),
+				references: []
+			}, %{
 				poll: Poll.force_get("probability", "the theory of evolution is true", ["science", "biology", "evolution"])
 				|> Map.put(:fa_icon, "hourglass-end"),
+				references: []
+			}, %{
+				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
+				|> Map.put(:fa_icon, "bank"),
 				references: []
 			}			
 		]
@@ -86,7 +81,6 @@ defmodule Liquio.LandingController do
 			|> Map.put(:results, Poll.calculate(example.poll, calculate_opts))
 			|> Map.put(:num_references, Enum.count(example.references))
 		end)
-		|> Enum.sort_by(& &1.results.turnout_ratio + 0.1 * &1.num_references, &>=/2)
 
 		render conn, "index.html", examples: examples, polls: polls
 	end
