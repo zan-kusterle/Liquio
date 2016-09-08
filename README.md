@@ -1,4 +1,4 @@
-![liquio logo](web/static/assets/images/logo.png)
+![liquio logo](web/static/assets/images/logo.svg)
 
 # Trust Metrics
 
