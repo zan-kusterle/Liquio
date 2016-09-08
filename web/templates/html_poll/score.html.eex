@@ -2,17 +2,13 @@
 	<%= if Enum.empty?(@poll.results.by_datetime) do %>
 		<div class="chart-no-data">No data available.</div>
 	<% else %>
-		<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}) %>
-		<%= if @poll.results.total > 0 do %>
-			<div class="chart-turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</div>
-		<% end %>
+		<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}) %>
+		<div class="chart-turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</div>
 	<% end %>
 <% else %>
-	<% has_data? = @poll.results.mean != nil and (assigns[:minimum_voting_power] == nil or @poll.results.total >= @minimum_voting_power) %>
-
-	<div class="score-box" style="background-color: <%= if has_data? do score_color(@poll) else default_score_color() end %>;">
+	<div class="score-box" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;">
 		<div class="number">
-			<%= if has_data? do %>
+			<%= if @poll.results.mean != nil do %>
 				<%= if @poll.choice_type == "probability" do %>
 					<%= round(@poll.results.mean * 100) %><span class="percent">%</span>
 				<% else %>

@@ -1,5 +1,4 @@
 <% poll = @reference.reference_poll %>
-<% has_data? = (assigns[:minimum_voting_power] == nil and poll.results.total > 0) or poll.results.total >= @minimum_voting_power %>
 <a href="/polls/<%= poll.id %>" class="reference-a">
 	<div class="reference">
 		<p class="reference-text">
@@ -7,9 +6,9 @@
 				<span class="for-choice-text"><%= number_format(@for_choice) %></span>
 			<% end %>
 			<%= poll.title %>
-		</p><%= if poll.choice_type == "time_quantity" do %><div class="reference-score" style="background-color: <%= default_score_color %>;<%= if has_data? do %> font-size: 0px;<% end %>"><%= if has_data? do %><%= render "chart.html", points: poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.results.mean, &1.results.turnout_ratio}), tooltips: false %><% else %>?<% end %></div>
-		<% else %><div class="reference-score" style="background-color: <%= if has_data? do score_color(poll) else default_score_color() end %>;">
-				<%= if has_data? do %>
+		</p><%= if poll.choice_type == "time_quantity" do %><div class="reference-score" style="background-color: <%= default_score_color %>;<%= if not Enum.empty?(poll.results.by_datetime) do %> font-size: 0px;<% end %>"><%= if not Enum.empty?(poll.results.by_datetime) do %><%= render "chart.html", points: poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %><% else %>?<% end %></div>
+		<% else %><div class="reference-score" style="background-color: <%= if poll.results.mean != nil do score_color(poll) else default_score_color() end %>;">
+				<%= if poll.results.mean != nil do %>
 					<%= if poll.choice_type == "probability" do %>
 						<%= round(poll.results.mean * 100) %>%
 					<% else %>

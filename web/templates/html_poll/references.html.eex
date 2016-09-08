@@ -4,7 +4,7 @@
 			<h3 class="pole-heading"><%= if @references |> Enum.filter(& &1.for_choice == 1) |> Enum.empty? do %>Nothing <% end %>Positive</h3>
 			<div class="pole-list">
 				<%= for reference <- @references |> Enum.filter(& &1.for_choice == 1) do %>
-					<%= render "reference.html", reference: reference, minimum_voting_power: @minimum_voting_power %>
+					<%= render "reference.html", reference: reference %>
 				<% end %>
 			</div>
 		</div>
@@ -12,14 +12,14 @@
 			<h3 class="pole-heading"><%= if @references |> Enum.filter(& &1.for_choice == 0) |> Enum.empty? do %>Nothing <% end %>Negative</h3>
 			<div class="pole-list">
 				<%= for reference <- @references |> Enum.filter(& &1.for_choice == 0) do %>
-					<%= render "reference.html", reference: reference, minimum_voting_power: @minimum_voting_power %>
+					<%= render "reference.html", reference: reference %>
 				<% end %>
 			</div>
 		</div>
 	<% else %>
 		<div class="references-list">
 			<%= for reference <- @references do %>
-				<%= render "reference.html", reference: reference, for_choice: reference.for_choice, minimum_voting_power: @minimum_voting_power %>
+				<%= render "reference.html", reference: reference, for_choice: reference.for_choice %>
 			<% end %>
 		</div>
 	<% end %>

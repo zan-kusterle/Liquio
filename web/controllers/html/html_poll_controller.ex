@@ -35,8 +35,7 @@ defmodule Liquio.HtmlPollController do
 			title: poll.title,
 			poll: poll,
 			references: prepare_references(poll, calculation_opts),
-			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
-			minimum_voting_power: calculation_opts[:minimum_voting_power])
+			inverse_references: Reference.inverse_for_poll(poll, calculation_opts))
 	end)
 
 	with_params(%{
