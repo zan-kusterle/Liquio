@@ -54,12 +54,12 @@ defmodule Liquio.LandingController do
 				|> Map.put(:fa_icon, "question"),
 				references: []
 			}, %{
-				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"])
-				|> Map.put(:fa_icon, "bolt"),
-				references: []
-			}, %{
 				poll: Poll.force_get("probability", "the theory of evolution is true", ["science", "biology", "evolution"])
 				|> Map.put(:fa_icon, "hourglass-end"),
+				references: []
+			}, %{
+				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"])
+				|> Map.put(:fa_icon, "bolt"),
 				references: []
 			}, %{
 				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
