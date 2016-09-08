@@ -50,7 +50,8 @@ defmodule Liquio.HtmlPollController do
 			title: poll.title,
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
 			poll: prepare_poll(poll, calculation_opts),
-			contributions: prepare_contributions(poll, calculation_opts))
+			contributions: prepare_contributions(poll, calculation_opts),
+			calculation_opts: calculation_opts)
 	end)
 
 	plug :put_layout, "minimal.html" when action in [:embed]

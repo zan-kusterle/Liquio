@@ -6,7 +6,8 @@ defmodule Liquio.Controllers.Helpers do
 			case List.keyfind(conn.req_headers, "referer", 0) do
 				{"referer", referer} ->
 					url = URI.parse(referer)
-					url.path
+					query = if url.query == nil do "" else "?#{url.query}" end
+					url.path <> query
 				nil ->
 					"/"
 			end
@@ -47,8 +48,8 @@ defmodule Liquio.Controllers.Helpers do
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
 			soft_quorum_t: ((identity && identity.approval_turnout_importance) || 0) * trust_metric_count,
 			minimum_reference_approval_score: (identity && identity.approval_minimum_score) ||  0.5,
-			minimum_voting_power: ((identity && identity.minimum_turnout) ||  0.0001) * trust_metric_count,
-			minimum_turnout: (identity && identity.minimum_turnout) ||  0.0001,
+			minimum_voting_power: ((identity && Float.round(identity.minimum_turnout || 0.05, 2))) * trust_metric_count,
+			minimum_turnout: (identity && Float.round(identity.minimum_turnout || 0.05, 2)),
 			approval_turnout_importance: (identity && identity.approval_turnout_importance) || 0,
 		}
 	end

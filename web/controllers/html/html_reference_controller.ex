@@ -32,6 +32,7 @@ defmodule Liquio.HtmlReferenceController do
 			title: poll.title || "Liquio",
 			reference: reference,
 			for_choice: for_choice,
-			own_vote: Vote.current_by(reference.approval_poll, user))
+			own_vote: Vote.current_by(reference.approval_poll, user),
+			calculation_opts: calculation_opts)
 	end)
 end

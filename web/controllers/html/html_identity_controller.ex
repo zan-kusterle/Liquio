@@ -240,7 +240,7 @@ defmodule Liquio.HtmlIdentityController do
 
 		result |> handle_errors(conn, fn _user ->
 			conn
-			|> put_flash(:info, "Using your new preferences when calculating results")
+			|> put_flash(:info, "Using your new preferences when calculating results.")
 			|> redirect(to: default_redirect conn)
 		end)
 	end)
