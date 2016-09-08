@@ -44,6 +44,9 @@
 	<div class="bubble">
 		<p>
 			<%= if @poll.choice_type == "time_quantity" do %>
+				<div style="padding: 4px 6px; height: 38px;">
+					<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
+				</div>
 			<% else %>
 				<%= if @poll.results.mean != nil do %>
 					<%= if @poll.choice_type == "probability" do %>
@@ -55,8 +58,8 @@
 					?
 				<% end %>
 				<br>
+				<span class="turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</span>
 			<% end %>
-			<span class="turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</span>
 		</p>
 	</div>
 </div>

@@ -54,6 +54,10 @@ defmodule Liquio.LandingController do
 				|> Map.put(:fa_icon, "question"),
 				references: []
 			}, %{
+				poll: Poll.force_get("time_quantity", "number of yearly traffic fatalities in the USA", ["statistics", "usa"])
+				|> Map.put(:fa_icon, "road"),
+				references: []
+			}, %{
 				poll: Poll.force_get("probability", "the theory of evolution is true", ["science", "biology", "evolution"])
 				|> Map.put(:fa_icon, "hourglass-end"),
 				references: []
@@ -65,7 +69,7 @@ defmodule Liquio.LandingController do
 				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
 				|> Map.put(:fa_icon, "bank"),
 				references: []
-			}			
+			},
 		]
 		polls = %{
 			:not_the_best_idea => Poll.force_get("probability", "vanilla ice cream flavor rating", ["joke"])
