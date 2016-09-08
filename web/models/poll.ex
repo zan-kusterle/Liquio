@@ -139,8 +139,6 @@ defmodule Liquio.Poll do
 			if main_results.total >= calculation_opts[:minimum_voting_power] do
 				main_results
 			else
-				IO.inspect main_results.total
-				IO.inspect calculation_opts[:minimum_voting_power]
 				Map.put(main_results, :mean, nil)
 			end
 		end

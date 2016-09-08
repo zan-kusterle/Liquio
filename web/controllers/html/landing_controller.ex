@@ -9,7 +9,7 @@ defmodule Liquio.LandingController do
 				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"])
 				|> Map.put(:fa_icon, "sun-o"),
 				references: [%{
-					poll: Poll.force_get("time_quantity", "earth sea level in cm with base #{round(30000000000)} at year 1900", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "earth sea level in cm with zero at year 1900", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
