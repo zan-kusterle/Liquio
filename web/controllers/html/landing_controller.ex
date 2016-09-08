@@ -55,6 +55,10 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "climate models used to model global warming are proven to be unreliable", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					references: []
+				}, %{
+					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "global warming"]),
+					for_choice: 0.0,
+					references: []
 				}]
 			},
 			%{

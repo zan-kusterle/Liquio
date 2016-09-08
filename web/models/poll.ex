@@ -85,9 +85,9 @@ defmodule Liquio.Poll do
 		title = Enum.zip([nil] ++ words, words) |> Enum.map(fn({previous_word, word}) ->
 			previous_word = if previous_word == nil do nil else String.downcase(previous_word) end
 			cond do
-				is_acronymn(word) ->
+				is_acronymn(word) or is_unit(previous_word, word) ->
 					word
-				String.downcase(word) in ["a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "up", "and", "as", "but", "or", "nor"] or is_unit(previous_word, String.downcase(word)) ->
+				String.downcase(word) in ["a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "up", "and", "as", "but", "or", "nor"] ->
 					String.downcase(word)
 				true ->
 					String.capitalize(word)
