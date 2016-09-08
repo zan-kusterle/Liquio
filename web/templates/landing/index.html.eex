@@ -90,5 +90,5 @@
 </div>
 
 <div class="footer">
-	Liquio is still in early development. You can view the source code on <a href="https://github.com/zan-kusterle/Liquio" target="_blank">GitHub</a>. Feedback and contributions are welcome.
+	<a href="https://github.com/zan-kusterle/Liquio" target="_blank" style="vertical-align: middle;"><i class="fa fa-github" aria-hidden="true" style="font-size: 36px; vertical-align: middle;"></i> View source on GitHub</a>
 </div>
