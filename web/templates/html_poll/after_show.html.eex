@@ -5,7 +5,7 @@
 	</p>
 
 	<a class="liquio-inline" href="#" style="text-decoration: none; display: inline-block;">
-		<span style="vertical-align: middle; margin-right: 15px;"><%= @poll.title %></span>
+		<span style="vertical-align: middle; margin-right: 15px;"><%= truncate @poll.title, 120 %></span>
 		<iframe src="/polls/<%= @poll.id %>/embed" scrolling="no" frameBorder="0" width="120px" height="45px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"></iframe>
 	</a>
 </div>

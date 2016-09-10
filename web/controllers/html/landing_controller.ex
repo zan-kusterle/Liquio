@@ -48,7 +48,79 @@ defmodule Liquio.LandingController do
 			}, %{
 				poll: Poll.force_get("probability", "genetically modified foods are dangerous", ["science", "biology", "gmo"])
 				|> Map.put(:fa_icon, "leaf"),
-				references: []
+				references: [%{
+					poll: Poll.force_get("probability", "Multiple Toxins From GMOs Detected In Maternal and Fetal Blood", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "2011: Maternal and fetal exposure to pesticides associated to genetically modified foods in Eastern Townships of Quebec, Canada by Aziz Aris and Samuel Leblanc. Is this article credible?", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "DNA From Genetically Modified Crops Can Be Transferred Into Humans Who Eat Them", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "2013: Complete Genes May Pass from Food to Human Blood by Sándor Spisák, Norbert Solymosi, Péter Ittzés, András Bodor, Dániel Kondor, Gábor Vattay, Barbara K. Barták, Ferenc Sipos, Orsolya Galamb, Zsolt Tulassay, Zoltán Szállási, Simon Rasmussen, Thomas Sicheritz-Ponten, Søren Brunak, Béla Molnár and István Csabai. Is this article credible?", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "Study Links GMOs To Gluten Disorders That Affect 18 Million Americans", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "2013: GMOs linked to gluten disorders plaguing 18 million Americans - report by RT. Is this article credible?", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "Study Links Genetically Modified Corn to Rat Tumors", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "2012: Long term toxicity of a Roundup herbicide and a Roundup-tolerant genetically modified maize by Gilles-Eric Séralini, Emilie Clair, Robin Mesnage, Steeve Gress,  Nicolas Defarge, Manuela Malatesta, Didier Hennequin, Joël Spiroux de Vendômois. Is this article credible?", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}]
 			}, %{
 				poll: Poll.force_get("quantity", "number of refugees EU should let inside", ["politics", "eu", "refugees"])
 				|> Map.put(:fa_icon, "question"),
@@ -69,7 +141,12 @@ defmodule Liquio.LandingController do
 				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
 				|> Map.put(:fa_icon, "bank"),
 				references: []
-			},
+			}, %{
+				poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases by Anthony Samsel & Stephanie Seneff. Is this article credible?", ["california", "politics", "economics"])
+				|> Map.put(:fa_icon, "bank"),
+				references: []
+			}
+			
 		]
 		polls = %{
 			:not_the_best_idea => Poll.force_get("probability", "vanilla ice cream flavor rating", ["joke"])

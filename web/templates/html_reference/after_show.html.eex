@@ -1,4 +1,4 @@
-<p class="heading" style="margin-top: 50px;">FINE TUNE HOW THIS DATA WILL BE USED</p>
+<p class="heading" style="margin-top: 50px;">CALCULATION PREFERENCES</p>
 
 <form method="POST" action="/identities/preferences" class="pure-form">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />

@@ -48,8 +48,8 @@ defmodule Liquio.Controllers.Helpers do
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
 			soft_quorum_t: ((identity && identity.approval_turnout_importance) || 0) * trust_metric_count,
 			minimum_reference_approval_score: (identity && identity.approval_minimum_score) ||  0.5,
-			minimum_voting_power: ((identity && Float.round(identity.minimum_turnout || 0.05, 2))) * trust_metric_count,
-			minimum_turnout: (identity && Float.round(identity.minimum_turnout || 0.05, 2)),
+			minimum_voting_power: ((identity && identity.minimum_turnout && Float.round(identity.minimum_turnout, 2)) || 0.05) * trust_metric_count,
+			minimum_turnout: (identity && identity.minimum_turnout && Float.round(identity.minimum_turnout, 2)) || 0.05,
 			approval_turnout_importance: (identity && identity.approval_turnout_importance) || 0,
 		}
 	end

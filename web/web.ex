@@ -62,6 +62,7 @@ defmodule Liquio.Web do
 			import Liquio.ErrorHelpers
 			import Liquio.Gettext
 			import Liquio.NumberFormat, only: [number_format: 1, number_format_simple: 1, number_format_simple: 2, score_format: 1, score_format: 2, for_choice_format: 2]
+			import Liquio.TextFormat
 		end
 	end
 
