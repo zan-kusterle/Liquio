@@ -81,42 +81,58 @@ defmodule Liquio.LandingController do
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Glyphosate Induces Human Breast Cancer Cells Growth via Estrogen Receptors", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: Glyphosate induces human breast cancer cells growth via estrogen receptors by Thongprakaisang S1, Thiantanawat A, Rangkadilok N, Suriyo T, Satayavivad J. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Glyphosate Linked To Birth Defects", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2010: Glyphosate-Based Herbicides Produce Teratogenic Effects on Vertebrates by Impairing Retinoic Acid Signaling by Alejandra Paganelli, Victoria Gnazzo, Helena Acosta, Silvia L. López, and Andrés E. Carrasco. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Study Links Glyphosate To Autism, Parkinson’s and Alzheimer’s", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases† by Anthony Samsel and Stephanie Seneff. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Chronically Ill Humans Have Higher Glyphosate Levels Than Healthy Humans", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2014: Detection of Glyphosate Residues in Animals and Humans by Monika Krüger, Philipp Schledorn, Wieland Schrödl, Hans-Wolfgang Hoppe, Walburga Lutz and Awad A. Shehata. Is this credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Studies Link GMO Animal Feed to Severe Stomach Inflammation and Enlarged Uteri in Pigs", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: A long-term toxicology study on pigs fed a combined genetically modified (GM) soy and GM maize diet by Judy A. Carman, Howard R. Vlieger, Larry J. Ver Steeg, Verlyn E. Sneller, Garth W. Robinson, Catherine A. Clinch-Jones, Julie I. Haynes and John W. Edwards. Is this study credible?", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}]
+				}, %{
+					poll: Poll.force_get("probability", "GMO risk assessment is based on very little scientific evidence in the sense that the testing methods recommended are not adequate to ensure safety", ["science", "nature", "gmo"]),
+					for_choice: 0.0,
+					references: [%{
+						poll: Poll.force_get("probability", "2004: Risk assessment of genetically modified crops for nutrition and health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}, %{
+						poll: Poll.force_get("probability", "2004: Reese W, Schubert D. Safety testing and regulation of genetically engineered foods. Biotechnol Genet Eng Rev. Is this book legit?", ["science", "nature", "gmo"]),
+						for_choice: 1.0,
+						references: []
+					}, %{
+						poll: Poll.force_get("probability", "2002: Schubert D. A different perspective on GM food. Nat Biotechnol. Is this book legit?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
