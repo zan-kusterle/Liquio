@@ -157,12 +157,7 @@ defmodule Liquio.LandingController do
 				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
 				|> Map.put(:fa_icon, "bank"),
 				references: []
-			}, %{
-				poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases by Anthony Samsel & Stephanie Seneff. Is this article credible?", ["california", "politics", "economics"])
-				|> Map.put(:fa_icon, "bank"),
-				references: []
 			}
-			
 		]
 		polls = %{
 			:not_the_best_idea => Poll.force_get("probability", "vanilla ice cream flavor rating", ["joke"])
