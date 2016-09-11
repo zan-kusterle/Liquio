@@ -7,6 +7,11 @@
 		<meta name="description" content="A liquid democracy where anyone can vote on anything">
 		<meta name="author" content="Žan Kusterle">
 
+		<meta property="og:image" content="https://liqu.io/images/logo.png" />
+		<meta property="og:description" content="A liquid democracy where anyone can vote on anything." />
+		<meta property="og:url" content="https://liqu.io/" />
+		<meta property="og:title" content="Liquio" />
+
 		<%= if assigns[:title] do %>
 			<title><%= @title %></title>
 		<% else %>
