@@ -46,7 +46,7 @@ defmodule Liquio.LandingController do
 					references: []
 				}]
 			}, %{
-				poll: Poll.force_get("probability", "Genetically Modified Foods Are Dangerous", ["science", "biology", "gmo"])
+				poll: Poll.force_get("probability", "Genetically Modified Foods Are Safe", ["science", "biology", "gmo"])
 				|> Map.put(:fa_icon, "leaf"),
 				references: [%{
 					poll: Poll.force_get("probability", "Multiple Toxins From GMOs Detected In Maternal and Fetal Blood", ["science", "nature", "gmo"]),
