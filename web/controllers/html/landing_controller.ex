@@ -82,7 +82,7 @@ defmodule Liquio.LandingController do
 					}]
 				}, %{
 					poll: Poll.force_get("probability", "Glyphosate Is Safe For Human Consumption", ["science", "nature", "gmo"]),
-					for_choice: 0.0,
+					for_choice: 1.0,
 					references: [%{
 						poll: Poll.force_get("probability", "Glyphosate Induces Human Breast Cancer Cells Growth Via Estrogen Receptors", ["science", "nature", "gmo"]),
 						for_choice: 0.0,
