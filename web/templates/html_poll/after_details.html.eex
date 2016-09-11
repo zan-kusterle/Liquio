@@ -1,4 +1,4 @@
-<p class="heading" style="margin-top: 50px;">AGGREGATION PREFERENCES</p>
+<p class="heading" style="margin-top: 100px;">AGGREGATION PREFERENCES</p>
 
 <form method="POST" action="/identities/preferences" class="pure-form">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />

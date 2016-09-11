@@ -2,9 +2,12 @@
 
 body {
 	margin: 0px;
-	background-color: #f0f0f0;
 	cursor: default !important;
 	line-height: 1.4;
+	background-color: white;
+	@media @sm {
+		background: #f0f0f0;
+	}
 }
 
 p {
@@ -30,7 +33,7 @@ p {
 			max-width: 900px;
 			margin: 0 auto;
 			padding: 10px 15px;
-			padding-bottom: 0px;
+			padding-bottom: 2px;
 			@media @md {
 				padding: 14px 40px;
 				padding-bottom: 0px;
@@ -176,9 +179,6 @@ p {
 
 		border-radius: 2px;
 		box-shadow: none;
-		@media @xs {
-			border: none;
-		}
 	}
 
 	input[type=range] {
@@ -199,10 +199,7 @@ p {
 		height: 5px;
 		border: none;
 		border-radius: 3px;
-		background: white;
-		@media @sm {
-			background: #ccc
-		}
+		background: #ccc;
 	}
 	input[type=range]::-webkit-slider-thumb {
 		-webkit-appearance: none;
@@ -225,10 +222,7 @@ p {
 		height: 5px;
 		border: none;
 		border-radius: 3px;
-		background: white;
-		@media @sm {
-			background: #ccc
-		}
+		background: #ccc;
 	}
 	input[type=range]::-moz-range-thumb {
 		border: none;
@@ -264,10 +258,7 @@ p {
 	}
 	input[type=range]::-ms-fill-upper {
 		border-radius: 10px;
-		background: white;
-		@media @sm {
-			background: #ccc
-		}
+		background: #ccc;
 	}
 	input[type=range]::-ms-thumb {
 		border: none;
@@ -293,10 +284,9 @@ p {
 
 	.pure-button {
 		color: rgba(0, 0, 0, 0.8);
-		background-color: white;
+		background-color: #E6E6E6;
 		font-size: 14px;
 		@media @sm {
-			background-color: #E6E6E6;
 			font-size: 16px;
 		}
 	}
@@ -321,7 +311,7 @@ p {
 		right: 0px;
 		bottom: 0px;
 		padding-top: 40px;
-		top: 118px;
+		top: 120px;
 		overflow-y: scroll;
 		@media @md {
 			top: 128px;
@@ -370,14 +360,13 @@ p {
 			margin-top: 0px;
 			border-radius: 0px;
 			color: #333;
-			background-color: none;
+			background-color: white;
 			max-width: 900px;
 			margin-left: auto;
 			margin-right: auto;
-			padding: 30px 20px 30px 20px;
+			padding: 30px 5px 30px 5px;
 			@media @sm {
 				padding: 40px 35px 40px 35px;
-				background: white;
 			}
 		}
 	}

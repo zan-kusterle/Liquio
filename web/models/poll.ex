@@ -81,28 +81,8 @@ defmodule Liquio.Poll do
 	end
 
 	defp capitalize_title(title) do
-		words = title |> String.split(" ")
-		title = Enum.zip([nil] ++ words, words) |> Enum.map(fn({previous_word, word}) ->
-			previous_word = if previous_word == nil do nil else String.downcase(previous_word) end
-			cond do
-				is_acronymn(word) or is_unit(previous_word, word) ->
-					word
-				String.downcase(word) in ["a", "an", "the", "at", "by", "for", "in", "of", "on", "to", "up", "and", "as", "but", "or", "nor"] ->
-					String.downcase(word)
-				true ->
-					String.capitalize(word)
-			end
-		end) |> Enum.join(" ")
 		{a, b} = String.split_at(title, 1)
 		(a |> String.upcase) <> b
-	end
-
-	defp is_acronymn(w) do
-		w == String.upcase(w) and String.length(w) >= 2
-	end
-
-	def is_unit(previous_word, w) do
-		previous_word == "in" and String.length(w) <= 3
 	end
 
 	def is_custom(poll) do poll.kind == "custom" end
@@ -120,9 +100,11 @@ defmodule Liquio.Poll do
 
 	def calculate(poll, calculation_opts) do
 		soft_quorum_t = if poll.kind == "custom" do 0 else calculation_opts.soft_quorum_t end
+		vote_weight_halving_days = if poll.kind == "custom" do calculation_opts.vote_weight_halving_days else nil end
+		minimum_voting_power = if poll.kind == "custom" do calculation_opts.minimum_voting_power else 0 end
 
 		results = Poll.calculate_contributions(poll, calculation_opts)
-		|> AggregateContributions.aggregate(calculation_opts.datetime, calculation_opts.vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculation_opts.trust_metric_ids)
+		|> AggregateContributions.aggregate(calculation_opts.datetime, vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculation_opts.trust_metric_ids)
 
 		if poll.choice_type == "time_quantity" do
 			results_with_datetime = results.by_keys
@@ -131,12 +113,12 @@ defmodule Liquio.Poll do
 				Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
 			end)
 			|> Enum.filter(fn(datetime_result) ->
-				datetime_result.total >= calculation_opts[:minimum_voting_power]
+				datetime_result.total >= minimum_voting_power
 			end)
 			results |> Map.put(:by_datetime, results_with_datetime)
 		else
 			main_results = AggregateContributions.by_key(results.by_keys, "main")
-			if main_results.total >= calculation_opts[:minimum_voting_power] do
+			if main_results.total >= minimum_voting_power do
 				main_results
 			else
 				Map.put(main_results, :mean, nil)

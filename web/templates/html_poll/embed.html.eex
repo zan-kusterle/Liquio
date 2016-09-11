@@ -44,8 +44,12 @@
 	<div class="bubble">
 		<p>
 			<%= if @poll.choice_type == "time_quantity" do %>
-				<div style="padding: 4px 6px; height: 38px;">
-					<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
+				<div style="padding: 4px 6px; height: 38px; line-height: 36px; text-align: center;">
+					<%= if Enum.empty?(@poll.results.by_datetime) do %>
+						?
+					<% else %>
+						<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
+					<% end %>
 				</div>
 			<% else %>
 				<%= if @poll.results.mean != nil do %>

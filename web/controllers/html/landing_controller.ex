@@ -6,53 +6,53 @@ defmodule Liquio.LandingController do
 	def index(conn, _params) do
 		examples = [
 			%{
-				poll: Poll.force_get("probability", "global warming is caused by human activity", ["science", "nature", "global warming"])
+				poll: Poll.force_get("probability", "Global Warming Is Caused by Human Activity", ["science", "nature", "global warming"])
 				|> Map.put(:fa_icon, "sun-o"),
 				references: [%{
-					poll: Poll.force_get("time_quantity", "earth sea level in cm with zero at year 1900", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "Earth Sea Level in cm With 0 at Year 1900", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "earth temperature in ℃", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "Earth Temperature in ℃", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "earth ocean temperature in ℃", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "Earth Ocean Temperature in ℃", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "earth ice volume yearly differences in km³", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "Earth Ice Volume Yearly Differences in km³", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("time_quantity", "earth surface ocean waters acidity in pH", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("time_quantity", "Earth Surface Ocean Waters Acidity in pH", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("probability", "glaciers are retreating almost everywhere around the world", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("probability", "Glaciers Are Retreating Almost Everywhere Around the world", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("probability", "not enough earth temperature historical data available to know the cause of global warming", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("probability", "Not Enough Earth Temperature Historical Data Available to Know the Cause of Global Warming", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("probability", "climate models used to model global warming are proven to be unreliable", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("probability", "Climate Models Used to Model Global Warming Are Proven to Be Unreliable", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("probability", "variations in climate are just a part of natural cycles", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("probability", "Variations in Climate Are Just a Part of Natural Cycles", ["science", "nature", "global warming"]),
 					for_choice: 0.0,
 					references: []
 				}]
 			}, %{
-				poll: Poll.force_get("probability", "genetically modified foods are dangerous", ["science", "biology", "gmo"])
+				poll: Poll.force_get("probability", "Genetically Modified Foods Are Dangerous", ["science", "biology", "gmo"])
 				|> Map.put(:fa_icon, "leaf"),
 				references: [%{
 					poll: Poll.force_get("probability", "Multiple Toxins From GMOs Detected In Maternal and Fetal Blood", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2011: Maternal and fetal exposure to pesticides associated to genetically modified foods in Eastern Townships of Quebec, Canada by Aziz Aris and Samuel Leblanc. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2011: Maternal and Fetal Exposure to Pesticides Associated to Genetically Modified Foods in Eastern Townships of Quebec, Canada by Aziz Aris and Samuel Leblanc. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
@@ -68,7 +68,7 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "Study Links GMOs To Gluten Disorders That Affect 18 Million Americans", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2013: GMOs linked to gluten disorders plaguing 18 million Americans - report by RT. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: 'GMOs Linked To Gluten Disorders Plaguing 18 million Americans - Report' by RT. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
@@ -76,7 +76,7 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "Study Links Genetically Modified Corn to Rat Tumors", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2012: Long term toxicity of a Roundup herbicide and a Roundup-tolerant genetically modified maize by Gilles-Eric Séralini, Emilie Clair, Robin Mesnage, Steeve Gress,  Nicolas Defarge, Manuela Malatesta, Didier Hennequin, Joël Spiroux de Vendômois. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2012: Long Term Toxicity of a Roundup Herbicide and a Roundup-Tolerant Genetically Modified Maize by Gilles-Eric Séralini, Emilie Clair, Robin Mesnage, Steeve Gress,  Nicolas Defarge, Manuela Malatesta, Didier Hennequin and Joël Spiroux de Vendômois. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
@@ -84,7 +84,7 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "Glyphosate Induces Human Breast Cancer Cells Growth via Estrogen Receptors", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2013: Glyphosate induces human breast cancer cells growth via estrogen receptors by Thongprakaisang S1, Thiantanawat A, Rangkadilok N, Suriyo T, Satayavivad J. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: Glyphosate Induces Human Breast Cancer Cells Growth via Estrogen Receptors by Thongprakaisang S1, Thiantanawat A, Rangkadilok N, Suriyo T and Satayavivad J. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
@@ -92,7 +92,7 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "Glyphosate Linked To Birth Defects", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2010: Glyphosate-Based Herbicides Produce Teratogenic Effects on Vertebrates by Impairing Retinoic Acid Signaling by Alejandra Paganelli, Victoria Gnazzo, Helena Acosta, Silvia L. López, and Andrés E. Carrasco. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2010: Glyphosate-Based Herbicides Produce Teratogenic Effects on Vertebrates by Impairing Retinoic Acid Signaling by Alejandra Paganelli, Victoria Gnazzo, Helena Acosta, Silvia L. López and Andrés E. Carrasco. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
@@ -100,7 +100,7 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "Study Links Glyphosate To Autism, Parkinson’s and Alzheimer’s", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases† by Anthony Samsel and Stephanie Seneff. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases by Anthony Samsel and Stephanie Seneff. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
@@ -116,51 +116,51 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "Studies Link GMO Animal Feed to Severe Stomach Inflammation and Enlarged Uteri in Pigs", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2013: A long-term toxicology study on pigs fed a combined genetically modified (GM) soy and GM maize diet by Judy A. Carman, Howard R. Vlieger, Larry J. Ver Steeg, Verlyn E. Sneller, Garth W. Robinson, Catherine A. Clinch-Jones, Julie I. Haynes and John W. Edwards. Is this study credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: A Long-Term Toxicology Study on Pigs Fed a Combined Genetically Modified (GM) Soy and GM Maize Diet by Judy A. Carman, Howard R. Vlieger, Larry J. Ver Steeg, Verlyn E. Sneller, Garth W. Robinson, Catherine A. Clinch-Jones, Julie I. Haynes and John W. Edwards. Is this study credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "GMO risk assessment is based on very little scientific evidence in the sense that the testing methods recommended are not adequate to ensure safety", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "GMO Risk Assessment Is Based on Very Little Scientific Evidence in the Sense That the Testing Methods Recommended Are Not Adequate to Ensure Safety", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2004: Risk assessment of genetically modified crops for nutrition and health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2004: Risk Assessment of Genetically Modified Crops for Nutrition And Health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}, %{
-						poll: Poll.force_get("probability", "2004: Reese W, Schubert D. Safety testing and regulation of genetically engineered foods. Biotechnol Genet Eng Rev. Is this book legit?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2004: Reese W, Schubert D — Safety Testing And Regulation of Genetically Engineered Foods. Is this book legit?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}, %{
-						poll: Poll.force_get("probability", "2002: Schubert D. A different perspective on GM food. Nat Biotechnol. Is this book legit?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2002: Schubert D — A Different Perspective on GM food. Is this book legit?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
 				}]
 			}, %{
-				poll: Poll.force_get("quantity", "number of refugees EU should let inside", ["politics", "eu", "refugees"])
+				poll: Poll.force_get("quantity", "Number of Refugees EU Should Let Inside", ["politics", "eu", "refugees"])
 				|> Map.put(:fa_icon, "question"),
 				references: []
 			}, %{
-				poll: Poll.force_get("time_quantity", "number of yearly traffic fatalities in the USA", ["statistics", "usa"])
+				poll: Poll.force_get("time_quantity", "Number of Traffic Fatalities by Year in the USA", ["statistics", "usa"])
 				|> Map.put(:fa_icon, "road"),
 				references: []
 			}, %{
-				poll: Poll.force_get("probability", "the theory of evolution is true", ["science", "biology", "evolution"])
+				poll: Poll.force_get("probability", "The Theory of Evolution Is a Fact", ["science", "biology", "evolution"])
 				|> Map.put(:fa_icon, "hourglass-end"),
 				references: []
 			}, %{
-				poll: Poll.force_get("quantity", "year when we will have artificial general intelligence", ["science", "artificial intelligence"])
+				poll: Poll.force_get("quantity", "Year of Invention of Artificial General Intelligence", ["science", "artificial intelligence"])
 				|> Map.put(:fa_icon, "bolt"),
 				references: []
 			}, %{
-				poll: Poll.force_get("quantity", "additional tax revenue in USD if recreational cannabis becomes legal in California", ["california", "politics", "economics"])
+				poll: Poll.force_get("quantity", "Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California", ["california", "politics", "economics"])
 				|> Map.put(:fa_icon, "bank"),
 				references: []
 			}
 		]
 		polls = %{
-			:not_the_best_idea => Poll.force_get("probability", "vanilla ice cream flavor rating", ["joke"])
+			:not_the_best_idea => Poll.force_get("probability", "Vanilla Ice Cream Flavor Rating", ["joke"])
 		}
 
 		calculate_opts = get_calculation_opts_from_conn(conn)
