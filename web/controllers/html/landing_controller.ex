@@ -57,7 +57,7 @@ defmodule Liquio.LandingController do
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "DNA From Genetically Modified Crops Can Be Transferred Into Humans Who Eat Them", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "DNA From GM Crops Can Be Transferred Into Humans Who Eat Them", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
 						poll: Poll.force_get("probability", "2013: Complete Genes May Pass from Food to Human Blood by Sándor Spisák, Norbert Solymosi, Péter Ittzés, András Bodor, Dániel Kondor, Gábor Vattay, Barbara K. Barták, Ferenc Sipos, Orsolya Galamb, Zsolt Tulassay, Zoltán Szállási, Simon Rasmussen, Thomas Sicheritz-Ponten, Søren Brunak, Béla Molnár and István Csabai. Is this article credible?", ["science", "nature", "gmo"]),
@@ -65,15 +65,15 @@ defmodule Liquio.LandingController do
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "Study Links GMOs To Gluten Disorders That Affect 18 Million Americans", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "GMOs Cause Gluten Disorders That Affect 18 Million Americans", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2013: 'GMOs Linked To Gluten Disorders Plaguing 18 million Americans - Report' by RT. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: 'GMOs Linked to Gluten Disorders Plaguing 18 million Americans - Report' by RT. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "Study Links Genetically Modified Corn to Rat Tumors", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "GM Corn Causes Tumors in Rats", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
 						poll: Poll.force_get("probability", "2012: Long Term Toxicity of a Roundup Herbicide and a Roundup-Tolerant Genetically Modified Maize by Gilles-Eric Séralini, Emilie Clair, Robin Mesnage, Steeve Gress,  Nicolas Defarge, Manuela Malatesta, Didier Hennequin and Joël Spiroux de Vendômois. Is this article credible?", ["science", "nature", "gmo"]),
@@ -81,39 +81,59 @@ defmodule Liquio.LandingController do
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "Glyphosate Induces Human Breast Cancer Cells Growth Via Estrogen Receptors", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Glyphosate Is Safe For Human Consumption", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2013: Glyphosate Induces Human Breast Cancer Cells Growth Via Estrogen Receptors by Thongprakaisang S1, Thiantanawat A, Rangkadilok N, Suriyo T and Satayavivad J. Is this article credible?", ["science", "nature", "gmo"]),
-						for_choice: 1.0,
-						references: []
+						poll: Poll.force_get("probability", "Glyphosate Induces Human Breast Cancer Cells Growth Via Estrogen Receptors", ["science", "nature", "gmo"]),
+						for_choice: 0.0,
+						references: [%{
+							poll: Poll.force_get("probability", "2013: Glyphosate Induces Human Breast Cancer Cells Growth Via Estrogen Receptors by Thongprakaisang S1, Thiantanawat A, Rangkadilok N, Suriyo T and Satayavivad J. Is this article credible?", ["science", "nature", "gmo"]),
+							for_choice: 1.0,
+							references: []
+						}]
+					}, %{
+						poll: Poll.force_get("probability", "Glyphosate Causes Birth Defects", ["science", "nature", "gmo"]),
+						for_choice: 0.0,
+						references: [%{
+							poll: Poll.force_get("probability", "2010: Glyphosate-Based Herbicides Produce Teratogenic Effects on Vertebrates by Impairing Retinoic Acid Signaling by Alejandra Paganelli, Victoria Gnazzo, Helena Acosta, Silvia L. López and Andrés E. Carrasco. Is this article credible?", ["science", "nature", "gmo"]),
+							for_choice: 1.0,
+							references: []
+						}]
+					}, %{
+						poll: Poll.force_get("probability", "Glyphosate Causes Autism", ["science", "nature", "gmo"]),
+						for_choice: 0.0,
+						references: [%{
+							poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases by Anthony Samsel and Stephanie Seneff. Is this article credible?", ["science", "nature", "gmo"]),
+							for_choice: 1.0,
+							references: []
+						}]
+					}, %{
+						poll: Poll.force_get("probability", "Glyphosate Causes Parkinson's", ["science", "nature", "gmo"]),
+						for_choice: 0.0,
+						references: [%{
+							poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases by Anthony Samsel and Stephanie Seneff. Is this article credible?", ["science", "nature", "gmo"]),
+							for_choice: 1.0,
+							references: []
+						}]
+					}, %{
+						poll: Poll.force_get("probability", "Glyphosate Causes Alzheimer's", ["science", "nature", "gmo"]),
+						for_choice: 0.0,
+						references: [%{
+							poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases by Anthony Samsel and Stephanie Seneff. Is this article credible?", ["science", "nature", "gmo"]),
+							for_choice: 1.0,
+							references: []
+						}]
+					}, %{
+						poll: Poll.force_get("probability", "Chronically Ill Humans Have Higher Glyphosate Levels Than Healthy Humans", ["science", "nature", "gmo"]),
+						for_choice: 0.0,
+						references: [%{
+							poll: Poll.force_get("probability", "2014: Detection of Glyphosate Residues in Animals and Humans by Monika Krüger, Philipp Schledorn, Wieland Schrödl, Hans-Wolfgang Hoppe, Walburga Lutz and Awad A. Shehata. Is this credible?", ["science", "nature", "gmo"]),
+							for_choice: 1.0,
+							references: []
+						}]
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "Glyphosate Linked to Birth Defects", ["science", "nature", "gmo"]),
-					for_choice: 0.0,
-					references: [%{
-						poll: Poll.force_get("probability", "2010: Glyphosate-Based Herbicides Produce Teratogenic Effects on Vertebrates by Impairing Retinoic Acid Signaling by Alejandra Paganelli, Victoria Gnazzo, Helena Acosta, Silvia L. López and Andrés E. Carrasco. Is this article credible?", ["science", "nature", "gmo"]),
-						for_choice: 1.0,
-						references: []
-					}]
-				}, %{
-					poll: Poll.force_get("probability", "Study Links Glyphosate to Autism, Parkinson’s and Alzheimer’s", ["science", "nature", "gmo"]),
-					for_choice: 0.0,
-					references: [%{
-						poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases by Anthony Samsel and Stephanie Seneff. Is this article credible?", ["science", "nature", "gmo"]),
-						for_choice: 1.0,
-						references: []
-					}]
-				}, %{
-					poll: Poll.force_get("probability", "Chronically Ill Humans Have Higher Glyphosate Levels Than Healthy Humans", ["science", "nature", "gmo"]),
-					for_choice: 0.0,
-					references: [%{
-						poll: Poll.force_get("probability", "2014: Detection of Glyphosate Residues in Animals and Humans by Monika Krüger, Philipp Schledorn, Wieland Schrödl, Hans-Wolfgang Hoppe, Walburga Lutz and Awad A. Shehata. Is this credible?", ["science", "nature", "gmo"]),
-						for_choice: 1.0,
-						references: []
-					}]
-				}, %{
-					poll: Poll.force_get("probability", "Studies Link GMO Animal Feed to Severe Stomach Inflammation and Enlarged Uteri in Pigs", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "GM Food Causes Severe Stomach Inflammation and Enlarged Uteri in Pigs", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
 						poll: Poll.force_get("probability", "2013: A Long-Term Toxicology Study on Pigs Fed a Combined Genetically Modified (GM) Soy and GM Maize Diet by Judy A. Carman, Howard R. Vlieger, Larry J. Ver Steeg, Verlyn E. Sneller, Garth W. Robinson, Catherine A. Clinch-Jones, Julie I. Haynes and John W. Edwards. Is this study credible?", ["science", "nature", "gmo"]),
@@ -121,7 +141,7 @@ defmodule Liquio.LandingController do
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "GMO Risk Assessment Is Based on Very Little Scientific Evidence in the Sense That the Testing Methods Recommended Are Not Adequate to Ensure Safety", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "GMO Risk Assessment Is Based on Little Scientific Evidence in the Sense That the Testing Methods Recommended Are Not Adequate to Ensure Safety", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
 						poll: Poll.force_get("probability", "2004: Risk Assessment of Genetically Modified Crops for Nutrition and Health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?", ["science", "nature", "gmo"]),
