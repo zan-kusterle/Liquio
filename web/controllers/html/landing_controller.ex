@@ -29,7 +29,7 @@ defmodule Liquio.LandingController do
 					for_choice: 1.0,
 					references: []
 				}, %{
-					poll: Poll.force_get("probability", "Glaciers Are Retreating Almost Everywhere Around the world", ["science", "nature", "global warming"]),
+					poll: Poll.force_get("probability", "Glaciers Are Retreating Almost Everywhere Around the World", ["science", "nature", "global warming"]),
 					for_choice: 1.0,
 					references: []
 				}, %{
@@ -81,15 +81,15 @@ defmodule Liquio.LandingController do
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "Glyphosate Induces Human Breast Cancer Cells Growth via Estrogen Receptors", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Glyphosate Induces Human Breast Cancer Cells Growth Via Estrogen Receptors", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2013: Glyphosate Induces Human Breast Cancer Cells Growth via Estrogen Receptors by Thongprakaisang S1, Thiantanawat A, Rangkadilok N, Suriyo T and Satayavivad J. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2013: Glyphosate Induces Human Breast Cancer Cells Growth Via Estrogen Receptors by Thongprakaisang S1, Thiantanawat A, Rangkadilok N, Suriyo T and Satayavivad J. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "Glyphosate Linked To Birth Defects", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Glyphosate Linked to Birth Defects", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
 						poll: Poll.force_get("probability", "2010: Glyphosate-Based Herbicides Produce Teratogenic Effects on Vertebrates by Impairing Retinoic Acid Signaling by Alejandra Paganelli, Victoria Gnazzo, Helena Acosta, Silvia L. López and Andrés E. Carrasco. Is this article credible?", ["science", "nature", "gmo"]),
@@ -97,7 +97,7 @@ defmodule Liquio.LandingController do
 						references: []
 					}]
 				}, %{
-					poll: Poll.force_get("probability", "Study Links Glyphosate To Autism, Parkinson’s and Alzheimer’s", ["science", "nature", "gmo"]),
+					poll: Poll.force_get("probability", "Study Links Glyphosate to Autism, Parkinson’s and Alzheimer’s", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
 						poll: Poll.force_get("probability", "2013: Glyphosate’s Suppression of Cytochrome P450 Enzymes and Amino Acid Biosynthesis by the Gut Microbiome: Pathways to Modern Diseases by Anthony Samsel and Stephanie Seneff. Is this article credible?", ["science", "nature", "gmo"]),
@@ -150,7 +150,7 @@ defmodule Liquio.LandingController do
 				|> Map.put(:fa_icon, "hourglass-end"),
 				references: []
 			}, %{
-				poll: Poll.force_get("quantity", "Year of Invention of Artificial General Intelligence", ["science", "artificial intelligence"])
+				poll: Poll.force_get("quantity", "Year of the Invention of Artificial General Intelligence", ["science", "artificial intelligence"])
 				|> Map.put(:fa_icon, "bolt"),
 				references: []
 			}, %{
