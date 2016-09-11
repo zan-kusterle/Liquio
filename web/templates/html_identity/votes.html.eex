@@ -9,7 +9,7 @@
 						<%= if poll.reference != nil do %>
 							<span style="font-size: 15px; font-weight: bold; margin-right: 4px;"><%= for_choice_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
 						<% end %>
-						<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
+						<a href="/polls/<%= poll.id %>"><%= truncate poll.title, 150 %></a>
 						<%= if poll.choice != nil and poll.choice_type != "time_quantity" do %>
 							<span>&mdash;</span>
 							<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.choice["main"], poll.choice_type) %></span>

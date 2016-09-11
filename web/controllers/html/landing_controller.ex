@@ -124,11 +124,11 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "GMO Risk Assessment Is Based on Very Little Scientific Evidence in the Sense That the Testing Methods Recommended Are Not Adequate to Ensure Safety", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2004: Risk Assessment of Genetically Modified Crops for Nutrition And Health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2004: Risk Assessment of Genetically Modified Crops for Nutrition and Health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}, %{
-						poll: Poll.force_get("probability", "2004: Reese W, Schubert D — Safety Testing And Regulation of Genetically Engineered Foods. Is this book legit?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2004: Reese W, Schubert D — Safety Testing and Regulation of Genetically Engineered Foods. Is this book legit?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}, %{
