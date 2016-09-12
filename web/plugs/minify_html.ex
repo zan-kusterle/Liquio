@@ -14,6 +14,7 @@ defmodule Liquio.Plugs.MinifyHtml do
 				|> String.replace("\t", "")
 				|> String.replace("\n", "")
 				|> String.replace("\r", "\n")
+				|> String.replace("<!DOCTYPE html>", "<!DOCTYPE html>\n")
 				resp(conn, conn.status, html)
 			else
 				conn

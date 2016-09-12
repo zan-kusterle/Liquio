@@ -22,7 +22,7 @@
 					<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
 					<td><%= number_format(contribution.voting_power) %></td>
 					<td><%= if @poll.choice_type == "time_quantity" do
-						raw(contribution.choice |> Enum.map(fn({k, v}) -> "#{k} &mdash; #{number_format_simple v}" end) |> Enum.join("\n"))
+						raw(contribution.choice |> Enum.map(fn({k, v}) -> "#{k} &mdash; #{number_format_simple v}" end) |> Enum.join("\n\r"))
 					else
 						score_format(contribution.choice["main"], @poll.choice_type)
 					end %></td>
