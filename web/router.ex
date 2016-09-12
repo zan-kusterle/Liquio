@@ -10,6 +10,8 @@ defmodule Liquio.Router do
 		
 		plug Guardian.Plug.VerifySession
 		plug Guardian.Plug.LoadResource
+
+		plug Liquio.Plugs.MinifyHtml
 	end
 
 	pipeline :embed do
@@ -18,6 +20,8 @@ defmodule Liquio.Router do
 
 		plug Guardian.Plug.VerifySession
 		plug Guardian.Plug.LoadResource
+
+		plug Liquio.Plugs.MinifyHtml
 	end
 
 	pipeline :api do
