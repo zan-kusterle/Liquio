@@ -15,15 +15,15 @@
 	<div class="pure-u-1 pure-u-sm-5-6 row-input choices">
 		<label for="probability" class="pure-radio">
 			<input id="probability" type="radio" name="choice_type" value="probability" checked>
-			Probability <span class="choice-type-details">- vote with a probability between 0 and 1, mean result</span>
+			 Probability <span class="choice-type-details">- vote with a probability between 0 and 1, mean result</span>
 		</label>
 		<label for="quantity" class="pure-radio">
 			<input id="quantity" type="radio" name="choice_type" value="quantity">
-			Quantity <span class="choice-type-details">- vote with any number, median result</span>
+			 Quantity <span class="choice-type-details">- vote with any number, median result</span>
 		</label>
 		<label for="time_quantity" class="pure-radio">
 			<input id="time_quantity" type="radio" name="choice_type" value="time_quantity">
-			Time quantity <span class="choice-type-details">- vote with multiple time and number pairs, median result</span>
+			 Time quantity <span class="choice-type-details">- vote with multiple time and number pairs, median result</span>
 		</label>
 	</div>
 

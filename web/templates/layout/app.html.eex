@@ -12,13 +12,18 @@
 		<meta property="og:url" content="https://liqu.io/" />
 		<meta property="og:title" content="Liquio" />
 
+		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" href="/icons/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/icons/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/icons/manifest.json">
+		<link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5">
+		<meta name="theme-color" content="#ffffff">
+
 		<%= if assigns[:title] do %>
 			<title><%= @title %></title>
 		<% else %>
 			<title>Liquio</title>
 		<% end %>
-
-		<link rel="icon" href="/favicon.ico" />
 
 		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
 	</head>

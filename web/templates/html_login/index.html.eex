@@ -5,4 +5,4 @@
 	<button type="submit" class="pure-button pure-button-primary">Login</button>
 </form>
 
-<a href="/identities/new" class="new-identity-link">or create new identity</a>
+<a href="/identities/new" class="new-identity-link">Create new identity</a>
