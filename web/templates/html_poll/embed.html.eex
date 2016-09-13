@@ -7,11 +7,8 @@
 		height: 100%;
 		margin: 0px;
 		overflow: hidden;
-		-webkit-overflow-scrolling:touch
-		color: #333;
+		-webkit-overflow-scrolling: touch;
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-		font-weight: bold;
-		font-size: 16px;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
@@ -35,10 +32,15 @@
 		display: table-cell;
 		vertical-align: middle;
 		text-align: center;
+		font-weight: bold;
+		color: #333;
+		font-size: 16px;
+		line-height: 14px;
 	}
 
 	.turnout {
 		font-size: 12px;
+		line-height: 10px;
 	}
 </style>
 
