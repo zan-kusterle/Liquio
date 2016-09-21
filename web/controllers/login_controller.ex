@@ -14,7 +14,7 @@ defmodule Liquio.LoginController do
 		else
 			conn
 			|> send_resp(:unauthorized, "")
-		end	
+		end
 	end
 
 	def delete(conn, _params) do
