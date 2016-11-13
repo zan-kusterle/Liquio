@@ -1,15 +1,15 @@
 APP="liquio"
 
 BUILD_HOST="104.197.215.238"
-BUILD_USER="zank"
+BUILD_USER="zan"
 BUILD_AT="/home/zank/builds"
 
 STAGING_HOSTS="104.197.215.238"
-STAGING_USER="zank"
+STAGING_USER="zan"
 TEST_AT="/home/zank/staging"
 
 PRODUCTION_HOSTS="104.197.215.238"
-PRODUCTION_USER="zank"
+PRODUCTION_USER="zan"
 DELIVER_TO="/home/zank"
 
 AUTO_VERSION=commit-count+git-revision+branch-unless-master
