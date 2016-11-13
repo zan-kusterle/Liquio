@@ -6,7 +6,7 @@ defmodule Liquio.LandingController do
 	def index(conn, _params) do
 		examples = [
 			%{
-				poll: Poll.force_get("probability", "Global Warming Is Caused by Human Activity", ["science", "nature", "global warming"])
+				poll: Poll.force_get("probability", "Human Activity Is Causing Global Warming", ["science", "nature", "global warming"])
 				|> Map.put(:fa_icon, "sun-o"),
 				references: [%{
 					poll: Poll.force_get("time_quantity", "Earth Sea Level in cm With 0 at Year 1900", ["science", "nature", "global warming"]),
@@ -158,24 +158,32 @@ defmodule Liquio.LandingController do
 					}]
 				}]
 			}, %{
-				poll: Poll.force_get("quantity", "Number of Refugees EU Should Let Inside", ["politics", "eu", "refugees"])
-				|> Map.put(:fa_icon, "question"),
-				references: []
-			}, %{
-				poll: Poll.force_get("time_quantity", "Number of Traffic Fatalities by Year in the USA", ["statistics", "usa"])
-				|> Map.put(:fa_icon, "road"),
-				references: []
+				poll: Poll.force_get("quantity", "EU Refugee Crisis Approval Rating", ["politics", "eu", "refugees"])
+				|> Map.put(:fa_icon, "users"),
+				references: [%{
+					poll: Poll.force_get("quantity", "Number of Refugees EU Should Let Inside", ["politics", "eu", "refugees"])
+					|> Map.put(:fa_icon, "question"),
+					references: []
+				}]
 			}, %{
 				poll: Poll.force_get("probability", "The Theory of Evolution Is a Fact", ["science", "biology", "evolution"])
 				|> Map.put(:fa_icon, "hourglass-end"),
 				references: []
 			}, %{
-				poll: Poll.force_get("quantity", "Year of the Invention of Artificial General Intelligence", ["science", "artificial intelligence"])
-				|> Map.put(:fa_icon, "bolt"),
-				references: []
-			}, %{
-				poll: Poll.force_get("quantity", "Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California", ["california", "politics", "economics"])
+				poll: Poll.force_get("quantity", "USA Government Should Legalize Cannabis", ["california", "politics", "economics"])
 				|> Map.put(:fa_icon, "bank"),
+				references: [%{
+					poll: Poll.force_get("quantity", "Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California", ["california", "politics", "economics"])
+					|> Map.put(:fa_icon, "bank"),
+					references: []
+				}, %{
+					poll: Poll.force_get("time_quantity", "Number of Traffic Fatalities by Year in the USA", ["statistics", "usa"])
+					|> Map.put(:fa_icon, "road"),
+					references: []
+				}]
+			}, %{
+				poll: Poll.force_get("quantity", "Invention of General Artificial Intelligence Year", ["science", "artificial intelligence"])
+				|> Map.put(:fa_icon, "bolt"),
 				references: []
 			}
 		]

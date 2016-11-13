@@ -1,18 +1,4 @@
 <style>
-	html {
-		height: 100%;
-	}
-
-	body {
-		height: 100%;
-		margin: 0px;
-		overflow: hidden;
-		-webkit-overflow-scrolling: touch;
-		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-	}
-
 	.area {
 		width: 120px;
 		height: 45px;
@@ -43,8 +29,6 @@
 		line-height: 10px;
 	}
 </style>
-
-<title>Liquio Inline</title>
 
 <div class="area" style="background: <%= score_color(@poll) %>;">
 	<div class="bubble">

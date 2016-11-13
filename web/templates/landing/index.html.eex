@@ -10,15 +10,15 @@
 </div>
 
 <div class="content examples">
-	<h2 class="heading">Featured polls</h2>
+	<h2 class="heading">EXPLORE</h2>
 
-	<div class="list">
+	<div class="pure-g">
 		<%= for poll <- @examples do %>
-			<div class="example">
+			<div class="example pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
 				<a class="liquio-inline" href="/polls/<%= poll.id %>" style="text-decoration: none; display: inline-block;">
 					<i class="fa fa-<%= poll.fa_icon %>" aria-hidden="true" style="margin-right: 15px;"></i>
 					<span style="vertical-align: middle; margin-right: 20px;"><%= poll.title %></span>
-					<iframe src="/polls/<%= poll.id %>/embed" seamless="seamless" scrolling="no" frameBorder="0" width="125px" height="50px" style="vertical-align: middle; margin-right: 4px; pointer-events: none;"></iframe>
+					<%= render Liquio.HtmlPollView, "embed.html", poll: poll %>
 				</a>
 			</div>
 		<%= end %>

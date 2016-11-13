@@ -4,8 +4,6 @@ defmodule Liquio.Poll do
 	alias Liquio.Repo
 	alias Liquio.Poll
 	alias Liquio.Vote
-	alias Liquio.Reference
-	alias Liquio.Identity
 	alias Liquio.Results.GetData
 	alias Liquio.Results.CalculateContributions
 	alias Liquio.Results.AggregateContributions

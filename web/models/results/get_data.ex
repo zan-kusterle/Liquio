@@ -60,7 +60,7 @@ defmodule Liquio.Results.GetData do
 			identity_id,
 			{
 				Timex.DateTime.now,
-				:random.uniform
+				:rand.uniform
 			}
 		}
 	end
