@@ -1,25 +1,6 @@
 defmodule Liquio.HtmlIdentityController do
 	use Liquio.Web, :controller
 
-	def new(conn, _params) do
-		conn
-		|> render("new.html")
-	end
-
-	def create(conn, params) do
-		password = Identity.generate_password()
-		result = Identity.create(Identity.changeset(%Identity{
-			password_hash: Comeonin.Bcrypt.hashpwsalt(password)
-		}, params))
-
-		result |> handle_errors(conn, fn identity ->
-			conn
-			|> Guardian.Plug.sign_in(identity)
-			|> put_flash(:info, "Hello, #{identity.name}")
-			|> render("credentials.html", identity: identity, password: password)
-		end)
-	end
-
 	with_params(%{
 		:identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
 	},

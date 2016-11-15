@@ -9,9 +9,7 @@ defmodule Liquio.IdentityController do
 	plug :scrub_params, "identity" when action in [:create]
 	def create(conn, %{"identity" => params}) do
 		password = Identity.generate_password()
-		changeset = Identity.changeset(%Identity{
-			password_hash: Comeonin.Bcrypt.hashpwsalt(password)
-		}, params)
+		changeset = Identity.changeset(%Identity{}, params)
 		case Identity.create(changeset) do
 			{:ok, identity} ->
 				conn

@@ -1,5 +1,9 @@
-<form method="POST" action="/identities" autocomplete="off" class="pure-form pure-form-stacked create-identity">
+<form method="POST" action="/tokens" autocomplete="off" class="pure-form pure-form-stacked create-identity">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+
+	<input type="hidden" name="token" value="<%= @token %>" />
+
+	<p>Fill out the form below to login with <%= @email %></p>
 
 	<div class="inputs">
 		<label for="username">Username</label>
@@ -9,7 +13,5 @@
 		<input id="name" type="text" required name="name" />
 	</div>
 
-	<button type="submit" class="pure-button pure-button-primary">Create</button>
-
-	<p class="notes">All the data associated with your identity will be visible to everyone!</p>
+	<button type="submit" class="pure-button pure-button-primary">Login</button>
 </form>

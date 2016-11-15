@@ -1,29 +1,24 @@
 defmodule Liquio.HtmlLoginController do
 	use Liquio.Web, :controller
 
+	alias Liquio.Token
+
 	def index(conn, _params) do
 		conn
-		|> render("index.html")
+		|> render("index.html", width: 500)
 	end
 
-	def create(conn, %{"username" => username, "password" => password}) do
-		identity = Repo.get_by(Identity, username: String.downcase(username))
-		if identity != nil and Comeonin.Bcrypt.checkpw(password, identity.password_hash) do
-			conn
-			|> put_flash(:info, "Hello, #{identity.name}")
-			|> Guardian.Plug.sign_in(identity)
-			|> redirect(to: html_identity_path(conn, :show, identity.id))
-		else
-			conn
-			|> put_flash(:error, "Wrong username or password")
-			|> redirect(to: html_login_path(conn, :index))
-		end	
+	def create(conn, %{"email" => email}) do
+		Token.new(email)
+		conn
+		|> put_flash(:info, "Check your inbox at #{email}")
+		|> redirect(to: html_login_path(conn, :index))	
 	end
 
 	def delete(conn, _params) do
 		conn
 		|> Guardian.Plug.sign_out
 		|> put_flash(:info, "Goodbye")
-		|> redirect(to: html_login_path(conn, :create))
+		|> redirect(to: html_login_path(conn, :index))
 	end
 end

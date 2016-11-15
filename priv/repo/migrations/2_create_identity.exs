@@ -3,9 +3,8 @@ defmodule Liquio.Repo.Migrations.CreateIdentity do
 
 	def change do
 		create table(:identities) do
+			add :email, :string, null: false, size: 1000
 			add :username, :string, null: false, size: 20
-			add :password_hash, :string, null: false
-
 			add :name, :string, null: false
 
 			add :trust_metric_poll_id, references(:polls, on_delete: :nothing), null: false

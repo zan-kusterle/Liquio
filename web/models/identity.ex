@@ -4,9 +4,8 @@ defmodule Liquio.Identity do
 	alias Liquio.Repo
 
 	schema "identities" do
+		field :email, :string
 		field :username, :string
-		field :password_hash, :string
-
 		field :name, :string
 
 		belongs_to :trust_metric_poll, Liquio.Poll
