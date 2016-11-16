@@ -22,9 +22,15 @@ defmodule Liquio.HtmlTokenController do
 
 	def create(conn, params) do
 		email = Token.get_email(params["token"])
-		result = Identity.create(Identity.changeset(%Identity{}, params))
+		if email == nil do
+			conn
+			|> put_flash(:info, "Error logging in, please try again")
+			|> redirect(to: html_login_path(conn, :index))
+		else
+			result = Identity.create(Identity.changeset(%Identity{email: email}, params))
 
-		result |> handle_errors(conn, & sign_in(conn, &1, params["token"]))
+			result |> handle_errors(conn, & sign_in(conn, &1, params["token"]))
+		end
 	end
 
 	defp sign_in(conn, identity, token) do

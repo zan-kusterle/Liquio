@@ -4,7 +4,7 @@ defmodule Liquio.Repo.Migrations.CreateToken do
 	def change do
 		create table(:tokens) do
 			add :email, :string, null: false, size: 1000
-			add :token, :string, null: false, size: 40
+			add :token, :string, null: false
 			add :is_valid, :boolean
 			add :datetime, :datetime, null: false
 		end

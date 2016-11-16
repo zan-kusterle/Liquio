@@ -144,7 +144,7 @@ defmodule Liquio.LandingController do
 					poll: Poll.force_get("probability", "GMO Risk Assessment Is Based on Little Scientific Evidence in the Sense That the Testing Methods Recommended Are Not Adequate to Ensure Safety", ["science", "nature", "gmo"]),
 					for_choice: 0.0,
 					references: [%{
-						poll: Poll.force_get("probability", "2004: Risk Assessment of Genetically Modified Crops for Nutrition and Health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?", ["science", "nature", "gmo"]),
+						poll: Poll.force_get("probability", "2004: Risk Assessment of Genetically Modified Crops For Nutrition and Health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?", ["science", "nature", "gmo"]),
 						for_choice: 1.0,
 						references: []
 					}, %{
@@ -158,11 +158,12 @@ defmodule Liquio.LandingController do
 					}]
 				}]
 			}, %{
-				poll: Poll.force_get("quantity", "EU Refugee Crisis Approval Rating", ["politics", "eu", "refugees"])
+				poll: Poll.force_get("quantity", "President Donald Trump's Approval Rating", ["politics", "usa", "donald trump"])
 				|> Map.put(:fa_icon, "users"),
 				references: [%{
 					poll: Poll.force_get("quantity", "Number of Refugees EU Should Let Inside", ["politics", "eu", "refugees"])
 					|> Map.put(:fa_icon, "question"),
+					for_choice: 0.5,
 					references: []
 				}]
 			}, %{
@@ -175,10 +176,12 @@ defmodule Liquio.LandingController do
 				references: [%{
 					poll: Poll.force_get("quantity", "Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California", ["california", "politics", "economics"])
 					|> Map.put(:fa_icon, "bank"),
+					for_choice: 1.0,
 					references: []
 				}, %{
 					poll: Poll.force_get("time_quantity", "Number of Traffic Fatalities by Year in the USA", ["statistics", "usa"])
 					|> Map.put(:fa_icon, "road"),
+					for_choice: 1.0,
 					references: []
 				}]
 			}, %{
