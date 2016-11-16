@@ -20,6 +20,7 @@ defmodule Liquio.HtmlTokenController do
 		end
 	end
 
+	# TODO: Move to identity controller, merge show to login
 	def create(conn, params) do
 		email = Token.get_email(params["token"])
 		if email == nil do
