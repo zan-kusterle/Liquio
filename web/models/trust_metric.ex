@@ -31,7 +31,7 @@ defmodule Liquio.TrustMetric do
 					|> :calendar.datetime_to_gregorian_seconds
 					|> Kernel.-(cache_time)
 					|> :calendar.gregorian_seconds_to_datetime
-					|> Timex.from_erl
+					|> Timex.from_timestamp
 				if Timex.compare(trust_metric.last_update, if_before_datetime) < 0 do
 					response = HTTPotion.get(url, headers: ["If-Modified-Since": Timex.format!(trust_metric.last_update, "{ISO}")])
 					if HTTPotion.Response.success?(response) do
