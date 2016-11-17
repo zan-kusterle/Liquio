@@ -5,10 +5,10 @@ defmodule Liquio.Plugs.DatetimeParam do
 				{:ok, datetime} ->
 					{:ok, datetime}
 				{:error, _} ->
-					{:ok, Timex.DateTime.now}
+					{:ok, Timex.now}
 			end
 		else
-			{:ok, Timex.DateTime.now}
+			{:ok, Timex.now}
 		end
 	end
 end

@@ -14,7 +14,8 @@ defmodule Liquio.Token do
 
 	def get_email(token) do
 		token_item = Repo.get_by(Token, token: token, is_valid: true)
-		if token_item != nil and token_item.datetime do
+		before = Timex.shift(Timex.now, minutes: -Application.get_env(:liquio, :token_lifespan_minutes))
+		if token_item != nil and Timex.before?(before, token_item.datetime) do
 			token_item.email
 		else
 			nil
@@ -23,14 +24,15 @@ defmodule Liquio.Token do
 
 	def new(email) do
 		token = SecureRandom.hex(30)
-		#Repo.update! Ecto.Changeset.change token_item, is_valid: false
+		from(t in Token, where: t.email == ^email)
+		|> Repo.update_all(set: [is_valid: false])
 		token_item = Repo.insert!(%Token{
 			email: email,
 			token: token,
 			is_valid: true
 		})
 
-		url = Router.Helpers.html_token_url(Endpoint, :show, token)
+		url = Router.Helpers.html_login_url(Endpoint, :show, token)
 		send_email(
 			to: email,
 			from: "login@liqu.io",

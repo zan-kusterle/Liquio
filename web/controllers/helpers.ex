@@ -26,10 +26,10 @@ defmodule Liquio.Controllers.Helpers do
 
 	def get_calculation_opts_from_conn(conn) do
 		identity = Guardian.Plug.current_resource(conn)
-		now = Timex.DateTime.now
+		now = Timex.now
 		datetime =
 			if Map.has_key?(conn.params, :datetime) do
-				param_datetime = Timex.DateTime.shift(conn.params.datetime, days: 1)
+				param_datetime = Timex.shift(conn.params.datetime, days: 1)
 				if param_datetime < now do
 					param_datetime
 				else

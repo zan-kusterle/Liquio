@@ -37,11 +37,10 @@ defmodule Liquio.Router do
 
 		get "/", LandingController, :index
 
-		resources "/login", HtmlLoginController, only: [:index, :create]
-		resources "/tokens", HtmlTokenController, only: [:show, :create]
+		resources "/login", HtmlLoginController, only: [:index, :show, :create]
 		get "/logout", HtmlLoginController, :delete
 
-		resources "/identities", HtmlIdentityController, only: [:show] do
+		resources "/identities", HtmlIdentityController, only: [:create, :show] do
 			resources "/delegations", HtmlDelegationController, only: [:create]
 			get "/delegations/from", HtmlIdentityController, :delegations_from
 			get "/delegations/to", HtmlIdentityController, :delegations_to

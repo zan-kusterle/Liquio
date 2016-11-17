@@ -59,7 +59,7 @@ defmodule Liquio.Results.GetData do
 		for identity_id <- identity_ids |> Enum.take_random(num_votes), into: %{}, do: {
 			identity_id,
 			{
-				Timex.DateTime.now,
+				Timex.now,
 				:rand.uniform
 			}
 		}

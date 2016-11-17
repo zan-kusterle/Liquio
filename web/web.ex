@@ -45,6 +45,7 @@ defmodule Liquio.Web do
 			alias Liquio.Vote
 			alias Liquio.Poll
 			alias Liquio.Reference
+			alias Liquio.Token
 
 			import Liquio.Controllers.Helpers
 		end

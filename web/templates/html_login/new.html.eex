@@ -1,4 +1,4 @@
-<form method="POST" action="/tokens" autocomplete="off" class="pure-form pure-form-stacked create-identity">
+<form method="POST" action="/identities" autocomplete="off" class="pure-form pure-form-stacked create-identity">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 	<input type="hidden" name="token" value="<%= @token %>" />
