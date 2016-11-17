@@ -171,7 +171,7 @@ defmodule Liquio.LandingController do
 				|> Map.put(:fa_icon, "hourglass-end"),
 				references: []
 			}, %{
-				poll: Poll.force_get("probability", "USA Government Should Legalize Cannabis", ["california", "politics", "economics"])
+				poll: Poll.force_get("probability", "USA Government Should Legalize Recreational Cannabis", ["california", "politics", "economics"])
 				|> Map.put(:fa_icon, "bank"),
 				references: [%{
 					poll: Poll.force_get("quantity", "Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California", ["california", "politics", "economics"])
