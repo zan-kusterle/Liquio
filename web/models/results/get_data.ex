@@ -30,7 +30,7 @@ defmodule Liquio.Results.GetData do
 		votes = for row <- rows, into: %{} do
 			{date, {h, m, s, _}} = Enum.at(row, 1)
 			data = {
-				Timex.datetime({date, {h, m, s}}),
+				Timex.to_naive_datetime({date, {h, m, s}}),
 				Enum.at(row, 2)["choice"]
 			}
 			{Enum.at(row, 0), data}
