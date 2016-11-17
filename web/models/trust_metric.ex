@@ -24,15 +24,9 @@ defmodule Liquio.TrustMetric do
 	def get(url) do
 		trust_metric = Repo.get_by(TrustMetric, url: url)
 		if trust_metric do
-			cache_time = Application.get_env(:liquio, :trust_metric_cache_time_seconds)
 			Task.async(fn ->
-				if_before_datetime = Timex.now
-					|> Timex.to_erl
-					|> :calendar.datetime_to_gregorian_seconds
-					|> Kernel.-(cache_time)
-					|> :calendar.gregorian_seconds_to_datetime
-					|> Timex.from_timestamp
-				if Timex.compare(trust_metric.last_update, if_before_datetime) < 0 do
+				if_before_datetime = Timex.shift(Timex.now, seconds: -Application.get_env(:liquio, :trust_metric_cache_time_seconds))
+				if Timex.before?(trust_metric.last_update, if_before_datetime) do
 					response = HTTPotion.get(url, headers: ["If-Modified-Since": Timex.format!(trust_metric.last_update, "{ISO}")])
 					if HTTPotion.Response.success?(response) do
 						usernames = usernames_from_html response.body
