@@ -177,7 +177,7 @@ p {
 		-moz-appearance: none;
 		appearance: none;
 
-		border-radius: 2px;
+		border-radius: 0px;
 		box-shadow: none;
 	}
 
@@ -283,8 +283,11 @@ p {
 	}
 
 	.pure-button {
+		border-radius: 0;
+		height: 36px;
 		color: rgba(0, 0, 0, 0.8);
 		background-color: #E6E6E6;
+		background-color: rgba(0, 0, 0, 0.08);
 		font-size: 14px;
 		@media @sm {
 			font-size: 16px;
@@ -292,7 +295,11 @@ p {
 	}
 	.pure-button:hover {
 		background-image: none;
-		opacity: 0.9;
+		background-color: rgba(0, 0, 0, 0.12);
+	}
+	.pure-button:active {
+		box-shadow: none;
+		background-color: rgba(0, 0, 0, 0.15);
 	}
 
 	.delete-button {
