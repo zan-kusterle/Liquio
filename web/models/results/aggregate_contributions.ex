@@ -93,8 +93,8 @@ defmodule Liquio.Results.AggregateContributions do
 	end
 
 	defp moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do
-		ct = contribution.datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
-		rt = reference_datetime |> Timex.to_erlang_datetime |> :calendar.datetime_to_gregorian_seconds
+		ct = contribution.datetime |> Timex.to_erl |> :calendar.datetime_to_gregorian_seconds
+		rt = reference_datetime |> Timex.to_erl |> :calendar.datetime_to_gregorian_seconds
 		delta_days = (rt - ct) / (24 * 3600)
 
 		:math.pow(0.5, delta_days / vote_weight_halving_days)

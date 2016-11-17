@@ -27,7 +27,7 @@ defmodule Liquio.TrustMetric do
 			cache_time = Application.get_env(:liquio, :trust_metric_cache_time_seconds)
 			Task.async(fn ->
 				if_before_datetime = Timex.now
-					|> Timex.to_erlang_datetime
+					|> Timex.to_erl
 					|> :calendar.datetime_to_gregorian_seconds
 					|> Kernel.-(cache_time)
 					|> :calendar.gregorian_seconds_to_datetime
