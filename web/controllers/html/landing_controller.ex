@@ -158,7 +158,7 @@ defmodule Liquio.LandingController do
 					}]
 				}]
 			}, %{
-				poll: Poll.force_get("quantity", "President Donald Trump's Approval Rating", ["politics", "usa", "donald trump"])
+				poll: Poll.force_get("probability", "President Donald Trump's Approval Rating", ["politics", "usa", "donald trump"])
 				|> Map.put(:fa_icon, "users"),
 				references: [%{
 					poll: Poll.force_get("quantity", "Number of Refugees EU Should Let Inside", ["politics", "eu", "refugees"])
@@ -171,7 +171,7 @@ defmodule Liquio.LandingController do
 				|> Map.put(:fa_icon, "hourglass-end"),
 				references: []
 			}, %{
-				poll: Poll.force_get("quantity", "USA Government Should Legalize Cannabis", ["california", "politics", "economics"])
+				poll: Poll.force_get("probability", "USA Government Should Legalize Cannabis", ["california", "politics", "economics"])
 				|> Map.put(:fa_icon, "bank"),
 				references: [%{
 					poll: Poll.force_get("quantity", "Additional Tax Revenue in USD If Recreational Cannabis Becomes Legal in California", ["california", "politics", "economics"])
