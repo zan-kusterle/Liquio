@@ -4,7 +4,7 @@ defmodule Liquio.Results.GetData do
 	def get_inverse_delegations(datetime) do
 		query = "SELECT DISTINCT ON (from_identity_id, to_identity_id) from_identity_id, to_identity_id, data
 			FROM delegations
-			WHERE datetime <= '#{Timex.format!(datetime, "{ISO}")}'
+			WHERE datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY from_identity_id, to_identity_id, datetime DESC;"
 		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows
 		rows = rows |> Enum.filter(& Enum.at(&1, 2))
@@ -24,7 +24,7 @@ defmodule Liquio.Results.GetData do
 	def get_votes(poll_id, datetime) do
 		query = "SELECT DISTINCT ON (v.identity_id) v.identity_id, v.datetime, v.data
 			FROM votes AS v
-			WHERE v.poll_id = #{poll_id} AND v.datetime <= '#{Timex.format!(datetime, "{ISO}")}'
+			WHERE v.poll_id = #{poll_id} AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
 		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows |> Enum.filter(& Enum.at(&1, 2))
 		votes = for row <- rows, into: %{} do

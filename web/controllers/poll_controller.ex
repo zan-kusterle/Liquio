@@ -40,7 +40,7 @@ defmodule Liquio.PollController do
 		|> Poll.calculate_contributions(get_calculation_opts_from_conn(conn))
 		|> Enum.map(fn(contribution) ->
 			%{
-				:datetime => Timex.format!(contribution.datetime, "{ISO}"),
+				:datetime => Timex.format!(contribution.datetime, "{ISO:Basic}"),
 				:choice => contribution.choice,
 				:voting_power => contribution.voting_power,
 				:identity_id => contribution.identity_id
