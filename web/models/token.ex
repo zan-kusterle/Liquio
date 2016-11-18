@@ -37,7 +37,7 @@ defmodule Liquio.Token do
 			to: email,
 			from: "Liquio <login@liqu.io>",
 			subject: "Instantly login to Liquio",
-			html: "<a href=\"#{url}\" style=\"border: 2px solid #1f8dd6; color: #1f8dd6; display: block; padding: 20px; text-align: center; max-width: 200px; margin: 0 auto; font-size: 26px; text-decoration: none;\">Instant Login</a>"
+			html: "<a href=\"#{url}\" style=\"background-color: #1f8dd6; color: white; display: block; padding: 20px 30px; text-align: center; max-width: 200px; margin: 0 auto; font-size: 22px; text-decoration: none; border-radius: 5px;\">Login to Liquio</a>"
 		)
 	end
 

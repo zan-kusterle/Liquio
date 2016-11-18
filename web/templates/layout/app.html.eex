@@ -63,10 +63,10 @@
 			<div class="main-wrap">
 				<div class="scrollable">
 					<%= if get_flash(@conn, :error) != nil do %>
-						<p class="alert alert-error" role="alert"><%= get_flash(@conn, :error) %></p>
+						<p class="alert alert-error" role="alert"<%= if assigns[:width] do %> style="max-width: <%= @width %>px;"<% end %>><%= get_flash(@conn, :error) %></p>
 					<% else %>
 						<%= if get_flash(@conn, :info) != nil do %>
-							<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>					
+							<p class="alert alert-info" role="alert"<%= if assigns[:width] do %> style="max-width: <%= @width %>px;"<% end %>><%= get_flash(@conn, :info) %></p>
 						<% end %>
 					<% end %>
 
