@@ -14,6 +14,8 @@ defmodule Liquio.Poll do
 		field :title, :string
 		field :topics, {:array, :string}
 
+		field :latest_default_results, :map
+
 		has_many :votes, Vote
 
 		timestamps
