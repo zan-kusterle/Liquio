@@ -80,6 +80,17 @@ defmodule Liquio.Poll do
 		from(p in Poll, where: p.kind == "custom" and fragment("? = ANY(?)", ^topic, p.topics))
 	end
 
+	def sorted_top(query) do
+		from p in query,
+		where: not is_nil(p.latest_default_results),
+		order_by: [desc: fragment("?->'count'", p.latest_default_results)]
+	end
+
+	def sorted_new(query) do
+		from p in query,
+		order_by: [desc: p.id]
+	end
+
 	defp capitalize_title(title) do
 		{a, b} = String.split_at(title, 1)
 		(a |> String.upcase) <> b

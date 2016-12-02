@@ -1,8 +1,8 @@
 <p class="heading"><%= @heading %></p>
 
-<%= if Enum.count(@polls) > 10 do %>
+<%= if assigns[:polls] != nil do %>
 	<p class="heading">
-		<a href="<%= @url %>/top" class="sort">top</a>
-		<a href="<%= @url %>/new" class="sort">new</a>
+		<a href="<%= @url %>/top" class="sort<%= if @sort == "top" do %> active<% end %>">top</a>
+		<a href="<%= @url %>/new" class="sort<%= if @sort == "new" do %> active<% end %>">new</a>
 	</p>
 <% end %>
