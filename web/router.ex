@@ -54,9 +54,11 @@ defmodule Liquio.Router do
 			resources "/references", HtmlReferenceController, only: [:index, :show]
 		end
 
-		get "/explore", HtmlExploreController, :index
-		resources "/topics", HtmlExploreController, only: [:show]
-		get "/search", HtmlExploreController, :search
+		get "/explore/:sort", HtmlExploreController, :index
+		resources "/topics", HtmlExploreController, only: [:show] do
+			get "/:sort", HtmlExploreController, :show
+		end
+		get "/search/:sort", HtmlExploreController, :search
 	end
 
 	scope "/", Liquio do

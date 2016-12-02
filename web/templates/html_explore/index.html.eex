@@ -1,9 +1,15 @@
-<%= unless Enum.empty? @polls do %>
-	<%= for poll <- @polls do %>
-		<div class="poll-item">
-			<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
-		</div>
-	<% end %>
-<% else %>
+<%= if (Enum.empty? @polls) and (Enum.empty? @identities) do %>
 	There is nothing here
+<% end %>
+
+<%= for poll <- @polls do %>
+	<div class="poll-item">
+		<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
+	</div>
+<% end %>
+
+<%= for identity <- @identities do %>
+	<div class="poll-item">
+		<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
+	</div>
 <% end %>

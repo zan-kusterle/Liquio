@@ -1,9 +1,0 @@
-<%= unless Enum.empty? @identities do %>
-	<%= for identity <- @identities do %>
-		<div class="poll-item">
-			<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
-		</div>
-	<% end %>
-<% else %>
-	There is nothing here
-<% end %>

@@ -1,4 +1,0 @@
-<p class="heading"><%= @heading %></p>
-<%= if assigns[:query] do %>
-	<a class="heading-a" href="<%= html_explore_path(@conn, :search, t: "poll", query: @query) %>">SEARCH POLLS</a>
-<% end %>

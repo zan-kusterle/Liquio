@@ -2,7 +2,7 @@ defmodule Liquio.LandingController do
 	use Liquio.Web, :controller
 
 	plug :put_layout, "landing.html"
-
+	# democratic primary rigged
 	def index(conn, _params) do
 		examples = [
 			%{

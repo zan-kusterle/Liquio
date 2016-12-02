@@ -1,4 +1,8 @@
 <p class="heading"><%= @heading %></p>
-<%= if assigns[:query] do %>
-	<a class="heading-a" href="<%= html_explore_path(@conn, :search, t: "identity", query: @query) %>">SEARCH IDENTITIES</a>
+
+<%= if Enum.count(@polls) > 10 do %>
+	<p class="heading">
+		<a href="<%= @url %>/top" class="sort">top</a>
+		<a href="<%= @url %>/new" class="sort">new</a>
+	</p>
 <% end %>
