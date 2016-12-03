@@ -215,13 +215,13 @@ defmodule Liquio.LandingController do
 		end)
 	end
 
-	def cast_approve_vote(poll, reference, identity) do
-		reference = Reference.get(poll, reference.poll, reference.for_choice)
-		|> Repo.preload([:approval_poll])
+	def cast_approve_vote(poll, example_reference, identity) do
+		reference = Reference.get(poll, example_reference.poll)
+		|> Repo.preload([:for_choice_poll])
 
-		current_vote = Vote.current_by(reference.approval_poll, identity)
+		current_vote = Vote.current_by(reference.for_choice_poll, identity)
 		if current_vote == nil do
-			Vote.set(reference.approval_poll, identity, %{:main => 1.0})
+			Vote.set(reference.for_choice_poll, identity, %{:main => example_reference.for_choice})
 		end
 	end
 end

@@ -14,8 +14,7 @@ defmodule Liquio.ReferenceView do
 			id: reference.id,
 			poll: Liquio.PollView.render("poll.json", poll: reference.poll),
 			reference_poll: Liquio.PollView.render("poll.json", poll: reference.reference_poll),
-			approval_poll: Liquio.PollView.render("poll.json", poll: reference.approval_poll),
-			for_choice: reference.for_choice
+			for_choice_poll: Liquio.PollView.render("poll.json", poll: reference.for_choice_poll)
 		}
 	end
 end

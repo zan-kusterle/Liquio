@@ -1,11 +1,11 @@
-<div class="section-title" style="margin-top: 0px;">Decide whether the following is a reference that provides evidence for choice <b><%= score_format(@for_choice, @reference.poll.choice_type) %></b>.</div>
+<div class="section-title" style="margin-top: 0px;">Decide for which choice the following poll provides evidence.</div>
 <p class="claim"><%= @reference.reference_poll.title %></p>
 
 <%= render Liquio.HtmlPollView, "cast_vote.html",
-	to_path: "/polls/#{@reference.poll.id}/references/#{@reference.reference_poll.id}?for_choice=#{@reference.for_choice}",
-	poll: %{:id => @reference.approval_poll_id, :choice_type => "probability"},
+	to_path: "/polls/#{@reference.poll.id}/references/#{@reference.reference_poll.id}",
+	poll: %{:id => @reference.for_choice_poll_id, :choice_type => "probability"},
 	own_vote: @own_vote,
 	allow_numeric: false
 %>
 
-<%= render Liquio.HtmlPollView, "score.html", poll: @reference.approval_poll %>
+<%= render Liquio.HtmlPollView, "score.html", poll: @reference.for_choice_poll %>
