@@ -92,6 +92,26 @@ defmodule Liquio.HtmlIdentityController do
 	with_params(%{
 		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
+	def trusts_to(conn, %{:identity => identity}) do
+		query = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		delegations_to = query
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
+		|> Enum.sort(& &1.data.weight > &2.data.weight)
+
+		conn
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+		|> render("delegations.html",
+			title: "Delegations to #{identity.name}",
+			identity: identity,
+			direction: "to",
+			delegations: delegations_to
+		)
+	end)
+
+	with_params(%{
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
+	},
 	def delegations_from(conn, %{:identity => identity}) do
 		query = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
 		delegations_from = query

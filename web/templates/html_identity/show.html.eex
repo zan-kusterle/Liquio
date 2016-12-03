@@ -1,16 +1,16 @@
 <div class="identity">
-	<h1 class="identity-username">username: <%= @identity.username %></h1>
 	<h1 class="identity-name"><%= @identity.name %></h1>
+	<h1 class="identity-username"><%= @identity.username %></h1>
 
 	<div class="stats">
+		<div class="stat num-inverse-trusts">
+			<a href="/identities/<%= @identity.id %>/trusts/to">trusted by <%= @num_inverse_trusts %> <%= ngettext("identity", "identities", @num_inverse_trusts) %></a>
+		</div>
 		<div class="stat num-delegations-from">
 			<a href="/identities/<%= @identity.id %>/delegations/from">made <%= @num_delegations_from %> <%= ngettext("delegation", "delegations", @num_delegations_from) %></a>
 		</div>
 		<div class="stat num-delegations-to">
-			<a href="/identities/<%= @identity.id %>/delegations/to">receiving <%= @num_delegations_to %> <%= ngettext("delegation", "delegations", @num_delegations_to) %></a>
-		</div>
-		<div class="stat num-inverse-trusts">
-			<a href="/identities/<%= @identity.id %>/trusts/to">trusted by <%= @num_inverse_trusts %> <%= ngettext("identity", "identities", @num_inverse_trusts) %></a>
+			<a href="/identities/<%= @identity.id %>/delegations/to">delegations from <%= @num_delegations_to %> <%= ngettext("person", "people", @num_delegations_to) %></a>
 		</div>
 		<div class="stat num-votes">
 			<a href="/identities/<%= @identity.id %>/votes">voted on <%= @num_votes %> <%= ngettext("poll", "polls", @num_votes) %></a>
@@ -27,7 +27,7 @@
 <% end %>
 
 <%= if @is_me do %>
-	<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 30px;">Current trust metric URL</div>
+	<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 30px;">Trust metric URL</div>
 
 	<form method="POST" action="preferences" class="pure-form preferences">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />

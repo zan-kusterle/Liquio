@@ -41,6 +41,7 @@ defmodule Liquio.Router do
 		get "/logout", HtmlLoginController, :delete
 
 		resources "/identities", HtmlIdentityController, only: [:create, :show] do
+			get "/trusts/to", HtmlIdentityController, :trusts_to
 			resources "/delegations", HtmlDelegationController, only: [:create]
 			get "/delegations/from", HtmlIdentityController, :delegations_from
 			get "/delegations/to", HtmlIdentityController, :delegations_to
