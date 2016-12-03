@@ -151,18 +151,30 @@ defmodule Liquio.Poll do
 	end
 
 	def results_for_vote(poll, vote) do
+		choice = vote.data.choice
+
 		if poll.choice_type == "time_quantity" do
+			by_datetime = choice
+			|> Enum.map(fn({time_key, value}) ->
+				{year, ""} = Integer.parse(time_key)
+				%{
+					:total => 1,
+					:turnout_ratio => 1.0,
+					:datetime =>  Timex.to_date({year, 1, 1}),
+					:mean => value
+				}
+			end)
+
 			%{
-				:mean => 0.5,
-				:total => 2,
-				:turnout_ratio => 0.6,
-				:by_datetime => %{}
+				:total => 1,
+				:turnout_ratio => 1.0,
+				:by_datetime => by_datetime
 			}
 		else
 			%{
-				:mean => 0.5,
-				:total => 2,
-				:turnout_ratio => 0.6
+				:total => 1,
+				:turnout_ratio => 1.0,
+				:mean => choice["main"]
 			}
 		end
 	end
