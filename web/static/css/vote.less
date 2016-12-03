@@ -1,79 +1,102 @@
 @import "base";
 
-.claim {
-	font-size: 20px;
-	margin: 0px;
-	margin-bottom: 15px;
-}
+.vote {
+	.title {
+		margin: 0px;
+	}
 
-.true-choice, .false-choice {
-	padding: 12px 0px;
-	font-size: 18px;
-	margin: 0 5px;
-	width: 85px;
-	@media @md {
-		width: 120px;
+	.choice {
+		margin-bottom: 40px;
+
+		.title {
+			font-size: 18px;
+			margin-bottom: 6px;
+		}
+	}
+
+	.instruction {
+		font-size: 14px;
+		font-weight: bold;
+		margin-bottom: 30px;
+	}
+
+	.claim {
+		margin-bottom: 40px;
+
+		.title {
+			font-size: 20px;
+			margin-bottom: 10px;
+		}
 	}
 }
 
-.true-choice.pure-button-active, .false-choice.pure-button-active {
-	background: #48b2f9;
-}
-
-.cast-vote {
-	display: inline-block;
-	vertical-align: top;
-}
-
-.set-vote {
-	display: block;
-	margin-top: 10px;
-	width: 100%;
-}
-
-.remove-vote {
-	background: none;
-	outline: none;
-	border: none;
-	font-size: 10px;
-	color: #337ab7;
-	padding: 0px;
-	margin-top: 10px;
-	margin-bottom: 15px;
-}
-
-.remove-vote:hover {
-	text-decoration: underline;
-	background: none;
-}
-
-.vote-help {
-	background: none;
-	outline: none;
-	border: none;
-	font-size: 10px;
-	padding: 0px;
-	margin-top: 10px;
-	margin-bottom: 15px;
-}
-
-.link {
-	display: block;
-	margin-top: 10px;
-	color: #337ab7;
-	font-size: 14px;
-}
-
-.score-input {
-	height: 46px;
-	text-align: center;
-	font-size: 18px;
-	width: 100px;
-	@media @md {
-		width: 160px;
+.container {
+	.true-choice, .false-choice {
+		padding: 12px 0px;
+		font-size: 18px;
+		margin: 0 10px;
+		width: 85px;
+		height: 46px;
+		line-height: 26px;
+		@media @md {
+			width: 120px;
+		}
 	}
-}
 
-.current-choice {
-	margin-bottom: 5px;
+	.true-choice.pure-button-active, .false-choice.pure-button-active {
+		background: #48b2f9;
+	}
+
+	.cast-vote {
+		display: inline-block;
+		vertical-align: top;
+	}
+
+	.set-vote {
+		display: block;
+		margin-top: 10px;
+		width: 100%;
+	}
+
+	.remove-vote {
+		background: none;
+		outline: none;
+		border: none;
+		font-size: 10px;
+		color: #337ab7;
+		padding: 0px;
+		margin-top: 10px;
+	}
+
+	.remove-vote:hover {
+		text-decoration: underline;
+		background: none;
+	}
+
+	.vote-help {
+		background: none;
+		outline: none;
+		border: none;
+		font-size: 10px;
+		padding: 0px;
+		margin-top: 10px;
+		margin-bottom: 15px;
+	}
+
+	.link {
+		display: block;
+		margin-top: 10px;
+		color: #337ab7;
+		font-size: 14px;
+	}
+
+	.score-input {
+		height: 46px;
+		text-align: center;
+		font-size: 18px;
+		width: 100px;
+		@media @md {
+			width: 160px;
+		}
+	}
 }

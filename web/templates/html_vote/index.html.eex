@@ -1,19 +1,27 @@
-<%= if @own_vote do %>
-	<div class="section-title">Your current choice</div>
-	<%= render Liquio.HtmlPollView, "score.html", poll: @own_poll %>
-<% end %>
+<div class="vote">
+	<%= if @own_vote do %>
+		<div class="choice">
+			<p class="title">Your current choice</p>
+			<%= render Liquio.HtmlPollView, "score.html", poll: @own_poll %>
+		</div>
+	<% end %>
 
-<%= case @poll.choice_type do
-	"probability" -> "Decide whether the claim is true or false:"
-	"quantity" -> "Your best estimate of the quantity below:"
-	"time_quantity" -> "Your best estimate of the quantity below by years:"
-end %>
+	<p class="title instruction">
+		<%= case @poll.choice_type do
+			"probability" -> "Decide whether the claim is true or false."
+			"quantity" -> "Your best estimate of the quantity below."
+			"time_quantity" -> "Your best estimate of the quantity below by years."
+		end %>
+	</p>
 
-<p class="claim"><%= raw(@poll.title) %></p>
-<%= render Liquio.HtmlPollView, "cast_vote.html",
-	to_path: "/polls/#{@poll.id}/vote",
-	poll: @poll,
-	own_vote: @own_vote
-%>
+	<div class="claim">
+		<p class="title"><%= raw(@poll.title) %></p>
+		<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
+	</div>
 
-<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
+	<%= render Liquio.HtmlPollView, "cast_vote.html",
+		to_path: "/polls/#{@poll.id}/vote",
+		poll: @poll,
+		own_vote: @own_vote
+	%>
+</div>
