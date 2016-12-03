@@ -28,10 +28,6 @@
 	<h2 class="references-title">There are no references here</h2>
 <% end %>
 
-<div style="width: 60%; margin: 0 auto; margin-top: 30px; text-align: center;">
-	<%= render "approve_reference.html", poll: @poll %>
-</div>
-
 <%= unless Enum.empty?(@inverse_references) do %>
 	<h2 class="references-title">Inverse references</h2>
 	<%= for reference <- @inverse_references do %>
@@ -41,7 +37,13 @@
 	<% end %>
 <% end %>
 
-<form class="pure-form" style="margin-top: 30px;">
+
+<form action="/polls/<%= @poll.id %>/references" class="pure-form " style="margin-top: 40px;">
+	<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1 url-input" />
+	<button type="submit" class="pure-button poll-button">Vote for reference</button>
+</form>
+
+<form class="pure-form" style="margin-top: 15px;">
 	<input type="date" name="datetime" placeholder="YYYY-MM-DD" class="time-input" <%= if String.length(@datetime_text) > 0 do %>value=<%= @datetime_text %><% end %> />
-	<button class="pure-button set-time">View snapshot</button>
+	<button class="pure-button poll-button">View snapshot</button>
 </form>

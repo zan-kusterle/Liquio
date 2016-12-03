@@ -1,8 +1,0 @@
-<form action="/polls/<%= @poll.id %>/references" class="pure-form pure-g">
-	<div class="pure-u-1">
-		<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1" style="text-align: center;" />
-	</div>
-	<div class="pure-u-1" style="width: 50%; margin: 0 auto; margin-top: 15px;">
-		<button type="submit" class="pure-button" style="width: 100%;">Vote for reference</button>
-	</div>
-</form>
