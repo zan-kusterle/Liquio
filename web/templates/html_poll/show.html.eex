@@ -28,7 +28,9 @@
 	<h2 class="references-title">There are no references here</h2>
 <% end %>
 
-<%= render "approve_reference.html", poll: @poll %>
+<div style="width: 60%; margin: 0 auto; margin-top: 30px; text-align: center;">
+	<%= render "approve_reference.html", poll: @poll %>
+</div>
 
 <%= unless Enum.empty?(@inverse_references) do %>
 	<h2 class="references-title">Inverse references</h2>
