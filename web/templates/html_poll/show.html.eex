@@ -13,7 +13,7 @@
 </div>
 
 <div class="links">
-	<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-pie-chart" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+	<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
 	<a href="/polls/<%= @poll.id %>/vote"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
 </div>
 

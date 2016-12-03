@@ -14,7 +14,7 @@
 				<tr class="contribution">
 					<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
 					<td>
-						<div style="background: #888; text-align: center; color: white; line-height: 20px; height: 20px; width: <%= round(100 * width_ratio) %>%;">
+						<div style="background: #1f8dd6; text-align: center; color: white; line-height: 20px; height: 20px; width: <%= round(100 * width_ratio) %>%;">
 							<%= number_format(contribution.voting_power) %>
 						</div>
 					</td>
