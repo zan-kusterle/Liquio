@@ -1,5 +1,3 @@
-<p class="heading" style="margin-top: 100px;">AGGREGATION PREFERENCES</p>
-
 <form method="POST" action="/identities/preferences" class="pure-form">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
@@ -15,5 +13,5 @@
 		</output>
 	</div>
 
-	<button type="submit" class="pure-button pure-button-primary">Done</button>
+	<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
 </form>

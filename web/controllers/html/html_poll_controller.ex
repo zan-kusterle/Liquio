@@ -25,8 +25,9 @@ defmodule Liquio.HtmlPollController do
 
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "id", validator: &Poll.is_custom/1]},
+		:datetime => {Plugs.DatetimeParam, [name: "datetime"]}
 	},
-	def show(conn, %{:poll => poll}) do
+	def show(conn, %{:poll => poll, :datetime => datetime}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		poll = prepare_poll(poll, calculation_opts)
 		conn
@@ -34,13 +35,14 @@ defmodule Liquio.HtmlPollController do
 		|> render("show.html",
 			title: poll.title,
 			poll: poll,
+			datetime_text: Timex.format!(datetime, "{ISOdate}"),
 			references: prepare_references(poll, calculation_opts),
 			inverse_references: Reference.inverse_for_poll(poll, calculation_opts))
 	end)
 
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
-		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
+		:datetime => {Plugs.DatetimeParam, [name: "datetime"]}
 	},
 	def details(conn, %{:poll => poll, :datetime => datetime}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
@@ -48,7 +50,6 @@ defmodule Liquio.HtmlPollController do
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("details.html",
 			title: poll.title,
-			datetime_text: Timex.format!(datetime, "{ISOdate}"),
 			poll: prepare_poll(poll, calculation_opts),
 			contributions: prepare_contributions(poll, calculation_opts),
 			calculation_opts: calculation_opts)

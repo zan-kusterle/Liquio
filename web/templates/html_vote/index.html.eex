@@ -1,38 +1,14 @@
-<%= unless Enum.empty?(@references) do %>
-	<div style="margin-bottom: 20px;">
-		<div class="section-title" style="margin-top: 0px;">Before voting review the references.</div>
-		<%= render Liquio.HtmlPollView, "references.html", poll: @poll, references: @references, minimum_voting_power: @minimum_voting_power %>
-	</div>
-<% else %>
-	<h2 class="references-title" style="margin-top: 0;">There are no references here. Add references that explain your choice before voting.</h2>
+<%= if @own_vote do %>
+	<div class="section-title">Your current choice</div>
+	<%= render Liquio.HtmlPollView, "score.html", poll: @own_poll %>
 <% end %>
 
-<%= if @poll.kind == "custom" do %>
-	<%= render Liquio.HtmlPollView, "approve_reference.html", poll: @poll %>
-<% end %>
+<%= case @poll.choice_type do
+	"probability" -> "Decide whether the claim is true or false:"
+	"quantity" -> "Your best estimate of the quantity below:"
+	"time_quantity" -> "Your best estimate of the quantity below by years:"
+end %>
 
-<div class="section-title" style="margin-top: 100px;">
-<%= if @poll.choice_type == "probability" do %>
-	<%= if @own_vote do %>
-		Your current score is <%= round(@own_vote.data.choice["main"] * 100) %>%.
-	<% else %>
-		After reviewing references, decide whether the claim is true or false.
-	<% end %>
-<% else %>
-	<%= if @poll.choice_type == "time_quantity" do %>
-		<%= if @own_vote do %>
-		<% else %>
-			After reviewing references, enter your best estimate of below quantity:
-		<% end %>
-	<% else %>
-		<%= if @own_vote do %>
-			Your current estimate for the quantity below is <%= number_format_simple(@own_vote.data.choice["main"]) %>.
-		<% else %>
-			After reviewing references, enter your best estimate of below quantity:
-		<% end %>
-	<% end %>
-<% end %>
-</div>
 <p class="claim"><%= raw(@poll.title) %></p>
 <%= render Liquio.HtmlPollView, "cast_vote.html",
 	to_path: "/polls/#{@poll.id}/vote",

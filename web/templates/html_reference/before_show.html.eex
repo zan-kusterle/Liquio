@@ -1,2 +1,2 @@
-<p class="heading">REFERENCE APPROVAL - <%= @reference.poll.title %></p>
-<a class="heading-a" href="/polls/<%= @reference.poll.id %>">BACK TO POLL</a>
+<p class="heading">REFERENCE APPROVAL - <%= @reference.poll.title |> String.upcase %></p>
+<a class="heading-a" href="/polls/<%= @reference.poll.id %>">BACK</a>

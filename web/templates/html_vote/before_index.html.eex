@@ -1,2 +1,2 @@
-<p class="heading">VOTE - <%= @poll.title %></p>
-<a class="heading-a" href="/polls/<%= @poll.id %>">BACK TO POLL</a>
+<p class="heading">VOTE - <%= @poll.title |> String.upcase %></p>
+<a class="heading-a" href="/polls/<%= @poll.id %>">BACK</a>

@@ -1,0 +1,2 @@
+<p class="heading">PEOPLE THAT TRUST <%= @identity.name |> String.upcase %></p>
+<a class="heading-a" href="/identities/<%= @identity.id %>">BACK</a>

@@ -70,6 +70,12 @@ defmodule Liquio.HtmlIdentityController do
 			where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data),
 			select: count(d.id))
 		)
+
+		identity = identity |> Repo.preload([:trust_metric_poll_votes])
+		num_inverse_trusts =  identity.trust_metric_poll_votes
+		|> Repo.preload([:identity])
+		|> Enum.filter(& &1.is_last and &1.data != nil and &1.data.choice["main"] == 1.0)
+		|> Enum.count
 		
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
@@ -86,26 +92,26 @@ defmodule Liquio.HtmlIdentityController do
 			delegation: delegation,
 			num_delegations_to: num_delegations_to,
 			num_delegations_from: num_delegations_from,
-			num_inverse_trusts: 10)
+			num_inverse_trusts: num_inverse_trusts)
 	end)
 
 	with_params(%{
 		:identity => {Plugs.ItemParam, [schema: Identity, name: "html_identity_id"]}
 	},
 	def trusts_to(conn, %{:identity => identity}) do
-		query = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
-		delegations_to = query
-		|> Repo.all
-		|> Repo.preload([:from_identity, :to_identity])
-		|> Enum.sort(& &1.data.weight > &2.data.weight)
+		identity = identity |> Repo.preload([:trust_metric_poll_votes])
+		identities =  identity.trust_metric_poll_votes
+		|> Repo.preload([:identity])
+		|> Enum.filter(& &1.is_last and &1.data != nil and &1.data.choice["main"] == 1.0)
+		|> Enum.map(& &1.identity)
+		|> Enum.sort(& &1.username > &2.username)
 
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render("delegations.html",
-			title: "Delegations to #{identity.name}",
+		|> render("identities.html",
+			title: "People that trust #{identity.name}",
 			identity: identity,
-			direction: "to",
-			delegations: delegations_to
+			identities: identities
 		)
 	end)
 

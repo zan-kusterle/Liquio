@@ -4,7 +4,7 @@
 
 	<div class="stats">
 		<div class="stat num-inverse-trusts">
-			<a href="/identities/<%= @identity.id %>/trusts/to">trusted by <%= @num_inverse_trusts %> <%= ngettext("identity", "identities", @num_inverse_trusts) %></a>
+			<a href="/identities/<%= @identity.id %>/trusts/to">trusted by <%= @num_inverse_trusts %> <%= ngettext("person", "people", @num_inverse_trusts) %></a>
 		</div>
 		<div class="stat num-delegations-from">
 			<a href="/identities/<%= @identity.id %>/delegations/from">made <%= @num_delegations_from %> <%= ngettext("delegation", "delegations", @num_delegations_from) %></a>
@@ -27,12 +27,12 @@
 <% end %>
 
 <%= if @is_me do %>
-	<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 30px;">Trust metric URL</div>
+	<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 15px;">Trust metric URL</div>
 
 	<form method="POST" action="preferences" class="pure-form preferences">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-		<input type="url" name="trust_metric_url" value="<%= @calculation_opts.trust_metric_url %>" />
+		<input type="url" name="trust_metric_url" value="<%= @calculation_opts.trust_metric_url %>" style="max-width: 500px; display: block; margin: 0 auto;" />
 
 		<button type="submit" class="pure-button pure-button-primary">Update</button>
 	</form>

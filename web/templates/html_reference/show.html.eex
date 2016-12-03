@@ -3,9 +3,8 @@
 
 <%= render Liquio.HtmlPollView, "cast_vote.html",
 	to_path: "/polls/#{@reference.poll.id}/references/#{@reference.reference_poll.id}",
-	poll: %{:id => @reference.for_choice_poll_id, :choice_type => "probability"},
-	own_vote: @own_vote,
-	allow_numeric: false
+	poll: %{:id => @reference.for_choice_poll_id, :choice_type => @reference.poll.choice_type},
+	own_vote: @own_vote
 %>
 
 <%= render Liquio.HtmlPollView, "score.html", poll: @reference.for_choice_poll %>

@@ -1,31 +1,28 @@
 <div class="details">
-	<div class="section-title" style="margin-top: 0px;">View results at specific time</div>
-	<form class="pure-form">
-		<input type="date" name="datetime" placeholder="YYYY-MM-DD" class="time-input" <%= if String.length(@datetime_text) > 0 do %>value=<%= @datetime_text %><% end %> />
-		<button class="pure-button set-time">Set time</button>
-	</form>
-
-	<div class="section-title">Aggregate result</div>
-	<%= render "score.html", poll: @poll %>
-	
 	<%= unless Enum.empty? @contributions do %>
-		<div class="section-title">All votes</div>
 		<table class="contributions">
 			<tr class="contribution">
-				<td class="column-name">From identity</td>
-				<td class="column-name">Voting power</td>
+				<td class="column-name">Username</td>
+				<td class="column-name">Power</td>
 				<td class="column-name">Choice</td>
-				<td class="column-name">Time</td>
+				<td class="column-name">Date</td>
 			</tr>
-			<%= for contribution <- @contributions do %>
+			<% total_power = @contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
+			<% max_ratio = @contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
+			<%= for contribution <- @contributions |> Enum.sort_by(& -&1.voting_power) do %>
+				<% width_ratio = contribution.voting_power / total_power / max_ratio %>
 				<tr class="contribution">
 					<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
-					<td><%= number_format(contribution.voting_power) %></td>
-					<td><%= if @poll.choice_type == "time_quantity" do
+					<td>
+						<div style="background: #888; text-align: center; color: white; line-height: 20px; height: 20px; width: <%= round(100 * width_ratio) %>%;">
+							<%= number_format(contribution.voting_power) %>
+						</div>
+					</td>
+					<td><b><%= if @poll.choice_type == "time_quantity" do
 						raw(contribution.choice |> Enum.map(fn({k, v}) -> "#{k} &mdash; #{number_format_simple v}" end) |> Enum.join("\n\r"))
 					else
 						score_format(contribution.choice["main"], @poll.choice_type)
-					end %></td>
+					end %></b></td>
 					<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
 				</tr>
 			<% end %>

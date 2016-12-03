@@ -149,4 +149,21 @@ defmodule Liquio.Poll do
 	def empty_result() do
 		AggregateContributions.empty()
 	end
+
+	def results_for_vote(poll, vote) do
+		if poll.choice_type == "time_quantity" do
+			%{
+				:mean => 0.5,
+				:total => 2,
+				:turnout_ratio => 0.6,
+				:by_datetime => %{}
+			}
+		else
+			%{
+				:mean => 0.5,
+				:total => 2,
+				:turnout_ratio => 0.6
+			}
+		end
+	end
 end

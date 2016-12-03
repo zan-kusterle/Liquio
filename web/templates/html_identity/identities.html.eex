@@ -1,0 +1,9 @@
+<%= if Enum.empty?(@identities) do %>
+	<h2 class="identity-no-items">There is nothing here.</h2>
+<% else %>
+	<div class="identities">
+		<%= for identity <- @identities do %>
+			<a href="/identities/<%= identity.id %>" class="name"><%= identity.username %></a>
+		<% end %>
+	</div>
+<% end %>

@@ -40,3 +40,8 @@
 		</div>
 	<% end %>
 <% end %>
+
+<form class="pure-form" style="margin-top: 30px;">
+	<input type="date" name="datetime" placeholder="YYYY-MM-DD" class="time-input" <%= if String.length(@datetime_text) > 0 do %>value=<%= @datetime_text %><% end %> />
+	<button class="pure-button set-time">View snapshot</button>
+</form>

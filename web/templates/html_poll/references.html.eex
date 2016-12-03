@@ -4,17 +4,18 @@
 		<% negative = @references |> Enum.filter(& &1.for_choice < 0.5) %>
 		
 		<div class="pole pure-u-1 pure-u-md-1-2">
-			<h3 class="pole-heading"><%= if positive |> Enum.empty? do %>Nothing <% end %>Positive</h3>
+			<h3 class="pole-heading"><%= if negative |> Enum.empty? do %>Nothing <% end %>Negative</h3>
 			<div class="pole-list">
-				<%= for reference <- positive do %>
+				<%= for reference <- negative do %>
 					<%= render "reference.html", reference: reference %>
 				<% end %>
 			</div>
 		</div>
+
 		<div class="pole pure-u-1 pure-u-md-1-2">
-			<h3 class="pole-heading"><%= if negative |> Enum.empty? do %>Nothing <% end %>Negative</h3>
+			<h3 class="pole-heading"><%= if positive |> Enum.empty? do %>Nothing <% end %>Positive</h3>
 			<div class="pole-list">
-				<%= for reference <- negative do %>
+				<%= for reference <- positive do %>
 					<%= render "reference.html", reference: reference %>
 				<% end %>
 			</div>
