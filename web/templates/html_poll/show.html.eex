@@ -13,8 +13,8 @@
 </div>
 
 <div class="links">
-	<a href="/polls/<%= @poll.id %>/details"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
-	<a href="/polls/<%= @poll.id %>/vote"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
+	<a onclick="details_dialog.open()"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+	<a onclick="vote_dialog.open()"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
 </div>
 
 <%= unless Enum.empty?(@references) do %>
@@ -41,3 +41,18 @@
 	<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1 url-input" />
 	<button type="submit" class="pure-button poll-button">Vote for reference</button>
 </form>
+
+
+<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+	<%= render "details.html", poll: @poll, contributions: @contributions %>
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+	</div>
+</paper-dialog>
+
+<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+	<%= render(Liquio.HtmlVoteView, "index.html", poll: @poll, own_vote: @own_vote, own_poll: @own_poll) %>
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+	</div>
+</paper-dialog>

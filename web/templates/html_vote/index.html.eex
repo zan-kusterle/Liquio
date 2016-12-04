@@ -14,11 +14,6 @@
 		end %>
 	</p>
 
-	<div class="claim">
-		<p class="title"><%= raw(@poll.title) %></p>
-		<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
-	</div>
-
 	<%= render Liquio.HtmlPollView, "cast_vote.html",
 		to_path: "/polls/#{@poll.id}/vote",
 		poll: @poll,

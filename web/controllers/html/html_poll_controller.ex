@@ -25,16 +25,21 @@ defmodule Liquio.HtmlPollController do
 
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "id", validator: &Poll.is_custom/1]},
-		:datetime => {Plugs.DatetimeParam, [name: "datetime"]}
+		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
+		:user => {Plugs.CurrentUser, [require: false]}
 	},
-	def show(conn, %{:poll => poll, :datetime => datetime}) do
+	def show(conn, %{:poll => poll, :datetime => datetime, :user => user}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		poll = prepare_poll(poll, calculation_opts)
+		own_vote = if user do Vote.current_by(poll, user) else nil end
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("show.html",
 			title: poll.title,
 			poll: poll,
+			contributions: prepare_contributions(poll, calculation_opts),
+			own_vote: own_vote,
+			own_poll: poll |> Map.put(:results, if own_vote do Poll.results_for_vote(poll, own_vote) else nil end),
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
 			references: prepare_references(poll, calculation_opts),
 			inverse_references: Reference.inverse_for_poll(poll, calculation_opts))
