@@ -27,7 +27,7 @@
 
 <div class="content features">
 	<div class="pure-g">
-		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2">
 			<h3 class="subheading">
 				<i class="fa fa-users"></i>
 				Delegations
@@ -37,17 +37,17 @@
 			</p>
 		</div>
 
-		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2">
 			<h3 class="subheading">
 				<i class="fa fa-quote-left"></i>
-				References
+				Objective
 			</h3>
 			<p>
-				Helping voters make more accurate decisions. People not familiar with the subject can also quickly learn more about it.
+				Both sides can present their best arguments.
 			</p>
 		</div>
 
-		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2">
 			<h3 class="subheading">
 				<i class="fa fa-cogs"></i>
 				Trust metrics
@@ -57,33 +57,13 @@
 			</p>
 		</div>
 
-		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
-			<h3 class="subheading">
-				<i class="fa fa-flask"></i>
-				Objectivity
-			</h3>
-			<p>
-				Liquid democracy works best with objective polls. <a href="/polls/<%= @polls.not_the_best_idea.id %>">Vanilla Ice Cream Flavor Rating</a> &mdash; not the best idea.
-			</p>
-		</div>
-
-		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+		<div class="feature pure-u-1 pure-u-md-1-2">
 			<h3 class="subheading">
 				<i class="fa fa-comment"></i>
 				No censorship
 			</h3>
 			<p>
 				Trust metrics contain all subjective logic. The default trust metric lives <a href="https://trust-metric.liqu.io">here</a>. You can always choose a different one.
-			</p>
-		</div>
-
-		<div class="feature pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
-			<h3 class="subheading">
-				<i class="fa fa-eye"></i>
-				Transparency
-			</h3>
-			<p>
-				The source code is available under MIT license. All data is publicly available through the API for anyone to view or analyze.
 			</p>
 		</div>
 	</div>

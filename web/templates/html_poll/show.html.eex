@@ -1,3 +1,14 @@
+<paper-button raised onclick="dialog.open()">plain dialog</paper-button>
+
+<paper-dialog id="dialog" class="paper-date-picker-dialog" modal
+  on-iron-overlay-closed="dismissDialog">
+  <paper-date-picker id="picker"></paper-date-picker>
+  <div class="buttons">
+    <paper-button dialog-dismiss>Cancel</paper-button>
+    <paper-button dialog-confirm>OK</paper-button>
+  </div>
+</paper-dialog>
+
 <%= if @poll.topics != nil do %>
 	<h3 class="topics">
 		<%= for topic <- @poll.topics do %>
