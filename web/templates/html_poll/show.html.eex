@@ -44,9 +44,6 @@
 
 <paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 	<%= render "details.html", poll: @poll, contributions: @contributions %>
-	<div class="buttons">
-		<paper-button dialog-dismiss>Close</paper-button>
-	</div>
 </paper-dialog>
 
 <paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">

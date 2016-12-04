@@ -1,11 +1,11 @@
+<h2>Votes</h2>
 <div class="details">
-	<h2>Votes</h2>
 	<%= unless Enum.empty? @contributions do %>
 		<table class="contributions">
 			<tr class="contribution">
-				<td class="column-name">Username</td>
-				<td class="column-name">Weight</td>
+				<td class="column-name weight">Contribution</td>
 				<td class="column-name">Choice</td>
+				<td class="column-name">Username</td>
 				<td class="column-name">Date</td>
 			</tr>
 			<% total_power = @contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
@@ -13,20 +13,26 @@
 			<%= for contribution <- @contributions |> Enum.sort_by(& -&1.voting_power) do %>
 				<% width_ratio = contribution.voting_power / total_power / max_ratio %>
 				<tr class="contribution">
-					<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
 					<td>
 						<div style="background: #1f8dd6; text-align: center; color: white; line-height: 20px; height: 20px; width: <%= round(100 * width_ratio) %>%;">
 							<%= number_format(100 * contribution.voting_power / total_power) %>%
 						</div>
 					</td>
-					<td><b><%= if @poll.choice_type == "time_quantity" do
+					<td>
+						<b><%= if @poll.choice_type == "time_quantity" do
 						raw(contribution.choice |> Enum.map(fn({k, v}) -> "#{k} &mdash; #{number_format_simple v}" end) |> Enum.join("\n\r"))
 					else
 						score_format(contribution.choice["main"], @poll.choice_type)
-					end %></b></td>
+					end %></b>
+					</td>
+					<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
 					<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
 				</tr>
 			<% end %>
 		</table>
 	<% end %>
+</div>
+
+<div class="buttons">
+	<paper-button dialog-dismiss>Close</paper-button>
 </div>

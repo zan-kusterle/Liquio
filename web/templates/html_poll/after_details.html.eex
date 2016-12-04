@@ -3,20 +3,20 @@
 <form id="preferences_form" method="POST" action="/identities/preferences" class="pure-form">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-	<div class="range" style="margin: 20px 0px;">
+	<div class="range" style="margin-bottom: 20px;">
 		<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @calculation_opts.minimum_turnout || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" style="margin: 0 auto;" />
 		<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@calculation_opts.minimum_turnout || 0))}% turnout." %></output>
 	</div>
 
-	<div class="range" style="margin: 20px 0px;">
+	<div class="range" style="margin-bottom: 20px;">
 		<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @calculation_opts.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" style="margin: 0 auto;" />
 		<output id="vote_weight_halving_days_value">
 			<%= if @calculation_opts.vote_weight_halving_days do "Votes will lose half remaining power every #{round(@calculation_opts.vote_weight_halving_days)} #{ngettext("day", "days", round(@calculation_opts.vote_weight_halving_days))}." else "Votes don't lose power with time." end %>
 		</output>
 	</div>
-
-	<div class="buttons">
-		<paper-button dialog-dismiss>Close</paper-button>
-		<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Update</paper-button>
-	</div>
 </form>
+
+<div class="buttons">
+	<paper-button dialog-dismiss>Close</paper-button>
+	<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Update</paper-button>
+</div>

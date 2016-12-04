@@ -32,9 +32,6 @@
 
 	<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 		<%= render Liquio.HtmlPollView, "details.html", poll: @reference.for_choice_poll, contributions: @reference.for_choice_poll.contributions %>
-		<div class="buttons">
-			<paper-button dialog-dismiss>Close</paper-button>
-		</div>
 	</paper-dialog>
 
 	<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
@@ -56,11 +53,11 @@
 				<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @calculation_opts.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Turnout at least ' + Math.round(100 * minimum_score_range.value) + '% to show reference.'" style="margin: 0 auto;">
 				<output id="minimum_score_value"><%= "Turnout at least #{round(100 * @calculation_opts.minimum_reference_approval_score)}% to show reference." %></output>
 			</div>
-
-			<div class="buttons">
-				<paper-button dialog-dismiss>Close</paper-button>
-				<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Update</paper-button>
-			</div>
 		</form>
+
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+			<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Update</paper-button>
+		</div>
 	</paper-dialog>
 </div>
