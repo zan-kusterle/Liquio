@@ -42,7 +42,6 @@
 	<button type="submit" class="pure-button poll-button">Vote for reference</button>
 </form>
 
-
 <paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 	<%= render "details.html", poll: @poll, contributions: @contributions %>
 	<div class="buttons">

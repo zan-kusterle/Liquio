@@ -1,4 +1,6 @@
 <div class="vote">
+	<h2>Vote</h2>
+	
 	<%= if @own_vote do %>
 		<div class="choice">
 			<p class="title">Your current choice</p>
@@ -24,14 +26,14 @@
 <div class="buttons">
 	<paper-button dialog-dismiss>Close</paper-button>
 	<%= if @own_vote do %>
-		<paper-button dialog-confirm>
+		<paper-button dialog-confirm raised class="warning">
 			<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 				<button type="submit" name="choice" value="null">REMOVE VOTE</button>
 			</form>
 		</paper-button>
 	<% end %>
-	<paper-button dialog-confirm>Cast vote</paper-button>
+	<paper-button dialog-confirm raised class="primary">Cast vote</paper-button>
 </div>
 
 

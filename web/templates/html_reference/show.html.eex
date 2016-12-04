@@ -30,7 +30,6 @@
 		<a onclick="vote_dialog.open()"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
 	</div>
 
-
 	<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 		<%= render Liquio.HtmlPollView, "details.html", poll: @reference.for_choice_poll, contributions: @reference.for_choice_poll.contributions %>
 		<div class="buttons">
@@ -43,6 +42,8 @@
 	</paper-dialog>
 
 	<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+		<h2>Fine tune which references are shown</h2>
+		
 		<form id="preferences_form" method="POST" action="/identities/preferences" class="pure-form">
 			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
@@ -58,7 +59,7 @@
 
 			<div class="buttons">
 				<paper-button dialog-dismiss>Close</paper-button>
-				<paper-button dialog-confirm onclick="preferences_form.submit()">Update</paper-button>
+				<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Update</paper-button>
 			</div>
 		</form>
 	</paper-dialog>

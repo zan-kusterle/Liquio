@@ -1,4 +1,5 @@
 <div class="details">
+	<h2>Votes</h2>
 	<%= unless Enum.empty? @contributions do %>
 		<table class="contributions">
 			<tr class="contribution">

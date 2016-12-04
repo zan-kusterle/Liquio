@@ -6,6 +6,6 @@
 	<paper-date-picker id="snapshot_date" name="datetime"<%= if String.length(@datetime_text) > 0 do %> date=<%= @datetime_text %><% end %>></paper-date-picker>
 	<div class="buttons">
 		<paper-button dialog-dismiss>Cancel</paper-button>
-		<paper-button dialog-confirm onclick="document.location = '?datetime=' + snapshot_date.date.toISOString().substring(0, 10)">OK</paper-button>
+		<paper-button dialog-confirm raised class="primary" onclick="document.location = '?datetime=' + snapshot_date.date.toISOString().substring(0, 10)">OK</paper-button>
 	</div>
 </paper-dialog>
