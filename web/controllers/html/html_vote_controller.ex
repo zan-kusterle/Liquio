@@ -49,7 +49,7 @@ defmodule Liquio.HtmlVoteController do
 
 		conn
 		|> put_flash(level, message)
-		|> redirect(to: default_redirect(conn))
+		|> redirect(to: html_poll_path(conn, :show, poll))
 	end)
 
 	def parse_choice(choice, choice_type) do

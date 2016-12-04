@@ -42,7 +42,8 @@ defmodule Liquio.HtmlPollController do
 			own_poll: poll |> Map.put(:results, if own_vote do Poll.results_for_vote(poll, own_vote) else nil end),
 			datetime_text: Timex.format!(datetime, "{ISOdate}"),
 			references: prepare_references(poll, calculation_opts),
-			inverse_references: Reference.inverse_for_poll(poll, calculation_opts))
+			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
+			calculation_opts: calculation_opts)
 	end)
 
 	with_params(%{

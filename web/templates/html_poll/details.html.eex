@@ -3,7 +3,7 @@
 		<table class="contributions">
 			<tr class="contribution">
 				<td class="column-name">Username</td>
-				<td class="column-name">Power</td>
+				<td class="column-name">Weight</td>
 				<td class="column-name">Choice</td>
 				<td class="column-name">Date</td>
 			</tr>
@@ -15,7 +15,7 @@
 					<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
 					<td>
 						<div style="background: #1f8dd6; text-align: center; color: white; line-height: 20px; height: 20px; width: <%= round(100 * width_ratio) %>%;">
-							<%= number_format(contribution.voting_power) %>
+							<%= number_format(100 * contribution.voting_power / total_power) %>%
 						</div>
 					</td>
 					<td><b><%= if @poll.choice_type == "time_quantity" do

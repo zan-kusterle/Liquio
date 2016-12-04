@@ -1,7 +1,6 @@
-<a class="view-snapshot" onclick="snapshot_dialog.open()">
-	Set viewing date
-	<%= if String.length(@datetime_text) > 0 do %>(<%= @datetime_text %>)<% end %>
-</a>
+<a class="after-link" style="margin-top: 30px;" onclick="snapshot_dialog.open()">Set viewing date: <b><%= @datetime_text %></b></a>
+<br/>
+<a class="after-link" onclick="preferences_dialog.open()">Update preferences</a>
 
 <paper-dialog id="snapshot_dialog" class="paper-date-picker-dialog" modal on-iron-overlay-closed="dismissDialog">
 	<paper-date-picker id="snapshot_date" name="datetime"<%= if String.length(@datetime_text) > 0 do %> date=<%= @datetime_text %><% end %>></paper-date-picker>

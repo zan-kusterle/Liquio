@@ -51,7 +51,14 @@
 </paper-dialog>
 
 <paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-	<%= render(Liquio.HtmlVoteView, "index.html", poll: @poll, own_vote: @own_vote, own_poll: @own_poll) %>
+	<%= render Liquio.HtmlVoteView, "index.html", poll: @poll, own_vote: @own_vote, own_poll: @own_poll %>
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+	</div>
+</paper-dialog>
+
+<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+	<%= render "after_details.html", calculation_opts: @calculation_opts %>
 	<div class="buttons">
 		<paper-button dialog-dismiss>Close</paper-button>
 	</div>
