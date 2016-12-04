@@ -75,17 +75,17 @@ defmodule Liquio.HtmlPollController do
 			references: prepare_references(poll, calculation_opts))
 	end)
 
-	defp prepare_poll(poll, calculate_opts) do
+	defp prepare_poll(poll, calculation_opts) do
 		poll
-		|> Map.put(:results, Poll.calculate(poll, calculate_opts))
+		|> Map.put(:results, Poll.calculate(poll, calculation_opts))
 	end
 
-	defp prepare_references(poll, calculate_opts) do
-		Reference.for_poll(poll, calculate_opts)
+	defp prepare_references(poll, calculation_opts) do
+		Reference.for_poll(poll, calculation_opts)
 	end
 
-	defp prepare_contributions(poll, calculate_opts) do
-		poll |> Poll.calculate_contributions(calculate_opts) |> Enum.map(fn(contribution) ->
+	defp prepare_contributions(poll, calculation_opts) do
+		poll |> Poll.calculate_contributions(calculation_opts) |> Enum.map(fn(contribution) ->
 			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
 		end)
 	end

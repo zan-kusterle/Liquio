@@ -1,15 +1,1 @@
-<form method="POST" action="/identities/preferences" class="pure-form">
-	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-
-	<div class="range" style="margin: 20px 0px;">
-		<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @calculation_opts.approval_turnout_importance %>" min="0" max="1" step="any" oninput="soft_quorum_t_value.value = 'Low turnout penalty set at ' + Math.round(100 * soft_quorum_t_range.value) + '%.'" style="margin: 0 auto;">
-		<output id="soft_quorum_t_value"><%= "Low turnout penalty set at #{round(100 * @calculation_opts.approval_turnout_importance)}%." %></output>
-	</div>
-
-	<div class="range" style="margin: 20px 0px;">
-		<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @calculation_opts.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Score at least ' + Math.round(100 * minimum_score_range.value) + '% to show reference.'" style="margin: 0 auto;">
-		<output id="minimum_score_value"><%= "Score at least #{round(100 * @calculation_opts.minimum_reference_approval_score)}% to show reference." %></output>
-	</div>
-
-	<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
-</form>
+<a class="after-link" style="margin-top: 30px;" onclick="preferences_dialog.open()">Update preferences</a>

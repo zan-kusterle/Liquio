@@ -30,6 +30,8 @@ defmodule Liquio.HtmlReferenceController do
 		|> render("show.html",
 			title: poll.title || "Liquio",
 			reference: reference,
+			poll: poll |> Map.put(:results, Poll.calculate(poll, calculation_opts)),
+			reference_poll: reference_poll |> Map.put(:results, Poll.calculate(reference_poll, calculation_opts)),
 			own_vote: Vote.current_by(reference.for_choice_poll, user),
 			calculation_opts: calculation_opts)
 	end)
