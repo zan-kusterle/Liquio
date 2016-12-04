@@ -1,4 +1,4 @@
-<form method="POST" action="/identities/preferences" class="pure-form">
+<form id="preferences_form" method="POST" action="/identities/preferences" class="pure-form">
 	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 	<div class="range" style="margin: 20px 0px;">
@@ -13,5 +13,8 @@
 		</output>
 	</div>
 
-	<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+		<paper-button dialog-confirm onclick="preferences_form.submit()">Update</paper-button>
+	</div>
 </form>

@@ -13,7 +13,6 @@
 		<input type="hidden" name="redirect" value="<%= @to_path %>" />
 		<textarea class="score-input" name="choice" style="height: 150px; resize: vertical; text-align: left;" placeholder="2010: 10
 2011: 12"><%= if @own_vote != nil do %><%= @own_vote.data.choice |> Enum.map(fn({k, v}) -> "#{k}: #{number_format_simple v}" end) |> Enum.join("\n\r") %><% end %></textarea>
-		<button type="submit" class="pure-button pure-button-primary set-vote">Cast vote</button>
 	</form>
 <% else %>
 	<%= if assigns[:allow_numeric] == nil or @allow_numeric == true do %>
@@ -21,7 +20,6 @@
 			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 			<input type="hidden" name="redirect" value="<%= @to_path %>" />
 			<input type="text" class="score-input" name="choice"<%= if @own_vote != nil do %> value="<%= number_format_simple(@own_vote.data.choice["main"], 10) %>"<% end %> />
-			<button type="submit" class="pure-button pure-button-primary set-vote">Cast vote</button>
 		</form>
 	<% end %>
 <% end %>
@@ -34,13 +32,3 @@
 		</button>
 	</form>
 <% end %>
-
-<br>
-
-<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
-	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-	<input type="hidden" name="redirect" value="<%= @to_path %>" />
-	<%= if @own_vote != nil do %>
-		<button type="submit" name="choice" value="null" class="remove-vote">REMOVE VOTE</button>
-	<% end %>
-</form>

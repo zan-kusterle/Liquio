@@ -20,3 +20,19 @@
 		own_vote: @own_vote
 	%>
 </div>
+
+<div class="buttons">
+	<paper-button dialog-dismiss>Close</paper-button>
+	<%= if @own_vote do %>
+		<paper-button dialog-confirm>
+			<form action="/polls/<%= @poll.id %>/vote" method="POST" class="cast-vote">
+				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+				<button type="submit" name="choice" value="null">REMOVE VOTE</button>
+			</form>
+		</paper-button>
+	<% end %>
+	<paper-button dialog-confirm>Cast vote</paper-button>
+</div>
+
+
+

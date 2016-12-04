@@ -31,7 +31,7 @@
 	</div>
 
 	<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-		<form method="POST" action="/identities/preferences" class="pure-form">
+		<form id="preferences_form" method="POST" action="/identities/preferences" class="pure-form">
 			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 			<div class="range" style="margin: 20px 0px;">
@@ -44,10 +44,10 @@
 				<output id="minimum_score_value"><%= "Turnout at least #{round(100 * @calculation_opts.minimum_reference_approval_score)}% to show reference." %></output>
 			</div>
 
-			<button type="submit" class="pure-button pure-button-primary">Update preferences</button>
+			<div class="buttons">
+				<paper-button dialog-dismiss>Close</paper-button>
+				<paper-button dialog-confirm onclick="preferences_form.submit()">Update</paper-button>
+			</div>
 		</form>
-		<div class="buttons">
-			<paper-button dialog-dismiss>Close</paper-button>
-		</div>
 	</paper-dialog>
 </div>
