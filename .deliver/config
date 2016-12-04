@@ -21,6 +21,7 @@ pre_erlang_clean_compile() {
     cd '$BUILD_AT'
     mkdir -p priv/static
     brunch build --production
+    bower install
     MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest
   "
 }
