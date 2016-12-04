@@ -23,8 +23,12 @@ defmodule Liquio.HtmlReferenceController do
 		reference = poll
 		|> Reference.get(reference_poll)
 		|> Repo.preload([:for_choice_poll, :reference_poll, :poll])
+		contributions = reference.for_choice_poll |> Poll.calculate_contributions(calculation_opts) |> Enum.map(fn(contribution) ->
+			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
+		end)
 		results = Poll.calculate(reference.for_choice_poll, calculation_opts)
-		reference = Map.put(reference, :for_choice_poll, Map.put(reference.for_choice_poll, :results, results))
+		reference = Map.put(reference, :for_choice_poll, reference.for_choice_poll |> Map.put(:results, results) |> Map.put(:contributions, contributions))
+		own_vote = Vote.current_by(reference.for_choice_poll, user)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("show.html",
@@ -32,7 +36,8 @@ defmodule Liquio.HtmlReferenceController do
 			reference: reference,
 			poll: poll |> Map.put(:results, Poll.calculate(poll, calculation_opts)),
 			reference_poll: reference_poll |> Map.put(:results, Poll.calculate(reference_poll, calculation_opts)),
-			own_vote: Vote.current_by(reference.for_choice_poll, user),
+			own_vote: own_vote,
+			own_poll: reference.for_choice_poll |> Map.put(:results, if own_vote do Poll.results_for_vote(reference.for_choice_poll, own_vote) else nil end),
 			calculation_opts: calculation_opts)
 	end)
 end

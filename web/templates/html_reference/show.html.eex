@@ -21,14 +21,26 @@
 
 	<div class="title instruction" style="margin-top: 50px;">How would you vote if this was the only reference and you knew it was true?</div>
 
-	<%= render Liquio.HtmlPollView, "cast_vote.html",
-		to_path: "/polls/#{@reference.poll.id}/references/#{@reference.reference_poll.id}",
-		poll: %{:id => @reference.for_choice_poll_id, :choice_type => @reference.poll.choice_type},
-		own_vote: @own_vote
-	%>
 	<div style="margin-top: 30px;">
 		<%= render Liquio.HtmlPollView, "score.html", poll: @reference.for_choice_poll %>
 	</div>
+
+	<div class="links">
+		<a onclick="details_dialog.open()"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+		<a onclick="vote_dialog.open()"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
+	</div>
+
+
+	<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+		<%= render Liquio.HtmlPollView, "details.html", poll: @reference.for_choice_poll, contributions: @reference.for_choice_poll.contributions %>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+
+	<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+		<%= render Liquio.HtmlVoteView, "index.html", poll: @reference.for_choice_poll, own_vote: @own_vote, own_poll: @own_poll %>
+	</paper-dialog>
 
 	<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 		<form id="preferences_form" method="POST" action="/identities/preferences" class="pure-form">
