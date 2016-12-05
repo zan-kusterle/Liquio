@@ -9,14 +9,22 @@ defmodule Liquio.HtmlReferenceController do
 			else
 				reference_poll_url
 			end
-		conn
-		|> redirect(to: html_poll_html_reference_path(conn, :show, poll_id, reference_poll_id))
+		reference_poll = Repo.get(Poll, reference_poll_id)
+
+		if reference_poll != nil and reference_poll.kind == "custom" do
+			conn
+			|> redirect(to: html_poll_html_reference_path(conn, :show, poll_id, reference_poll_id))
+		else
+			conn
+			|> put_flash(:info, "The poll you want to reference does not exist.")
+			|> redirect(to: html_poll_path(conn, :show, poll_id))
+		end
 	end
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
-		:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
+		:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id", validator: &Poll.is_custom/1]},
 	},
 	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
