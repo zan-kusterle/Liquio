@@ -1,9 +1,9 @@
-<a class="after-link" style="margin-top: 30px;" onclick="snapshot_dialog.open()">Set viewing date: <b><%= @datetime_text %></b></a>
+<a class="after-link" style="margin-top: 30px;" onclick="snapshot_dialog.open()">Set viewing date: <b><%= Timex.format!(@datetime, "{M}/{D}/{YYYY}") %></b></a>
 <br/>
 <a class="after-link" onclick="preferences_dialog.open()">Update preferences</a>
 
 <paper-dialog id="snapshot_dialog" class="paper-date-picker-dialog" modal on-iron-overlay-closed="dismissDialog">
-	<paper-date-picker id="snapshot_date" name="datetime"<%= if String.length(@datetime_text) > 0 do %> date=<%= @datetime_text %><% end %> max-date="<%= Timex.now |> Timex.format!("{ISOdate}") %>"></paper-date-picker>
+	<paper-date-picker id="snapshot_date" name="datetime" date=<%= Timex.format!(@datetime, "{ISOdate}") %> max-date="<%= Timex.now |> Timex.format!("{ISOdate}") %>"></paper-date-picker>
 	<div class="buttons">
 		<paper-button dialog-dismiss>Cancel</paper-button>
 		<paper-button dialog-confirm raised class="primary" onclick="document.location = '?datetime=' + snapshot_date.date.toISOString().substring(0, 10)">OK</paper-button>

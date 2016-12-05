@@ -26,10 +26,12 @@
 					end %></b>
 					</td>
 					<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
-					<td><%= Timex.format!(contribution.datetime, "{D}.{M}.{YYYY}") %></td>
+					<td><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
 				</tr>
 			<% end %>
 		</table>
+	<% else %>
+		There are no votes for this poll yet.
 	<% end %>
 </div>
 

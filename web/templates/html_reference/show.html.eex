@@ -7,9 +7,7 @@
 		</h3>
 	<% end %>
 
-	<a href="<%= html_poll_path(@conn, :show, @reference.poll.id) %>">
-		<h1 class="title"><%= @poll.title %></h1>
-	</a>
+	<a href="<%= html_poll_path(@conn, :show, @reference.poll.id) %>" class="title"><%= @poll.title %></a>
 
 	<div class="score-container">
 		<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
