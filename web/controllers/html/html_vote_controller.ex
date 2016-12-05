@@ -4,26 +4,6 @@ defmodule Liquio.HtmlVoteController do
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
-	},
-	def index(conn, %{:poll => poll, :user => user}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
-		own_vote = Vote.current_by(poll, user)
-		conn
-		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render("index.html",
-			title: poll.title || "Liquio",
-			poll: poll
-				|> Map.put(:results, Poll.calculate(poll, calculation_opts)),
-			own_poll: poll
-				|> Map.put(:results, if own_vote do Poll.results_for_vote(poll, own_vote) else nil end),
-			references:  Reference.for_poll(poll, calculation_opts),
-			own_vote: own_vote,
-			minimum_voting_power: calculation_opts.minimum_voting_power)
-	end)
-
-	with_params(%{
-		:user => {Plugs.CurrentUser, [require: true]},
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
 		:choice => {Plugs.StringParam, [name: "choice", maybe: true]}
 	},
 	def create(conn, %{:user => user, :poll => poll, :choice => choice}) do

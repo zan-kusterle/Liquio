@@ -46,21 +46,6 @@ defmodule Liquio.HtmlPollController do
 			calculation_opts: calculation_opts)
 	end)
 
-	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
-		:datetime => {Plugs.DatetimeParam, [name: "datetime"]}
-	},
-	def details(conn, %{:poll => poll, :datetime => datetime}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
-		conn
-		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render("details.html",
-			title: poll.title,
-			poll: prepare_poll(poll, calculation_opts),
-			contributions: prepare_contributions(poll, calculation_opts),
-			calculation_opts: calculation_opts)
-	end)
-
 	plug :put_layout, "minimal.html" when action in [:embed]
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},

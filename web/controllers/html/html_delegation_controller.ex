@@ -14,9 +14,6 @@ defmodule Liquio.HtmlDelegationController do
 			|> put_flash(:info, "You no longer delegate your votes to this identity.")
 			|> redirect(to: default_redirect(conn))
 		else
-			current_delegation = Delegation.get_by(from_identity, to_identity)
-			current_weight = if current_delegation != nil and current_delegation.data != nil do current_delegation.data.weight else 0 end
-
 			weight = weight || 1.0
 			changeset = Delegation.changeset(%Delegation{}, %{
 				from_identity_id: from_identity.id,
@@ -24,18 +21,17 @@ defmodule Liquio.HtmlDelegationController do
 				weight: weight,
 				topics: topics
 			})
-			
-			query = from(d in Delegation, where: d.from_identity_id == ^from_identity.id and d.is_last == true and not is_nil(d.data))
-			total_weights = query
-			|> Repo.all
-			|> Enum.map(& &1.data.weight)
-			|> Enum.sum
-			next_total = (total_weights - current_weight + weight)
-			ratio = weight / next_total
 
 			changeset
 			|> Delegation.set
 			|> handle_errors(conn, fn(_delegation) ->
+				query = from(d in Delegation, where: d.from_identity_id == ^from_identity.id and d.is_last == true and not is_nil(d.data))
+				total_weights = query
+				|> Repo.all
+				|> Enum.map(& &1.data.weight)
+				|> Enum.sum
+				ratio = weight / total_weights
+
 				conn
 				|> put_flash(:info, "You now delegate #{round(100 * ratio)}% of your power to this identity.")
 				|> redirect(to: default_redirect(conn))
