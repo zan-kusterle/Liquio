@@ -41,14 +41,6 @@ defmodule Liquio.HtmlIdentityController do
 				nil
 			end
 
-		num_votes = Repo.one(
-			from(v in Vote,
-			where: v.identity_id == ^identity.id
-				and v.is_last == true
-				and not is_nil(v.data),
-			select: count(v.id))
-		)
-
 		delegation = if current_identity != nil and not is_me do
 			delegation = Repo.get_by(Delegation, %{from_identity_id: current_identity.id, to_identity_id: identity.id, is_last: true})
 			if delegation != nil and delegation.data != nil do
@@ -60,23 +52,85 @@ defmodule Liquio.HtmlIdentityController do
 			nil
 		end
 
-		num_delegations_from = Repo.one(
-			from(d in Delegation,
-			where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data),
-			select: count(d.id))
-		)
-		num_delegations_to = Repo.one(
-			from(d in Delegation,
-			where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data),
-			select: count(d.id))
-		)
+		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
+		|> Enum.sort(& &1.data.weight > &2.data.weight)
+
+		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
+		|> Enum.sort(& &1.data.weight > &2.data.weight)
 
 		identity = identity |> Repo.preload([:trust_metric_poll_votes])
-		num_inverse_trusts =  identity.trust_metric_poll_votes
+		trusted_by_identities =  identity.trust_metric_poll_votes
 		|> Repo.preload([:identity])
 		|> Enum.filter(& &1.is_last and &1.data != nil and &1.data.choice["main"] == 1.0)
-		|> Enum.count
-		
+		|> Enum.map(& &1.identity)
+		|> Enum.sort(& &1.username > &2.username)
+
+		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
+		|> Repo.all
+		|> Repo.preload([:poll])
+
+		voted_polls = votes |> Enum.map(fn(vote) ->
+			vote.poll
+			|> Map.put(:choice, vote.data.choice)
+		end)
+		polls = voted_polls
+		|> Enum.flat_map(& expand_poll(&1, calculation_opts))
+		|> Enum.reduce(%{}, fn(poll, acc) ->
+			existing_poll = Map.get(acc, poll.id, %{})
+			merged_poll = Map.merge(existing_poll, poll, fn k, v1, v2 ->
+				cond do
+					v1 == nil and v2 == nil ->
+						nil
+					v1 == nil ->
+						v2
+					v2 == nil ->
+						v1
+					true ->
+						case k do
+							:references -> v1 ++ v2
+							_ -> v1
+						end
+				end
+			end)
+			acc |> Map.put(poll.id, merged_poll)
+		end)
+		|> Map.values
+		{is_human_polls, other_polls} = Enum.partition(polls, &(&1.kind == "is_human"))
+
+		vote_groups = if Enum.empty?(other_polls) do
+			[]
+		else
+			root_polls = other_polls |> Enum.filter(fn(poll) ->
+				Enum.all?(other_polls, fn current_poll ->
+					Enum.find(current_poll.references, & &1.reference_poll.id == poll.id) == nil
+				end)
+			end)
+			root_polls = if Enum.empty?(root_polls) do
+				[Enum.at(other_polls, 0)]
+			else
+				root_polls
+			end
+
+			polls_by_ids = for poll <- other_polls, into: %{} do
+				{poll.id, poll}
+			end
+			root_polls |> Enum.map(fn poll ->
+				traverse_polls(polls_by_ids, poll.id, MapSet.new, 0, nil)
+			end)
+		end
+
+		is_human_votes = is_human_polls |> Enum.map(fn poll ->
+			identity = Repo.get_by!(Identity, trust_metric_poll_id: poll.id)
+			%{
+				:identity => identity,
+				:poll => poll
+			}
+		end)
+
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("show.html",
@@ -87,12 +141,13 @@ defmodule Liquio.HtmlIdentityController do
 			calculation_opts: calculation_opts,
 			is_in_trust_metric: is_in_trust_metric,
 			own_is_human_vote: own_is_human_vote,
-			num_votes: num_votes,
-			is_trusted: true,
 			delegation: delegation,
-			num_delegations_to: num_delegations_to,
-			num_delegations_from: num_delegations_from,
-			num_inverse_trusts: num_inverse_trusts)
+			delegations_to: delegations_to,
+			delegations_from: delegations_from,
+			trusted_by_identities: trusted_by_identities,
+			is_human_votes: is_human_votes,
+			votes: votes,
+			vote_groups: vote_groups)
 	end)
 
 	with_params(%{
@@ -235,7 +290,7 @@ defmodule Liquio.HtmlIdentityController do
 		visited = MapSet.put(visited, id)
 
 		current = polls_by_ids[id] |> Map.put(:level, level) |> Map.put(:reference, reference)
-		sub = Enum.flat_map(polls_by_ids[id].references, fn(reference = %{:reference_poll_id => reference_poll_id}) ->
+		sub = Enum.flat_map(polls_by_ids[id].references, fn(reference = %{:reference_poll => %{:id => reference_poll_id}}) ->
 			if Map.has_key?(polls_by_ids, reference_poll_id) do
 				traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1, reference)
 			else
@@ -275,38 +330,27 @@ defmodule Liquio.HtmlIdentityController do
 		Map.merge(Map.merge(%{
 			:references => [],
 			:choice => nil,
-			:approval_score => nil
+			:for_choice => nil
 		}, poll), data)
 	end
 
 	defp expand_poll(poll, calculation_opts) do
 		case poll.kind do
 			"custom" ->
-				references = poll
-				|> Reference.for_poll(calculation_opts)
-				|> Repo.preload([:poll, :reference_poll])
-				[prepare_poll(poll, %{:choice => poll.choice, :references => references})]
+				[prepare_poll(poll, %{:choice => poll.choice})]
 			"is_reference" ->
 				reference = Reference
 				|> Repo.get_by!(for_choice_poll_id: poll.id)
 				|> Repo.preload([:poll, :reference_poll])
-
-				references = reference.poll
-				|> Reference.for_poll(calculation_opts)
-				|> Repo.preload([:poll, :reference_poll, :for_choice_poll])
-				reference_poll_references = reference.reference_poll
-				|> Reference.for_poll(calculation_opts)
-				|> Repo.preload([:poll, :reference_poll])
-
-				references = if Enum.find(references, &(&1.reference_poll_id == reference.reference_poll.id and &1.for_choice == reference.for_choice)) == nil do
-					references ++ [%{:reference_poll_id => reference.reference_poll.id, :for_choice => reference.for_choice, :poll => reference.poll}]
-				else
-					references
-				end
+				for_choice = poll.choice["main"]
 
 				[
-					prepare_poll(reference.poll, %{:references => references}),
-					prepare_poll(reference.reference_poll, %{:references => reference_poll_references, :approval_score => poll.choice["main"]})
+					prepare_poll(reference.poll, %{:references => [%{
+						:reference_poll => reference.reference_poll,
+						:for_choice => for_choice,
+						:poll => reference.reference_poll
+					}]}),
+					prepare_poll(reference.reference_poll, %{})
 				]
 			_ ->
 				[prepare_poll(poll, %{})]

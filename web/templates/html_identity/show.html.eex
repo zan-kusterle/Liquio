@@ -4,19 +4,67 @@
 
 	<div class="stats">
 		<div class="stat num-inverse-trusts">
-			<a href="/identities/<%= @identity.id %>/trusts/to">trusted by <%= @num_inverse_trusts %> <%= ngettext("person", "people", @num_inverse_trusts) %></a>
+			<a onclick="inverse_trusts_dialog.open()">trusted by <%=  Enum.count(@trusted_by_identities) %> <%= ngettext("person", "people", Enum.count(@trusted_by_identities)) %></a>
 		</div>
 		<div class="stat num-delegations-from">
-			<a href="/identities/<%= @identity.id %>/delegations/from">made <%= @num_delegations_from %> <%= ngettext("delegation", "delegations", @num_delegations_from) %></a>
+			<a onclick="delegations_from_dialog.open()">made <%= Enum.count(@delegations_from) %> <%= ngettext("delegation", "delegations", Enum.count(@delegations_from)) %></a>
 		</div>
 		<div class="stat num-delegations-to">
-			<a href="/identities/<%= @identity.id %>/delegations/to">delegations from <%= @num_delegations_to %> <%= ngettext("person", "people", @num_delegations_to) %></a>
+			<a onclick="delegations_to_dialog.open()">delegations from <%= Enum.count(@delegations_to) %> <%= ngettext("person", "people", Enum.count(@delegations_to)) %></a>
 		</div>
 		<div class="stat num-votes">
-			<a href="/identities/<%= @identity.id %>/votes">voted on <%= @num_votes %> <%= ngettext("poll", "polls", @num_votes) %></a>
+			<a onclick="votes_dialog.open()">voted on <%= Enum.count(@votes) %> <%= ngettext("poll", "polls", Enum.count(@votes)) %></a>
 		</div>
 	</div>
 </div>
+
+<paper-dialog id="inverse_trusts_dialog" style="width: 600px;">
+	<h2>Trusted by</h2>
+
+	<paper-dialog-scrollable>
+		<%= render "identities.html", identities: @trusted_by_identities %>
+	</paper-dialog-scrollable>
+	
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+	</div>
+</paper-dialog>
+
+<paper-dialog id="delegations_from_dialog" style="width: 600px;">
+	<h2>Delegations made</h2>
+
+	<paper-dialog-scrollable>
+		<%= render "delegations.html", delegations: @delegations_from, direction: "from" %>
+	</paper-dialog-scrollable>
+
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+	</div>
+</paper-dialog>
+
+<paper-dialog id="delegations_to_dialog" style="width: 600px;">
+	<h2>Receiving delegations</h2>
+
+	<paper-dialog-scrollable>
+		<%= render "delegations.html", delegations: @delegations_to, direction: "to" %>
+	</paper-dialog-scrollable>
+	
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+	</div>
+</paper-dialog>
+
+<paper-dialog id="votes_dialog" style="width: 600px;">
+	<h2>Votes cast</h2>
+
+	<paper-dialog-scrollable>
+		<%= render "votes.html", groups: @vote_groups, is_human_votes: @is_human_votes %>
+	</paper-dialog-scrollable>
+
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+	</div>
+</paper-dialog>
 
 <%= unless @is_in_trust_metric do %>
 	<p style="color: #e80606; margin: 0px; margin-top: 50px; font-weight: bold;">NOT IN TRUST METRIC</p>

@@ -14,10 +14,10 @@
 							<span>&mdash;</span>
 							<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.choice["main"], poll.choice_type) %></span>
 						<% end %>
-						<%= if poll.reference != nil and poll.approval_score != nil do %>
+						<%= if poll.reference != nil and poll.for_choice != nil do %>
 							<span>&mdash;</span>
 							<a href="/polls/<%= poll.reference.poll.id %>/references/<%= poll.id %>?for_choice=<%= poll.reference.for_choice %>" style="font-size: 12px; margin-left: 0px;">
-								<b><%= score_format(poll.approval_score) %></b> on reference
+								<b><%= score_format(poll.for_choice) %></b> on reference
 							</a>
 						<% end %>
 					</div>
