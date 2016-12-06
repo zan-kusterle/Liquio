@@ -14,7 +14,6 @@ defmodule Liquio.Results.CacheServer do
     end
 
 	def get_results(poll_id) do
-		IO.inspect poll_id
 		Agent.get(__MODULE__, fn(map) ->
 			{results, created_at} = Map.get(map, poll_id)
             results
