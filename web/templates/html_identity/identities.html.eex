@@ -4,7 +4,7 @@
 	<div class="identities">
 		<%= for vote <- @trust_votes do %>
 			<% identity = vote.trust_identity  %>
-			<a href="/identities/<%= identity.id %>"><%= identity.username %></a>
+			<a href="/identities/<%= identity.id %>" class="name"><%= identity.username %></a>
 			<%= if vote.data.choice["main"] < 1 - 0.0001 do %>
 				<span style="margin-left: 10px; font-weight: bold;"><%= score_format(vote.data.choice["main"]) %></span>
 			<% end %>

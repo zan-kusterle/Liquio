@@ -65,7 +65,7 @@ defmodule Liquio.HtmlIdentityController do
 		identity = identity |> Repo.preload([:trust_metric_poll_votes])
 		trusted_by_votes =  identity.trust_metric_poll_votes
 		|> Repo.preload([:identity])
-		|> Enum.filter(& &1.is_last and &1.data != nil and &1.data.choice["main"] == 1.0)
+		|> Enum.filter(& &1.is_last and &1.data != nil)
 		|> Enum.map(& Map.put(&1, :trust_identity, &1.identity))
 		|> Enum.sort(& &1.trust_identity.username > &2.trust_identity.username)
 
