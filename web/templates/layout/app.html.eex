@@ -34,6 +34,9 @@
 		<link rel="import" href="/bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 		<link rel="import" href="/bower_components/paper-styles/color.html">
 		<link rel="import" href="/bower_components/paper-date-picker-item/paper-date-picker-item.html">
+		<link rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+		<link rel="import" href="/bower_components/paper-listbox/paper-listbox.html">
+		<link rel="import" href="/bower_components/paper-item/paper-item.html">
 
 		<script src="/bower_components/moment/min/locales.js"></script>
 
@@ -42,6 +45,8 @@
 
 	<body>
 		<div class="container">
+			<%= render Liquio.HtmlPollView, "new.html" %>
+			
 			<div class="header">
 				<div class="header-contents">
 					<div class="pure-g">
@@ -58,6 +63,7 @@
 						<div class="pure-u-1 pure-u-lg-1-2">
 							<div class="actions">
 								<a href="/explore/top"><i class="fa fa-eye" aria-hidden="true"></i> Explore</a>
+								<a onclick="create_dialog.open()"><i class="fa fa-plus" aria-hidden="true"></i> Create</a>
 								<%= if user = Guardian.Plug.current_resource(@conn) do %>
 									<a href="/identities/<%= user.id %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></a>
 									<a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>

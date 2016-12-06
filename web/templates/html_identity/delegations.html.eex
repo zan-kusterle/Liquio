@@ -1,5 +1,5 @@
 <%= if Enum.empty?(@delegations) do %>
-	<h2 class="identity-no-items">There are no delegations here.</h2>
+	<h2 class="identity-no-items">There is nothing here.</h2>
 <% else %>
 	<div class="delegations">
 		<% total_weights = @delegations |> Enum.map(& &1.data.weight) |> Enum.sum %>
@@ -10,7 +10,7 @@
 				<span class="weight"><%= round(100 * delegation.data.weight / total_weights) %>%</span>
 				<%= if delegation.data.topics != nil do %>
 					<%= for topic <- delegation.data.topics do %>
-						<a href="<%= html_explore_path(@conn, :show, topic) %>" class="topic">#<%= topic %></a>
+						<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
 					<% end %>
 				<% else %>
 					<span class="all-topics">All topics</span>

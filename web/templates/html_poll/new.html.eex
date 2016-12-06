@@ -1,36 +1,43 @@
-<form method="POST" action="/polls" autocomplete="off" class="pure-form pure-g new-poll">
-	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+<paper-dialog id="create_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+	<h2>Create new poll</h2>
+	
+	<form id="create_form" method="POST" action="/polls" autocomplete="off" class="pure-form pure-g new-poll">
+		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-	<label for="title" class="pure-u-1 pure-u-sm-1-6 row-label">Title</label>
-	<div class="pure-u-1 pure-u-sm-5-6 row-input">
-		<input id="title" name="title" type="text" required placeholder="Be as unambiguous as possible" class="pure-input-1" />
+		<input id="reference_to_poll_id_input" type="hidden" name="reference_to_poll_id" value="-1" />
+
+		<label for="title" class="pure-u-1 row-label">Title</label>
+		<div class="pure-u-1 row-input">
+			<input id="title" name="title" type="text" required placeholder="Be as unambiguous as possible" class="pure-input-1" style="text-align: center;" />
+		</div>
+
+		<label for="topics" class="pure-u-1 row-label">Topics</label>
+		<div class="pure-u-1 row-input">
+			<input id="topics" name="topics" type="text" required placeholder="Politics, economics" class="pure-input-1" style="text-align: center;" />
+		</div>
+
+		<label class="pure-u-1 row-label">Choice Type</label>
+		<div class="pure-u-1 row-input">
+			<paper-dropdown-menu style="width: 100%; text-align: center; margin-top: -20px;" attr-for-selected="value" selected="{{choice_type}}">
+				<paper-listbox class="dropdown-content" selected="0">
+					<paper-item value="probability">Probability: vote with a probability between 0 and 100%</span></paper-item>
+					<paper-item value="quantity">Quantity: vote with any number</span></paper-item>
+					<paper-item value="time_quantity">Quantity by time: vote with many year and number pairs</span></paper-item>
+				</paper-listbox>
+			</paper-dropdown-menu>
+		</div>
+		<input type="hidden" name="choice_type" value="{{choice_type}}">
+
+		<div class="pure-u-1 row-input create">
+			<p class="notes">You can't modify or delete the poll later.</p>
+		</div>
+	</form>
+
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+		<paper-button dialog-confirm raised>
+			<button onclick="reference_to_poll_id_input.value=1; create_form.submit()">CREATE AND REFERENCE</button>
+		</paper-button>
+		<paper-button dialog-confirm raised class="primary" onclick="create_form.submit()">Create</paper-button>
 	</div>
-
-	<label for="topics" class="pure-u-1 pure-u-sm-1-6 row-label">Topics</label>
-	<div class="pure-u-1 pure-u-sm-5-6 row-input">
-		<input id="topics" name="topics" type="text" required placeholder="Politics, economics" class="pure-input-1" />
-	</div>
-
-	<label class="pure-u-1 pure-u-sm-1-6 row-label">Choice Type</label>
-	<div class="pure-u-1 pure-u-sm-5-6 row-input choices">
-		<label for="probability" class="pure-radio">
-			<input id="probability" type="radio" name="choice_type" value="probability" checked>
-			 Probability <span class="choice-type-details">- vote with a probability between 0 and 1, mean result</span>
-		</label>
-		<label for="quantity" class="pure-radio">
-			<input id="quantity" type="radio" name="choice_type" value="quantity">
-			 Quantity <span class="choice-type-details">- vote with any number, median result</span>
-		</label>
-		<label for="time_quantity" class="pure-radio">
-			<input id="time_quantity" type="radio" name="choice_type" value="time_quantity">
-			 Time quantity <span class="choice-type-details">- vote with multiple time and number pairs, median result</span>
-		</label>
-	</div>
-
-	<div class="pure-u-sm-1-6"></div>
-	<div class="pure-u-1 pure-u-sm-5-6 row-input create">
-		<button type="submit" class="pure-button pure-button-primary">Create</button>
-
-		<p class="notes">You won't be able to modify or delete poll after it's live.</p>
-	</div>
-</form>
+</paper-dialog>

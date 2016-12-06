@@ -96,6 +96,8 @@
 
 			<input type="url" name="trust_metric_url" value="<%= @calculation_opts.trust_metric_url %>" style="max-width: 500px; display: block; margin: 0 auto;" />
 
+			<p style="margin-top: 15px;"><%= Enum.count(@calculation_opts[:trust_metric_ids]) %> <%= ngettext("person", "people", Enum.count(@calculation_opts[:trust_metric_ids])) %> in current trust metric.</p>
+
 			<button type="submit" class="pure-button pure-button-primary">Update</button>
 		</form>
 	<% else %>
