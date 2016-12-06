@@ -111,8 +111,6 @@ defmodule Liquio.Poll do
 	end
 
 	def calculate(poll, calculation_opts) do
-		Liquio.Results.CacheServer.start_link
-
 		if CacheServer.has_results?(poll.id) do
 			CacheServer.get_results(poll.id)
 		else

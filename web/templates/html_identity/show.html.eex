@@ -3,17 +3,17 @@
 	<h1 class="identity-username"><%= @identity.username %></h1>
 
 	<div class="stats">
-		<div class="stat num-trusts">
-			<a onclick="trusts_dialog.open()">trusts <%=  Enum.count(@is_human_votes) %> <%= ngettext("person", "people", Enum.count(@is_human_votes)) %></a>
-		</div>
 		<div class="stat num-inverse-trusts">
 			<a onclick="inverse_trusts_dialog.open()">trusted by <%=  Enum.count(@trusted_by_votes) %> <%= ngettext("person", "people", Enum.count(@trusted_by_votes)) %></a>
 		</div>
-		<div class="stat num-delegations-from">
-			<a onclick="delegations_from_dialog.open()">made <%= Enum.count(@delegations_from) %> <%= ngettext("delegation", "delegations", Enum.count(@delegations_from)) %></a>
+		<div class="stat num-trusts">
+			<a onclick="trusts_dialog.open()">trusts <%=  Enum.count(@is_human_votes) %> <%= ngettext("person", "people", Enum.count(@is_human_votes)) %></a>
 		</div>
 		<div class="stat num-delegations-to">
 			<a onclick="delegations_to_dialog.open()">delegations from <%= Enum.count(@delegations_to) %> <%= ngettext("person", "people", Enum.count(@delegations_to)) %></a>
+		</div>
+		<div class="stat num-delegations-from">
+			<a onclick="delegations_from_dialog.open()">made <%= Enum.count(@delegations_from) %> <%= ngettext("delegation", "delegations", Enum.count(@delegations_from)) %></a>
 		</div>
 		<div class="stat num-votes">
 			<a onclick="votes_dialog.open()">voted on <%= Enum.count(@votes) %> <%= ngettext("poll", "polls", Enum.count(@votes)) %></a>
