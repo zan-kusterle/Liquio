@@ -7,6 +7,7 @@ defmodule Liquio.Poll do
 	alias Liquio.Results.GetData
 	alias Liquio.Results.CalculateContributions
 	alias Liquio.Results.AggregateContributions
+	alias Liquio.Results.CacheServer
 
 	schema "polls" do
 		field :kind, :string
@@ -110,30 +111,41 @@ defmodule Liquio.Poll do
 	end
 
 	def calculate(poll, calculation_opts) do
-		soft_quorum_t = if poll.kind == "custom" do 0 else calculation_opts.soft_quorum_t end
-		vote_weight_halving_days = if poll.kind == "custom" do calculation_opts.vote_weight_halving_days else nil end
-		minimum_voting_power = if poll.kind == "custom" do calculation_opts.minimum_voting_power else 0 end
+		Liquio.Results.CacheServer.start_link
 
-		results = Poll.calculate_contributions(poll, calculation_opts)
-		|> AggregateContributions.aggregate(calculation_opts.datetime, vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculation_opts.trust_metric_ids)
-
-		if poll.choice_type == "time_quantity" do
-			results_with_datetime = results.by_keys
-			|> Enum.map(fn({time_key, time_results}) ->
-				{year, ""} = Integer.parse(time_key)
-				Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
-			end)
-			|> Enum.filter(fn(datetime_result) ->
-				datetime_result.total >= minimum_voting_power
-			end)
-			results |> Map.put(:by_datetime, results_with_datetime)
+		if CacheServer.has_results?(poll.id) do
+			CacheServer.get_results(poll.id)
 		else
-			main_results = AggregateContributions.by_key(results.by_keys, "main")
-			if main_results.total >= minimum_voting_power do
-				main_results
+			soft_quorum_t = if poll.kind == "custom" do 0 else calculation_opts.soft_quorum_t end
+			vote_weight_halving_days = if poll.kind == "custom" do calculation_opts.vote_weight_halving_days else nil end
+			minimum_voting_power = if poll.kind == "custom" do calculation_opts.minimum_voting_power else 0 end
+
+			results = Poll.calculate_contributions(poll, calculation_opts)
+			|> AggregateContributions.aggregate(calculation_opts.datetime, vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculation_opts.trust_metric_ids)
+
+			results = if poll.choice_type == "time_quantity" do
+				results_with_datetime = results.by_keys
+				|> Enum.map(fn({time_key, time_results}) ->
+					{year, ""} = Integer.parse(time_key)
+					Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
+				end)
+				|> Enum.filter(fn(datetime_result) ->
+					datetime_result.total >= minimum_voting_power
+				end)
+				results |> Map.put(:by_datetime, results_with_datetime)
 			else
-				Map.put(main_results, :mean, nil)
+				main_results = AggregateContributions.by_key(results.by_keys, "main")
+				if main_results.total >= minimum_voting_power do
+					main_results
+				else
+					Map.put(main_results, :mean, nil)
+				end
 			end
+
+			CacheServer.put_results(poll.id, results)
+
+			IO.inspect Liquio.Results.CacheServer.inspect
+			results
 		end
 	end
 
