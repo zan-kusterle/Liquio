@@ -63,20 +63,29 @@ defmodule Liquio.HtmlIdentityController do
 		|> Enum.sort(& &1.data.weight > &2.data.weight)
 
 		identity = identity |> Repo.preload([:trust_metric_poll_votes])
-		trusted_by_identities =  identity.trust_metric_poll_votes
+		trusted_by_votes =  identity.trust_metric_poll_votes
 		|> Repo.preload([:identity])
 		|> Enum.filter(& &1.is_last and &1.data != nil and &1.data.choice["main"] == 1.0)
-		|> Enum.map(& &1.identity)
-		|> Enum.sort(& &1.username > &2.username)
+		|> Enum.map(& Map.put(&1, :trust_identity, &1.identity))
+		|> Enum.sort(& &1.trust_identity.username > &2.trust_identity.username)
 
 		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
 		|> Repo.all
-		|> Repo.preload([:poll])
+		|> Repo.preload([:poll, :identity])
 
 		voted_polls = votes |> Enum.map(fn(vote) ->
 			vote.poll
 			|> Map.put(:choice, vote.data.choice)
 		end)
+
+		is_human_votes = votes
+		|> Enum.filter(& &1.poll.kind == "is_human")
+		|> Enum.map(fn(vote) ->
+			trust_identity = Repo.get_by!(Identity, trust_metric_poll_id: vote.poll.id)
+			Map.put(vote, :trust_identity, trust_identity)
+		end)
+		|> Enum.sort(& &1.trust_identity.username > &2.trust_identity.username)
+
 		polls = voted_polls
 		|> Enum.flat_map(& expand_poll(&1, calculation_opts))
 		|> Enum.reduce(%{}, fn(poll, acc) ->
@@ -98,38 +107,29 @@ defmodule Liquio.HtmlIdentityController do
 			end)
 			acc |> Map.put(poll.id, merged_poll)
 		end)
-		|> Map.values
-		{is_human_polls, other_polls} = Enum.partition(polls, &(&1.kind == "is_human"))
+		|> Map.values()
 
-		vote_groups = if Enum.empty?(other_polls) do
+		vote_groups = if Enum.empty?(polls) do
 			[]
 		else
-			root_polls = other_polls |> Enum.filter(fn(poll) ->
-				Enum.all?(other_polls, fn current_poll ->
+			root_polls = polls |> Enum.filter(fn(poll) ->
+				Enum.all?(polls, fn current_poll ->
 					Enum.find(current_poll.references, & &1.reference_poll.id == poll.id) == nil
 				end)
 			end)
 			root_polls = if Enum.empty?(root_polls) do
-				[Enum.at(other_polls, 0)]
+				[Enum.at(polls, 0)]
 			else
 				root_polls
 			end
 
-			polls_by_ids = for poll <- other_polls, into: %{} do
+			polls_by_ids = for poll <- polls, into: %{} do
 				{poll.id, poll}
 			end
 			root_polls |> Enum.map(fn poll ->
 				traverse_polls(polls_by_ids, poll.id, MapSet.new, 0, nil)
 			end)
 		end
-
-		is_human_votes = is_human_polls |> Enum.map(fn poll ->
-			identity = Repo.get_by!(Identity, trust_metric_poll_id: poll.id)
-			%{
-				:identity => identity,
-				:poll => poll
-			}
-		end)
 
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
@@ -144,7 +144,7 @@ defmodule Liquio.HtmlIdentityController do
 			delegation: delegation,
 			delegations_to: delegations_to,
 			delegations_from: delegations_from,
-			trusted_by_identities: trusted_by_identities,
+			trusted_by_votes: trusted_by_votes,
 			is_human_votes: is_human_votes,
 			votes: votes,
 			vote_groups: vote_groups)
@@ -353,7 +353,7 @@ defmodule Liquio.HtmlIdentityController do
 					prepare_poll(reference.reference_poll, %{})
 				]
 			_ ->
-				[prepare_poll(poll, %{})]
+				[]
 		end
 	end
 end

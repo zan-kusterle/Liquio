@@ -3,8 +3,11 @@
 	<h1 class="identity-username"><%= @identity.username %></h1>
 
 	<div class="stats">
+		<div class="stat num-trusts">
+			<a onclick="trusts_dialog.open()">trusts <%=  Enum.count(@is_human_votes) %> <%= ngettext("person", "people", Enum.count(@is_human_votes)) %></a>
+		</div>
 		<div class="stat num-inverse-trusts">
-			<a onclick="inverse_trusts_dialog.open()">trusted by <%=  Enum.count(@trusted_by_identities) %> <%= ngettext("person", "people", Enum.count(@trusted_by_identities)) %></a>
+			<a onclick="inverse_trusts_dialog.open()">trusted by <%=  Enum.count(@trusted_by_votes) %> <%= ngettext("person", "people", Enum.count(@trusted_by_votes)) %></a>
 		</div>
 		<div class="stat num-delegations-from">
 			<a onclick="delegations_from_dialog.open()">made <%= Enum.count(@delegations_from) %> <%= ngettext("delegation", "delegations", Enum.count(@delegations_from)) %></a>
@@ -16,117 +19,124 @@
 			<a onclick="votes_dialog.open()">voted on <%= Enum.count(@votes) %> <%= ngettext("poll", "polls", Enum.count(@votes)) %></a>
 		</div>
 	</div>
-</div>
 
-<paper-dialog id="inverse_trusts_dialog" style="width: 600px;">
-	<h2>Trusted by</h2>
+	<paper-dialog id="trusts_dialog" style="width: 600px;">
+		<h2>Trusts</h2>
 
-	<paper-dialog-scrollable>
-		<%= render "identities.html", identities: @trusted_by_identities %>
-	</paper-dialog-scrollable>
-	
-	<div class="buttons">
-		<paper-button dialog-dismiss>Close</paper-button>
-	</div>
-</paper-dialog>
+		<paper-dialog-scrollable>
+			<%= render "identities.html", trust_votes: @is_human_votes %>
+		</paper-dialog-scrollable>
+		
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
 
-<paper-dialog id="delegations_from_dialog" style="width: 600px;">
-	<h2>Delegations made</h2>
+	<paper-dialog id="inverse_trusts_dialog" style="width: 600px;">
+		<h2>Trusted by</h2>
 
-	<paper-dialog-scrollable>
-		<%= render "delegations.html", delegations: @delegations_from, direction: "from" %>
-	</paper-dialog-scrollable>
+		<paper-dialog-scrollable>
+			<%= render "identities.html", trust_votes: @trusted_by_votes %>
+		</paper-dialog-scrollable>
+		
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
 
-	<div class="buttons">
-		<paper-button dialog-dismiss>Close</paper-button>
-	</div>
-</paper-dialog>
+	<paper-dialog id="delegations_from_dialog" style="width: 600px;">
+		<h2>Delegations made</h2>
 
-<paper-dialog id="delegations_to_dialog" style="width: 600px;">
-	<h2>Receiving delegations</h2>
+		<paper-dialog-scrollable>
+			<%= render "delegations.html", conn: @conn, delegations: @delegations_from, direction: "from" %>
+		</paper-dialog-scrollable>
 
-	<paper-dialog-scrollable>
-		<%= render "delegations.html", delegations: @delegations_to, direction: "to" %>
-	</paper-dialog-scrollable>
-	
-	<div class="buttons">
-		<paper-button dialog-dismiss>Close</paper-button>
-	</div>
-</paper-dialog>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
 
-<paper-dialog id="votes_dialog" style="width: 600px;">
-	<h2>Votes cast</h2>
+	<paper-dialog id="delegations_to_dialog" style="width: 600px;">
+		<h2>Receiving delegations</h2>
 
-	<paper-dialog-scrollable>
-		<%= render "votes.html", groups: @vote_groups, is_human_votes: @is_human_votes %>
-	</paper-dialog-scrollable>
+		<paper-dialog-scrollable>
+			<%= render "delegations.html", conn: @conn, delegations: @delegations_to, direction: "to" %>
+		</paper-dialog-scrollable>
+		
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
 
-	<div class="buttons">
-		<paper-button dialog-dismiss>Close</paper-button>
-	</div>
-</paper-dialog>
+	<paper-dialog id="votes_dialog" style="width: 600px;">
+		<h2>Votes cast</h2>
 
-<%= unless @is_in_trust_metric do %>
-	<p style="color: #e80606; margin: 0px; margin-top: 50px; font-weight: bold;">NOT IN TRUST METRIC</p>
+		<paper-dialog-scrollable>
+			<%= render "votes.html", groups: @vote_groups, is_human_votes: @is_human_votes %>
+		</paper-dialog-scrollable>
+
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+		</div>
+	</paper-dialog>
+
+	<%= unless @is_in_trust_metric do %>
+		<p style="color: #e80606; margin: 0px; margin-top: 50px; font-weight: bold;">NOT IN TRUST METRIC</p>
+
+		<%= if @is_me do %>
+			<div class="section-title" style="margin-top: 5px;">Share the URL of your identity with others.<br>If they want they can trust you or delegate you their voting power.</div>
+		<% end %>
+	<% end %>
 
 	<%= if @is_me do %>
-		<div class="section-title" style="margin-top: 5px;">Share the URL of your identity with others.<br>If they want they can trust you or delegate you their voting power.</div>
-	<% end %>
-<% end %>
+		<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 15px;">Trust metric URL</div>
 
-<%= if @is_me do %>
-	<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 15px;">Trust metric URL</div>
+		<form method="POST" action="preferences" class="pure-form preferences">
+			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-	<form method="POST" action="preferences" class="pure-form preferences">
-		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+			<input type="url" name="trust_metric_url" value="<%= @calculation_opts.trust_metric_url %>" style="max-width: 500px; display: block; margin: 0 auto;" />
 
-		<input type="url" name="trust_metric_url" value="<%= @calculation_opts.trust_metric_url %>" style="max-width: 500px; display: block; margin: 0 auto;" />
+			<button type="submit" class="pure-button pure-button-primary">Update</button>
+		</form>
+	<% else %>
+		<div class="section-title" style="font-size: 20px; margin-top: 60px;">I trust this identity</div>
+		<%= render Liquio.HtmlPollView, "cast_vote.html",
+			to_path: "/identities/#{@identity.id}",
+			poll: %{:id => @identity.trust_metric_poll_id, :choice_type => "probability"},
+			own_vote: @own_is_human_vote,
+			allow_numeric: false
+		%>
 
-		<button type="submit" class="pure-button pure-button-primary">Update</button>
-	</form>
-<% else %>
-	<div class="section-title" style="font-size: 20px; margin-top: 60px;">I trust this identity</div>
-	<%= render Liquio.HtmlPollView, "cast_vote.html",
-		to_path: "/identities/#{@identity.id}",
-		poll: %{:id => @identity.trust_metric_poll_id, :choice_type => "probability"},
-		own_vote: @own_is_human_vote,
-		allow_numeric: false
-	%>
+		<a onclick="delegation_dialog.open()" class="add-delegation-button">Delegate your vote</a>
 
-	<div class="section-title" style="font-size: 20px; margin-top: 50px; margin-bottom: 20px;">Delegate your vote</div>
-	<form method="POST" action="/identities/<%= @identity.id %>/delegations" class="pure-form">
-		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+		<paper-dialog id="delegation_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+			<h2>Delegate your vote to <%= @identity.name %></h2>
+			
+			<form id="delegation_form" method="POST" action="/identities/<%= @identity.id %>/delegations" class="pure-form preferences">
+				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-		<div class="pure-g preferences">
-			<div class="pure-u-1 pure-u-md-1-4 name">
-				For topics
-			</div>
-			<div class="pure-u-1 pure-u-md-3-4 value">
-				<input type="text" name="topics" value='<%= if @delegation != nil and @delegation.data != nil and @delegation.data.topics != nil do @delegation.data.topics |> Enum.join(", ") else "" end %>' placeholder="Delegate regardless of topics" />
-			</div>
-
-			<% relative_weight = if @delegation != nil and @delegation.data != nil do @delegation.data.weight else 1.0 end %>
-			<div class="pure-u-1 pure-u-md-1-4 name">
-				Relative weight
-			</div>
-			<div class="pure-u-1 pure-u-md-3-4 value">
-				<div class="range">
-					<input type="range" name="weight" id="weight_range" value="<%= number_format_simple(relative_weight) %>" min="0" max="1" step="any" oninput="weight_value.value = 'Relative weight set to ' + Math.round(100 * weight_range.value) + '%'" />
-					<output id="weight_value"><%= "Relative weight set to #{round(100 * relative_weight)}%" %></output>
+				<div class="preference">
+					<p class="name">For topics</p>
+					<input type="text" name="topics" value='<%= if @delegation != nil and @delegation.data != nil and @delegation.data.topics != nil do @delegation.data.topics |> Enum.join(", ") else "" end %>' placeholder="Delegate regardless of topics" />
 				</div>
 
-			</div>
+				<% relative_weight = if @delegation != nil and @delegation.data != nil do @delegation.data.weight else 1.0 end %>
+				<div class="preference">
+					<p class="name">Relative weight</p>
+					<div class="range">
+						<input type="range" name="weight" id="weight_range" value="<%= number_format_simple(relative_weight) %>" min="0" max="1" step="any" oninput="weight_value.value = 'Relative weight set to ' + Math.round(100 * weight_range.value) + '%'" />
+						<output id="weight_value"><%= "Relative weight set to #{round(100 * relative_weight)}%" %></output>
+					</div>
+				</div>
+			</form>
 
-			<div class="pure-u-1 pure-u-md-1-4 name">
+			<div class="buttons">
+				<paper-button dialog-dismiss>Close</paper-button>
+				<paper-button dialog-confirm raised class="warning">
+					<button name="weight" value="0" onclick="weight_range.value = 0; delegation_form.submit()">REMOVE DELEGATION</button>
+				</paper-button>
+				<paper-button dialog-confirm raised class="primary" onclick="delegation_form.submit()">Delegate</paper-button>
 			</div>
-			<div class="pure-u-1 pure-u-md-3-4 value">
-				<%= if @delegation do %>
-					<button type="submit" class="pure-button pure-button-primary" style="margin-right: 15px;">Update delegation</button>
-					<button type="submit" name="weight" value="0" class="pure-button delete-button" style="margin-left: 15px;">Remove delegation</button>
-				<% else %>
-					<button type="submit" class="pure-button pure-button-primary">Set delegation</button>
-				<% end %>
-			</div>
-		</div>
-	</form>
-<% end %>
+		</paper-dialog>
+	<% end %>
+</div>
