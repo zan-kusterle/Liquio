@@ -1,1 +1,1 @@
-<a class="after-link" style="margin-top: 30px;" onclick="preferences_dialog.open()">Update preferences</a>
+<a class="after-link" style="margin-top: 30px;" onclick="preferences_dialog.open()">Change preferences</a>

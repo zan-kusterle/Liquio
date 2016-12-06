@@ -55,7 +55,7 @@
 
 		<div class="buttons">
 			<paper-button dialog-dismiss>Close</paper-button>
-			<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Update</paper-button>
+			<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change preferences for references</paper-button>
 		</div>
 	</paper-dialog>
 </div>
