@@ -27,10 +27,6 @@
 			</paper-dropdown-menu>
 		</div>
 		<input id="choice_type_input" type="hidden" name="choice_type">
-
-		<div class="pure-u-1 row-input create">
-			<p class="notes">You can't modify or delete the poll later.</p>
-		</div>
 	</form>
 
 	<div class="buttons">

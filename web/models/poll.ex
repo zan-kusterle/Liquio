@@ -158,9 +158,7 @@ defmodule Liquio.Poll do
 		AggregateContributions.empty()
 	end
 
-	def results_for_vote(poll, vote) do
-		choice = vote.data.choice
-
+	def results_for_contribution(poll, %{:choice => choice}) do
 		if poll.choice_type == "time_quantity" do
 			by_datetime = choice
 			|> Enum.map(fn({time_key, value}) ->

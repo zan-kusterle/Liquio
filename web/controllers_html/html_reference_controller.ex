@@ -45,7 +45,7 @@ defmodule Liquio.HtmlReferenceController do
 			poll: poll |> Map.put(:results, Poll.calculate(poll, calculation_opts)),
 			reference_poll: reference_poll |> Map.put(:results, Poll.calculate(reference_poll, calculation_opts)),
 			own_vote: own_vote,
-			own_poll: reference.for_choice_poll |> Map.put(:results, if own_vote do Poll.results_for_vote(reference.for_choice_poll, own_vote) else nil end),
+			own_poll: reference.for_choice_poll |> Map.put(:results, if own_vote do Poll.results_for_contribution(reference.for_choice_poll, %{:choice => own_vote.data.choice}) else nil end),
 			calculation_opts: calculation_opts)
 	end)
 end

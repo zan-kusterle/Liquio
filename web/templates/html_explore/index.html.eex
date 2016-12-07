@@ -5,8 +5,18 @@
 <%= for poll <- @polls do %>
 	<div class="poll-item">
 		<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
-		<%= for topic <- poll.topics do %>
-			<a href="<%= html_explore_path(@conn, :show, topic) %>/top" style="margin-left: 25px; font-size: 13px;">#<%= topic %></a>
+
+		<%= if poll.latest_default_results do %>
+			<% results = for {key, val} <- poll.latest_default_results, into: %{}, do: {String.to_atom(key), val} %>
+			<div style="margin-left: 20px; display: inline-block;">
+				<%= render Liquio.HtmlPollView, "score_reference.html", choice_type: poll.choice_type, results: results %>
+			</div>
+		<% end %>
+
+		<%= if poll.topics do %>
+			<%= for topic <- poll.topics do %>
+				<a href="<%= html_explore_path(@conn, :show, topic) %>/top" style="margin-left: 25px; font-size: 13px;">#<%= topic %></a>
+			<% end %>
 		<% end %>
 	</div>
 <% end %>
