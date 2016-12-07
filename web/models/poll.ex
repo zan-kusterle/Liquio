@@ -109,6 +109,19 @@ defmodule Liquio.Poll do
 		|> List.first
 	end
 
+	def unserialize_results(results) do
+		results = for {key, val} <- results, into: %{}, do: {String.to_atom(key), val} 
+		if Map.has_key?(results, :by_datetime) do
+			by_datetime = results.by_datetime |> Enum.map(fn(datetime_results) ->
+				datetime_results = for {key, val} <- datetime_results, into: %{}, do: {String.to_atom(key), val}
+				Map.put(datetime_results, :datetime, Timex.to_date({datetime_results.datetime["year"], 1, 1}))
+			end)
+			Map.put(results, :by_datetime, by_datetime)
+		else
+			results
+		end
+	end
+
 	def calculate(poll, calculation_opts) do
 		cache = Cachex.get!(:results_cache, poll.id)
 		if cache do

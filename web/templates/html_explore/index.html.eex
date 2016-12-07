@@ -7,9 +7,10 @@
 		<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
 
 		<%= if poll.latest_default_results do %>
-			<% results = for {key, val} <- poll.latest_default_results, into: %{}, do: {String.to_atom(key), val} %>
 			<div style="margin-left: 20px; display: inline-block;">
-				<%= render Liquio.HtmlPollView, "score_reference.html", choice_type: poll.choice_type, results: results %>
+				<%= render Liquio.HtmlPollView, "score_reference.html",
+					choice_type: poll.choice_type,
+					results: Liquio.Poll.unserialize_results(poll.latest_default_results) %>
 			</div>
 		<% end %>
 
