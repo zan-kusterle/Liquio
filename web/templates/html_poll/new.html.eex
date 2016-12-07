@@ -37,9 +37,15 @@
 		<paper-button dialog-dismiss>Close</paper-button>
 		<%= if assigns[:poll] do %>
 			<paper-button dialog-confirm raised>
-				<button onclick="reference_to_poll_id_input.value = '<%= @poll.id %>'; choice_type_input.value='probability'; create_form.submit()">CREATE AND REFERENCE</button>
+				<button onclick="reference_to_poll_id_input.value = '<%= @poll.id %>'; create_poll();">CREATE AND REFERENCE</button>
 			</paper-button>
 		<% end %>
-		<paper-button dialog-confirm raised class="primary" onclick="choice_type_input.value='probability'; create_form.submit()">Create</paper-button>
+		<paper-button dialog-confirm raised class="primary" onclick="create_poll()">Create</paper-button>
 	</div>
+	<script>
+		function create_poll() {
+			choice_type_input.value = choice_type_dropdown.selectedItem.getAttribute("value");
+			create_form.submit();
+		}
+	</script>
 </paper-dialog>

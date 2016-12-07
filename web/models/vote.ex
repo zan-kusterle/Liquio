@@ -56,11 +56,13 @@ defmodule Liquio.Vote do
 		remove_current_last(changeset.params["poll_id"], changeset.params["identity_id"])
 		changeset = changeset
 		|> put_change(:is_last, true)
-		Repo.insert(changeset)
+		result = Repo.insert(changeset)
+		Cachex.set(:results_cache, changeset.params["poll_id"], nil)
+		result
 	end
 	def set(poll, identity, choice) do
 		remove_current_last(poll.id, identity.id)
-		Repo.insert(%Vote{
+		result = Repo.insert(%Vote{
 			:poll_id => poll.id,
 			:identity_id => identity.id,
 			:is_last => true,
@@ -68,16 +70,20 @@ defmodule Liquio.Vote do
 				:choice => choice
 			}
 		})
+		Cachex.set(:results_cache, poll.id, nil)
+		result
 	end
 
 	def delete(poll, identity) do
 		remove_current_last(poll.id, identity.id)
-		Repo.insert!(%Vote{
+		result = Repo.insert!(%Vote{
 			:poll_id => poll.id,
 			:identity_id => identity.id,
 			:is_last => true,
 			:data => nil
 		})
+		Cachex.set(:results_cache, poll.id, nil)
+		result
 	end
 
 	defp remove_current_last(poll_id, identity_id) do
