@@ -4,7 +4,7 @@
 	<p class="heading">
 		<a href="<%= @url %>/top" class="sort<%= if @sort == "top" do %> active<% end %>">Top</a>
 		<a href="<%= @url %>/new" class="sort<%= if @sort == "new" do %> active<% end %>">New</a>
-		<a href="<%= @url %>/most-likely" class="sort<%= if @sort == "new" do %> active<% end %>">Most likely</a>
-		<a href="<%= @url %>/least-likely" class="sort<%= if @sort == "new" do %> active<% end %>">Least likely</a>
+		<a href="<%= @url %>/most-likely" class="sort<%= if @sort == "most_likely" do %> active<% end %>">Most likely</a>
+		<a href="<%= @url %>/least-likely" class="sort<%= if @sort == "least_likely" do %> active<% end %>">Least likely</a>
 	</p>
 <% end %>

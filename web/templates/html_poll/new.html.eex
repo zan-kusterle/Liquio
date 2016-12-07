@@ -18,15 +18,15 @@
 
 		<label class="pure-u-1 row-label">Choice Type</label>
 		<div class="pure-u-1 row-input">
-			<paper-dropdown-menu style="width: 100%; text-align: center; margin-top: -20px;" attr-for-selected="value" selected="{{choice_type}}">
-				<paper-listbox class="dropdown-content" selected="0">
-					<paper-item value="probability">Probability: vote with a probability between 0 and 100%</span></paper-item>
-					<paper-item value="quantity">Quantity: vote with any number</span></paper-item>
-					<paper-item value="time_quantity">Quantity by time: vote with many year and number pairs</span></paper-item>
+			<paper-dropdown-menu id="choice_type_dropdown" style="width: 100%; text-align: center; margin-top: -20px;" >
+				<paper-listbox class="dropdown-content" attr-for-selected="value" selected="probability">
+					<paper-item value="probability">Probability: vote with a probability between 0 and 100%</paper-item>
+					<paper-item value="quantity">Quantity: vote with any number</paper-item>
+					<paper-item value="time_quantity">Quantity by time: vote with many year and number pairs</paper-item>
 				</paper-listbox>
 			</paper-dropdown-menu>
 		</div>
-		<input type="hidden" name="choice_type" value="{{choice_type}}">
+		<input id="choice_type_input" type="hidden" name="choice_type">
 
 		<div class="pure-u-1 row-input create">
 			<p class="notes">You can't modify or delete the poll later.</p>
@@ -35,9 +35,11 @@
 
 	<div class="buttons">
 		<paper-button dialog-dismiss>Close</paper-button>
-		<paper-button dialog-confirm raised>
-			<button onclick="reference_to_poll_id_input.value=1; create_form.submit()">CREATE AND REFERENCE</button>
-		</paper-button>
-		<paper-button dialog-confirm raised class="primary" onclick="create_form.submit()">Create</paper-button>
+		<%= if assigns[:poll] do %>
+			<paper-button dialog-confirm raised>
+				<button onclick="reference_to_poll_id_input.value = '<%= @poll.id %>'; choice_type_input.value='probability'; create_form.submit()">CREATE AND REFERENCE</button>
+			</paper-button>
+		<% end %>
+		<paper-button dialog-confirm raised class="primary" onclick="choice_type_input.value='probability'; create_form.submit()">Create</paper-button>
 	</div>
 </paper-dialog>

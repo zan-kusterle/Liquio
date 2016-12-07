@@ -13,7 +13,7 @@ defmodule Liquio do
 			supervisor(Liquio.Repo, []),
 			# Here you could define other workers and supervisors as children
 			# worker(Liquio.Worker, [arg1, arg2, arg3]),
-			worker(Liquio.Results.CacheServer, []),
+			worker(Cachex, [:results_cache, []])
 		]
 
 		# See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

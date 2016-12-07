@@ -27,9 +27,9 @@
 
 	<% current_choice = if @own_vote do @own_vote.data.choice["main"] else 0.5 end %>
 	<form id="vote_form" action="/polls/<%= @poll.id %>/vote" method="POST" class="pure-form">
+		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+		
 		<%= if @poll.choice_type == "probability" do %>
-			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-
 			<div class="range" style="margin-bottom: 5px;">
 				FALSE
 				<input type="range" name="choice" id="choice_range" value="<%= current_choice %>" min="0" max="1" step="any" oninput="choice_value.value = Math.round(100 * choice_range.value) + '%'" style="width: 70%; display: inline-block; vertical-align: middle; margin: 0 15px;" />

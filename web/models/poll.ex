@@ -7,7 +7,6 @@ defmodule Liquio.Poll do
 	alias Liquio.Results.GetData
 	alias Liquio.Results.CalculateContributions
 	alias Liquio.Results.AggregateContributions
-	alias Liquio.Results.CacheServer
 
 	schema "polls" do
 		field :kind, :string
@@ -111,8 +110,9 @@ defmodule Liquio.Poll do
 	end
 
 	def calculate(poll, calculation_opts) do
-		if CacheServer.has_results?(poll.id) do
-			CacheServer.get_results(poll.id)
+		cache = Cachex.get!(:results_cache, poll.id)
+		if cache do
+			cache
 		else
 			soft_quorum_t = if poll.kind == "custom" do 0 else calculation_opts.soft_quorum_t end
 			vote_weight_halving_days = if poll.kind == "custom" do calculation_opts.vote_weight_halving_days else nil end
@@ -140,9 +140,7 @@ defmodule Liquio.Poll do
 				end
 			end
 
-			CacheServer.put_results(poll.id, results)
-
-			IO.inspect Liquio.Results.CacheServer.inspect
+			Cachex.set(:results_cache, poll.id, results, [ttl: :timer.seconds(60)])
 			results
 		end
 	end

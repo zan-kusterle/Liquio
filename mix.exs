@@ -21,7 +21,7 @@ defmodule Liquio.Mixfile do
 			applications: [
 				:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
 				:phoenix_ecto, :postgrex, :ssl, :uuid, :httpotion, :timex, :timex_ecto,
-				:guardian, :cors_plug, :comeonin, :basic_auth, :floki, :secure_random, :mailgun, :quantum, :edeliver
+				:guardian, :cors_plug, :comeonin, :basic_auth, :floki, :secure_random, :mailgun, :cachex, :quantum, :edeliver
 			]
 		]
 	end
@@ -53,7 +53,8 @@ defmodule Liquio.Mixfile do
 			{:floki, "~> 0.10.0"},
 			{:secure_random, "~> 0.5"},
 			{:mailgun, "~> 0.1.2"},
-			{:quantum, ">= 1.5.0"}
+			{:quantum, ">= 1.5.0"},
+			{:cachex, "~> 2.0"}
 		]
 	end
 

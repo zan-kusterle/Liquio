@@ -45,7 +45,7 @@
 
 	<body>
 		<div class="container">
-			<%= render Liquio.HtmlPollView, "new.html" %>
+			<%= render Liquio.HtmlPollView, "new.html", assigns %>
 			
 			<div class="header">
 				<div class="header-contents">

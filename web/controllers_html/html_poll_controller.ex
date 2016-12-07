@@ -9,13 +9,21 @@ defmodule Liquio.HtmlPollController do
 	with_params(%{
 		:title => {Plugs.StringParam, [name: "title"]},
 		:topics => {Plugs.ListParam, [name: "topics", maybe: true, item: {Plugs.StringParam, [downcase: true]}]},
-		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity", "time_quantity"]]}
+		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity", "time_quantity"]]},
+		:reference_to_poll => {Plugs.ItemParam, [schema: Poll, name: "reference_to_poll_id", maybe: true, validator: &Poll.is_custom/1]}
 	},
-	def create(conn, %{:title => title, :topics => topics, :choice_type => choice_type}) do
+	def create(conn, %{:title => title, :topics => topics, :choice_type => choice_type, :reference_to_poll => reference_to_poll}) do
 		poll = Poll.create(choice_type, title, topics)
-		conn
-		|> put_flash(:info, "Done, share the url so others can vote")
-		|> redirect(to: html_poll_path(conn, :show, poll.id))
+
+		if reference_to_poll != nil do
+			conn
+			|> put_flash(:info, "Done, you can add a reference now.")
+			|> redirect(to: html_poll_html_reference_path(conn, :show, reference_to_poll.id, poll.id))
+		else
+			conn
+			|> put_flash(:info, "Done, share the url so others can vote.")
+			|> redirect(to: html_poll_path(conn, :show, poll.id))
+		end
 	end)
 
 	def show(conn, %{"id" => "random"}) do

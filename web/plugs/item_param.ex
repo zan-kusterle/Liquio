@@ -6,10 +6,18 @@ defmodule Liquio.Plugs.ItemParam do
 				if item != nil and (opts[:validator] == nil or opts[:validator].(item)) do
 					{:ok, item}
 				else
-					{:error, :not_found, opts[:message] || "Not found"}
+					if opts[:maybe] do
+						{:ok, nil}
+					else
+						{:error, :not_found, opts[:message] || "Not found"}
+					end
 				end
 			:error ->
-				{:error, :not_found, opts[:message] || "Not found"}
+				if opts[:maybe] do
+					{:ok, nil}
+				else
+					{:error, :not_found, opts[:message] || "Not found"}
+				end
 		end
 		
 	end
