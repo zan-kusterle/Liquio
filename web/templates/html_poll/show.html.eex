@@ -33,6 +33,11 @@
 	<%= for reference <- @inverse_references do %>
 		<div class="inverse-reference">
 			<a href="/polls/<%= reference.poll.id %>"><%= reference.poll.title %></a>
+			<div style="margin-left: 20px; display: inline-block;">
+				<%= render Liquio.HtmlPollView, "score_reference.html",
+					choice_type: reference.poll.choice_type,
+					results: reference.poll.results %>
+			</div>
 		</div>
 	<% end %>
 <% end %>
