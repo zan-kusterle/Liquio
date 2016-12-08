@@ -83,7 +83,7 @@ defmodule Liquio.Poll do
 	def sorted_top(query) do
 		from p in query,
 		where: not is_nil(p.latest_default_results),
-		order_by: [desc: fragment("1.0 * (?->'count')::text::int + 0.25 * (?->'references_count')::text::int", p.latest_default_results, p.latest_default_results)]
+		order_by: [desc: fragment("1.0 * (?->'total')::text::int + 0.25 * (?->'references_count')::text::int", p.latest_default_results, p.latest_default_results)]
 	end
 
 	def sorted_new(query) do
