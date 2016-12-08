@@ -22,6 +22,7 @@ pre_erlang_clean_compile() {
     mkdir -p priv/static
     brunch build --production
     bower install
+    mkdir -p priv/static/polymer
     vulcanize --inline-scripts --inline-css web/static/assets/web_components.html > priv/static/polymer/main.html
     MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest
   "
