@@ -3,17 +3,19 @@
 	<h1 class="identity-username"><%= @identity.username %></h1>
 
 	<div class="stats">
-		<div class="stat num-inverse-trusts">
-			<a onclick="inverse_trusts_dialog.open()">trusted by <%=  Enum.count(@trusted_by_votes) %> <%= ngettext("person", "people", Enum.count(@trusted_by_votes)) %></a>
-		</div>
 		<div class="stat num-trusts">
-			<a onclick="trusts_dialog.open()">trusts <%=  Enum.count(@is_human_votes) %> <%= ngettext("person", "people", Enum.count(@is_human_votes)) %></a>
+			<a onclick="trusts_dialog.open()">
+				trusted by <%=  Enum.count(@trusted_by_votes) %>  <%= ngettext("person", "people", Enum.count(@trusted_by_votes)) %>
+				<br>
+				trusts <%=  Enum.count(@is_human_votes) %> <%= ngettext("person", "people", Enum.count(@is_human_votes)) %>
+			</a>
 		</div>
-		<div class="stat num-delegations-to">
-			<a onclick="delegations_to_dialog.open()">delegations from <%= Enum.count(@delegations_to) %> <%= ngettext("person", "people", Enum.count(@delegations_to)) %></a>
-		</div>
-		<div class="stat num-delegations-from">
-			<a onclick="delegations_from_dialog.open()">made <%= Enum.count(@delegations_from) %> <%= ngettext("delegation", "delegations", Enum.count(@delegations_from)) %></a>
+		<div class="stat num-delegations">
+			<a onclick="delegations_dialog.open()">
+				receiving <%= Enum.count(@delegations_to) %> <%= ngettext("delegation", "delegations", Enum.count(@delegations_to)) %>
+				<br>
+				made <%= Enum.count(@delegations_from) %> <%= ngettext("delegation", "delegations", Enum.count(@delegations_from)) %>
+			</a>
 		</div>
 		<div class="stat num-votes">
 			<a onclick="votes_dialog.open()">voted on <%= Enum.count(@votes) %> <%= ngettext("poll", "polls", Enum.count(@votes)) %></a>
@@ -24,7 +26,17 @@
 		<h2>Trusts</h2>
 
 		<paper-dialog-scrollable>
-			<%= render "identities.html", trust_votes: @is_human_votes %>
+			
+			<div class="pure-g">
+				<div class="pure-u-1-2">
+					<h3>Trusted by</h3>
+					<%= render "identities.html", trust_votes: @trusted_by_votes %>
+				</div>
+				<div class="pure-u-1-2">
+					<h3>Trusts</h3>
+					<%= render "identities.html", trust_votes: @is_human_votes %>
+				</div>
+			</div>
 		</paper-dialog-scrollable>
 		
 		<div class="buttons">
@@ -32,11 +44,20 @@
 		</div>
 	</paper-dialog>
 
-	<paper-dialog id="inverse_trusts_dialog" style="width: 600px;">
-		<h2>Trusted by</h2>
+	<paper-dialog id="delegations_dialog" style="width: 600px;">
+		<h2>Delegations</h2>
 
 		<paper-dialog-scrollable>
-			<%= render "identities.html", trust_votes: @trusted_by_votes %>
+			<div class="pure-g">
+				<div class="pure-u-1-2">
+					<h3>Receiving delegations</h3>
+					<%= render "delegations.html", conn: @conn, delegations: @delegations_to, direction: "to" %>
+				</div>
+				<div class="pure-u-1-2">
+					<h3>Made delegations</h3>
+					<%= render "delegations.html", conn: @conn, delegations: @delegations_from, direction: "from" %>
+				</div>
+			</div>
 		</paper-dialog-scrollable>
 		
 		<div class="buttons">
@@ -44,31 +65,7 @@
 		</div>
 	</paper-dialog>
 
-	<paper-dialog id="delegations_from_dialog" style="width: 600px;">
-		<h2>Delegations made</h2>
-
-		<paper-dialog-scrollable>
-			<%= render "delegations.html", conn: @conn, delegations: @delegations_from, direction: "from" %>
-		</paper-dialog-scrollable>
-
-		<div class="buttons">
-			<paper-button dialog-dismiss>Close</paper-button>
-		</div>
-	</paper-dialog>
-
-	<paper-dialog id="delegations_to_dialog" style="width: 600px;">
-		<h2>Receiving delegations</h2>
-
-		<paper-dialog-scrollable>
-			<%= render "delegations.html", conn: @conn, delegations: @delegations_to, direction: "to" %>
-		</paper-dialog-scrollable>
-		
-		<div class="buttons">
-			<paper-button dialog-dismiss>Close</paper-button>
-		</div>
-	</paper-dialog>
-
-	<paper-dialog id="votes_dialog" style="width: 600px;">
+	<paper-dialog id="votes_dialog" style="width: 800px;">
 		<h2>Votes cast</h2>
 
 		<paper-dialog-scrollable>
