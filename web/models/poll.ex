@@ -128,7 +128,7 @@ defmodule Liquio.Poll do
 	end
 
 	def calculate(poll, calculation_opts) do
-		cache = Cachex.get!(:results_cache, poll.id)
+		cache = Cachex.get!(:results_cache, {"results", poll.id})
 		if cache do
 			cache
 		else
@@ -158,18 +158,26 @@ defmodule Liquio.Poll do
 				end
 			end
 
-			Cachex.set(:results_cache, poll.id, results, [ttl: :timer.seconds(60)])
+			Cachex.set(:results_cache, {"results", poll.id}, results, [ttl: :timer.seconds(60)])
 			results
 		end
 	end
 
 	def calculate_contributions(poll, calculation_opts) do
-		topics = if poll.topics == nil do nil else MapSet.new(poll.topics) end
+		cache = Cachex.get!(:results_cache, {"contributions", poll.id})
+		if cache do
+			cache
+		else
+			topics = if poll.topics == nil do nil else MapSet.new(poll.topics) end
 
-		votes = GetData.get_votes(poll.id, calculation_opts.datetime)
-		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
+			votes = GetData.get_votes(poll.id, calculation_opts.datetime)
+			inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 
-		CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, topics)
+			contributions = CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, topics)
+
+			Cachex.set(:results_cache, {"contributions", poll.id}, contributions, [ttl: :timer.seconds(60)])
+			contributions
+		end
 	end
 
 	def empty_result() do
