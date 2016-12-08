@@ -26,7 +26,6 @@ defmodule Liquio.DefaultResults do
 			if results.total > 0 do
 				references = Reference.for_poll(poll, calculation_opts)
 				results = results
-				|> Map.put(:references, references)
 				|> Map.put(:references_count, Enum.count(references))
 				Repo.update! Ecto.Changeset.change poll, latest_default_results: results
 			end
