@@ -342,12 +342,11 @@ defmodule Liquio.HtmlIdentityController do
 				reference = Reference
 				|> Repo.get_by!(for_choice_poll_id: poll.id)
 				|> Repo.preload([:poll, :reference_poll])
-				for_choice = poll.choice["main"]
 
 				[
 					prepare_poll(reference.poll, %{:references => [%{
 						:reference_poll => reference.reference_poll,
-						:for_choice => for_choice,
+						:for_choice => poll.choice,
 						:poll => reference.poll
 					}]}),
 					prepare_poll(reference.reference_poll, %{})

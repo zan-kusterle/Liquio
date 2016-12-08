@@ -11,34 +11,6 @@ defmodule Liquio.NumberFormat do
 		|> String.trim_trailing(".0")
 	end
 
-	def for_choice_format(for_choice, choice_type) do
-		if choice_type == "probability" do
-			case for_choice do
-				0.0 -> raw('<span style="color: rgb(255, 97, 97);">NEGATIVE</span>')
-				1.0 -> raw('<span style="color: rgb(111, 206, 111);">POSITIVE</span>')
-				x -> raw("#{format_number(x * 100)}%")
-			end
-		else
-			raw(format_number(for_choice))
-		end
-	end
-
-	def score_format(score, choice_type) do
-		if choice_type == "probability" do
-			case score do
-				0.0 -> raw('<span style="color: rgb(255, 97, 97);">FALSE</span>')
-				1.0 -> raw('<span style="color: rgb(111, 206, 111);">TRUE</span>')
-				x -> raw("#{format_number(x * 100)}%")
-			end
-		else
-			raw(format_number(score))
-		end
-	end
-
-	def score_format(score) do
-		score_format(score, "probability")
-	end
-
 	def format_number(x) do
 		abs_x = abs(x)
 		if abs_x > 0 do

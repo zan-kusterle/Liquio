@@ -7,14 +7,21 @@
 				<%= for poll <- group do %>
 					<div style="margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
 						<%= if poll.reference != nil do %>
-							<span style="font-size: 15px; font-weight: bold; margin-right: 10px;"><%= for_choice_format(poll.reference.for_choice, poll.reference.poll.choice_type) %></span>
+							<div style="margin-right: 10px; display: inline-block;">
+								<%= render Liquio.HtmlPollView, "score_reference.html",
+									choice_type: poll.reference.poll.choice_type,
+									results: Liquio.Poll.results_for_contribution(poll.reference.poll, %{:choice => poll.reference.for_choice}) %>
+							</div>
 						<% end %>
 
-						<a href="/polls/<%= poll.id %>"><%= truncate poll.title, 150 %></a>
+						<a href="/polls/<%= poll.id %>"><%= truncate poll.title, 250 %></a>
 
-						<%= if poll.choice != nil and poll.choice_type != "time_quantity" do %>
-							<span>&nbsp;&mdash;&nbsp;</span>
-							<span style="font-size: 15px; font-weight: bold;"><%= score_format(poll.choice["main"], poll.choice_type) %></span>
+						<%= if poll.choice != nil do %>
+							<div style="margin-left: 10px; display: inline-block;">
+								<%= render Liquio.HtmlPollView, "score_reference.html",
+									choice_type: poll.choice_type,
+									results: Liquio.Poll.results_for_contribution(poll, %{:choice => poll.choice}) %>
+							</div>
 						<% end %>
 					</div>
 				<% end %>
