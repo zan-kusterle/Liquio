@@ -14,14 +14,16 @@ defmodule Liquio.DefaultResults do
 			vote_weight_halving_days: nil,
 			soft_quorum_t: 0.0,
 			minimum_voting_power: 0.0,
-			minimum_turnout: 0.0
+			minimum_turnout: 0.0,
+			minimum_reference_approval_score: 0.5,
+			approval_turnout_importance: 0.0
 		}
 
 		polls = Repo.all Poll.all
 		
 		Enum.each(polls, fn(poll) ->
 			results = Poll.calculate(poll, calculation_opts)
-			if results.count > 0 do
+			if results.total > 0 do
 				references = Reference.for_poll(poll, calculation_opts)
 				results = results
 				|> Map.put(:references, references)
