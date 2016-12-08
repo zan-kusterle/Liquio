@@ -3,9 +3,9 @@ defmodule Liquio.HtmlExploreController do
 
 	def index(conn, %{"sort" => sort}) do
 		polls = case sort do
-			"new" -> Poll.all |> Poll.sorted_new |> Repo.all
-			"top" -> Poll.all |> Poll.sorted_top |> Repo.all
-			"most-certain" -> Poll.all |> Poll.sorted_certain |> Repo.all
+			"new" -> Poll |> Poll.sorted_new |> Repo.all
+			"top" -> Poll |> Poll.sorted_top |> Repo.all
+			"most-certain" -> Poll |> Poll.sorted_certain |> Repo.all
 		end
 		conn
 		|> render("index.html",
