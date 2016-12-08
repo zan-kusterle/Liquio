@@ -1,13 +1,13 @@
 <div class="references pure-g">
 	<%= if @poll.choice_type == "probability" do %>
-		<% positive = @references |> Enum.filter(& &1.for_choice >= 0.5) %>
-		<% negative = @references |> Enum.filter(& &1.for_choice < 0.5) %>
+		<% positive = @references |> Enum.filter(& &1.for_choice_result.mean >= 0.5) %>
+		<% negative = @references |> Enum.filter(& &1.for_choice_result.mean < 0.5) %>
 		
 		<div class="pole pure-u-1 pure-u-md-1-2">
 			<h3 class="pole-heading"><%= if negative |> Enum.empty? do %>Nothing <% end %>Negative</h3>
 			<div class="pole-list">
 				<%= for reference <- negative do %>
-					<%= render "reference.html", poll: reference.reference_poll %>
+					<%= render "reference.html", poll: @poll, reference_poll: reference.reference_poll %>
 				<% end %>
 			</div>
 		</div>
@@ -16,14 +16,14 @@
 			<h3 class="pole-heading"><%= if positive |> Enum.empty? do %>Nothing <% end %>Positive</h3>
 			<div class="pole-list">
 				<%= for reference <- positive do %>
-					<%= render "reference.html", poll: reference.reference_poll %>
+					<%= render "reference.html", poll: @poll, reference_poll: reference.reference_poll %>
 				<% end %>
 			</div>
 		</div>
 	<% else %>
-		<div class="references-list">
+		<div class="references-list pure-u-1">
 			<%= for reference <- @references do %>
-				<%= render "reference.html", poll: reference.reference_poll, for_choice: reference.for_choice %>
+				<%= render "reference.html", poll: @poll, reference_poll: reference.reference_poll, for_choice_result: reference.for_choice_result %>
 			<% end %>
 		</div>
 	<% end %>

@@ -15,7 +15,7 @@
 
 	<h2 class="references-title">References</h2>
 
-	<%= render Liquio.HtmlPollView, "reference.html", poll: @reference_poll %>
+	<%= render Liquio.HtmlPollView, "reference.html", poll: @poll, reference_poll: @reference_poll %>
 
 	<div class="title instruction" style="margin-top: 50px;">How would you vote if this was the only reference and you knew it was true?</div>
 

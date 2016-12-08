@@ -1,11 +1,24 @@
-<a href="/polls/<%= @poll.id %>" class="reference-a">
+<a href="/polls/<%= @reference_poll.id %>" class="reference-a">
 	<div class="reference">
+		<% for_choice_result =
+			cond do
+				assigns[:for_choice] -> Liquio.Poll.results_for_contribution(@poll, %{:choice => @for_choice})
+				assigns[:for_choice_result] -> @for_choice_result
+				true -> nil
+			end
+		%>
+
+		<%= if for_choice_result do %>
+			<div style="margin-right: 30px; display: inline-block;">
+				<%= render Liquio.HtmlPollView, "score_reference.html",
+					choice_type: @poll.choice_type,
+					results: for_choice_result %>
+			</div>
+		<% end %>
+
 		<p class="reference-text">
-			<%= if assigns[:for_choice] do %>
-				<span class="for-choice-text"><%= number_format(@for_choice) %></span>
-			<% end %>
-			<%= truncate @poll.title, 120 %>
+			<%= truncate @reference_poll.title, 120 %>
 		</p>
-		<%= render "score_reference.html", choice_type: @poll.choice_type, results: @poll.results %>
+		<%= render "score_reference.html", choice_type: @reference_poll.choice_type, results: @reference_poll.results %>
 	</div>
 </a>
