@@ -10,7 +10,7 @@
 </div>
 
 <div class="content examples">
-	<h2 class="heading">EXPLORE</h2>
+	<h2 class="heading"><a href="/explore/top" style="text-decoration: none; color: #1f8dd6;">EXPLORE</a></h2>
 
 	<div class="pure-g">
 		<%= for poll <- @examples do %>
@@ -22,52 +22,6 @@
 				</a>
 			</div>
 		<%= end %>
-	</div>
-
-	<a href="/explore/top" class="explore-more">Explore more</a>
-</div>
-
-<div class="content features">
-	<div class="pure-g">
-		<div class="feature pure-u-1 pure-u-md-1-2">
-			<h3 class="subheading">
-				<i class="fa fa-users"></i>
-				Delegations
-			</h3>
-			<p>
-				Not everyone is an expert at everything. That's why you can give your vote to people you trust, but can override it at any time.
-			</p>
-		</div>
-
-		<div class="feature pure-u-1 pure-u-md-1-2">
-			<h3 class="subheading">
-				<i class="fa fa-quote-left"></i>
-				Objective
-			</h3>
-			<p>
-				Both sides can present their best arguments.
-			</p>
-		</div>
-
-		<div class="feature pure-u-1 pure-u-md-1-2">
-			<h3 class="subheading">
-				<i class="fa fa-cogs"></i>
-				Trust metrics
-			</h3>
-			<p>
-				Attempt to prevent a single person from having multiple identities. Everyone can choose their own trust metric or make a new one.
-			</p>
-		</div>
-
-		<div class="feature pure-u-1 pure-u-md-1-2">
-			<h3 class="subheading">
-				<i class="fa fa-comment"></i>
-				No censorship
-			</h3>
-			<p>
-				Trust metrics contain all subjective logic. The default trust metric lives <a href="https://trust-metric.liqu.io">here</a>. You can always choose a different one.
-			</p>
-		</div>
 	</div>
 </div>
 
