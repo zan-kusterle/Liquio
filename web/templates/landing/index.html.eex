@@ -23,6 +23,8 @@
 			</div>
 		<%= end %>
 	</div>
+
+	<a href="/explore/top" class="explore-more">Explore more</a>
 </div>
 
 <div class="content features">

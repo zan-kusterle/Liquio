@@ -5,6 +5,7 @@ defmodule Liquio.HtmlExploreController do
 		polls = case sort do
 			"new" -> Poll.all |> Poll.sorted_new |> Repo.all
 			"top" -> Poll.all |> Poll.sorted_top |> Repo.all
+			"most-certain" -> Poll.all |> Poll.sorted_certain |> Repo.all
 		end
 		conn
 		|> render("index.html",
@@ -19,6 +20,7 @@ defmodule Liquio.HtmlExploreController do
 		polls = case sort do
 			"new" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_new |> Repo.all
 			"top" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_top |> Repo.all
+			"most-certain" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_certain |> Repo.all
 		end
 		conn
 		|> render("index.html",

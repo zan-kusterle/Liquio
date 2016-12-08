@@ -18,8 +18,8 @@
 			else
 				case @poll.choice_type do
 					"probability" -> "Decide whether the claim is true or false."
-					"quantity" -> "Your best estimate of the quantity below."
-					"time_quantity" -> "Your best estimate of the quantity below by years."
+					"quantity" -> "Your best estimate of the quantity."
+					"time_quantity" -> "Your best estimate of the quantity by years."
 				end
 			end
 		%>

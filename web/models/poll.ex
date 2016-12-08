@@ -91,6 +91,11 @@ defmodule Liquio.Poll do
 		order_by: [desc: p.id]
 	end
 
+	def sorted_certain(query) do
+		from p in query,
+		order_by: [desc: p.id]
+	end
+
 	defp capitalize_title(title) do
 		{a, b} = String.split_at(title, 1)
 		(a |> String.upcase) <> b
