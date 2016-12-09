@@ -111,21 +111,15 @@
 		<paper-dialog id="delegation_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 			<h2>Delegate your vote to <%= @identity.name %></h2>
 			
-			<form id="delegation_form" method="POST" action="/identities/<%= @identity.id %>/delegations" class="pure-form preferences">
+			<form id="delegation_form" method="POST" action="/identities/<%= @identity.id %>/delegations" class="preferences">
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
-				<div class="preference">
-					<p class="name">For topics</p>
-					<input type="text" name="topics" value='<%= if @delegation != nil and @delegation.data != nil and @delegation.data.topics != nil do @delegation.data.topics |> Enum.join(", ") else "" end %>' placeholder="Delegate regardless of topics" />
-				</div>
+				<paper-input id="topics" name="topics" label="For topics" value='<%= if @delegation != nil and @delegation.data != nil and @delegation.data.topics != nil do @delegation.data.topics |> Enum.join(", ") else "" end %>' placeholder="Delegate regardless of topics"></paper-input>
 
 				<% relative_weight = if @delegation != nil and @delegation.data != nil do @delegation.data.weight else 1.0 end %>
-				<div class="preference">
-					<p class="name">Relative weight</p>
-					<div class="range">
-						<input type="range" name="weight" id="weight_range" value="<%= number_format_simple(relative_weight) %>" min="0" max="1" step="any" oninput="weight_value.value = 'Relative weight set to ' + Math.round(100 * weight_range.value) + '%'" />
-						<output id="weight_value"><%= "Relative weight set to #{round(100 * relative_weight)}%" %></output>
-					</div>
+				<div class="range">
+					<input type="range" name="weight" id="weight_range" value="<%= number_format_simple(relative_weight) %>" min="0" max="1" step="any" oninput="weight_value.value = 'Relative weight set to ' + Math.round(100 * weight_range.value) + '%'" />
+					<output id="weight_value"><%= "Relative weight set to #{round(100 * relative_weight)}%" %></output>
 				</div>
 			</form>
 

@@ -1,32 +1,23 @@
 <paper-dialog id="create_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-	<h2>Create new poll</h2>
+	<h2>Make a poll</h2>
 	
-	<form id="create_form" method="POST" action="/polls" autocomplete="off" class="pure-form pure-g new-poll">
+	<form is="iron-form" id="create_form" method="POST" action="/polls" autocomplete="off" class="new-poll">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 		<input id="reference_to_poll_id_input" type="hidden" name="reference_to_poll_id" value="-1" />
 
-		<label for="title" class="pure-u-1 row-label">Title</label>
-		<div class="pure-u-1 row-input">
-			<input id="title" name="title" type="text" required placeholder="Be as unambiguous as possible" class="pure-input-1" style="text-align: center;" />
-		</div>
-
-		<label for="topics" class="pure-u-1 row-label">Topics</label>
-		<div class="pure-u-1 row-input">
-			<input id="topics" name="topics" type="text" required placeholder="Politics, economics" class="pure-input-1" style="text-align: center;" />
-		</div>
-
-		<label class="pure-u-1 row-label">Choice Type</label>
-		<div class="pure-u-1 row-input">
-			<paper-dropdown-menu id="choice_type_dropdown" style="width: 100%; text-align: center; margin-top: -20px;" >
-				<paper-listbox class="dropdown-content" attr-for-selected="value" selected="probability">
-					<paper-item value="probability">Probability: vote with a probability between 0 and 100%</paper-item>
-					<paper-item value="quantity">Quantity: vote with any number</paper-item>
-					<paper-item value="time_quantity">Quantity by time: vote with many year and number pairs</paper-item>
-				</paper-listbox>
-			</paper-dropdown-menu>
-		</div>
+		<paper-dropdown-menu id="choice_type_dropdown" label="Vote type" style="width: 100%; text-align: center; margin-top: -20px;" >
+			<paper-listbox class="dropdown-content" attr-for-selected="value" selected="probability">
+				<paper-item value="probability">Vote with a probability between 0 and 100%</paper-item>
+				<paper-item value="quantity">Vote with any number</paper-item>
+				<paper-item value="time_quantity">Vote with multiple year and number pairs</paper-item>
+			</paper-listbox>
+		</paper-dropdown-menu>
 		<input id="choice_type_input" type="hidden" name="choice_type">
+
+		<paper-input id="title" name="title" label="Title" required></paper-input>
+
+		<paper-input id="topics" name="topics" label="Topics" required></paper-input>
 	</form>
 
 	<div class="buttons">
