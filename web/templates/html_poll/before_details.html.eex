@@ -1,2 +1,0 @@
-<p class="heading">DETAILS - <%= @poll.title |> String.upcase %></p>
-<a class="heading-a" href="/polls/<%= @poll.id %>">BACK</a>

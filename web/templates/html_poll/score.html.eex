@@ -3,7 +3,7 @@
 		<div class="chart-no-data">No data available.</div>
 	<% else %>
 		<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}) %>
-		<div class="chart-turnout"><%= round(@poll.results.total) %> votes (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
+		<div class="chart-turnout"><%= round(@poll.results.total) %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 	<% end %>
 <% else %>
 	<div class="score-box" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;">
@@ -18,6 +18,6 @@
 				?
 			<% end %>
 		</div>
-		<div class="subtext"><%= @poll.results.total %> votes (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
+		<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 	</div>
 <% end %>

@@ -23,17 +23,14 @@
 	</div>
 
 	<paper-dialog id="trusts_dialog" style="width: 600px;">
-		<h2>Trusts</h2>
-
 		<paper-dialog-scrollable>
-			
 			<div class="pure-g">
 				<div class="pure-u-1-2">
-					<h3>Trusted by</h3>
+					<h2>Trusted by</h2>
 					<%= render "identities.html", trust_votes: @trusted_by_votes %>
 				</div>
 				<div class="pure-u-1-2">
-					<h3>Trusts</h3>
+					<h2>Trusts</h2>
 					<%= render "identities.html", trust_votes: @is_human_votes %>
 				</div>
 			</div>
@@ -45,16 +42,14 @@
 	</paper-dialog>
 
 	<paper-dialog id="delegations_dialog" style="width: 600px;">
-		<h2>Delegations</h2>
-
 		<paper-dialog-scrollable>
 			<div class="pure-g">
 				<div class="pure-u-1-2">
-					<h3>Receiving delegations</h3>
+					<h2>Receiving delegations</h2>
 					<%= render "delegations.html", conn: @conn, delegations: @delegations_to, direction: "to" %>
 				</div>
 				<div class="pure-u-1-2">
-					<h3>Made delegations</h3>
+					<h2>Made delegations</h2>
 					<%= render "delegations.html", conn: @conn, delegations: @delegations_from, direction: "from" %>
 				</div>
 			</div>

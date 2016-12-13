@@ -6,7 +6,7 @@
 
 		<input id="reference_to_poll_id_input" type="hidden" name="reference_to_poll_id" value="-1" />
 
-		<paper-dropdown-menu id="choice_type_dropdown" label="Vote type" style="width: 100%; text-align: center; margin-top: -20px;" >
+		<paper-dropdown-menu id="choice_type_dropdown" label="Vote format" style="width: 100%;" >
 			<paper-listbox class="dropdown-content" attr-for-selected="value" selected="probability">
 				<paper-item value="probability">Vote with a probability between 0 and 100%</paper-item>
 				<paper-item value="quantity">Vote with any number</paper-item>

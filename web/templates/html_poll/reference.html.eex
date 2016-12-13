@@ -16,9 +16,10 @@
 			</div>
 		<% end %>
 
+		<%= render "score_reference.html", choice_type: @reference_poll.choice_type, results: @reference_poll.results %>
+
 		<p class="reference-text">
 			<%= truncate @reference_poll.title, 120 %>
 		</p>
-		<%= render "score_reference.html", choice_type: @reference_poll.choice_type, results: @reference_poll.results %>
 	</div>
 </a>
