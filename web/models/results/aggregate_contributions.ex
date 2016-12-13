@@ -1,5 +1,5 @@
 defmodule Liquio.Results.AggregateContributions do
-	def aggregate(contributions, datetime, vote_weight_halving_days, soft_quorum_t, choice_type, trust_metric_ids) do
+	def aggregate(contributions, datetime, vote_weight_halving_days, choice_type, trust_metric_ids) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		trust_metric_size = MapSet.size(trust_metric_ids)
 
@@ -28,7 +28,7 @@ defmodule Liquio.Results.AggregateContributions do
 				end
 			mean =
 				if choice_type == "probability" do
-					mean(adjusted_contributions, soft_quorum_t)
+					mean(adjusted_contributions)
 				else
 					median(adjusted_contributions)
 				end
@@ -66,11 +66,11 @@ defmodule Liquio.Results.AggregateContributions do
 		}
 	end
 
-	defp mean(contributions, soft_quorum_t) do
+	defp mean(contributions) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		total_score = Enum.sum(Enum.map(contributions, & &1.choice * &1.voting_power))
-		if total_power + soft_quorum_t > 0 do
-			1.0 * total_score / (total_power + soft_quorum_t)
+		if total_power > 0 do
+			1.0 * total_score / total_power
 		else
 			nil
 		end

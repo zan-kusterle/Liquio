@@ -46,11 +46,10 @@ defmodule Liquio.Controllers.Helpers do
 			trust_metric_url: trust_metric_url,
 			trust_metric_ids: trust_identity_ids,
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
-			soft_quorum_t: ((identity && identity.approval_turnout_importance) || 0) * trust_metric_count,
-			minimum_reference_approval_score: (identity && identity.approval_minimum_score) ||  0.5,
+			reference_minimum_agree: (identity && identity.reference_minimum_agree) ||  0.5,
 			minimum_voting_power: ((identity && identity.minimum_turnout && Float.round(identity.minimum_turnout, 2)) || 0.05) * trust_metric_count,
 			minimum_turnout: (identity && identity.minimum_turnout && Float.round(identity.minimum_turnout, 2)) || 0.05,
-			approval_turnout_importance: (identity && identity.approval_turnout_importance) || 0,
+			reference_minimum_turnout: (identity && identity.reference_minimum_turnout) || 0,
 		}
 	end
 

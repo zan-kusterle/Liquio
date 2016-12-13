@@ -132,12 +132,11 @@ defmodule Liquio.Poll do
 		if cache do
 			cache
 		else
-			soft_quorum_t = if poll.kind == "custom" do 0 else calculation_opts.soft_quorum_t end
 			vote_weight_halving_days = if poll.kind == "custom" do calculation_opts.vote_weight_halving_days else nil end
 			minimum_voting_power = if poll.kind == "custom" do calculation_opts.minimum_voting_power else 0 end
 
 			results = Poll.calculate_contributions(poll, calculation_opts)
-			|> AggregateContributions.aggregate(calculation_opts.datetime, vote_weight_halving_days, soft_quorum_t, poll.choice_type, calculation_opts.trust_metric_ids)
+			|> AggregateContributions.aggregate(calculation_opts.datetime, vote_weight_halving_days, poll.choice_type, calculation_opts.trust_metric_ids)
 
 			results = if poll.choice_type == "time_quantity" do
 				results_with_datetime = results.by_keys

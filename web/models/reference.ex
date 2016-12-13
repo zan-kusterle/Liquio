@@ -48,7 +48,7 @@ defmodule Liquio.Reference do
 				|> Map.put(:for_choice_result, for_choice_result)
 			end)
 			|> Enum.filter(fn(reference) ->
-				reference.for_choice_result.total > 0 and reference.for_choice_result.turnout_ratio >= calculation_opts[:minimum_reference_approval_score]
+				reference.for_choice_result.total > 0 and reference.for_choice_result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
 			end)
 			|> Enum.map(fn(reference) ->
 				results = Poll.calculate(reference.reference_poll, calculation_opts)
@@ -75,7 +75,7 @@ defmodule Liquio.Reference do
 				|> Map.put(:for_choice_result, for_choice_result)
 			end)
 			|> Enum.filter(fn(reference) ->
-				reference.for_choice_result.total > 0 and reference.for_choice_result.turnout_ratio >= calculation_opts[:minimum_reference_approval_score]
+				reference.for_choice_result.total > 0 and reference.for_choice_result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
 			end)
 			|> Enum.map(fn(reference) ->
 				results = Poll.calculate(reference.poll, calculation_opts)

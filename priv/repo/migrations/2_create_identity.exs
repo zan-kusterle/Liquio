@@ -12,8 +12,8 @@ defmodule Liquio.Repo.Migrations.CreateIdentity do
 			add :trust_metric_url, :string
 			add :minimum_turnout, :float
 			add :vote_weight_halving_days, :float
-			add :approval_turnout_importance, :float
-			add :approval_minimum_score, :float
+			add :reference_minimum_turnout, :float
+			add :reference_minimum_agree, :float
 
 			timestamps
 		end

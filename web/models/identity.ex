@@ -17,8 +17,8 @@ defmodule Liquio.Identity do
 		field :trust_metric_url, :string
 		field :minimum_turnout, :float
 		field :vote_weight_halving_days, :float
-		field :approval_turnout_importance, :float
-		field :approval_minimum_score, :float
+		field :reference_minimum_turnout, :float
+		field :reference_minimum_agree, :float
 
 		timestamps
 	end
@@ -59,11 +59,11 @@ defmodule Liquio.Identity do
 
 	def update_changeset(data, params) do
 		data
-		|> cast(params, ["trust_metric_url", "minimum_turnout", "vote_weight_halving_days", "approval_turnout_importance", "approval_minimum_score"])
+		|> cast(params, ["trust_metric_url", "minimum_turnout", "vote_weight_halving_days", "reference_minimum_turnout", "reference_minimum_agree"])
 		|> validate_number(:minimum_turnout, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
 		|> validate_number(:vote_weight_halving_days, greater_than_or_equal_to: 0)
-		|> validate_number(:approval_turnout_importance, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
-		|> validate_number(:approval_minimum_score, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
+		|> validate_number(:reference_minimum_turnout, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
+		|> validate_number(:reference_minimum_agree, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
 	end
 
 	def update_preferences(changeset) do

@@ -84,7 +84,7 @@
 	</main>
 <% end %>
 
-<a class="after-link" style="margin-top: 30px;" onclick="snapshot_dialog.open()">Set viewing date: <b><%= Timex.format!(@datetime, "{M}/{D}/{YYYY}") %></b></a>
+<a class="after-link" onclick="snapshot_dialog.open()">Set viewing date: <b><%= Timex.format!(@datetime, "{M}/{D}/{YYYY}") %></b></a>
 <br/>
 <a class="after-link" onclick="preferences_dialog.open()">Change preferences</a>
 

@@ -305,8 +305,8 @@ defmodule Liquio.HtmlIdentityController do
 		:user => {Plugs.CurrentUser, [require: true]},
 		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url", maybe: true]},
 		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", maybe: true, whole: true]},
-		:approval_turnout_importance => {Plugs.NumberParam, [name: "soft_quorum_t", maybe: true]},
-		:approval_minimum_score => {Plugs.NumberParam, [name: "minimum_reference_approval_score", maybe: true]},
+		:reference_minimum_turnout => {Plugs.NumberParam, [name: "reference_minimum_turnout", maybe: true]},
+		:reference_minimum_agree => {Plugs.NumberParam, [name: "reference_minimum_agree", maybe: true]},
 		:minimum_turnout => {Plugs.NumberParam, [name: "minimum_voting_power", maybe: true]},
 	},
 	def update(conn, params = %{:user => user}) do
@@ -317,7 +317,7 @@ defmodule Liquio.HtmlIdentityController do
 		end
 		
 		result = Identity.update_preferences(Identity.update_changeset(user, params
-			|> Map.take([:trust_metric_url, :minimum_turnout, :vote_weight_halving_days, :approval_turnout_importance, :approval_minimum_score])))
+			|> Map.take([:trust_metric_url, :minimum_turnout, :vote_weight_halving_days, :reference_minimum_turnout, :reference_minimum_agree])))
 
 		result |> handle_errors(conn, fn _user ->
 			conn
