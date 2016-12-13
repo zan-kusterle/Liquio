@@ -1,117 +1,97 @@
-<%= if @poll.topics != nil do %>
-	<h3 class="topics">
-		<%= for topic <- @poll.topics do %>
-			<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
-		<% end %>
-	</h3>
-<% end %>
+<p class="heading"><%= @poll.choice_type |> String.replace("_", " ") |> String.upcase %> POLL</p>
 
-<h1 class="title"><%= @poll.title %></h1>
-
-<div class="score-container">
-	<%= render "score.html", poll: @poll %>
-</div>
-
-<div class="links">
-	<a onclick="details_dialog.open()"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
-	<a onclick="vote_dialog.open()"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
-</div>
-
-<%= unless Enum.empty?(@references) do %>
-	<%= if @poll.choice_type == "probability" do %>
-		<h2 class="references-title">References</h2>
-	<% else %>
-		<h2 class="references-title">References for quantity</h2>
+<main role="main" class="main">
+	<%= if @poll.topics != nil do %>
+		<h3 class="topics">
+			<%= for topic <- @poll.topics do %>
+				<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
+			<% end %>
+		</h3>
 	<% end %>
-	<%= render "references.html", poll: @poll, references: @references %>
-<% else %>
-	<h2 class="references-title">There are no references here</h2>
-<% end %>
+
+	<h1 class="title"><%= @poll.title %></h1>
+
+	<div class="score-container">
+		<%= render "score.html", poll: @poll %>
+	</div>
+
+	<div class="links">
+		<a onclick="details_dialog.open()"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+		<a onclick="vote_dialog.open()"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
+	</div>
+
+	<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+		<%= render "details.html", poll: @poll, contributions: @contributions %>
+	</paper-dialog>
+
+	<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+		<%= render Liquio.HtmlVoteView, "index.html", poll: @poll, own_vote: @own_vote, own_poll: @own_poll %>
+	</paper-dialog>
+
+	<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+		<h2>Fine tune how results are calculated</h2>
+
+		<form id="preferences_form" method="POST" action="/identities/me/preferences" class="pure-form">
+			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+
+			<div class="range" style="margin-bottom: 20px;">
+				<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @calculation_opts.minimum_turnout || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" style="margin: 0 auto;" />
+				<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@calculation_opts.minimum_turnout || 0))}% turnout." %></output>
+			</div>
+
+			<div class="range" style="margin-bottom: 20px;">
+				<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @calculation_opts.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" style="margin: 0 auto;" />
+				<output id="vote_weight_halving_days_value">
+					<%= if @calculation_opts.vote_weight_halving_days do "Votes will lose half remaining power every #{round(@calculation_opts.vote_weight_halving_days)} #{ngettext("day", "days", round(@calculation_opts.vote_weight_halving_days))}." else "Votes don't lose power with time." end %>
+				</output>
+			</div>
+		</form>
+
+		<div class="buttons">
+			<paper-button dialog-dismiss>Close</paper-button>
+			<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change preferences for polls</paper-button>
+		</div>
+	</paper-dialog>
+</main>
+
+<p class="heading">REFERENCES</p>
+
+<main role="main" class="main">
+	<%= unless Enum.empty?(@references) do %>
+		<%= render "references.html", poll: @poll, references: @references %>
+	<% end %>
+
+	<form action="/polls/<%= @poll.id %>/references" class="pure-form" <%= unless Enum.empty?(@references) do %> style="margin-top: 40px;"<% end %>>
+		<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1 url-input" />
+		<button type="submit" class="pure-button poll-button">View reference</button>
+	</form>
+</main>
 
 <%= unless Enum.empty?(@inverse_references) do %>
-	<h2 class="references-title">Inverse references</h2>
-	<%= for reference <- @inverse_references do %>
-		<div class="inverse-reference">
-			<a href="/polls/<%= reference.poll.id %>"><%= reference.poll.title %></a>
-			<div style="margin-left: 20px; display: inline-block;">
-				<%= render Liquio.HtmlPollView, "score_reference.html",
-					choice_type: reference.poll.choice_type,
-					results: reference.poll.results %>
+	<p class="heading">INVERSE REFERENCES</p>
+
+	<main role="main" class="main">
+		<%= for reference <- @inverse_references do %>
+			<div class="inverse-reference">
+				<div style="margin-right: 15px; display: inline-block;">
+					<%= render Liquio.HtmlPollView, "score_reference.html",
+						choice_type: reference.poll.choice_type,
+						results: reference.poll.results %>
+				</div>
+				<a href="/polls/<%= reference.poll.id %>"><%= reference.poll.title %></a>
 			</div>
-		</div>
-	<% end %>
+		<% end %>
+	</main>
 <% end %>
 
-<form action="/polls/<%= @poll.id %>/references" class="pure-form " style="margin-top: 40px;">
-	<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1 url-input" />
-	<button type="submit" class="pure-button poll-button">Vote for reference</button>
-</form>
+<a class="after-link" style="margin-top: 30px;" onclick="snapshot_dialog.open()">Set viewing date: <b><%= Timex.format!(@datetime, "{M}/{D}/{YYYY}") %></b></a>
+<br/>
+<a class="after-link" onclick="preferences_dialog.open()">Change preferences</a>
 
-<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-	<h2>Votes</h2>
-	
-	<div class="details">
-		<%= unless Enum.empty? @contributions do %>
-			<table class="contributions">
-				<tr class="contribution">
-					<td class="column-name">Username</td>
-					<td class="column-name">Date</td>
-					<td class="column-name">Choice</td>
-					<td class="column-name weight">Contribution</td>
-				</tr>
-				<% total_power = @contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
-				<% max_ratio = @contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
-				<%= for contribution <- @contributions |> Enum.sort_by(& -&1.voting_power) do %>
-					<% width_ratio = contribution.voting_power / total_power / max_ratio %>
-					<tr class="contribution">
-						<td><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
-						<td><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
-						<td>
-							<%= render "score_reference.html", choice_type: @poll.choice_type, results: Liquio.Poll.results_for_contribution(@poll, contribution) %>
-						</td>
-						<td>
-							<div style="background: #1f8dd6; text-align: center; color: white; line-height: 20px; height: 20px; width: <%= round(100 * width_ratio) %>%;">
-								<%= number_format(100 * contribution.voting_power / total_power) %>%
-							</div>
-						</td>
-					</tr>
-				<% end %>
-			</table>
-		<% else %>
-			There are no votes for this poll yet.
-		<% end %>
-	</div>
-
+<paper-dialog id="snapshot_dialog" class="paper-date-picker-dialog" modal on-iron-overlay-closed="dismissDialog">
+	<paper-date-picker id="snapshot_date" name="datetime" date=<%= Timex.format!(@datetime, "{ISOdate}") %> max-date="<%= Timex.now |> Timex.format!("{ISOdate}") %>"></paper-date-picker>
 	<div class="buttons">
-		<paper-button dialog-dismiss>Close</paper-button>
-	</div>
-</paper-dialog>
-
-<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-	<%= render Liquio.HtmlVoteView, "index.html", poll: @poll, own_vote: @own_vote, own_poll: @own_poll %>
-</paper-dialog>
-
-<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-	<h2>Fine tune how results are calculated</h2>
-
-	<form id="preferences_form" method="POST" action="/identities/me/preferences" class="pure-form">
-		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-
-		<div class="range" style="margin-bottom: 20px;">
-			<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @calculation_opts.minimum_turnout || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" style="margin: 0 auto;" />
-			<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@calculation_opts.minimum_turnout || 0))}% turnout." %></output>
-		</div>
-
-		<div class="range" style="margin-bottom: 20px;">
-			<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @calculation_opts.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" style="margin: 0 auto;" />
-			<output id="vote_weight_halving_days_value">
-				<%= if @calculation_opts.vote_weight_halving_days do "Votes will lose half remaining power every #{round(@calculation_opts.vote_weight_halving_days)} #{ngettext("day", "days", round(@calculation_opts.vote_weight_halving_days))}." else "Votes don't lose power with time." end %>
-			</output>
-		</div>
-	</form>
-
-	<div class="buttons">
-		<paper-button dialog-dismiss>Close</paper-button>
-		<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change preferences for polls</paper-button>
+		<paper-button dialog-dismiss>Cancel</paper-button>
+		<paper-button dialog-confirm raised class="primary" onclick="document.location = '?datetime=' + snapshot_date.date.toISOString().substring(0, 10)">Set viewing date</paper-button>
 	</div>
 </paper-dialog>

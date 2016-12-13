@@ -6,6 +6,7 @@ defmodule Liquio.HtmlExploreController do
 			"new" -> Poll |> Poll.sorted_new |> Repo.all
 			"top" -> Poll |> Poll.sorted_top |> Repo.all
 			"most-certain" -> Poll |> Poll.sorted_certain |> Repo.all
+			"least-certain" -> Poll |> Poll.sorted_certain |> Repo.all |> Enum.reverse
 		end
 		conn
 		|> render("index.html",
@@ -21,6 +22,7 @@ defmodule Liquio.HtmlExploreController do
 			"new" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_new |> Repo.all
 			"top" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_top |> Repo.all
 			"most-certain" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_certain |> Repo.all
+			"least-certain" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_certain |> Repo.all |> Enum.reverse
 		end
 		conn
 		|> render("index.html",

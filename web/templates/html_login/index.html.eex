@@ -1,5 +1,7 @@
-<form method="POST" class="pure-form pure-form-stacked login">
-	<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-	<input name="email" type="email" placeholder="Your email" />
-	<button type="submit" class="pure-button pure-button-primary">Login</button>
-</form>
+<main role="main" class="main" style="width: 500px;">
+	<form method="POST" class="pure-form pure-form-stacked login">
+		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+		<input name="email" type="email" placeholder="Your email" />
+		<button type="submit" class="pure-button pure-button-primary">Login</button>
+	</form>
+</main>

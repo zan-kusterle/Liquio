@@ -1,1 +1,0 @@
-<p class="heading"><%= @poll.choice_type |> String.replace("_", " ") |> String.upcase %> POLL</p>

@@ -2,7 +2,6 @@
 	text-align: left;
 
 	.pole {
-		margin-top: 10px;
 		padding: 0 15px;
 		
 		.pole-heading {
@@ -35,14 +34,9 @@
 		font-size: 0px;
 
 		.reference-text {
-			color: #333;
-			display: inline-block;
 			font-size: 13px;
 			width: calc(~"100% - 80px");
 			line-height: 16px;
-			margin: 0px;
-			vertical-align: middle;
-			padding-left: 10px;
 
 			.for-choice-text {
 				font-size: 20px;
@@ -53,12 +47,17 @@
 		}
 
 		.reference-score {
-			position: relative;
-			top: -1px;
 			height: 30px;
-			border: 2px solid rgba(0, 0, 0, 0.05);
 		}
 	}
+}
+
+.reference-text {
+	color: #333;
+	display: inline-block;
+	margin: 0px;
+	vertical-align: middle;
+	padding-left: 10px;
 }
 
 .reference-score {
@@ -73,4 +72,6 @@
 	height: 32px;
 	line-height: 22px;
 	border: 2px solid rgba(0, 0, 0, 0.05);
+	position: relative;
+	top: -1px;
 }

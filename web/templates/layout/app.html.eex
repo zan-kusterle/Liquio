@@ -78,14 +78,8 @@
 							<p class="alert alert-info" role="alert"<%= if assigns[:width] do %> style="max-width: <%= @width %>px;"<% end %>><%= get_flash(@conn, :info) %></p>
 						<% end %>
 					<% end %>
-
-					<%= render_existing @view_module, "before_#{@view_template}", assigns %>
-
-					<main role="main" class="main"<%= if assigns[:width] do %> style="max-width: <%= @width %>px;"<% end %>>
-						<%= render @view_module, @view_template, assigns %>
-					</main>
-
-					<%= render_existing @view_module, "after_#{@view_template}", assigns %>
+					
+					<%= render @view_module, @view_template, assigns %>
 				</div>
 			</div>
 		</div>

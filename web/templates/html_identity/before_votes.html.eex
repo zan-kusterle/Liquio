@@ -1,2 +1,0 @@
-<p class="heading">VOTES OF <%= @identity.name %></p>
-<a class="heading-a" href="/identities/<%= @identity.id %>">BACK TO IDENTITY</a>

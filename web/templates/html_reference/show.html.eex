@@ -1,20 +1,26 @@
-<div class="reference-approval">
-	<%= if @poll.topics != nil do %>
-		<h3 class="topics">
-			<%= for topic <- @poll.topics do %>
-				<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
-			<% end %>
-		</h3>
-	<% end %>
+<p class="heading">POLL</p>
 
-	<a href="<%= html_poll_path(@conn, :show, @reference.poll.id) %>" class="title"><%= @poll.title %></a>
+<main role="main" class="main">
+	<div class="reference-approval">
+		<%= if @poll.topics != nil do %>
+			<h3 class="topics">
+				<%= for topic <- @poll.topics do %>
+					<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
+				<% end %>
+			</h3>
+		<% end %>
 
-	<div class="score-container">
-		<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
+		<a href="<%= html_poll_path(@conn, :show, @reference.poll.id) %>" class="title"><%= @poll.title %></a>
+
+		<div class="score-container">
+			<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
+		</div>
 	</div>
+</main>
 
-	<h2 class="references-title">References</h2>
+<p class="heading">REFERENCE</p>
 
+<main role="main" class="main">
 	<%= render Liquio.HtmlPollView, "reference.html", poll: @poll, reference_poll: @reference_poll %>
 
 	<div class="title instruction" style="margin-top: 50px;">How would you vote if this was the only reference and you knew it was true?</div>
@@ -35,27 +41,42 @@
 	<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 		<%= render Liquio.HtmlVoteView, "index.html", poll: @reference.for_choice_poll, own_vote: @own_vote, own_poll: @own_poll %>
 	</paper-dialog>
+</main>
 
-	<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-		<h2>Fine tune which references are shown</h2>
-		
-		<form id="preferences_form" method="POST" action="/identities/me/preferences" class="pure-form">
-			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+<p class="heading">CURRENT REFERENCES</p>
 
-			<div class="range" style="margin: 20px 0px;">
-				<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @calculation_opts.approval_turnout_importance %>" min="0" max="1" step="any" oninput="soft_quorum_t_value.value = 'Low turnout penalty set at ' + Math.round(100 * soft_quorum_t_range.value) + '%.'" style="margin: 0 auto;">
-				<output id="soft_quorum_t_value"><%= "Low turnout penalty set at #{round(100 * @calculation_opts.approval_turnout_importance)}%." %></output>
-			</div>
+<main role="main" class="main">
+	<%= unless Enum.empty?(@references) do %>
+		<%= render Liquio.HtmlPollView, "references.html", poll: @poll, references: @references %>
+	<% end %>
 
-			<div class="range" style="margin: 20px 0px;">
-				<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @calculation_opts.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Turnout at least ' + Math.round(100 * minimum_score_range.value) + '% to show reference.'" style="margin: 0 auto;">
-				<output id="minimum_score_value"><%= "Turnout at least #{round(100 * @calculation_opts.minimum_reference_approval_score)}% to show reference." %></output>
-			</div>
-		</form>
+	<form action="/polls/<%= @poll.id %>/references" class="pure-form" <%= unless Enum.empty?(@references) do %> style="margin-top: 40px;"<% end %>>
+		<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1 url-input" />
+		<button type="submit" class="pure-button poll-button">View another reference</button>
+	</form>
+</main>
 
-		<div class="buttons">
-			<paper-button dialog-dismiss>Close</paper-button>
-			<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change preferences for references</paper-button>
+<a class="after-link" style="margin-top: 30px;" onclick="preferences_dialog.open()">Change preferences</a>
+
+<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+	<h2>Fine tune which references are shown</h2>
+	
+	<form id="preferences_form" method="POST" action="/identities/me/preferences" class="pure-form">
+		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+
+		<div class="range" style="margin: 20px 0px;">
+			<input type="range" name="soft_quorum_t" id="soft_quorum_t_range" value="<%= @calculation_opts.approval_turnout_importance %>" min="0" max="1" step="any" oninput="soft_quorum_t_value.value = 'Low turnout penalty set at ' + Math.round(100 * soft_quorum_t_range.value) + '%.'" style="margin: 0 auto;">
+			<output id="soft_quorum_t_value"><%= "Low turnout penalty set at #{round(100 * @calculation_opts.approval_turnout_importance)}%." %></output>
 		</div>
-	</paper-dialog>
-</div>
+
+		<div class="range" style="margin: 20px 0px;">
+			<input type="range" name="minimum_reference_approval_score" id="minimum_score_range" value="<%= @calculation_opts.minimum_reference_approval_score || 0 %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'Turnout at least ' + Math.round(100 * minimum_score_range.value) + '% to show reference.'" style="margin: 0 auto;">
+			<output id="minimum_score_value"><%= "Turnout at least #{round(100 * @calculation_opts.minimum_reference_approval_score)}% to show reference." %></output>
+		</div>
+	</form>
+
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+		<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change preferences for references</paper-button>
+	</div>
+</paper-dialog>

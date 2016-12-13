@@ -1,9 +1,0 @@
-<p class="heading"><%= @heading %></p>
-
-<%= if assigns[:url] != nil do %>
-	<p class="heading">
-		<a href="<%= @url %>/top" class="sort<%= if @sort == "top" do %> active<% end %>">top</a>
-		<a href="<%= @url %>/new" class="sort<%= if @sort == "new" do %> active<% end %>">new</a>
-		<a href="<%= @url %>/most-certain" class="sort<%= if @sort == "most-certain" do %> active<% end %>">most certain</a>
-	</p>
-<% end %>
