@@ -88,13 +88,13 @@ defmodule Liquio.Poll do
 
 	def sorted_new(query) do
 		from p in query,
-		where: not is_nil(p.latest_default_results)
+		where: not is_nil(p.latest_default_results),
 		order_by: [desc: p.id]
 	end
 
 	def sorted_certain(query) do
 		from p in query,
-		where: not is_nil(p.latest_default_results)
+		where: not is_nil(p.latest_default_results),
 		order_by: [desc: p.id]
 	end
 
