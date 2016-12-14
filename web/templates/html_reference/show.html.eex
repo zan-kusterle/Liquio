@@ -84,8 +84,8 @@
 		</div>
 
 		<div class="range" style="margin: 20px 0px;">
-			<input type="range" name="reference_minimum_agree" id="minimum_score_range" value="<%= @calculation_opts.reference_minimum_agree %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'At least ' + Math.round(100 * minimum_score_range.value) + '% must vote positive.'" style="margin: 0 auto;">
-			<output id="minimum_score_value"><%= "At least #{round(100 * @calculation_opts.reference_minimum_agree)}% must vote positive." %></output>
+			<input type="range" name="reference_minimum_agree" id="minimum_score_range" value="<%= @calculation_opts.reference_minimum_agree %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'At least ' + Math.round(100 * minimum_score_range.value) + '% votes must be positive.'" style="margin: 0 auto;">
+			<output id="minimum_score_value"><%= "At least #{round(100 * @calculation_opts.reference_minimum_agree)}% votes must be positive." %></output>
 		</div>
 	</form>
 

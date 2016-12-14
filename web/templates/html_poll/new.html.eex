@@ -1,5 +1,5 @@
 <paper-dialog id="create_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-	<h2>Make a poll</h2>
+	<h2>Make new poll</h2>
 	
 	<form is="iron-form" id="create_form" method="POST" action="/polls" autocomplete="off" class="new-poll">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
