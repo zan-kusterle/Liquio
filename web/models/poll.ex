@@ -130,7 +130,15 @@ defmodule Liquio.Poll do
 	end
 
 	def calculate(poll, calculation_opts) do
-		cache = Cachex.get!(:results_cache, {"results", poll.id})
+		cache_key = {
+			"results",
+			Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
+			calculation_opts.trust_metric_url,
+			calculation_opts.vote_weight_halving_days,
+			calculation_opts.minimum_voting_power,
+			poll.id
+		}
+		cache = Cachex.get!(:results_cache, cache_key)
 		if cache do
 			cache
 		else
@@ -159,13 +167,19 @@ defmodule Liquio.Poll do
 				end
 			end
 
-			Cachex.set(:results_cache, {"results", poll.id}, results, [ttl: :timer.seconds(60)])
+			Cachex.set(:results_cache, cache_key, results, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
 			results
 		end
 	end
 
 	def calculate_contributions(poll, calculation_opts) do
-		cache = Cachex.get!(:results_cache, {"contributions", poll.id})
+		cache_key = {
+			"contributions",
+			Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
+			calculation_opts.trust_metric_url,
+			poll.id
+		}
+		cache = Cachex.get!(:results_cache, cache_key)
 		if cache do
 			cache
 		else
@@ -176,7 +190,7 @@ defmodule Liquio.Poll do
 
 			contributions = CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, topics)
 
-			Cachex.set(:results_cache, {"contributions", poll.id}, contributions, [ttl: :timer.seconds(60)])
+			Cachex.set(:results_cache, cache_key, contributions, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
 			contributions
 		end
 	end

@@ -35,7 +35,16 @@ defmodule Liquio.Reference do
 	end
 
 	def for_poll(poll, calculation_opts) do
-		cache = Cachex.get!(:results_cache, {"references", poll.id})
+		cache_key = {
+			"references",
+			Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
+			calculation_opts.trust_metric_url,
+			calculation_opts.vote_weight_halving_days,
+			calculation_opts.minimum_voting_power,
+			calculation_opts.reference_minimum_turnout,
+			poll.id
+		}
+		cache = Cachex.get!(:results_cache, cache_key)
 		if cache do
 			cache
 		else
@@ -56,13 +65,22 @@ defmodule Liquio.Reference do
 			end)
 			|> Enum.sort(&(&1.reference_poll.results.total > &2.reference_poll.results.total))
 
-			Cachex.set(:results_cache, {"references", poll.id}, references, [ttl: :timer.seconds(60)])
+			Cachex.set(:results_cache, cache_key, references, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
 			references
 		end
 	end
 
 	def inverse_for_poll(poll, calculation_opts) do
-		cache = Cachex.get!(:results_cache, {"inverse_references", poll.id})
+		cache_key = {
+			"inverse_references",
+			Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
+			calculation_opts.trust_metric_url,
+			calculation_opts.vote_weight_halving_days,
+			calculation_opts.minimum_voting_power,
+			calculation_opts.reference_minimum_turnout,
+			poll.id
+		}
+		cache = Cachex.get!(:results_cache, cache_key)
 		if cache do
 			cache
 		else
@@ -83,7 +101,7 @@ defmodule Liquio.Reference do
 			end)
 			|> Enum.sort(&(&1.poll.results.total > &2.poll.results.total))
 
-			Cachex.set(:results_cache, {"inverse_references", poll.id}, references, [ttl: :timer.seconds(60)])
+			Cachex.set(:results_cache, cache_key, references, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
 			references
 		end
 	end

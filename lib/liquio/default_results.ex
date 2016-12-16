@@ -12,11 +12,10 @@ defmodule Liquio.DefaultResults do
 			trust_metric_url: trust_metric_url,
 			trust_metric_ids: Liquio.TrustMetric.get!(trust_metric_url),
 			vote_weight_halving_days: nil,
-			soft_quorum_t: 0.0,
 			minimum_voting_power: 0.0,
 			minimum_turnout: 0.0,
-			minimum_reference_approval_score: 0.5,
-			approval_turnout_importance: 0.0
+			reference_minimum_agree: 0.5,
+			reference_minimum_turnout: 0.0
 		}
 
 		polls = Repo.all Poll.all

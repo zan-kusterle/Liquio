@@ -13,16 +13,44 @@
 
 	<div class="score-container">
 		<%= render "score.html", poll: @poll %>
+
+		<div id="vote_choice" style="display: none;">
+			<%= render "score.html", poll: @poll, editable: true %>
+		</div>
 	</div>
 
 	<div class="links">
-		<a onclick="details_dialog.open()"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
-		<a onclick="vote_dialog.open()"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
+		<a onclick="contributions_table.classList.toggle('shown')"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+		<a onclick="vote_choice.style.display = vote_choice.style.display == 'none' ? 'inline-block' : 'none';"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
 	</div>
 
-	<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-		<%= render "details.html", poll: @poll, contributions: @contributions %>
-	</paper-dialog>
+	<%= unless Enum.empty? @contributions do %>
+        <table class="contributions" id="contributions_table">
+            <tr class="contribution">
+                <td class="column-name username">Username</td>
+                <td class="column-name contribution">Contribution</td>
+                <td class="column-name choice">Choice</td>
+				<td class="column-name date">Date</td>
+            </tr>
+            <% total_power = @contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
+            <% max_ratio = @contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
+            <%= for contribution <- @contributions |> Enum.sort_by(& -&1.voting_power) do %>
+                <% width_ratio = contribution.voting_power / total_power / max_ratio %>
+                <tr class="contribution">
+                    <td class="username"><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
+                    <td class="contribution">
+                        <div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px; border: 2px solid rgba(0, 0, 0, 0.2); width: <%= round(100 * width_ratio) %>%;">
+                            <%= number_format(100 * contribution.voting_power / total_power) %>%
+                        </div>
+                    </td>
+                    <td class="choice">
+                        <%= render "score_reference.html", choice_type: @poll.choice_type, results: Liquio.Poll.results_for_contribution(@poll, contribution) %>
+                    </td>
+					<td class="date"><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
+                </tr>
+            <% end %>
+        </table>
+    <% end %>
 
 	<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 		<%= render Liquio.HtmlVoteView, "index.html", poll: @poll, own_vote: @own_vote, own_poll: @own_poll %>
