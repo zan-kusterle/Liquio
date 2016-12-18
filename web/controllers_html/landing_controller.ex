@@ -309,7 +309,7 @@ defmodule Liquio.LandingController do
 	end
 
 	def cast_approve_vote(poll, example_reference, identity) do
-		reference_poll = Poll.force_get(example_reference.poll.choice_type, example_reference.poll.title)
+		reference_poll = Poll.force_get(example_reference.choice_type, example_reference.title)
 		reference = Reference.get(poll, reference_poll)
 		|> Repo.preload([:for_choice_poll])
 
