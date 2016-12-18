@@ -8,12 +8,11 @@ defmodule Liquio.HtmlPollController do
 
 	with_params(%{
 		:title => {Plugs.StringParam, [name: "title"]},
-		:topics => {Plugs.ListParam, [name: "topics", maybe: true, item: {Plugs.StringParam, [downcase: true]}]},
 		:choice_type => {Plugs.EnumParam, [name: "choice_type", values: ["probability", "quantity", "time_quantity"]]},
 		:reference_to_poll => {Plugs.ItemParam, [schema: Poll, name: "reference_to_poll_id", maybe: true, validator: &Poll.is_custom/1]}
 	},
-	def create(conn, %{:title => title, :topics => topics, :choice_type => choice_type, :reference_to_poll => reference_to_poll}) do
-		poll = Poll.create(choice_type, title, topics)
+	def create(conn, %{:title => title, :choice_type => choice_type, :reference_to_poll => reference_to_poll}) do
+		poll = Poll.create(choice_type, title)
 
 		if reference_to_poll != nil do
 			conn

@@ -1,4 +1,5 @@
 /data/*
+/rel/liquio
 .deliver/releases/
 # App artifacts
 /_build

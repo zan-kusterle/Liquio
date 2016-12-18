@@ -16,21 +16,6 @@
 		<input id="choice_type_input" type="hidden" name="choice_type">
 
 		<paper-input id="title" name="title" label="Title" required></paper-input>
-
-		<paper-listbox multi>
-			<paper-item>Science</paper-item>
-			<paper-item>Politics</paper-item>
-			<paper-item>Physics</paper-item>
-			<paper-item>Statistics</paper-item>
-			<paper-item>Research</paper-item>
-		</paper-listbox>
-
-		<div id="other_topics">
-			<paper-input id="other_topic" name="topics[]" label="Name of topic"></paper-input>
-		</div>
-		<a onclick="let n=other_topic.cloneNode(true); n.removeAttribute('id'); other_topics.appendChild(n);">+ Add another topic</a>
-
-		<paper-input id="topics" name="topics" label="Topics" required></paper-input>
 	</form>
 
 	<div class="buttons">
