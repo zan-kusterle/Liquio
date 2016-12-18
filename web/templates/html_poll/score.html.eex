@@ -15,7 +15,7 @@
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 				
 				<%= if @poll.choice_type == "probability" do %>
-					<div class="number"><%= current_choice %></div>
+					<div class="number"><%= round(100 * current_choice) %><span class="percent">%</span></div>
 					<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 					<div class="range">
 						<input type="range" name="choice" id="choice_range" value="<%= current_choice %>" min="0" max="1" step="any" oninput="let o = document.getElementsByClassName('number')[1]; o.innerHTML = Math.round(100 * choice_range.value) + '%'" style="width: 90%; margin: 0 auto;" />

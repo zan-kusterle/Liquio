@@ -52,7 +52,6 @@ defmodule Liquio.Router do
 
 		get "/explore/:sort", HtmlExploreController, :index
 		resources "/topics", HtmlExploreController, only: [:show] do
-			get "/:sort/embed", HtmlExploreController, :show_embed
 			get "/:sort", HtmlExploreController, :show
 			get "/polls/:poll_id", HtmlTopicController, :reference
 		end
@@ -63,6 +62,7 @@ defmodule Liquio.Router do
 		pipe_through :embed
 
 		get "/polls/:html_poll_id/embed", HtmlPollController, :embed
+		get "/topics/:html_explore_id/:sort/embed", HtmlExploreController, :show_embed
 	end
 	
 	scope "/api", Liquio do

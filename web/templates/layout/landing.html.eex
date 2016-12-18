@@ -26,7 +26,7 @@
 	</head>
 
 	<body>
-		<div class="landing-container">
+		<div class="container landing-container">
 			<%= render @view_module, @view_template, assigns %>
 		</div>
 	</body>

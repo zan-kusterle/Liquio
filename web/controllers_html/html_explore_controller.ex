@@ -41,11 +41,8 @@ defmodule Liquio.HtmlExploreController do
 			"least-certain" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_certain |> Repo.all |> Enum.reverse
 		end
 		conn
-		|> put_layout("minimal.html")
-		|> render("index.html",
-			heading: "POLLS WITH TOPIC #{topic |> String.upcase}",
-			url: "/topics/#{topic |> String.downcase}",
-			sort: sort,
+		|> put_layout("raw.html")
+		|> render("embed.html",
 			polls: polls,
 			identities: [])
 	end
