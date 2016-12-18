@@ -32,7 +32,7 @@ defmodule Liquio.Mixfile do
 	defp deps do
 		[
 			{:phoenix, "~> 1.2.0"},
-			{:exrm, "~> 1.0.8"},
+			{:distillery, "~> 1.0"},
 			{:edeliver, "~> 1.4.0"},
 			{:phoenix_pubsub, "~> 1.0"},
 			{:cors_plug, "~> 1.1"},

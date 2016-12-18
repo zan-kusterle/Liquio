@@ -15,12 +15,14 @@
 		<%= render "score.html", poll: @poll %>
 
 		<div id="vote_choice" style="display: none;">
-			<%= render "score.html", poll: @poll, editable: true %>
+			<%= render "score.html", poll: @poll, own_vote: @own_vote, editable: true %>
 		</div>
 	</div>
 
 	<div class="links">
-		<a onclick="contributions_table.classList.toggle('shown')"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+		<%= unless Enum.empty? @contributions do %>
+			<a onclick="contributions_table.classList.toggle('shown')"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+		<% end %>
 		<a onclick="vote_choice.style.display = vote_choice.style.display == 'none' ? 'inline-block' : 'none';"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
 	</div>
 
@@ -51,11 +53,7 @@
             <% end %>
         </table>
     <% end %>
-
-	<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-		<%= render Liquio.HtmlVoteView, "index.html", poll: @poll, own_vote: @own_vote, own_poll: @own_poll %>
-	</paper-dialog>
-
+	
 	<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 		<h2>Fine tune how results are calculated</h2>
 

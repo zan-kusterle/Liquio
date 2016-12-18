@@ -52,7 +52,9 @@ defmodule Liquio.Router do
 
 		get "/explore/:sort", HtmlExploreController, :index
 		resources "/topics", HtmlExploreController, only: [:show] do
+			get "/:sort/embed", HtmlExploreController, :show_embed
 			get "/:sort", HtmlExploreController, :show
+			get "/polls/:poll_id", HtmlTopicController, :reference
 		end
 		get "/search", HtmlExploreController, :search
 	end

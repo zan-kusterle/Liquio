@@ -1,0 +1,96 @@
+<div class="pure-g main-g">
+	<div class="pure-u-1-2" style="padding-right: 10px";>
+		<p class="heading">POLL</p>
+
+		<main role="main" class="main">
+			<div class="reference-approval">
+				<%= if @poll.topics != nil do %>
+					<h3 class="topics">
+						<%= for topic <- @poll.topics do %>
+							<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
+						<% end %>
+					</h3>
+				<% end %>
+
+				<a href="<%= html_poll_path(@conn, :show, @reference.poll.id) %>" class="title"><%= @poll.title %></a>
+
+				<div class="score-container">
+					<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
+				</div>
+			</div>
+		</main>
+	</div>
+	<div class="pure-u-1-2" style="padding-left: 10px;">
+		<p class="heading">REFERENCE POLL</p>
+
+		<main role="main" class="main">
+			<div class="reference-approval">
+				<%= if @reference_poll.topics != nil do %>
+					<h3 class="topics">
+						<%= for topic <- @reference_poll.topics do %>
+							<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
+						<% end %>
+					</h3>
+				<% end %>
+
+				<a href="<%= html_poll_path(@conn, :show, @reference_poll.id) %>" class="title"><%= @reference_poll.title %></a>
+
+				<div class="score-container">
+					<%= render Liquio.HtmlPollView, "score.html", poll: @reference_poll %>
+				</div>
+			</div>
+		</main>
+	</div>
+
+	<div class="pure-u-1">
+		<p class="heading">EVIDENCE FOR CHOICE</p>
+
+		<main role="main" class="main">
+			<p href="<%= html_poll_path(@conn, :show, @reference_poll.id) %>" class="title">Choice For Which Reference Poll Provides Evidence</p>
+
+			<div style="margin-top: 30px;">
+				<%= render Liquio.HtmlPollView, "score.html", poll: @reference.for_choice_poll %>
+			</div>
+
+			<div class="links">
+				<a onclick="details_dialog.open()"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
+				<a onclick="vote_dialog.open()"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
+			</div>
+
+			<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+				<%= render Liquio.HtmlPollView, "details.html", poll: @reference.for_choice_poll, contributions: @reference.for_choice_poll.contributions %>
+			</paper-dialog>
+
+			<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+				<%= render Liquio.HtmlVoteView, "index.html", poll: @reference.for_choice_poll, own_vote: @own_vote, own_poll: @own_poll %>
+			</paper-dialog>
+		</main>
+	</div>
+
+	<div class="pure-u-1">
+		<a class="after-link" onclick="preferences_dialog.open()">Change preferences</a>
+	</div>
+</div>
+
+<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
+	<h2>Fine tune which references are shown</h2>
+	
+	<form id="preferences_form" method="POST" action="/identities/me/preferences" class="pure-form">
+		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+
+		<div class="range" style="margin: 20px 0px;">
+			<input type="range" name="reference_minimum_turnout" id="reference_minimum_turnout_range" value="<%= @calculation_opts.reference_minimum_turnout %>" min="0" max="1" step="any" oninput="reference_minimum_turnout_value.value = 'Expecting at least ' + Math.round(100 * reference_minimum_turnout_range.value) + '% turnout.'" style="margin: 0 auto;">
+			<output id="reference_minimum_turnout_value"><%= "Expecting at least #{round(100 * @calculation_opts.reference_minimum_turnout)}% turnout." %></output>
+		</div>
+
+		<div class="range" style="margin: 20px 0px;">
+			<input type="range" name="reference_minimum_agree" id="minimum_score_range" value="<%= @calculation_opts.reference_minimum_agree %>" min="0" max="1" step="any" oninput="minimum_score_value.value = 'At least ' + Math.round(100 * minimum_score_range.value) + '% votes must be positive.'" style="margin: 0 auto;">
+			<output id="minimum_score_value"><%= "At least #{round(100 * @calculation_opts.reference_minimum_agree)}% votes must be positive." %></output>
+		</div>
+	</form>
+
+	<div class="buttons">
+		<paper-button dialog-dismiss>Close</paper-button>
+		<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change preferences for references</paper-button>
+	</div>
+</paper-dialog>
