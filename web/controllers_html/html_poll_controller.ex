@@ -49,6 +49,7 @@ defmodule Liquio.HtmlPollController do
 			own_vote: own_vote,
 			own_poll: poll |> Map.put(:results, if own_vote do Poll.results_for_contribution(poll, %{:choice => own_vote.data.choice}) else nil end),
 			datetime: datetime,
+			topics: Topic.for_poll(poll, calculation_opts),
 			references: prepare_references(poll, calculation_opts),
 			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
 			calculation_opts: calculation_opts)

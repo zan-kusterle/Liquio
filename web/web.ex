@@ -44,6 +44,7 @@ defmodule Liquio.Web do
 			alias Liquio.Delegation
 			alias Liquio.Vote
 			alias Liquio.Poll
+			alias Liquio.Topic
 			alias Liquio.Reference
 			alias Liquio.Token
 

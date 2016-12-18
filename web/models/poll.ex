@@ -4,6 +4,7 @@ defmodule Liquio.Poll do
 	alias Liquio.Repo
 	alias Liquio.Poll
 	alias Liquio.Vote
+	alias Liquio.Topic
 	alias Liquio.Results.GetData
 	alias Liquio.Results.CalculateContributions
 	alias Liquio.Results.AggregateContributions
@@ -12,7 +13,6 @@ defmodule Liquio.Poll do
 		field :kind, :string
 		field :choice_type, :string
 		field :title, :string
-		field :topics, {:array, :string}
 
 		field :latest_default_results, :map
 
@@ -29,10 +29,9 @@ defmodule Liquio.Poll do
 				params
 			end
 		data
-		|> cast(params, ["choice_type", "title", "topics"])
+		|> cast(params, ["choice_type", "title"])
 		|> validate_required(:title)
 		|> validate_required(:choice_type)
-		|> validate_required(:topics)
 		|> put_change(:kind, "custom")
 	end
 
@@ -40,27 +39,25 @@ defmodule Liquio.Poll do
 		Repo.insert(changeset)
 	end
 
-	def create(choice_type, title, topics) do
+	def create(choice_type, title) do
 		Repo.insert!(%Poll{
 			:kind => "custom",
 			:choice_type => choice_type,
 			:title => capitalize_title(title),
-			:topics => topics,
 		})
 	end
 
-	def force_get(choice_type, title, topics) do
+	def force_get(choice_type, title) do
 		query = from(p in Poll, where:
 			p.kind == "custom" and
 			p.choice_type == ^choice_type and
-			p.title == ^capitalize_title(title) and
-			p.topics == ^topics
+			p.title == ^capitalize_title(title)
 		)
 		poll = query
 		|> Ecto.Query.first
 		|> Repo.one
 		if poll == nil do
-			Poll.create(choice_type, title, topics)
+			Poll.create(choice_type, title)
 		else
 			poll
 		end
@@ -76,8 +73,12 @@ defmodule Liquio.Poll do
 		from(p in Poll, where: p.kind == "custom", order_by: [desc: p.id])
 	end
 
-	def by_topic(topic) do
-		from(p in Poll, where: p.kind == "custom" and fragment("? = ANY(?)", ^topic, p.topics))
+	def by_default_topic(query, topic) do
+		from p in query,
+		where:
+			not is_nil(p.latest_default_results) and
+			p.kind == "custom" and
+			fragment("(?->'topics')::jsonb \\? ?", p.latest_default_results, ^topic)
 	end
 
 	def sorted_top(query) do
@@ -183,7 +184,9 @@ defmodule Liquio.Poll do
 		if cache do
 			cache
 		else
-			topics = if poll.topics == nil do nil else MapSet.new(poll.topics) end
+			topics = Topic.for_poll(poll, calculation_opts)
+			|> Enum.map(& &1.name)
+			|> MapSet.new
 
 			votes = GetData.get_votes(poll.id, calculation_opts.datetime)
 			inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)

@@ -19,8 +19,7 @@ defmodule Liquio.Topic do
             relevance_poll = Repo.insert!(%Poll{
                 :kind => "is_topic",
                 :choice_type => "probability",
-                :title => nil,
-                :topics => nil
+                :title => nil
             })
             Repo.insert!(%Topic{
                 :name => name,

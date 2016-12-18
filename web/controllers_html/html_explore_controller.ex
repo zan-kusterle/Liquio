@@ -19,10 +19,10 @@ defmodule Liquio.HtmlExploreController do
 
 	def show(conn, %{"html_explore_id" => topic, "sort" => sort}) do
 		polls = case sort do
-			"new" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_new |> Repo.all
-			"top" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_top |> Repo.all
-			"most-certain" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_certain |> Repo.all
-			"least-certain" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_certain |> Repo.all |> Enum.reverse
+			"new" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_new |> Repo.all
+			"top" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_top |> Repo.all
+			"most-certain" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_certain |> Repo.all
+			"least-certain" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_certain |> Repo.all |> Enum.reverse
 		end
 		conn
 		|> render("index.html",
@@ -35,10 +35,10 @@ defmodule Liquio.HtmlExploreController do
 
 	def show_embed(conn, %{"html_explore_id" => topic, "sort" => sort}) do
 		polls = case sort do
-			"new" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_new |> Repo.all
-			"top" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_top |> Repo.all
-			"most-certain" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_certain |> Repo.all
-			"least-certain" -> topic |> String.downcase |> Poll.by_topic |> Poll.sorted_certain |> Repo.all |> Enum.reverse
+			"new" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_new |> Repo.all
+			"top" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_top |> Repo.all
+			"most-certain" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_certain |> Repo.all
+			"least-certain" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_certain |> Repo.all |> Enum.reverse
 		end
 		conn
 		|> put_layout("raw.html")

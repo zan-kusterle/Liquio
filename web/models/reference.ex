@@ -20,8 +20,7 @@ defmodule Liquio.Reference do
 				for_choice_poll = Repo.insert!(%Poll{
 					:kind => "is_reference",
 					:choice_type => poll.choice_type,
-					:title => nil,
-					:topics => nil
+					:title => nil
 				})
 				Repo.insert!(%Reference{
 					:poll => poll,

@@ -46,7 +46,7 @@
 		<p class="heading">EVIDENCE FOR CHOICE</p>
 
 		<main role="main" class="main">
-			<p href="<%= html_poll_path(@conn, :show, @reference_poll.id) %>" class="title">Choice For Which Reference Poll Provides Evidence</p>
+			<p class="title">Choice For Which Reference Poll Provides Evidence</p>
 
 			<div style="margin-top: 30px;">
 				<%= render Liquio.HtmlPollView, "score.html", poll: @reference.for_choice_poll %>
