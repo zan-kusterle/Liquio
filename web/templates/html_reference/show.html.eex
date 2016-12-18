@@ -3,42 +3,14 @@
 		<p class="heading">POLL</p>
 
 		<main role="main" class="main">
-			<div class="reference-approval">
-				<%= if @poll.topics != nil do %>
-					<h3 class="topics">
-						<%= for topic <- @poll.topics do %>
-							<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
-						<% end %>
-					</h3>
-				<% end %>
-
-				<a href="<%= html_poll_path(@conn, :show, @reference.poll.id) %>" class="title"><%= @poll.title %></a>
-
-				<div class="score-container">
-					<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
-				</div>
-			</div>
+			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @poll , topics: @poll.topics %>
 		</main>
 	</div>
 	<div class="pure-u-1-2" style="padding-left: 10px;">
 		<p class="heading">REFERENCE POLL</p>
 
 		<main role="main" class="main">
-			<div class="reference-approval">
-				<%= if @reference_poll.topics != nil do %>
-					<h3 class="topics">
-						<%= for topic <- @reference_poll.topics do %>
-							<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
-						<% end %>
-					</h3>
-				<% end %>
-
-				<a href="<%= html_poll_path(@conn, :show, @reference_poll.id) %>" class="title"><%= @reference_poll.title %></a>
-
-				<div class="score-container">
-					<%= render Liquio.HtmlPollView, "score.html", poll: @reference_poll %>
-				</div>
-			</div>
+			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @reference_poll , topics: @reference_poll.topics %>
 		</main>
 	</div>
 
@@ -46,24 +18,7 @@
 		<p class="heading">EVIDENCE FOR CHOICE</p>
 
 		<main role="main" class="main">
-			<p class="title">Choice For Which Reference Poll Provides Evidence</p>
-
-			<div style="margin-top: 30px;">
-				<%= render Liquio.HtmlPollView, "score.html", poll: @reference.for_choice_poll %>
-			</div>
-
-			<div class="links">
-				<a onclick="details_dialog.open()"><i class="fa fa-th-list" aria-hidden="true" style="margin-right: 2px;"></i> Details</a>
-				<a onclick="vote_dialog.open()"><i class="fa fa-sticky-note" aria-hidden="true" style="margin-right: 4px;"></i> Vote</a>
-			</div>
-
-			<paper-dialog id="details_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-				<%= render Liquio.HtmlPollView, "details.html", poll: @reference.for_choice_poll, contributions: @reference.for_choice_poll.contributions %>
-			</paper-dialog>
-
-			<paper-dialog id="vote_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-				<%= render Liquio.HtmlVoteView, "index.html", poll: @reference.for_choice_poll, own_vote: @own_vote, own_poll: @own_poll %>
-			</paper-dialog>
+			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Choice For Which Reference Poll Provides Evidence", contributions: @reference.for_choice_poll.contributions, poll: @reference.for_choice_poll, topics: [], own_vote: @own_vote %>
 		</main>
 	</div>
 

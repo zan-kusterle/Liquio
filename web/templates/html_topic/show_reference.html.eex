@@ -4,7 +4,7 @@
 
 		<main role="main" class="main">
 			<div class="reference-approval">
-				<a href="<%= html_poll_path(@conn, :show, @reference.poll.id) %>" class="title"><%= @reference.name %></a>
+				<a href="<%= html_explore_html_explore_path(@conn, :show, @reference.name, "top") %>" class="title"><%= @reference.name %></a>
 			</div>
 		</main>
 	</div>
@@ -12,21 +12,7 @@
 		<p class="heading">POLL</p>
 
 		<main role="main" class="main">
-			<div class="reference-approval">
-				<%= if @poll.topics != nil do %>
-					<h3 class="topics">
-						<%= for topic <- @poll.topics do %>
-							<a href="<%= html_explore_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
-						<% end %>
-					</h3>
-				<% end %>
-
-				<a href="<%= html_poll_path(@conn, :show, @poll.id) %>" class="title"><%= @poll.title %></a>
-
-				<div class="score-container">
-					<%= render Liquio.HtmlPollView, "score.html", poll: @poll %>
-				</div>
-			</div>
+			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, contributions: [], poll: @poll, topics: [] %>
 		</main>
 	</div>
 
@@ -34,7 +20,7 @@
 		<p class="heading">RELEVANCE POLL</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", title: "Poll Relevance To Topic", contributions: [], poll: @reference.relevance_poll, topics: [], own_vote: @reference.relevance_poll.own_vote %>
+			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Relevance of Poll To Topic", contributions: [], poll: @reference.relevance_poll, topics: [], own_vote: @reference.relevance_poll.own_vote %>
 		</main>
 	</div>
 
