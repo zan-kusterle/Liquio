@@ -87,7 +87,7 @@ defmodule Liquio.HtmlIdentityController do
 		|> Enum.sort(& &1.trust_identity.username > &2.trust_identity.username)
 
 		polls = voted_polls
-		|> Enum.flat_map(& expand_poll(&1, calculation_opts))
+		|> Enum.flat_map(&expand_poll/1)
 		|> Enum.reduce(%{}, fn(poll, acc) ->
 			existing_poll = Map.get(acc, poll.id, %{})
 			merged_poll = Map.merge(existing_poll, poll, fn k, v1, v2 ->
@@ -198,7 +198,7 @@ defmodule Liquio.HtmlIdentityController do
 		}, poll), data)
 	end
 
-	defp expand_poll(poll, calculation_opts) do
+	defp expand_poll(poll) do
 		case poll.kind do
 			"custom" ->
 				[prepare_poll(poll, %{:choice => poll.choice})]

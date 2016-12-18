@@ -77,7 +77,7 @@ defmodule Liquio.LandingController do
 					for_choice: 0.0,
 					references: [%{
 						choice_type: "probability",
-						title:"2013: Complete Genes May Pass from Food to Human Blood by Sándor Spisák, Norbert Solymosi, Péter Ittzés, András Bodor, Dániel Kondor, Gábor Vattay, Barbara K. Barták, Ferenc Sipos, Orsolya Galamb, Zsolt Tulassay, Zoltán Szállási, Simon Rasmussen, Thomas Sicheritz-Ponten, Søren Brunak, Béla Molnár and István Csabai. Is this article credible?",
+						title: "2013: Complete Genes May Pass from Food to Human Blood by Sándor Spisák, Norbert Solymosi, Péter Ittzés, András Bodor, Dániel Kondor, Gábor Vattay, Barbara K. Barták, Ferenc Sipos, Orsolya Galamb, Zsolt Tulassay, Zoltán Szállási, Simon Rasmussen, Thomas Sicheritz-Ponten, Søren Brunak, Béla Molnár and István Csabai. Is this article credible?",
 						topics: ["science", "nature", "gmo"],
 						for_choice: 1.0,
 						references: []
@@ -280,6 +280,7 @@ defmodule Liquio.LandingController do
 		examples = Enum.map(examples, fn(example) ->
 			poll = Poll.force_get(example.choice_type, example.title)
 			poll
+			|> Map.put(:fa_icon, example.fa_icon)
 			|> Map.put(:topics, example.topics)
 			|> Map.put(:results, Poll.calculate(poll, calculate_opts))
 			|> Map.put(:num_references, Enum.count(example.references))
