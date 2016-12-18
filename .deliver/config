@@ -1,5 +1,3 @@
-USING_DISTILLERY=true
-
 APP="liquio"
 
 BUILD_HOST="104.197.215.238"

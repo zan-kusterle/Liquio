@@ -7,19 +7,7 @@
 	<% end %>
 <% else %>
 	<div class="score-box" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;">
-		<div class="number">
-			<%= if @poll.results.mean != nil do %>
-				<%= if @poll.choice_type == "probability" do %>
-					<%= round(@poll.results.mean * 100) %><span class="percent">%</span>
-				<% else %>
-					<%= number_format(@poll.results.mean) %>
-				<% end %>
-			<% else %>
-				?
-			<% end %>
-		</div>
-		<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
-
+		
 		<%= if assigns[:editable] != nil and @editable do %>
 			<% current_choice = if @own_vote do @own_vote.data.choice["main"] else 0.5 end %>
 
@@ -27,12 +15,17 @@
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 				
 				<%= if @poll.choice_type == "probability" do %>
+					<div class="number"><%= current_choice %></div>
+					<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 					<div class="range">
 						<input type="range" name="choice" id="choice_range" value="<%= current_choice %>" min="0" max="1" step="any" oninput="let o = document.getElementsByClassName('number')[1]; o.innerHTML = Math.round(100 * choice_range.value) + '%'" style="width: 90%; margin: 0 auto;" />
 					</div>
 				<% else %>
 					<%= if @poll.choice_type == "quantity" do %>
-						<input type="text" class="score-input" name="choice"<%= if @own_vote != nil do %> value="<%= number_format_simple(current_choice, 10) %>"<% end %> />
+						<div class="number">
+							<input type="text" class="score-input" name="choice"<%= if @own_vote != nil do %> value="<%= number_format_simple(current_choice, 10) %>"<% end %> />
+						</div>
+						<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>	
 					<% else %>
 						<textarea class="score-input" name="choice" style="height: 150px; resize: vertical; text-align: left;" placeholder="2010: 10"><%= if @own_vote != nil do %><%= @own_vote.data.choice |> Enum.map(fn({k, v}) -> "#{k}: #{number_format_simple v}" end) |> Enum.join("\n\r") %><% end %></textarea>
 					<% end %>
@@ -48,6 +41,19 @@
 				</form>
 				<a onclick="remove_vote_form.submit()" style="display: block; margin-top: 6px; font-size: 12px;">Remove vote</a>
 			<% end %>
+		<% else %>
+			<div class="number">
+				<%= if @poll.results.mean != nil do %>
+					<%= if @poll.choice_type == "probability" do %>
+						<%= round(@poll.results.mean * 100) %><span class="percent">%</span>
+					<% else %>
+						<%= number_format(@poll.results.mean) %>
+					<% end %>
+				<% else %>
+					?
+				<% end %>
+			</div>
+			<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 		<% end %>
 	</div>
 <% end %>
