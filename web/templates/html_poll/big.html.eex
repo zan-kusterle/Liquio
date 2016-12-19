@@ -2,6 +2,12 @@
     <%= for topic <- @topics do %>
         <a href="<%= html_explore_path(@conn, :show, topic.name) %>/top" class="topic">#<%= topic.name %></a>
     <% end %>
+
+    <%= if @show_actions do %>
+        <form id="topic_form" style="display: inline;">
+            <paper-input label="New topic name" name="topic_name" style="display: inline-block; width: 200px; text-align: left;"></paper-input>
+        </form>
+    <% end %>
 </h3>
 
 <%= if assigns[:link] != nil and @link do %>

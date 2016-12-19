@@ -35,23 +35,35 @@ defmodule Liquio.HtmlPollController do
 		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
 		:user => {Plugs.CurrentUser, [require: false]}
 	},
-	def show(conn, %{:poll => poll, :datetime => datetime, :user => user}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
-		poll = prepare_poll(poll, calculation_opts)
-		own_vote = if user do Vote.current_by(poll, user) else nil end
-		conn
-		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render("show.html",
-			title: poll.title,
-			poll: poll,
-			contributions: prepare_contributions(poll, calculation_opts),
-			own_vote: own_vote,
-			own_poll: poll |> Map.put(:results, if own_vote do Poll.results_for_contribution(poll, %{:choice => own_vote.data.choice}) else nil end),
-			datetime: datetime,
-			topics: Topic.for_poll(poll, calculation_opts) |> Topic.filter_visible,
-			references: prepare_references(poll, calculation_opts),
-			inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
-			calculation_opts: calculation_opts)
+	def show(conn, params = %{:poll => poll, :datetime => datetime, :user => user}) do
+		if Map.has_key?(params, "topic_name") do
+			topic_name = params["topic_name"]
+
+			if String.length(topic_name) > 0 do
+				conn
+				|> redirect(to: html_explore_html_topic_path(conn, :reference, topic_name, poll.id))
+			else
+				conn
+				|> redirect(to: html_poll_path(conn, :show, poll.id))
+			end
+		else
+			calculation_opts = get_calculation_opts_from_conn(conn)
+			poll = prepare_poll(poll, calculation_opts)
+			own_vote = if user do Vote.current_by(poll, user) else nil end
+			conn
+			|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+			|> render("show.html",
+				title: poll.title,
+				poll: poll,
+				contributions: prepare_contributions(poll, calculation_opts),
+				own_vote: own_vote,
+				own_poll: poll |> Map.put(:results, if own_vote do Poll.results_for_contribution(poll, %{:choice => own_vote.data.choice}) else nil end),
+				datetime: datetime,
+				topics: Topic.for_poll(poll, calculation_opts) |> Topic.filter_visible,
+				references: prepare_references(poll, calculation_opts),
+				inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
+				calculation_opts: calculation_opts)
+		end
 	end)
 
 	plug :put_layout, "minimal.html" when action in [:embed]

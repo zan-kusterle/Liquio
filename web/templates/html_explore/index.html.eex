@@ -41,4 +41,9 @@
 			<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
 		</div>
 	<% end %>
+
+	<form id="poll_form">
+		<paper-input label="Poll URL" name="poll_url"></paper-input>
+		<paper-button onclick="poll_form.submit()">View poll in topic</paper-button>
+	</form>
 </main>
