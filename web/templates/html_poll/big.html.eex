@@ -4,7 +4,7 @@
     <% end %>
 
     <%= if assigns[:add_topic] != nil and @add_topic do %>
-        <form id="topic_form" style="display: inline;">
+        <form id="topic_form" style="display: inline; margin-left: 10px;">
             <paper-input label="New topic name" name="topic_name" style="display: inline-block; width: 200px; text-align: left;"></paper-input>
         </form>
     <% end %>
@@ -15,7 +15,6 @@
 <% else %>
     <h1 class="title"><%= if assigns[:title] do @title else @poll.title end %></h1>
 <% end %>
-
 
 <div class="score-container">
     <%= render "score.html", poll: @poll %>

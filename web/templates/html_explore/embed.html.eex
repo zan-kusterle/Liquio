@@ -11,7 +11,7 @@
 					results: (if poll.latest_default_results do Liquio.Poll.unserialize_results(poll.latest_default_results) else nil end) %>
 			</div>
 
-			<div style="display: inline-block; vertical-align: middle; margin-left: 25px;">
+			<div class="main-content" style="display: inline-block; vertical-align: middle; margin-left: 25px;">
 				<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
 
 				<%= if poll.latest_default_results do %>
