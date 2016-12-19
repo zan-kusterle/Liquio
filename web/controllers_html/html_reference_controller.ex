@@ -42,9 +42,9 @@ defmodule Liquio.HtmlReferenceController do
 		|> render("show.html",
 			title: poll.title || "Liquio",
 			reference: reference,
-			poll: poll |> Map.put(:topics, Topic.for_poll(poll, calculation_opts)) |> Map.put(:results, Poll.calculate(poll, calculation_opts)),
+			poll: poll |> Map.put(:topics, Topic.for_poll(poll, calculation_opts) |> Topic.filter_visible) |> Map.put(:results, Poll.calculate(poll, calculation_opts)),
 			references: Reference.for_poll(poll, calculation_opts),
-			reference_poll: reference_poll |> Map.put(:topics, Topic.for_poll(reference_poll, calculation_opts)) |> Map.put(:results, Poll.calculate(reference_poll, calculation_opts)),
+			reference_poll: reference_poll |> Map.put(:topics, Topic.for_poll(reference_poll, calculation_opts) |> Topic.filter_visible) |> Map.put(:results, Poll.calculate(reference_poll, calculation_opts)),
 			own_vote: own_vote,
 			own_poll: reference.for_choice_poll |> Map.put(:results, if own_vote do Poll.results_for_contribution(reference.for_choice_poll, %{:choice => own_vote.data.choice}) else nil end),
 			calculation_opts: calculation_opts)

@@ -16,7 +16,7 @@
 
 				<%= if poll.latest_default_results do %>
 					<div class="topics">
-						<%= for topic <- poll.latest_default_results["topics"] do %>
+						<%= for topic <- poll.latest_default_results["topics"] |> Liquio.Topic.filter_visible do %>
 							<a href="<%= html_explore_path(@conn, :show, topic) %>/top" style="margin-right: 15px; font-size: 13px;">#<%= topic %></a>
 						<% end %>
 					</div>

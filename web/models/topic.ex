@@ -46,9 +46,6 @@ defmodule Liquio.Topic do
 			topics = from(t in Topic, where: t.poll_id == ^poll.id, order_by: t.inserted_at)
 			|> Repo.all
 			|> Repo.preload([:relevance_poll, :poll])
-			|> Enum.filter(fn(topic) ->
-				not String.starts_with?(topic.name, "(hidden)")
-			end)
             |> Enum.map(fn(topic) ->
                 relevance_result = Poll.calculate(topic.relevance_poll, calculation_opts)
 				Map.put(topic, :relevance_result, relevance_result)
@@ -92,5 +89,15 @@ defmodule Liquio.Topic do
 			Cachex.set(:results_cache, cache_key, topics, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
 			topics
 		end
+	end
+	
+	def filter_visible(topics) do
+		topics |> Enum.filter(fn(topic) ->
+			name = case topic do
+				%Topic{:name => name} -> name
+				_ -> topic
+			end
+			not String.starts_with?(name, "(hidden)")
+		end)
 	end
 end
