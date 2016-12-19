@@ -1,7 +1,7 @@
 <p class="heading"><%= @poll.choice_type |> String.replace("_", " ") |> String.upcase %> POLL</p>
 
 <main role="main" class="main">
-	<%= render "big.html", show_actions: true, conn: @conn, contributions: @contributions, poll: @poll, topics: @topics, own_vote: @own_vote %>
+	<%= render "big.html", show_actions: true, add_topic: true, conn: @conn, contributions: @contributions, poll: @poll, topics: @topics, own_vote: @own_vote %>
 	
 	<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 		<h2>Fine tune how results are calculated</h2>

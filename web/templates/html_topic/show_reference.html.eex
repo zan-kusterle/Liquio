@@ -20,7 +20,7 @@
 		<p class="heading">RELEVANCE POLL</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Relevance of Poll To Topic", contributions: [], poll: @reference.relevance_poll, topics: [], own_vote: @reference.relevance_poll.own_vote %>
+			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Poll Is Relevant To Topic", contributions: [], poll: @reference.relevance_poll, topics: [], own_vote: @reference.relevance_poll.own_vote %>
 		</main>
 	</div>
 

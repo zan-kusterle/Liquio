@@ -3,7 +3,7 @@
         <a href="<%= html_explore_path(@conn, :show, topic.name) %>/top" class="topic">#<%= topic.name %></a>
     <% end %>
 
-    <%= if @show_actions do %>
+    <%= if assigns[:add_topic] != nil and @add_topic do %>
         <form id="topic_form" style="display: inline;">
             <paper-input label="New topic name" name="topic_name" style="display: inline-block; width: 200px; text-align: left;"></paper-input>
         </form>
