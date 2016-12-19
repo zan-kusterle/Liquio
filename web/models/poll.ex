@@ -5,6 +5,7 @@ defmodule Liquio.Poll do
 	alias Liquio.Poll
 	alias Liquio.Vote
 	alias Liquio.Topic
+	alias Liquio.ResultsCache
 	alias Liquio.Results.GetData
 	alias Liquio.Results.CalculateContributions
 	alias Liquio.Results.AggregateContributions
@@ -131,17 +132,18 @@ defmodule Liquio.Poll do
 	end
 
 	def calculate(poll, calculation_opts) do
-		cache_key = {
-			"results",
-			Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
-			calculation_opts.trust_metric_url,
-			calculation_opts.vote_weight_halving_days,
-			calculation_opts.minimum_voting_power,
-			poll.id
+		key = {
+			{"results", poll.id},
+			{
+				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
+				calculation_opts.trust_metric_url,
+				calculation_opts.vote_weight_halving_days,
+				calculation_opts.minimum_voting_power
+			}
 		}
-		cache = Cachex.get!(:results_cache, cache_key)
-		if cache do
-			cache
+		cache_results = ResultsCache.get(key)
+		if cache_results do
+			cache_results
 		else
 			vote_weight_halving_days = if poll.kind == "custom" do calculation_opts.vote_weight_halving_days else nil end
 			minimum_voting_power = if poll.kind == "custom" do calculation_opts.minimum_voting_power else 0 end
@@ -168,21 +170,21 @@ defmodule Liquio.Poll do
 				end
 			end
 
-			Cachex.set(:results_cache, cache_key, results, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
-			results
+			ResultsCache.set(key, results)
 		end
 	end
 
 	def calculate_contributions(poll, calculation_opts) do
-		cache_key = {
-			"contributions",
-			Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
-			calculation_opts.trust_metric_url,
-			poll.id
+		key = {
+			{"contributions", poll.id},
+			{
+				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
+				calculation_opts.trust_metric_url,
+			}
 		}
-		cache = Cachex.get!(:results_cache, cache_key)
-		if cache do
-			cache
+		cache_results = ResultsCache.get(key)
+		if cache_results do
+			cache_results
 		else
 			topics = Topic.for_poll(poll, calculation_opts)
 			|> Enum.map(& &1.name)
@@ -193,8 +195,7 @@ defmodule Liquio.Poll do
 
 			contributions = CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, topics)
 
-			Cachex.set(:results_cache, cache_key, contributions, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
-			contributions
+			ResultsCache.set(key, contributions)
 		end
 	end
 

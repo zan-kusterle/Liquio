@@ -23,6 +23,7 @@ defmodule Liquio.Vote do
 	alias Liquio.Vote
 	alias Liquio.VoteData
 	alias Liquio.Reference
+	alias Liquio.Topic
 
 	schema "votes" do
 		belongs_to :poll, Liquio.Poll
@@ -90,10 +91,16 @@ defmodule Liquio.Vote do
 	defp invalidate_results_cache(poll) do
 		Cachex.set(:results_cache, {"results", poll.id}, nil)
 		Cachex.set(:results_cache, {"contributions", poll.id}, nil)
-		if poll.kind == "is_reference" do
-			reference = Repo.get_by(Reference, for_choice_poll_id: poll.id)
-			Cachex.set(:results_cache, {"references", reference.poll_id}, nil)
-			Cachex.set(:results_cache, {"inverse_references", reference.reference_poll_id}, nil)
+		case poll.kind do
+			"is_reference" ->
+				reference = Repo.get_by(Reference, for_choice_poll_id: poll.id)
+				Cachex.set(:results_cache, {"references", reference.poll_id}, nil)
+				Cachex.set(:results_cache, {"inverse_references", reference.reference_poll_id}, nil)
+			"is_topic" ->
+				topic = Repo.get_by(Topic, relevance_poll_id: poll.id)
+				Cachex.set(:results_cache, {"topic_polls", topic.name}, nil)
+				Cachex.set(:results_cache, {"topics", topic.poll_id}, nil)
+			_ -> nil
 		end
 	end
 

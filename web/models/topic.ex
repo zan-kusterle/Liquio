@@ -4,6 +4,7 @@ defmodule Liquio.Topic do
 	alias Liquio.Repo
 	alias Liquio.Topic
 	alias Liquio.Poll
+	alias Liquio.ResultsCache
 
 	schema "topics" do
         field :name, :string
@@ -32,16 +33,17 @@ defmodule Liquio.Topic do
 	end
 
 	def for_poll(poll, calculation_opts) do
-		cache_key = {
-			"topics",
-			Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
-			calculation_opts.trust_metric_url,
-			calculation_opts.vote_weight_halving_days,
-			poll.id
+		key = {
+			{"topics", poll.id},
+			{
+				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
+				calculation_opts.trust_metric_url,
+				calculation_opts.vote_weight_halving_days
+			}
 		}
-		cache = Cachex.get!(:results_cache, cache_key)
-		if cache do
-			cache
+		cache_results = ResultsCache.get(key)
+		if cache_results do
+			cache_results
 		else
 			topics = from(t in Topic, where: t.poll_id == ^poll.id, order_by: t.inserted_at)
 			|> Repo.all
@@ -56,22 +58,22 @@ defmodule Liquio.Topic do
             end)
 			|> Enum.sort(&(&1.relevance_result.mean > &2.relevance_result.mean))
 
-			Cachex.set(:results_cache, cache_key, topics, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
-			topics
+			ResultsCache.set(key, topics)
 		end
 	end
 
 	def for_name(name, calculation_opts) do
-		cache_key = {
-			"topic_polls",
-			Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
-			calculation_opts.trust_metric_url,
-			calculation_opts.vote_weight_halving_days,
-			name
+		key = {
+			{"topic_polls", name},
+			{
+				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
+				calculation_opts.trust_metric_url,
+				calculation_opts.vote_weight_halving_days,
+			}
 		}
-		cache = Cachex.get!(:results_cache, cache_key)
-		if cache do
-			cache
+		cache_results = ResultsCache.get(key)
+		if cache_results do
+			cache_results
 		else
 			topics = from(t in Topic, where: t.name == ^name, order_by: t.inserted_at)
 			|> Repo.all
@@ -86,8 +88,7 @@ defmodule Liquio.Topic do
             end)
 			|> Enum.sort(&(&1.relevance_result.mean > &2.relevance_result.mean))
 
-			Cachex.set(:results_cache, cache_key, topics, [ttl: :timer.seconds(10 * Application.get_env(:liquio, :results_cache_seconds))])
-			topics
+			ResultsCache.set(key, topics)
 		end
 	end
 	
