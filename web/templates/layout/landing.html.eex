@@ -22,6 +22,12 @@
 		<title>Liquio</title>
 		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
 
+		<script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+		<link rel="import" href="<%= static_path(@conn, "/polymer/main.html") %>">
+
+		<script src="/bower_components/moment/min/locales.js"></script>
+
 		<%= render "google_analytics.html", conn: @conn %>
 	</head>
 

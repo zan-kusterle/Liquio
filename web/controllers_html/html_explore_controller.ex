@@ -50,6 +50,7 @@ defmodule Liquio.HtmlExploreController do
 				url: "/topics/#{topic |> String.downcase}",
 				sort: sort,
 				polls: polls,
+				topic_name: topic,
 				identities: [])
 		end
 	end

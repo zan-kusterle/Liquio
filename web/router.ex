@@ -36,6 +36,7 @@ defmodule Liquio.Router do
 		pipe_through :browser
 
 		get "/", LandingController, :index
+		get "/learn", LandingController, :learn
 
 		resources "/login", HtmlLoginController, only: [:index, :show, :create]
 		get "/logout", HtmlLoginController, :delete

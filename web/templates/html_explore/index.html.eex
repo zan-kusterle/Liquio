@@ -24,6 +24,9 @@
 
 			<div style="display: inline-block; vertical-align: middle; margin-left: 25px;">
 				<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
+				<%= if assigns[:topic_name] do %>
+					<a href="/topics/<%= @topic_name %>/polls/<%= poll.id %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
+				<% end %>
 
 				<%= if poll.latest_default_results do %>
 					<div class="topics">

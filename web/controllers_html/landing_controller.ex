@@ -289,6 +289,10 @@ defmodule Liquio.LandingController do
 		render conn, "index.html", examples: examples, polls: polls
 	end
 
+	def learn(conn, _params) do
+		render conn, "learn.html"
+	end
+
 	def traverse_examples(examples, identity) do
 		Enum.flat_map(examples, fn(example) ->
 			poll = Poll.force_get(example.choice_type, example.title)

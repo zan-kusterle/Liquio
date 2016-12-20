@@ -1,6 +1,9 @@
 <h3 class="topics">
     <%= for topic <- @topics do %>
-        <a href="<%= html_explore_path(@conn, :show, topic.name) %>/top" class="topic">#<%= topic.name %></a>
+        <p class="topic">
+            <a href="<%= html_explore_path(@conn, :show, topic.name) %>/top">#<%= topic.name %></a>
+            <a href="/topics/<%= topic.name %>/polls/<%= @poll.id %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
+        </p>
     <% end %>
 
     <%= if assigns[:add_topic] != nil and @add_topic do %>
