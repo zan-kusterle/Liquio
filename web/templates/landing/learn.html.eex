@@ -1,0 +1,28 @@
+<div class="splash">
+	<a href="/"><img src="/images/logo.svg" alt="Liquio" class="logo"></img></a>
+	<p class="tagline">A liquid democracy where anyone can vote on anything.</p>
+</div>
+
+<h1>How it works</h1>
+
+<div class="section">
+    Trust metrics, moderation free
+</div>
+
+<div class="section">
+    Delegations, useful for objective polls
+</div>
+
+<div class="section">
+    Topics, references
+</div>
+
+<div class="section">
+    Prevents cherry picking of facts and voters
+</div>
+
+<div class="section">
+    Liquio Link
+</div>
+
+
