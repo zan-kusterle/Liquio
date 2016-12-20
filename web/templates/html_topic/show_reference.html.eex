@@ -12,7 +12,7 @@
 		<p class="heading">POLL</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, contributions: [], poll: @poll, topics: [] %>
+			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, contributions: [], poll: @poll, topics: @poll.topics %>
 		</main>
 	</div>
 

@@ -2,7 +2,9 @@
     <%= for topic <- @topics do %>
         <p class="topic">
             <a href="<%= html_explore_path(@conn, :show, topic.name) %>/top">#<%= topic.name %></a>
-            <a href="/topics/<%= topic.name %>/polls/<%= @poll.id %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
+            <%= if @show_actions do %>
+                <a href="/topics/<%= topic.name %>/polls/<%= @poll.id %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
+            <% end %>
         </p>
     <% end %>
 
