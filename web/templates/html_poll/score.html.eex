@@ -6,8 +6,7 @@
 		<div class="chart-turnout"><%= round(@poll.results.total) %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 	<% end %>
 <% else %>
-	<div class="score-box" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;">
-		
+	<div class="score-box" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;<%= if assigns[:editable] != nil and @editable do %> padding: 5px 0px;<% end %>">
 		<%= if assigns[:editable] != nil and @editable do %>
 			<% current_choice = if @own_vote do @own_vote.data.choice["main"] else 0.5 end %>
 
@@ -15,11 +14,14 @@
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 				
 				<%= if @poll.choice_type == "probability" do %>
-					<div class="number"><%= round(100 * current_choice) %><span class="percent">%</span></div>
-					<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 					<div class="range">
-						<input type="range" name="choice" id="choice_range" value="<%= current_choice %>" min="0" max="1" step="any" oninput="let o = document.getElementsByClassName('number')[1]; o.innerHTML = Math.round(100 * choice_range.value) + '%'" style="width: 90%; margin: 0 auto;" />
+						<input type="range" name="choice" id="choice_range" value="<%= current_choice %>" min="0" max="1" step="any" oninput="let o = document.getElementsByClassName('number-value')[1]; o.innerHTML = Math.round(100 * choice_range.value)" style="width: 90%; margin: 0 auto;" />
 					</div>
+					<div class="number">
+						<span class="number-value"><%= round(100 * current_choice) %></span>
+						<span class="percent">%</span>
+					</div>
+					<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 				<% else %>
 					<%= if @poll.choice_type == "quantity" do %>
 						<div class="number">
@@ -32,20 +34,24 @@
 				<% end %>
 			</form>
 
-			<paper-button raised onclick="vote_form.submit()" style="display: block; margin: 0 auto; width: 80%;">Cast vote</paper-button>
+			<div class="links vote-links">
+				<a onclick="vote_form.submit()" class="vote-action"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Cast</a>
 
-			<%= if @own_vote do %>
-				<form id="remove_vote_form" action="/polls/<%= @poll.id %>/vote" method="POST">
-					<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-					<input type="hidden" name="choice" value="null" />
-				</form>
-				<a onclick="remove_vote_form.submit()" style="display: block; margin-top: 6px; font-size: 12px;">Remove vote</a>
-			<% end %>
+				<%= if @own_vote do %>
+					<a onclick="remove_vote_form.submit()" class="vote-action"><i class="fa fa-remove" aria-hidden="true" style="margin-right: 2px;"></i> Remove</a>
+
+					<form id="remove_vote_form" action="/polls/<%= @poll.id %>/vote" method="POST" style="display: none;">
+						<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+						<input type="hidden" name="choice" value="null" />
+					</form>
+				<% end %>
+			</div>
 		<% else %>
 			<div class="number">
 				<%= if @poll.results.mean != nil do %>
 					<%= if @poll.choice_type == "probability" do %>
-						<%= round(@poll.results.mean * 100) %><span class="percent">%</span>
+						<span class="number-value"><%= round(@poll.results.mean * 100) %></span>
+						<span class="percent">%</span>
 					<% else %>
 						<%= number_format(@poll.results.mean) %>
 					<% end %>

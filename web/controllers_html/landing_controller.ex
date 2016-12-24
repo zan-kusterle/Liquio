@@ -186,36 +186,27 @@ defmodule Liquio.LandingController do
 					}]
 				}, %{
 					choice_type: "probability",
-					title: "GM Food Cause Severe Stomach Inflammation and Enlarged Uteri in Pigs",
+					title: "GMO[Genetically Modified Organisms] Risk Assessment Is Based on Little Scientific Evidence In the Sense That the Testing Methods Recommended Are Not Adequate to Ensure Safety",
 					topics: ["science", "nature", "gmo"],
 					for_choice: 0.0,
 					references: [%{
 						choice_type: "probability",
-						title: "2013: A Long-Term Toxicology Study on Pigs Fed a Combined Genetically Modified (GM) Soy and GM Maize Diet by Judy A. Carman, Howard R. Vlieger, Larry J. Ver Steeg, Verlyn E. Sneller, Garth W. Robinson, Catherine A. Clinch-Jones, Julie I. Haynes and John W. Edwards. Is this study credible?",
-						topics: ["science", "nature", "gmo"],
-						for_choice: 1.0,
-						references: []
-					}]
-				}, %{
-					choice_type: "probability",
-					title: "GMO Risk Assessment Is Based on Little Scientific Evidence in the Sense That the Testing Methods Recommended Are Not Adequate to Ensure Safety",
-					topics: ["science", "nature", "gmo"],
-					for_choice: 0.0,
-					references: [%{
-						choice_type: "probability",
-						title: "2004: Risk Assessment of Genetically Modified Crops For Nutrition and Health by Javier A Magaña-Gómez and Ana M Calderón de la Barca. Is this article credible?",
+						title: "Risk Assessment of Genetically Modified Crops For Nutrition and Health, 2004 (Javier A Magaña-Gómez and Ana M Calderón de la Barca)",
+						spectrum: "Quality",
 						topics: ["science", "nature", "gmo"],
 						for_choice: 1.0,
 						references: []
 					}, %{
 						choice_type: "probability",
-						title: "2004: Reese W, Schubert D — Safety Testing and Regulation of Genetically Engineered Foods. Is this book legit?",
+						title: "Safety Testing And Regulation of GM[Genetically Modified] Food, 2004 (Reese W, Schubert D)",
+						spectrum: "Quality",
 						topics: ["science", "nature", "gmo"],
 						for_choice: 1.0,
 						references: []
 					}, %{
 						choice_type: "probability",
-						title: "2002: Schubert D — A Different Perspective on GM food. Is this book legit?",
+						title: "A Different Perspective On GM[Genetically Modified] Food, 2002 (Schubert D)",
+						spectrum: "Quality",
 						topics: ["science", "nature", "gmo"],
 						for_choice: 1.0,
 						references: []

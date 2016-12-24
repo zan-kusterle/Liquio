@@ -20,13 +20,47 @@
 		word-wrap: break-word;
 	}
 
+	#vote_choice {
+		transition: visibility 0s, height 0.25s linear, opacity 0.5s ease-in;
+	}
+
+	.view-votes {
+		width: calc(~"100% + 60px");
+		background: rgba(31,141,214, 0.8);
+		margin: 20px -30px -30px -30px;
+		color: white;
+		font-size: 12px;
+		text-transform: lowercase;
+		opacity: 1;
+		height: 40px;
+		line-height: 40px;
+		transition: all 0.25s ease-in;
+
+		i {
+			margin-left: 5px;
+			font-size: 16px;
+			vertical-align: middle;
+		}
+	}
+	.view-votes:hover {
+		background: rgba(31,141,214, 1);
+	}
+
+	.vote-links {
+		opacity: 0.8;
+	}
+
+	.vote-action {
+		font-size: 13px;
+		display: inline-block;
+	}
+
 	.score-container {
 		margin-top: 30px;
 		width: 100%;
 
 		.score-box {
-			display: inline-block;
-			margin: 0 10px;
+			display: block;
 		}
 
 		.chart-turnout {

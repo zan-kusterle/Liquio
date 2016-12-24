@@ -6,7 +6,6 @@ defmodule Liquio.Repo.Migrations.CreatePoll do
 			add :kind, :string, null: false
 			add :choice_type, :string, null: false
 			add :title, :string, size: 5000
-			add :topics, {:array, :string}
 			add :latest_default_results, :map, null: true
 
 			timestamps
