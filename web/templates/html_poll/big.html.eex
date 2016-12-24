@@ -26,7 +26,7 @@
 
     <%= if @show_actions do %>
         <a style="display: inline-block; font-size: 12px; margin-top: 8px; color: #4aa5f3; font-weight: bold;" onclick="vote_choice.style.height = '150px'; vote_choice.style.opacity = 1; vote_choice.style['margin-top'] = '20px'; vote_choice.style.visibility = 'visible'; this.style.display = 'none';">
-            vote <i class="fa fa-sticky-note" aria-hidden="true" style="margin-left: 2px;"></i>
+            Vote <i class="fa fa-sticky-note" aria-hidden="true" style="margin-left: 2px;"></i>
         </a>
 
         <div id="vote_choice" style="margin-top: 0px; height: 0px; opacity: 0; visibility: hidden;">
@@ -38,19 +38,19 @@
 
 <%= if @show_actions do %>
     <%= unless Enum.empty? @contributions do %>
-        <div class="view-votes" onclick="contributions_table.style.display = 'table'; this.style.height = 0; this.style.opacity = 0; setTimeout(function() {contributions_table.classList.toggle('shown');}, 0);">
+        <div class="view-votes" onclick="contributions_table.style.display = 'table'; this.style.height = 0; this.style.opacity = 0; setTimeout(function() {contributions_table.classList.add('shown');}, 0);">
             View votes
             <i class="fa fa-long-arrow-down" aria-hidden="true" style="margin-right: 4px;"></i> 
         </div>
     <% end %>
 
     <%= unless Enum.empty? @contributions do %>
-        <table class="contributions" id="contributions_table" style="margin-top: 20px;">
+        <table class="contributions" id="contributions_table">
             <tr class="contribution">
                 <td class="column-name username">Username</td>
-                <td class="column-name contribution">Contribution</td>
-                <td class="column-name choice">Choice</td>
-                <td class="column-name date">Date</td>
+                <td class="column-name contribution"></td>
+                <td class="column-name choice"></td>
+                <td class="column-name date"></td>
             </tr>
             <% total_power = @contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
             <% max_ratio = @contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
