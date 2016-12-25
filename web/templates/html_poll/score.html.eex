@@ -35,7 +35,7 @@
 			</form>
 
 			<div class="links vote-links">
-				<a onclick="vote_form.submit()" class="vote-action"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Set</a>
+				<a onclick="vote_form.submit()" class="vote-action"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Vote</a>
 
 				<%= if @own_vote do %>
 					<a onclick="remove_vote_form.submit()" class="vote-action" style="border-left: 2px solid rgba(0,0,0,0.08);">Remove <i class="fa fa-remove" aria-hidden="true" style="margin-right: 2px;"></i></a>

@@ -64,10 +64,40 @@
 		</paper-dialog>
 
 		<paper-dialog id="votes_dialog" style="width: 800px;">
-			<h2>Votes cast</h2>
+			<h2>Votes made</h2>
 
 			<paper-dialog-scrollable>
-				<%= render "votes.html", groups: @vote_groups, is_human_votes: @is_human_votes %>
+				<div style="text-align: left;">
+					<%= if Enum.empty?(@vote_groups) and Enum.empty?(@is_human_votes) do %>
+						<h2 class="identity-no-items">There are no votes here.</h2>
+					<% else %>
+						<%= for group <- @vote_groups do %>
+							<div>
+								<%= for poll <- group do %>
+									<div style="margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
+										<%= if poll.reference != nil do %>
+											<div style="margin-right: 10px; display: inline-block; opacity: 0.7;">
+												<%= render Liquio.HtmlPollView, "score_reference.html",
+													choice_type: poll.reference.poll.choice_type,
+													results: Liquio.Poll.results_for_contribution(poll.reference.poll, %{:choice => poll.reference.for_choice}) %>
+											</div>
+										<% end %>
+
+										<%= if poll.choice != nil do %>
+											<div style="margin-right: 10px; display: inline-block;">
+												<%= render Liquio.HtmlPollView, "score_reference.html",
+													choice_type: poll.choice_type,
+													results: Liquio.Poll.results_for_contribution(poll, %{:choice => poll.choice}) %>
+											</div>
+										<% end %>
+
+										<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
+									</div>
+								<% end %>
+							</div>
+						<% end %>
+					<% end %>
+				</div>
 			</paper-dialog-scrollable>
 
 			<div class="buttons">
