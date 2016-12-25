@@ -5,7 +5,7 @@ defmodule Liquio.Helpers.PollHelper do
 		poll = if opts[:from_default_cache] do
 			if poll.latest_default_results do
 				results = Liquio.Poll.unserialize_results(poll.latest_default_results)
-				topics = poll.latest_default_results["topics"] |> Enum.map(& %{:name => &1})
+				topics = poll.latest_default_results["topics"] |> Enum.map(& %Topic{:name => &1}) |> Topic.filter_visible
 				poll |> Map.merge(%{
 					:topics => topics,
 					:contributions => nil,
