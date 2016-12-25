@@ -48,4 +48,12 @@ defmodule Liquio.Helpers.PollHelper do
 		
 		poll
 	end
+
+	def ensure_rounding_sums_to(numbers, precision, target) do
+		rounded = Enum.map(numbers, & Float.round(&1, precision))
+		off = target - Enum.sum(rounded)
+		numbers
+		|> Enum.sort_by(& Float.round(&1, precision) - &1)
+		|> Enum.map(& Float.round(&1, precision))
+	end
 end
