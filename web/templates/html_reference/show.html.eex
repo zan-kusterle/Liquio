@@ -3,14 +3,14 @@
 		<p class="heading">POLL</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @poll , topics: @poll.topics %>
+			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @poll %>
 		</main>
 	</div>
 	<div class="pure-u-1-2" style="padding-left: 10px;">
 		<p class="heading">REFERENCE POLL</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @reference_poll , topics: @reference_poll.topics %>
+			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @reference_poll %>
 		</main>
 	</div>
 
@@ -18,7 +18,7 @@
 		<p class="heading">EVIDENCE FOR CHOICE</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Choice For Which Reference Poll Provides Evidence", contributions: @reference.for_choice_poll.contributions, poll: @reference.for_choice_poll, topics: [], own_vote: @own_vote %>
+			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Choice For Which Reference Poll Provides Evidence", contributions: @for_choice_poll.contributions, poll: @for_choice_poll, topics: [] %>
 		</main>
 	</div>
 

@@ -1,6 +1,8 @@
 defmodule Liquio.HtmlReferenceController do
 	use Liquio.Web, :controller
 
+	alias Liquio.Helpers.PollHelper
+
 	def index(conn, %{"html_poll_id" => poll_id, "reference_poll_id" => reference_poll_url}) do
 		url = URI.parse(reference_poll_url)
 		reference_poll_id =
@@ -28,25 +30,15 @@ defmodule Liquio.HtmlReferenceController do
 	},
 	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
-		reference = poll
-		|> Reference.get(reference_poll)
-		|> Repo.preload([:for_choice_poll, :reference_poll, :poll])
-		contributions = reference.for_choice_poll |> Poll.calculate_contributions(calculation_opts) |> Enum.map(fn(contribution) ->
-			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
-		end)
-		results = Poll.calculate(reference.for_choice_poll, calculation_opts)
-		reference = Map.put(reference, :for_choice_poll, reference.for_choice_poll |> Map.put(:results, results) |> Map.put(:contributions, contributions))
-		own_vote = if user do Vote.current_by(reference.for_choice_poll, user) else nil end
+		reference = Reference.get(poll, reference_poll) |> Repo.preload([:for_choice_poll])
+
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("show.html",
 			title: poll.title || "Liquio",
-			reference: reference,
-			poll: poll |> Map.put(:topics, Topic.for_poll(poll, calculation_opts) |> Topic.filter_visible) |> Map.put(:results, Poll.calculate(poll, calculation_opts)),
-			references: Reference.for_poll(poll, calculation_opts),
-			reference_poll: reference_poll |> Map.put(:topics, Topic.for_poll(reference_poll, calculation_opts) |> Topic.filter_visible) |> Map.put(:results, Poll.calculate(reference_poll, calculation_opts)),
-			own_vote: own_vote,
-			own_poll: reference.for_choice_poll |> Map.put(:results, if own_vote do Poll.results_for_contribution(reference.for_choice_poll, %{:choice => own_vote.data.choice}) else nil end),
-			calculation_opts: calculation_opts)
+			calculation_opts: calculation_opts,
+			poll: PollHelper.prepare(poll, calculation_opts, user),
+			reference_poll: PollHelper.prepare(reference_poll, calculation_opts, user),
+			for_choice_poll: PollHelper.prepare(reference.for_choice_poll, calculation_opts, user))
 	end)
 end

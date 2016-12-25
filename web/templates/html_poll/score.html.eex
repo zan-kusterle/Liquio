@@ -6,7 +6,7 @@
 		<div class="chart-turnout"><%= round(@poll.results.total) %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
 	<% end %>
 <% else %>
-	<div class="score-box" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;<%= if assigns[:editable] != nil and @editable do %> padding: 5px 0px;<% end %>">
+	<div class="score-box" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;<%= if assigns[:editable] != nil and @editable do %> padding: 0;<% end %>">
 		<%= if assigns[:editable] != nil and @editable do %>
 			<% current_choice = if @own_vote do @own_vote.data.choice["main"] else 0.5 end %>
 
@@ -35,10 +35,10 @@
 			</form>
 
 			<div class="links vote-links">
-				<a onclick="vote_form.submit()" class="vote-action"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Cast</a>
+				<a onclick="vote_form.submit()" class="vote-action"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Set</a>
 
 				<%= if @own_vote do %>
-					<a onclick="remove_vote_form.submit()" class="vote-action"><i class="fa fa-remove" aria-hidden="true" style="margin-right: 2px;"></i> Remove</a>
+					<a onclick="remove_vote_form.submit()" class="vote-action" style="border-left: 2px solid rgba(0,0,0,0.08);">Remove <i class="fa fa-remove" aria-hidden="true" style="margin-right: 2px;"></i></a>
 
 					<form id="remove_vote_form" action="/polls/<%= @poll.id %>/vote" method="POST" style="display: none;">
 						<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />

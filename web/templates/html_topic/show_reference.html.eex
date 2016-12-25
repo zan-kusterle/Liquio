@@ -4,7 +4,7 @@
 
 		<main role="main" class="main">
 			<div class="reference-approval">
-				<a href="<%= html_explore_html_explore_path(@conn, :show, @reference.name, "top") %>" class="title"><%= @reference.name %></a>
+				<a href="<%= html_explore_html_explore_path(@conn, :show, @topic_name, "top") %>" class="title"><%= @topic_name %></a>
 			</div>
 		</main>
 	</div>
@@ -12,7 +12,7 @@
 		<p class="heading">POLL</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, contributions: [], poll: @poll, topics: @poll.topics %>
+			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @poll %>
 		</main>
 	</div>
 
@@ -20,7 +20,7 @@
 		<p class="heading">RELEVANCE POLL</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Poll Is Relevant To Topic", contributions: [], poll: @reference.relevance_poll, topics: [], own_vote: @reference.relevance_poll.own_vote %>
+			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Poll Is Relevant To Topic", poll: @relevance_poll %>
 		</main>
 	</div>
 

@@ -1,5 +1,6 @@
 defmodule Liquio.HtmlPollController do
 	use Liquio.Web, :controller
+	alias Liquio.Helpers.PollHelper
 
 	def new(conn, _) do
 		conn
@@ -48,21 +49,14 @@ defmodule Liquio.HtmlPollController do
 			end
 		else
 			calculation_opts = get_calculation_opts_from_conn(conn)
-			poll = prepare_poll(poll, calculation_opts)
 			own_vote = if user do Vote.current_by(poll, user) else nil end
 			conn
 			|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 			|> render("show.html",
 				title: poll.title,
-				poll: poll,
-				contributions: prepare_contributions(poll, calculation_opts),
-				own_vote: own_vote,
-				own_poll: poll |> Map.put(:results, if own_vote do Poll.results_for_contribution(poll, %{:choice => own_vote.data.choice}) else nil end),
+				calculation_opts: calculation_opts,
 				datetime: datetime,
-				topics: Topic.for_poll(poll, calculation_opts) |> Topic.filter_visible,
-				references: prepare_references(poll, calculation_opts),
-				inverse_references: Reference.inverse_for_poll(poll, calculation_opts),
-				calculation_opts: calculation_opts)
+				poll: PollHelper.prepare(poll, calculation_opts, user, put_references: true, put_inverse_references: true))
 		end
 	end)
 
@@ -76,22 +70,6 @@ defmodule Liquio.HtmlPollController do
 
 		conn
 		|> render("embed.html",
-			poll: prepare_poll(poll, calculation_opts),
-			references: prepare_references(poll, calculation_opts))
+			poll: PollHelper.prepare(poll, calculation_opts, nil, put_references: true))
 	end)
-
-	defp prepare_poll(poll, calculation_opts) do
-		poll
-		|> Map.put(:results, Poll.calculate(poll, calculation_opts))
-	end
-
-	defp prepare_references(poll, calculation_opts) do
-		Reference.for_poll(poll, calculation_opts)
-	end
-
-	defp prepare_contributions(poll, calculation_opts) do
-		poll |> Poll.calculate_contributions(calculation_opts) |> Enum.map(fn(contribution) ->
-			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
-		end)
-	end
 end

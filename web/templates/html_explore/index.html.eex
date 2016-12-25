@@ -47,6 +47,6 @@
 
 	<form id="poll_form">
 		<paper-input label="Poll URL" name="poll_url"></paper-input>
-		<paper-button onclick="poll_form.submit()">View poll in topic</paper-button>
+		<paper-button raised onclick="poll_form.submit()">View poll in topic</paper-button>
 	</form>
 </main>

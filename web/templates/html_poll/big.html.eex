@@ -1,5 +1,5 @@
 <h3 class="topics">
-    <%= for topic <- @topics do %>
+    <%= for topic <- @poll.topics do %>
         <p class="topic">
             <a href="<%= html_explore_path(@conn, :show, topic.name) %>/top">#<%= topic.name %></a>
             <%= if @show_actions do %>
@@ -31,44 +31,41 @@
 
         <div id="vote_choice" style="margin-top: 0px; height: 0px; opacity: 0; visibility: hidden;">
             <p style="margin-bottom: 5px;">Your current choice</p>
-            <%= render "score.html", poll: @poll, own_vote: @own_vote, editable: true %>
+            <%= render "score.html", poll: @poll, own_vote: @poll.own_vote, editable: true %>
         </div>
     <% end %>
 </div>
 
 <%= if @show_actions do %>
-    <%= unless Enum.empty? @contributions do %>
-        <div class="view-votes" onclick="contributions_table.style.display = 'table'; this.style.height = 0; this.style.opacity = 0; setTimeout(function() {contributions_table.classList.add('shown');}, 0);">
+    <%= unless Enum.empty? @poll.contributions do %>
+        <div class="view-votes" onclick="votes_list.style.display = 'block'; this.style.height = 0; this.style.opacity = 0; setTimeout(function() {votes_list.classList.add('shown');}, 0);">
             View votes
             <i class="fa fa-long-arrow-down" aria-hidden="true" style="margin-right: 4px;"></i> 
         </div>
     <% end %>
 
-    <%= unless Enum.empty? @contributions do %>
-        <table class="contributions" id="contributions_table">
-            <tr class="contribution">
-                <td class="column-name username">Username</td>
-                <td class="column-name contribution"></td>
-                <td class="column-name choice"></td>
-                <td class="column-name date"></td>
-            </tr>
-            <% total_power = @contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
-            <% max_ratio = @contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
-            <%= for contribution <- @contributions |> Enum.sort_by(& -&1.voting_power) do %>
-                <% width_ratio = contribution.voting_power / total_power / max_ratio %>
-                <tr class="contribution">
-                    <td class="username"><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
-                    <td class="contribution">
-                        <div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px; border: 2px solid rgba(0, 0, 0, 0.2); width: <%= round(100 * width_ratio) %>%;">
-                            <%= number_format(100 * contribution.voting_power / total_power) %>%
-                        </div>
-                    </td>
-                    <td class="choice">
-                        <%= render "score_reference.html", choice_type: @poll.choice_type, results: Liquio.Poll.results_for_contribution(@poll, contribution) %>
-                    </td>
-                    <td class="date"><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
-                </tr>
-            <% end %>
-        </table>
+    <%= unless Enum.empty? @poll.contributions do %>
+        <div id="votes_list" class="votes" style="display: none;">
+            <p style="margin-bottom: 5px;">Votes</p>
+            <table class="contributions">
+                <% total_power = @poll.contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
+                <% max_ratio = @poll.contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
+                <%= for contribution <- @poll.contributions |> Enum.sort_by(& -&1.voting_power) do %>
+                    <% width_ratio = contribution.voting_power / total_power / max_ratio %>
+                    <tr class="contribution">
+                        <td class="username"><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
+                        <td class="contribution">
+                            <div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px; border: 2px solid rgba(0, 0, 0, 0.2); width: <%= round(100 * width_ratio) %>%;">
+                                <%= number_format(100 * contribution.voting_power / total_power) %>%
+                            </div>
+                        </td>
+                        <td class="choice">
+                            <%= render "score_reference.html", choice_type: @poll.choice_type, results: Liquio.Poll.results_for_contribution(@poll, contribution) %>
+                        </td>
+                        <td class="date"><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
+                    </tr>
+                <% end %>
+            </table>
+        </div>
     <% end %>
 <% end %>

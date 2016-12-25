@@ -1,7 +1,7 @@
 <p class="heading"><%= @poll.choice_type |> String.replace("_", " ") |> String.upcase %> POLL</p>
 
 <main role="main" class="main">
-	<%= render "big.html", show_actions: true, add_topic: true, conn: @conn, contributions: @contributions, poll: @poll, topics: @topics, own_vote: @own_vote %>
+	<%= render "big.html", show_actions: true, add_topic: true, conn: @conn, poll: @poll %>
 	
 	<paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
 		<h2>Fine tune how results are calculated</h2>
@@ -32,21 +32,21 @@
 <p class="heading">REFERENCES</p>
 
 <main role="main" class="main">
-	<%= unless Enum.empty?(@references) do %>
-		<%= render "references.html", poll: @poll, references: @references %>
+	<%= unless Enum.empty?(@poll.references) do %>
+		<%= render "references.html", poll: @poll, references: @poll.references %>
 	<% end %>
 
-	<form id="view_reference_form" action="/polls/<%= @poll.id %>/references" class="pure-form" <%= unless Enum.empty?(@references) do %> style="margin-top: 40px;"<% end %>>
+	<form id="view_reference_form" action="/polls/<%= @poll.id %>/references" class="pure-form" <%= unless Enum.empty?(@poll.references) do %> style="margin-top: 40px;"<% end %>>
 		<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1 url-input" />
 		<paper-button raised class="poll-button" onclick="view_reference_form.submit()">View reference</paper-button>
 	</form>
 </main>
 
-<%= unless Enum.empty?(@inverse_references) do %>
+<%= unless Enum.empty?(@poll.inverse_references) do %>
 	<p class="heading">INVERSE REFERENCES</p>
 
 	<main role="main" class="main">
-		<%= for reference <- @inverse_references do %>
+		<%= for reference <- @poll.inverse_references do %>
 			<div class="inverse-reference">
 				<div style="margin-right: 15px; display: inline-block;">
 					<%= render Liquio.HtmlPollView, "score_reference.html",
