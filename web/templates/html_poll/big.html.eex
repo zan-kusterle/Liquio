@@ -1,4 +1,4 @@
-<h3 class="topics">
+<div class="topics"<%= if assigns[:add_topic] != nil and @add_topic do %> style="margin-top: -25px;"<% end %>>
     <%= for topic <- @poll.topics do %>
         <p class="topic">
             <a href="<%= html_explore_path(@conn, :show, topic.name) %>/top">#<%= topic.name %></a>
@@ -13,7 +13,7 @@
             <paper-input label="New topic name" name="topic_name" style="display: inline-block; width: 200px; text-align: left;"></paper-input>
         </form>
     <% end %>
-</h3>
+</div>
 
 <%= if assigns[:link] != nil and @link do %>
     <a href="<%= html_poll_path(@conn, :show, @poll.id) %>" class="title"><%= @poll.title %></a>

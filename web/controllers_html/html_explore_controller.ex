@@ -1,13 +1,10 @@
 defmodule Liquio.HtmlExploreController do
 	use Liquio.Web, :controller
+	alias Liquio.Helpers.PollHelper
 
 	def index(conn, %{"sort" => sort}) do
-		polls = case sort do
-			"new" -> Poll |> Poll.sorted_new |> Repo.all
-			"top" -> Poll |> Poll.sorted_top |> Repo.all
-			"most-certain" -> Poll |> Poll.sorted_certain |> Repo.all
-			"least-certain" -> Poll |> Poll.sorted_certain |> Repo.all |> Enum.reverse
-		end
+		polls = Poll |> Poll.sorted_for_keyword(sort) |> Repo.all
+		|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
 		conn
 		|> render("index.html",
 			heading: "ALL POLLS",
@@ -38,12 +35,9 @@ defmodule Liquio.HtmlExploreController do
 				|> redirect(to: html_explore_html_explore_path(conn, :show, topic, sort))
 			end
 		else
-			polls = case sort do
-				"new" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_new |> Repo.all
-				"top" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_top |> Repo.all
-				"most-certain" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_certain |> Repo.all
-				"least-certain" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_certain |> Repo.all |> Enum.reverse
-			end
+			polls = Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_for_keyword(sort) |> Repo.all
+			|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
+
 			conn
 			|> render("index.html",
 				heading: "POLLS WITH TOPIC #{topic |> String.upcase}",
@@ -56,12 +50,9 @@ defmodule Liquio.HtmlExploreController do
 	end
 
 	def show_embed(conn, %{"html_explore_id" => topic, "sort" => sort}) do
-		polls = case sort do
-			"new" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_new |> Repo.all
-			"top" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_top |> Repo.all
-			"most-certain" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_certain |> Repo.all
-			"least-certain" -> Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_certain |> Repo.all |> Enum.reverse
-		end
+		polls = Poll |> Poll.by_default_topic(topic |> String.downcase) |> Poll.sorted_for_keyword(sort) |> Repo.all
+		|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
+
 		conn
 		|> put_layout("raw.html")
 		|> render("embed.html",
@@ -70,11 +61,14 @@ defmodule Liquio.HtmlExploreController do
 	end
 
 	def search(conn, %{"query" => query}) do
+		polls = Poll |> Poll.search(query) |> Repo.all
+		|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
+
 		conn
 		|> render("index.html",
 			heading: "RESULTS",
 			query: query,
-			polls: Poll |> Poll.search(query) |> Repo.all,
+			polls: polls,
 			identities: Identity |> Identity.search(query) |> Repo.all)
 	end
 end

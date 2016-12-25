@@ -17,9 +17,7 @@
 	<%= for poll <- @polls do %>
 		<div class="poll-item">
 			<div style="display: inline-block; vertical-align: middle;">
-				<%= render Liquio.HtmlPollView, "score_reference.html",
-					choice_type: poll.choice_type,
-					results: (if poll.latest_default_results do Liquio.Poll.unserialize_results(poll.latest_default_results) else nil end) %>
+				<%= render Liquio.HtmlPollView, "score_reference.html", choice_type: poll.choice_type, results: poll.results %>
 			</div>
 
 			<div style="display: inline-block; vertical-align: middle; margin-left: 25px;">
@@ -28,13 +26,11 @@
 					<a href="/topics/<%= @topic_name %>/polls/<%= poll.id %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
 				<% end %>
 
-				<%= if poll.latest_default_results do %>
-					<div class="topics">
-						<%= for topic <- (poll.latest_default_results["topics"] |> Liquio.Topic.filter_visible) do %>
-							<a href="<%= html_explore_path(@conn, :show, topic) %>/top" style="margin-right: 15px; font-size: 13px;">#<%= topic %></a>
-						<% end %>
-					</div>
-				<% end %>
+				<div class="topics">
+					<%= for topic <- poll.topics do %>
+						<a href="<%= html_explore_path(@conn, :show, topic.name) %>/top" style="margin-right: 15px; font-size: 13px;">#<%= topic.name %></a>
+					<% end %>
+				</div>
 			</div>
 		</div>
 	<% end %>

@@ -100,6 +100,21 @@ defmodule Liquio.Poll do
 		order_by: [desc: p.id]
 	end
 
+	def sorted_least_certain(query) do
+		from p in query,
+		where: not is_nil(p.latest_default_results),
+		order_by: [asc: p.id]
+	end
+
+	def sorted_for_keyword(query, keyword) do
+		case keyword do
+			"new" -> query |> Poll.sorted_new
+			"top" -> query |> Poll.sorted_top
+			"most-certain" -> query |> Poll.sorted_certain
+			"least-certain" -> query |> Poll.sorted_least_certain
+		end
+	end
+
 	defp capitalize_title(title) do
 		{a, b} = String.split_at(title, 1)
 		(a |> String.upcase) <> b
