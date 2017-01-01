@@ -94,7 +94,7 @@ defmodule Liquio.TopicReference do
 	
 	def partition_visible(topics) do
 		topics |> Enum.partition(fn(topic) ->
-			Enum.count(topic.path) == 1
+			Enum.count(topic.path) == 1 and String.length(Enum.at(topic.path, 0)) <= 25
 		end)
 	end
 end
