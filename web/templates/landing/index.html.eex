@@ -7,7 +7,7 @@
 <div class="splash">
 	<img src="/images/logo.svg" alt="Liquio" class="logo"></img>
 	<p class="tagline">A liquid democracy where anyone can vote on anything.</p>
-	<a href="/learn"><paper-button raised class="default">Learn more</paper-button></a>
+	<!--<a href="/learn"><paper-button raised class="default">Learn more</paper-button></a>-->
 </div>
 
 <div class="content examples">
