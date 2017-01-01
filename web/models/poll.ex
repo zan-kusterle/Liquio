@@ -4,7 +4,7 @@ defmodule Liquio.Poll do
 	alias Liquio.Repo
 	alias Liquio.Poll
 	alias Liquio.Vote
-	alias Liquio.Topic
+	alias Liquio.TopicReference
 	alias Liquio.ResultsCache
 	alias Liquio.Results.GetData
 	alias Liquio.Results.CalculateContributions
@@ -74,12 +74,12 @@ defmodule Liquio.Poll do
 		from(p in Poll, where: p.kind == "custom", order_by: [desc: p.id])
 	end
 
-	def by_default_topic(query, topic) do
+	def by_default_topic(query, path) do
 		from p in query,
 		where:
 			not is_nil(p.latest_default_results) and
 			p.kind == "custom" and
-			fragment("(?->'topics')::jsonb \\? ?", p.latest_default_results, ^topic)
+			fragment("(?->'topics')::jsonb \\? ?", p.latest_default_results, ^Enum.join(path, ">"))
 	end
 
 	def sorted_top(query) do
@@ -201,8 +201,8 @@ defmodule Liquio.Poll do
 		if cache_results do
 			cache_results
 		else
-			topics = Topic.for_poll(poll, calculation_opts)
-			|> Enum.map(& &1.name)
+			topics = TopicReference.for_poll(poll, calculation_opts)
+			|> Enum.map(& &1.path)
 			|> MapSet.new
 
 			votes = GetData.get_votes(poll.id, calculation_opts.datetime)

@@ -8,7 +8,8 @@ defmodule Liquio.HtmlTopicController do
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id", validator: &Poll.is_custom/1]},
 	},
 	def reference(conn, %{"html_explore_id" => topic_name, :poll => poll, :user => user}) do
-		topic = Topic.get(topic_name, poll) |> Repo.preload([:relevance_poll])
+		topic_path = String.split(String.downcase(topic_name), ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
+		topic = TopicReference.get(topic_path, poll) |> Repo.preload([:relevance_poll])
 		calculation_opts = get_calculation_opts_from_conn(conn)
 
 		conn
@@ -16,7 +17,7 @@ defmodule Liquio.HtmlTopicController do
 		|> render("show_reference.html",
 			title: poll.title || "Liquio",
 			calculation_opts: calculation_opts,
-			topic_name: topic.name,
+			topic_path: topic.path,
 			poll: PollHelper.prepare(poll, calculation_opts, user),
 			relevance_poll: PollHelper.prepare(topic.relevance_poll, calculation_opts, user))
 	end)

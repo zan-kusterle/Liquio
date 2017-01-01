@@ -23,7 +23,7 @@ defmodule Liquio.Vote do
 	alias Liquio.Vote
 	alias Liquio.VoteData
 	alias Liquio.Reference
-	alias Liquio.Topic
+	alias Liquio.TopicReference
 
 	schema "votes" do
 		belongs_to :poll, Liquio.Poll
@@ -97,8 +97,8 @@ defmodule Liquio.Vote do
 				Cachex.set(:results_cache, {"references", reference.poll_id}, nil)
 				Cachex.set(:results_cache, {"inverse_references", reference.reference_poll_id}, nil)
 			"is_topic" ->
-				topic = Repo.get_by(Topic, relevance_poll_id: poll.id)
-				Cachex.set(:results_cache, {"topic_polls", topic.name}, nil)
+				topic = Repo.get_by(TopicReference, relevance_poll_id: poll.id)
+				Cachex.set(:results_cache, {"topic_polls", topic.path}, nil)
 				Cachex.set(:results_cache, {"topics", topic.poll_id}, nil)
 			_ -> nil
 		end

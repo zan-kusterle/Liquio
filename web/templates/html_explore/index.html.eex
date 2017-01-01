@@ -10,9 +10,18 @@
 <% end %>
 
 <main role="main" class="main">
+	<%= if assigns[:topic_path] do %>
+		<h2 class="topic-title">
+			<%= for topic_name <- @topic_path do %>
+				<%= topic_name %><br />
+			<% end %>
+		</h2>
+	<% end %>
+
 	<%= if (Enum.empty? @polls) and (Enum.empty? @identities) do %>
 		There is nothing here.
 	<% end %>
+	
 
 	<%= for poll <- @polls do %>
 		<div class="poll-item">
@@ -22,13 +31,13 @@
 
 			<div style="display: inline-block; vertical-align: middle; margin-left: 25px;">
 				<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
-				<%= if assigns[:topic_name] do %>
-					<a href="/topics/<%= @topic_name %>/polls/<%= poll.id %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
+				<%= if assigns[:topic_path] do %>
+					<a href="/topics/<%= Enum.join(@topic_path, ">") %>/polls/<%= poll.id %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
 				<% end %>
 
 				<div class="topics">
 					<%= for topic <- poll.topics do %>
-						<a href="<%= html_explore_path(@conn, :show, topic.name) %>/top" style="margin-right: 15px; font-size: 13px;">#<%= topic.name %></a>
+						<a href="<%= html_explore_path(@conn, :show, Enum.join(topic.path, ">")) %>/top" style="margin-right: 15px; font-size: 13px;">#<%= Enum.join(topic.path, ">") %></a>
 					<% end %>
 				</div>
 			</div>

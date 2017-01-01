@@ -294,7 +294,7 @@ defmodule Liquio.LandingController do
 	end
 
 	def cast_topic_vote(poll, topic_name, identity) do
-		topic = Topic.get(topic_name, poll)
+		topic = TopicReference.get([topic_name], poll)
 		|> Repo.preload([:relevance_poll])
 
 		current_vote = Vote.current_by(topic.relevance_poll, identity)

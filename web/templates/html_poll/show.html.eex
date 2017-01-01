@@ -18,7 +18,7 @@
 </main>
 
 <%= unless Enum.empty?(@poll.inverse_references) do %>
-	<p class="heading">INVERSE REFERENCES</p>
+	<p class="heading">REFERENCED BY</p>
 
 	<main role="main" class="main">
 		<%= for reference <- @poll.inverse_references do %>

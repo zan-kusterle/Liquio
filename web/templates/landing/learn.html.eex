@@ -3,26 +3,68 @@
 	<p class="tagline">A liquid democracy where anyone can vote on anything.</p>
 </div>
 
-<h1>How it works</h1>
+<h1 style="margin-top: 50px; font-weight: normal; color: #333;">Key features</h1>
 
-<div class="section">
-    Trust metrics, moderation free
+<div class="pure-g">
+    <div class="pure-u-1-2 learn-item">
+        <div class="box">
+            <span class="fa fa-comments"></span>
+            <h2>Trust metrics</h2>
+            <ul>
+                <li>A whitelist of identities to include when calculating results.</li>
+                <li>Make it difficult for one person to control many identities.</li>
+                <li>Anyone can choose their trust metric or make a new one.</li>
+                <li>No censorship or moderation.</li>
+                <li><a href="https://trust-metric.liqu.io" style="font-weight: bold;">The default trust metric is here</a>.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-2 learn-item">
+        <div class="box">
+            <span class="fa fa-arrow-right"></span>
+            <h2>Delegations</h2>
+            <ul>
+                <li>Not everyone is an expert at everything, delegate your vote to others.</li>
+                <li>Only active for polls where you don't have your own vote.</li>
+                <li>More accurate results with fewer votes.</li>
+                <li>Useless for subjective polls.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-2 learn-item">
+        <div class="box">
+            <span class="fa fa-sitemap"></span>
+            <h2>Topics</h2>
+            <ul>
+                <li>Delegations can be for specific topic only.</li>
+                <li>Voters with different views all vote on the same poll reducing sampling bias.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-2 learn-item">
+        <div class="box">
+            <span class="fa fa-random"></span>
+            <h2>References</h2>
+            <ul>
+                <li>Help voters make more accurate choices, or even enable viewers make judgement on certain topics themselves.</li>
+                <li>Viewers can quickly explore subject it in depth.</li>
+                <li>Eliminates cherry picking evidence, by having a fair democratic process for deciding which references to show.</li>
+            </ul>
+            <p></p>
+        </div>
+    </div>
+    <div class="pure-u-1-2 learn-item">
+        <div class="box">
+            <span class="fa fa-area-chart"></span>
+            <h2>Formats</h2>
+            <p>Probability, quantity and quantity by time choices. Prevents vote splitting by using range voting.</p>
+        </div>
+    </div>
+    <div class="pure-u-1-2 learn-item">
+        <div class="box">
+            <span class="fa fa-link"></span>
+            <h2>Liquio LINK</h2>
+            <p>Get relevant polls shown in the right context.</p>
+        </div>
+    </div>
 </div>
-
-<div class="section">
-    Delegations, useful for objective polls
-</div>
-
-<div class="section">
-    Topics, references
-</div>
-
-<div class="section">
-    Prevents cherry picking of facts and voters
-</div>
-
-<div class="section">
-    Liquio Link
-</div>
-
-

@@ -1,7 +1,7 @@
 defmodule Liquio.DefaultResults do
 	alias Liquio.Repo
 	alias Liquio.Poll
-	alias Liquio.Topic
+	alias Liquio.TopicReference
 	alias Liquio.Reference
 
 	def update() do
@@ -25,11 +25,25 @@ defmodule Liquio.DefaultResults do
 			results = Poll.calculate(poll, calculation_opts)
 			if results.total > 0 do
 				references = Reference.for_poll(poll, calculation_opts)
-				topics = Topic.for_poll(poll, calculation_opts)
-				|> Enum.map(& &1.name)
+				topics = TopicReference.for_poll(poll, calculation_opts)
+
+				voted_topics = topics
+				|> Enum.map(& Enum.join(&1, ">"))
+				|> Enum.uniq
+
+				topics_with_parents = topics
+				|> Enum.flat_map(fn(topic) ->
+					Enum.scan(topic.path, [], fn(path_segment, acc) ->
+						acc ++ [path_segment]
+					end)
+				end)
+				|> Enum.map(& Enum.join(&1, ">"))
+				|> Enum.uniq
+
 				results = results
 				|> Map.put(:references_count, Enum.count(references))
-				|> Map.put(:topics, topics)
+				|> Map.put(:topics, voted_topics)
+				|> Map.put(:topics_with_parents, topics_with_parents)
 				Repo.update! Ecto.Changeset.change poll, latest_default_results: results
 			end
 		end)

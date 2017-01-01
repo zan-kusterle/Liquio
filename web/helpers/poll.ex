@@ -1,11 +1,11 @@
 defmodule Liquio.Helpers.PollHelper do
-	alias Liquio.{Repo, Identity, Poll, Topic, Vote, Reference}
+	alias Liquio.{Repo, Identity, Poll, TopicReference, Vote, Reference}
 
 	def prepare(poll, calculation_opts, current_user, opts \\ []) do
 		poll = if opts[:from_default_cache] do
 			if poll.latest_default_results do
 				results = Liquio.Poll.unserialize_results(poll.latest_default_results)
-				topics = poll.latest_default_results["topics"] |> Enum.map(& %Topic{:name => &1}) |> Topic.filter_visible
+				topics = poll.latest_default_results["topics"] |> Enum.map(& %TopicReference{:path => String.split(&1, ">")})
 				poll |> Map.merge(%{
 					:topics => topics,
 					:contributions => nil,
@@ -19,7 +19,7 @@ defmodule Liquio.Helpers.PollHelper do
 				})
 			end
 		else
-			topics = Topic.for_poll(poll, calculation_opts) |> Topic.filter_visible
+			topics = TopicReference.for_poll(poll, calculation_opts)
 			contributions = poll |> Poll.calculate_contributions(calculation_opts) |> Enum.map(fn(contribution) ->
 				Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
 			end)

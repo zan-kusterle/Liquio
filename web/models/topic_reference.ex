@@ -1,29 +1,29 @@
-defmodule Liquio.Topic do
+defmodule Liquio.TopicReference do
 	use Liquio.Web, :model
 
 	alias Liquio.Repo
-	alias Liquio.Topic
+	alias Liquio.TopicReference
 	alias Liquio.Poll
 	alias Liquio.ResultsCache
 
 	schema "topics" do
-        field :name, :string
+		field :path, {:array, :string}
 		belongs_to :poll, Poll
 		belongs_to :relevance_poll, Poll
 
 		timestamps
 	end
 
-	def get(name, poll) do
-		topic = Repo.get_by(Topic, name: name, poll_id: poll.id)
+	def get(path, poll) do
+		topic = Repo.get_by(TopicReference, path: path, poll_id: poll.id)
         if topic == nil do
             relevance_poll = Repo.insert!(%Poll{
                 :kind => "is_topic",
                 :choice_type => "probability",
                 :title => nil
             })
-            Repo.insert!(%Topic{
-                :name => name,
+            Repo.insert!(%TopicReference{
+                :path => path,
                 :poll => poll,
                 :relevance_poll => relevance_poll
             })
@@ -45,7 +45,7 @@ defmodule Liquio.Topic do
 		if cache_results do
 			cache_results
 		else
-			topics = from(t in Topic, where: t.poll_id == ^poll.id, order_by: t.inserted_at)
+			topics = from(t in TopicReference, where: t.poll_id == ^poll.id, order_by: t.inserted_at)
 			|> Repo.all
 			|> Repo.preload([:relevance_poll, :poll])
             |> Enum.map(fn(topic) ->
@@ -62,9 +62,9 @@ defmodule Liquio.Topic do
 		end
 	end
 
-	def for_name(name, calculation_opts) do
+	def for_path(path, calculation_opts) do
 		key = {
-			{"topic_polls", name},
+			{"topic_polls", path},
 			{
 				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
 				calculation_opts.trust_metric_url,
@@ -75,7 +75,7 @@ defmodule Liquio.Topic do
 		if cache_results do
 			cache_results
 		else
-			topics = from(t in Topic, where: t.name == ^name, order_by: t.inserted_at)
+			topics = from(t in TopicReference, where: fragment("?[1] = ?", t.path, ^Enum.at(path, 0)), order_by: t.inserted_at)
 			|> Repo.all
 			|> Repo.preload([:relevance_poll, :poll])
             |> Enum.map(fn(topic) ->
@@ -92,13 +92,9 @@ defmodule Liquio.Topic do
 		end
 	end
 	
-	def filter_visible(topics) do
-		topics |> Enum.filter(fn(topic) ->
-			name = case topic do
-				%Topic{:name => name} -> name
-				_ -> topic
-			end
-			not String.starts_with?(name, "(hidden)")
+	def partition_visible(topics) do
+		topics |> Enum.partition(fn(topic) ->
+			Enum.count(topic.path) == 1
 		end)
 	end
 end
