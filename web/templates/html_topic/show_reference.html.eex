@@ -4,7 +4,7 @@
 
 		<main role="main" class="main">
 			<div class="reference-approval">
-				<a href="<%= html_explore_html_explore_path(@conn, :show, Enum.join(@topic_path, ">"), "top") %>" class="title">
+				<a href="<%= html_topic_path(@conn, :show, Enum.join(@topic_path, ">"), "top") %>" class="title">
 					<%= for topic_name <- @topic_path do %>
 						<%= topic_name %><br />
 					<% end %>

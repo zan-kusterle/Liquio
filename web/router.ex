@@ -51,11 +51,12 @@ defmodule Liquio.Router do
 			resources "/references", HtmlReferenceController, only: [:index, :show]
 		end
 
+		get "/topics/:path", HtmlTopicController, :show
+		get "/topics/:path/:sort", HtmlTopicController, :show
+		get "/topics/:path/polls/:poll_id", HtmlTopicController, :reference
+
 		get "/explore/:sort", HtmlExploreController, :index
-		resources "/topics", HtmlExploreController, only: [:show] do
-			get "/:sort", HtmlExploreController, :show
-			get "/polls/:poll_id", HtmlTopicController, :reference
-		end
+	
 		get "/search", HtmlExploreController, :search
 	end
 
@@ -63,7 +64,7 @@ defmodule Liquio.Router do
 		pipe_through :embed
 
 		get "/polls/:html_poll_id/embed", HtmlPollController, :embed
-		get "/topics/:html_explore_id/:sort/embed", HtmlExploreController, :show_embed
+		get "/topics/:path/:sort/embed", HtmlTopicController, :show_embed
 	end
 	
 	scope "/api", Liquio do
@@ -82,6 +83,8 @@ defmodule Liquio.Router do
 			get "/contributions", PollController, :contributions
 			resources "/references", ReferenceController, only: [:create, :index, :show]
 		end
+
+		get "/topics/:path", TopicController, :show
 
 		get "/search", SearchController, :index
 	end

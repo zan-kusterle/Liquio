@@ -38,7 +38,7 @@
 				<div class="topics">
 					<% {visible_topics, hidden_topics} = Liquio.TopicReference.partition_visible(poll.topics) %>
 					<%= for topic <- visible_topics do %>
-						<a href="<%= html_explore_path(@conn, :show, Enum.join(topic.path, ">")) %>/top" style="margin-right: 15px; font-size: 13px;">#<%= Enum.join(topic.path, ">") %></a>
+						<a href="<%= html_topic_path(@conn, :show, Enum.join(topic.path, ">")) %>/top" style="margin-right: 15px; font-size: 13px;">#<%= Enum.join(topic.path, ">") %></a>
 					<% end %>
 				</div>
 			</div>

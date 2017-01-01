@@ -42,7 +42,7 @@ defmodule Liquio.HtmlPollController do
 
 			if String.length(topic_name) > 0 do
 				conn
-				|> redirect(to: html_explore_html_topic_path(conn, :reference, topic_name, poll.id))
+				|> redirect(to: html_topic_path(conn, :reference, topic_name, poll.id))
 			else
 				conn
 				|> redirect(to: html_poll_path(conn, :show, poll.id))

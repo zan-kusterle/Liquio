@@ -3,9 +3,9 @@
 <div class="topics"<%= if assigns[:add_topic] != nil and @add_topic do %> style="margin-top: -25px;"<% end %>>
     <%= for topic <- visible_topics do %>
         <p class="topic">
-            <a href="<%= html_explore_path(@conn, :show, Enum.join(topic.path, ">")) %>/top">#<%= Enum.join(topic.path, ">") %></a>
+            <a href="<%= html_topic_path(@conn, :show, Enum.join(topic.path, ">")) %>/top">#<%= Enum.join(topic.path, ">") %></a>
             <%= if @show_actions do %>
-                <a href="/topics/<%= Enum.join(topic.path, ">") %>/polls/<%= @poll.id %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
+                <a href="<%= html_topic_path(@conn, :reference, Enum.join(topic.path, ">"), @poll.id) %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
             <% end %>
         </p>
     <% end %>
@@ -28,9 +28,9 @@
 
     <%= for topic <- @poll.topics do %>
         <p style="display: block; margin: 0; margin-bottom: 10px;">
-            <a href="<%= html_explore_path(@conn, :show, Enum.join(topic.path, ">")) %>/top">#<%= Enum.join(topic.path, " > ") %></a>
+            <a href="<%= html_topic_path(@conn, :show, Enum.join(topic.path, ">")) %>/top">#<%= Enum.join(topic.path, " > ") %></a>
             <%= if @show_actions do %>
-                <a href="/topics/<%= Enum.join(topic.path, ">") %>/polls/<%= @poll.id %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
+                <a href="<%= html_topic_path(@conn, :reference, Enum.join(topic.path, ">"), @poll.id) %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
             <% end %>
         </p>
     <% end %>

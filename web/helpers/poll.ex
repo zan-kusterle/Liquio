@@ -8,14 +8,11 @@ defmodule Liquio.Helpers.PollHelper do
 				topics = poll.latest_default_results["topics"] |> Enum.map(& %TopicReference{:path => String.split(&1, ">")})
 				poll |> Map.merge(%{
 					:topics => topics,
-					:contributions => nil,
 					:results => results
 				})
 			else
 				poll |> Map.merge(%{
-					:topics => [],
-					:contributions => nil,
-					:results => nil
+					:topics => []
 				})
 			end
 		else
