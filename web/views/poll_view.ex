@@ -34,7 +34,7 @@ defmodule Liquio.PollView do
 		v = if Map.has_key?(poll, :contributions) do
 			Map.put(v, :contributions, poll.contributions |> Enum.map(fn(contribution) ->
 				%{
-					:identity => %{:id => contribution.identity.id},
+					:identity => Liquio.IdentityView.render("identity.json", identity: contribution.identity),
 					:choice => contribution.choice,
 					:voting_power => contribution.voting_power
 				}	
