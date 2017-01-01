@@ -10,9 +10,11 @@
         </p>
     <% end %>
 
-    <p class="topic">
-        <a onclick="topics_dialog_<%= @poll.id %>.open()"><%= Enum.count(hidden_topics) %> more</a>
-    </p>
+    <%= if Enum.count(hidden_topics) > 0 do %>
+        <p class="topic">
+            <a onclick="topics_dialog_<%= @poll.id %>.open()"><%= Enum.count(hidden_topics) %> more</a>
+        </p>
+    <% end %>
 
     <%= if assigns[:add_topic] != nil and @add_topic do %>
         <form id="topic_form" style="display: inline; margin-left: 10px;">
@@ -21,16 +23,20 @@
     <% end %>
 </div>
 
-<paper-dialog id="topics_dialog_<%= @poll.id %>" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-    <h2>All topics</h2>
+<paper-dialog id="topics_dialog_<%= @poll.id %>" style="width: 600px;">
+    <h2 style="margin-bottom: 20px;">All topics</h2>
 
-    <%= for topic <- hidden_topics do %>
-        <%= Enum.join(topic.path, ">") %><br />
+    <%= for topic <- @poll.topics do %>
+        <p style="display: block; margin: 0; margin-bottom: 10px;">
+            <a href="<%= html_explore_path(@conn, :show, Enum.join(topic.path, ">")) %>/top">#<%= Enum.join(topic.path, " > ") %></a>
+            <%= if @show_actions do %>
+                <a href="/topics/<%= Enum.join(topic.path, ">") %>/polls/<%= @poll.id %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
+            <% end %>
+        </p>
     <% end %>
     
 	<div class="buttons">
-		<paper-button dialog-dismiss>Cancel</paper-button>
-		<paper-button dialog-confirm raised class="primary" onclick="document.location = '?datetime=' + snapshot_date.date.toISOString().substring(0, 10)">Set viewing date</paper-button>
+		<paper-button dialog-dismiss>Close</paper-button>
 	</div>
 </paper-dialog>
 

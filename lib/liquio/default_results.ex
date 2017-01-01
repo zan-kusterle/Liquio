@@ -28,7 +28,7 @@ defmodule Liquio.DefaultResults do
 				topics = TopicReference.for_poll(poll, calculation_opts)
 
 				voted_topics = topics
-				|> Enum.map(& Enum.join(&1, ">"))
+				|> Enum.map(& Enum.join(&1.path, ">"))
 				|> Enum.uniq
 
 				topics_with_parents = topics

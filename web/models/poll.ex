@@ -79,7 +79,7 @@ defmodule Liquio.Poll do
 		where:
 			not is_nil(p.latest_default_results) and
 			p.kind == "custom" and
-			fragment("(?->'topics')::jsonb \\? ?", p.latest_default_results, ^Enum.join(path, ">"))
+			fragment("(?->'topics_with_parents')::jsonb \\? ?", p.latest_default_results, ^Enum.join(path, ">"))
 	end
 
 	def sorted_top(query) do
