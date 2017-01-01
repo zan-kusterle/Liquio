@@ -1,6 +1,8 @@
 defmodule Liquio.PollController do
 	use Liquio.Web, :controller
 
+	alias Liquio.Helpers.PollHelper
+
 	plug :scrub_params, "poll" when action in [:create]
 	def create(conn, %{"poll" => params}) do
 		changeset = Poll.changeset(%Poll{}, params)
@@ -20,14 +22,12 @@ defmodule Liquio.PollController do
 
 	with_params(%{
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
-		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
-		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", whole: true]},
-		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url"]},
+		:user => {Plugs.CurrentUser, [require: false]}
 	},
-	def show(conn, %{:poll => poll}) do
-		results = Poll.calculate(poll, get_calculation_opts_from_conn(conn))
+	def show(conn, %{:poll => poll, :user => user}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
-		|> render("show.json", poll: poll |> Map.put(:results, results))
+		|> render("show.json", poll: PollHelper.prepare(poll, calculation_opts, user))
 	end)
 
 	with_params(%{

@@ -14,19 +14,35 @@ defmodule Liquio.PollView do
 			id: poll.id,
 			kind: poll.kind,
 			choice_type: poll.choice_type,
-			title: poll.title,
-			topics: poll.topics,
+			title: poll.title
 		}
+
+		v = if Map.has_key?(poll, :topics) do
+			Map.put(v, :topics, poll.topics |> Enum.map(fn(topic) ->
+				topic.path
+			end))
+		else
+			v
+		end
+
 		v = if Map.has_key?(poll, :results) do
 			Map.put(v, :results, poll.results)
 		else
 			v
 		end
+
 		v = if Map.has_key?(poll, :contributions) do
-			Map.put(v, :contributions, poll.contributions)
+			Map.put(v, :contributions, poll.contributions |> Enum.map(fn(contribution) ->
+				%{
+					:identity => %{:id => contribution.identity.id},
+					:choice => contribution.choice,
+					:voting_power => contribution.voting_power
+				}	
+			end))
 		else
 			v
 		end
+		
 		v
 	end
 
