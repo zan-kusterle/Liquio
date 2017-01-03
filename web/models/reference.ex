@@ -36,9 +36,8 @@ defmodule Liquio.Reference do
 
 	def for_poll(poll, calculation_opts) do
 		key = {
-			{"references", poll.id},
+			{"references", poll.id, calculation_opts.datetime},
 			{
-				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
 				calculation_opts.trust_metric_url,
 				calculation_opts.vote_weight_halving_days,
 				calculation_opts.minimum_voting_power,
@@ -72,9 +71,8 @@ defmodule Liquio.Reference do
 
 	def inverse_for_poll(poll, calculation_opts) do
 		key = {
-			{"inverse_references", poll.id},
+			{"inverse_references", poll.id, calculation_opts.datetime},
 			{
-				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
 				calculation_opts.trust_metric_url,
 				calculation_opts.vote_weight_halving_days,
 				calculation_opts.minimum_voting_power,

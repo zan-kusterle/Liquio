@@ -148,9 +148,8 @@ defmodule Liquio.Poll do
 
 	def calculate(poll, calculation_opts) do
 		key = {
-			{"results", poll.id},
+			{"results", poll.id, calculation_opts.datetime},
 			{
-				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
 				calculation_opts.trust_metric_url,
 				calculation_opts.vote_weight_halving_days,
 				calculation_opts.minimum_voting_power
@@ -191,9 +190,8 @@ defmodule Liquio.Poll do
 
 	def calculate_contributions(poll, calculation_opts) do
 		key = {
-			{"contributions", poll.id},
+			{"contributions", poll.id, calculation_opts.datetime},
 			{
-				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
 				calculation_opts.trust_metric_url,
 			}
 		}

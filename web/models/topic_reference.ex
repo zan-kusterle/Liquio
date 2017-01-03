@@ -34,9 +34,8 @@ defmodule Liquio.TopicReference do
 
 	def for_poll(poll, calculation_opts) do
 		key = {
-			{"topics", poll.id},
+			{"topics", poll.id, calculation_opts.datetime},
 			{
-				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
 				calculation_opts.trust_metric_url,
 				calculation_opts.vote_weight_halving_days
 			}
@@ -64,9 +63,8 @@ defmodule Liquio.TopicReference do
 
 	def for_path(path, calculation_opts) do
 		key = {
-			{"topic_polls", path},
+			{"topic_polls", path, calculation_opts.datetime},
 			{
-				Float.floor(Timex.to_unix(calculation_opts.datetime) / Application.get_env(:liquio, :results_cache_seconds)),
 				calculation_opts.trust_metric_url,
 				calculation_opts.vote_weight_halving_days,
 			}
