@@ -49,7 +49,7 @@ defmodule Liquio.Mixfile do
 			{:timex_ecto, "~> 3.0"},
 			{:comeonin, "~> 2.5"},
 			{:basic_auth, "~> 1.0.0"},
-			{:credo, "~> 0.3", only: [:dev, :test]},
+			{:credo, "~> 0.5", only: [:dev, :test]},
 			{:floki, "~> 0.10.0"},
 			{:secure_random, "~> 0.5"},
 			{:mailgun, "~> 0.1.2"},

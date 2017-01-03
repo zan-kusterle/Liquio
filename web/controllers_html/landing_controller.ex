@@ -294,7 +294,8 @@ defmodule Liquio.LandingController do
 	end
 
 	def cast_topic_vote(poll, topic_name, identity) do
-		topic = TopicReference.get([topic_name], poll)
+		topic = [topic_name]
+		|> TopicReference.get(poll)
 		|> Repo.preload([:relevance_poll])
 
 		current_vote = Vote.current_by(topic.relevance_poll, identity)
@@ -305,7 +306,8 @@ defmodule Liquio.LandingController do
 
 	def cast_approve_vote(poll, example_reference, identity) do
 		reference_poll = Poll.force_get(example_reference.choice_type, example_reference.title)
-		reference = Reference.get(poll, reference_poll)
+		reference = poll
+		|> Reference.get(reference_poll)
 		|> Repo.preload([:for_choice_poll])
 
 		current_vote = Vote.current_by(reference.for_choice_poll, identity)

@@ -11,7 +11,7 @@ defmodule Liquio.HtmlIdentityController do
 			result = Identity.create(Identity.changeset(%Identity{email: email}, params))
 
 			result |> handle_errors(conn, fn identity ->
-				Token.use( params["token"])
+				Token.use(params["token"])
 				conn
 				|> Guardian.Plug.sign_in(identity)
 				|> put_flash(:info, "Hello, #{identity.name}")

@@ -16,20 +16,20 @@ defmodule Liquio.TopicReference do
 
 	def get(path, poll) do
 		topic = Repo.get_by(TopicReference, path: path, poll_id: poll.id)
-        if topic == nil do
-            relevance_poll = Repo.insert!(%Poll{
-                :kind => "is_topic",
-                :choice_type => "probability",
-                :title => nil
-            })
-            Repo.insert!(%TopicReference{
-                :path => path,
-                :poll => poll,
-                :relevance_poll => relevance_poll
-            })
-        else
-            topic
-        end
+		if topic == nil do
+			relevance_poll = Repo.insert!(%Poll{
+				:kind => "is_topic",
+				:choice_type => "probability",
+				:title => nil
+			})
+			Repo.insert!(%TopicReference{
+				:path => path,
+				:poll => poll,
+				:relevance_poll => relevance_poll
+			})
+		else
+			topic
+		end
 	end
 
 	def for_poll(poll, calculation_opts) do
@@ -47,14 +47,14 @@ defmodule Liquio.TopicReference do
 			topics = from(t in TopicReference, where: t.poll_id == ^poll.id, order_by: t.inserted_at)
 			|> Repo.all
 			|> Repo.preload([:relevance_poll, :poll])
-            |> Enum.map(fn(topic) ->
-                relevance_result = Poll.calculate(topic.relevance_poll, calculation_opts)
+			|> Enum.map(fn(topic) ->
+				relevance_result = Poll.calculate(topic.relevance_poll, calculation_opts)
 				Map.put(topic, :relevance_result, relevance_result)
 			end)
-            |> Enum.filter(fn(topic) ->
-                # TODO: Use soft quorum t here.
-                topic.relevance_result.total > 0 and topic.relevance_result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
-            end)
+			|> Enum.filter(fn(topic) ->
+				# TODO: Use soft quorum t here.
+				topic.relevance_result.total > 0 and topic.relevance_result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
+			end)
 			|> Enum.sort(&(&1.relevance_result.mean > &2.relevance_result.mean))
 
 			ResultsCache.set(key, topics)
@@ -76,14 +76,14 @@ defmodule Liquio.TopicReference do
 			topics = from(t in TopicReference, where: fragment("?[1] = ?", t.path, ^Enum.at(path, 0)), order_by: t.inserted_at)
 			|> Repo.all
 			|> Repo.preload([:relevance_poll, :poll])
-            |> Enum.map(fn(topic) ->
-                relevance_result = Poll.calculate(topic.relevance_poll, calculation_opts)
+			|> Enum.map(fn(topic) ->
+				relevance_result = Poll.calculate(topic.relevance_poll, calculation_opts)
 				Map.put(topic, :relevance_result, relevance_result)
 			end)
-            |> Enum.filter(fn(topic) ->
-                # TODO: Use soft quorum t here.
-                topic.relevance_result.total > 0 and topic.relevance_result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
-            end)
+			|> Enum.filter(fn(topic) ->
+				# TODO: Use soft quorum t here.
+				topic.relevance_result.total > 0 and topic.relevance_result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
+			end)
 			|> Enum.sort(&(&1.relevance_result.mean > &2.relevance_result.mean))
 
 			ResultsCache.set(key, topics)

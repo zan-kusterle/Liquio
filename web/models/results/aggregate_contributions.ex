@@ -16,32 +16,7 @@ defmodule Liquio.Results.AggregateContributions do
 		end)
 		|> Enum.group_by(& &1.key)
 		|> Enum.map(fn({key, contributions_for_key}) ->
-			key_total_power = Enum.sum(Enum.map(contributions_for_key, & &1.voting_power))
-
-			adjusted_contributions =
-				if vote_weight_halving_days == nil do
-					contributions_for_key
-				else
-					contributions_for_key |> Enum.map(fn(contribution) ->
-						Map.put(contribution, :voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
-					end)
-				end
-			mean =
-				if choice_type == "probability" do
-					mean(adjusted_contributions)
-				else
-					median(adjusted_contributions)
-				end
-
-			{
-				key,
-				%{
-					:mean => mean,
-					:total => round(key_total_power),
-					:turnout_ratio => if trust_metric_size == 0 do 0 else key_total_power / trust_metric_size end,
-					:count => Enum.count(contributions_for_key)
-				}
-			}
+			{key, aggregate_for_key(contributions_for_key, datetime, vote_weight_halving_days, choice_type, trust_metric_size)}
 		end)
 		|> Enum.into(%{})
 
@@ -63,6 +38,32 @@ defmodule Liquio.Results.AggregateContributions do
 			:total => 0,
 			:turnout_ratio => 0,
 			:count => 0
+		}
+	end
+
+	defp aggregate_for_key(contributions_for_key, datetime, vote_weight_halving_days, choice_type, trust_metric_size) do
+		key_total_power = Enum.sum(Enum.map(contributions_for_key, & &1.voting_power))
+
+		adjusted_contributions =
+			if vote_weight_halving_days == nil do
+				contributions_for_key
+			else
+				contributions_for_key |> Enum.map(fn(contribution) ->
+					Map.put(contribution, :voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
+				end)
+			end
+		mean =
+			if choice_type == "probability" do
+				mean(adjusted_contributions)
+			else
+				median(adjusted_contributions)
+			end
+
+		%{
+			:mean => mean,
+			:total => round(key_total_power),
+			:turnout_ratio => if trust_metric_size == 0 do 0 else key_total_power / trust_metric_size end,
+			:count => Enum.count(contributions_for_key)
 		}
 	end
 

@@ -15,7 +15,7 @@
                 <li>Make it difficult for one person to control many identities.</li>
                 <li>Anyone can choose their trust metric or make a new one.</li>
                 <li>No censorship or moderation.</li>
-                <li><a href="https://trust-metric.liqu.io" style="font-weight: bold;">The default trust metric is here</a>.</li>
+                <li>The default trust metric lives <a href="https://trust-metric.liqu.io" style="font-weight: bold;">here</a>.</li>
             </ul>
         </div>
     </div>
@@ -37,7 +37,7 @@
             <h2>Topics</h2>
             <ul>
                 <li>Delegations can be for specific topic only.</li>
-                <li>Voters with different views all vote on the same poll reducing sampling bias.</li>
+                <li>People with different views vote on the same poll, reducing sampling bias.</li>
             </ul>
         </div>
     </div>
@@ -56,8 +56,12 @@
     <div class="pure-u-1-2 learn-item">
         <div class="box">
             <span class="fa fa-area-chart"></span>
-            <h2>Formats</h2>
-            <p>Probability, quantity and quantity by time choices. Prevents vote splitting by using range voting.</p>
+            <h2>Voting</h2>
+            <ul>
+                <li>Probability - vote with a percentage between 0% and 100%.</li>
+                <li>Quantity - vote with any number.</li>
+                <li>Quantity by time - vote with many date and number pairs.</li>
+            </ul>
         </div>
     </div>
     <div class="pure-u-1-2 learn-item">
