@@ -30,7 +30,7 @@ defmodule Liquio.HtmlTopicController do
 			conn
 			|> render(Liquio.HtmlExploreView, "index.html",
 				heading: "TOPIC",
-				url: "/topics/#{topic}",
+				url: "/topics/#{URI.encode(topic)}",
 				sort: sort,
 				polls: polls,
 				topic_path: topic_path,

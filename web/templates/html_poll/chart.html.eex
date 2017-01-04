@@ -24,7 +24,7 @@
 			end)
 		%>
 
-		<line vector-effect="non-scaling-stroke" x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" style="stroke: #aaa; stroke-width: 1;"></line>
+		<line vector-effect="non-scaling-stroke" x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" style="stroke: #aaa; stroke-width: 2;"></line>
 
 		<path vector-effect="non-scaling-stroke" fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= svg_path normalized_points %>"></path>
 
