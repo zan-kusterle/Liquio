@@ -11,7 +11,7 @@ defmodule Liquio.Plugs.MinifyHtml do
 			if String.contains?(content_type, "text/html") do
 				html = conn.resp_body
 				|> to_string
-				Liquio.HtmlHelper.minify
+				|> Liquio.HtmlHelper.minify
 				resp(conn, conn.status, html)
 			else
 				conn
