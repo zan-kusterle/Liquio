@@ -1,5 +1,5 @@
 defmodule Liquio.Helpers.PollHelper do
-	alias Liquio.{Repo, Identity, Poll, TopicReference, Vote, Reference}
+	alias Liquio.{Repo, Identity, Poll, TopicReference, Vote, Reference, HtmlHelper}
 
 	def prepare(poll, calculation_opts, current_user, opts \\ []) do
 		poll = if opts[:from_default_cache] do
@@ -42,7 +42,12 @@ defmodule Liquio.Helpers.PollHelper do
 		else
 			poll
 		end
-		
+
+		embed_html = Phoenix.View.render_to_iodata(Liquio.HtmlPollView, "embed.html", poll: poll)
+		|> :erlang.iolist_to_binary
+		|> HtmlHelper.minify
+		poll = Map.put(poll, :embed, embed_html)
+
 		poll
 	end
 

@@ -11,10 +11,7 @@ defmodule Liquio.Plugs.MinifyHtml do
 			if String.contains?(content_type, "text/html") do
 				html = conn.resp_body
 				|> to_string
-				|> String.replace("\t", "")
-				|> String.replace("\n", "")
-				|> String.replace("\r", "\n")
-				|> String.replace("<!DOCTYPE html>", "<!DOCTYPE html>\n")
+				Liquio.HtmlHelper.minify
 				resp(conn, conn.status, html)
 			else
 				conn

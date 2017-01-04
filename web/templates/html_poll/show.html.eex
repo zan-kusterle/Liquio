@@ -67,6 +67,6 @@
 
 	<div class="buttons">
 		<paper-button dialog-dismiss>Close</paper-button>
-		<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change preferences for polls</paper-button>
+		<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change</paper-button>
 	</div>
 </paper-dialog>

@@ -14,7 +14,8 @@ defmodule Liquio.PollView do
 			id: poll.id,
 			kind: poll.kind,
 			choice_type: poll.choice_type,
-			title: poll.title
+			title: poll.title,
+			html: poll.embed
 		}
 
 		v = if Map.has_key?(poll, :topics) do

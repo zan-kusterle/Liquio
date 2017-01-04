@@ -28,7 +28,7 @@
 </div>
 
 <paper-dialog id="preferences_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-	<h2>Fine tune which references are shown</h2>
+	<h2>Fine tune which references and topics are shown</h2>
 	
 	<form id="preferences_form" method="POST" action="/identities/me/preferences" class="pure-form">
 		<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
@@ -46,6 +46,6 @@
 
 	<div class="buttons">
 		<paper-button dialog-dismiss>Close</paper-button>
-		<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change preferences for references</paper-button>
+		<paper-button dialog-confirm raised class="primary" onclick="preferences_form.submit()">Change</paper-button>
 	</div>
 </paper-dialog>
