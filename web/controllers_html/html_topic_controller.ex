@@ -3,7 +3,7 @@ defmodule Liquio.HtmlTopicController do
 	alias Liquio.Helpers.PollHelper
 
 	def show(conn, params = %{"path" => topic, "sort" => sort}) do
-		topic_path = String.split(String.downcase(topic), ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
+		topic_path = String.split(topic, ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
 		if Map.has_key?(params, "poll_url") do
 			poll_url = params["poll_url"]
 			url = URI.parse(poll_url)
@@ -45,7 +45,7 @@ defmodule Liquio.HtmlTopicController do
 	end
 
 	def show_embed(conn, %{"path" => path_text, "sort" => sort}) do
-		path = String.split(String.downcase(path_text), ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
+		path = String.split(path_text, ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
 		polls = Poll |> Poll.by_default_topic(path) |> Poll.sorted_for_keyword(sort) |> Repo.all
 		|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
 
@@ -61,7 +61,7 @@ defmodule Liquio.HtmlTopicController do
 		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id", validator: &Poll.is_custom/1]},
 	},
 	def reference(conn, %{"path" => topic_name, :poll => poll, :user => user}) do
-		topic_path = String.split(String.downcase(topic_name), ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
+		topic_path = String.split(topic_name, ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
 		topic = TopicReference.get(topic_path, poll) |> Repo.preload([:relevance_poll])
 		calculation_opts = get_calculation_opts_from_conn(conn)
 

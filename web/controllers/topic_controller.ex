@@ -4,7 +4,7 @@ defmodule Liquio.TopicController do
 
 	def show(conn, %{"path" => path_text}) do
 		sort = "top"
-		path = String.split(String.downcase(path_text), ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
+		path = String.split(path_text, ">") |> Enum.map(& String.trim(&1)) |> Enum.filter(& String.length(&1) > 0)
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		polls = Poll
 		|> Poll.by_default_topic(path)
