@@ -14,8 +14,7 @@ defmodule Liquio.PollView do
 			id: poll.id,
 			kind: poll.kind,
 			choice_type: poll.choice_type,
-			title: poll.title,
-			html: poll.embed
+			title: poll.title
 		}
 
 		v = if Map.has_key?(poll, :topics) do
@@ -32,6 +31,12 @@ defmodule Liquio.PollView do
 			v
 		end
 
+		v = if Map.has_key?(poll, :embed) do
+			Map.put(v, :html, poll.embed)
+		else
+			v
+		end
+
 		v = if Map.has_key?(poll, :contributions) do
 			Map.put(v, :contributions, poll.contributions |> Enum.map(fn(contribution) ->
 				%{
@@ -39,6 +44,14 @@ defmodule Liquio.PollView do
 					:choice => contribution.choice,
 					:voting_power => contribution.voting_power
 				}	
+			end))
+		else
+			v
+		end
+
+		v = if Map.has_key?(poll, :references) do
+			Map.put(v, :references, poll.references |> Enum.map(fn(reference) ->
+				%{:poll => render("poll.json", poll: reference.reference_poll)}
 			end))
 		else
 			v
