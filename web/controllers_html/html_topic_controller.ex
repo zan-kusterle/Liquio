@@ -27,10 +27,16 @@ defmodule Liquio.HtmlTopicController do
 			polls = Poll |> Poll.by_default_topic(topic_path) |> Poll.sorted_for_keyword(sort) |> Repo.all
 			|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
 
+			encoded_topic = topic
+			|> URI.encode()
+			|> String.replace("/", "%2F")
+			|> String.replace(":", "%3A")
+			|> String.replace("?", "%3F")
+			|> String.replace("=", "%3D")
 			conn
 			|> render(Liquio.HtmlExploreView, "index.html",
 				heading: "TOPIC",
-				url: "/topics/#{URI.encode(topic)}",
+				url: "/topics/#{encoded_topic}",
 				sort: sort,
 				polls: polls,
 				topic_path: topic_path,
