@@ -23,11 +23,6 @@
 		font-size: 16px;
 		line-height: 14px;
 	}
-
-	.turnout {
-		font-size: 12px;
-		line-height: 10px;
-	}
 </style>
 
 <div class="area" style="background: <%= score_color(@poll) %>;">
@@ -51,8 +46,6 @@
 				<% else %>
 					?
 				<% end %>
-				<br>
-				<span class="turnout"><%= round(@poll.results.turnout_ratio * 100) %>% turnout</span>
 			<% end %>
 		</p>
 	</div>
