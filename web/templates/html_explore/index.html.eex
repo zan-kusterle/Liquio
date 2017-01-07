@@ -13,7 +13,12 @@
 	<%= if assigns[:topic_path] do %>
 		<h2 class="topic-title">
 			<%= for topic_name <- @topic_path do %>
-				<%= topic_name %><br />
+				<%= if String.starts_with?(topic_name, "http://") or String.starts_with?(topic_name, "https://") do %>
+					<a href="<%= topic_name %>" target="_blank" style="text-decoration: underline;"><%= topic_name %></a>
+				<% else %>
+					<%= topic_name %>
+				<% end %>
+				<br />
 			<% end %>
 		</h2>
 	<% end %>

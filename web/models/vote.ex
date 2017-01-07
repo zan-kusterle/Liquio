@@ -20,11 +20,11 @@ defmodule Liquio.Vote do
 	use Liquio.Web, :model
 
 	alias Liquio.Repo
+	alias Liquio.Poll
 	alias Liquio.Vote
 	alias Liquio.VoteData
 	alias Liquio.Reference
 	alias Liquio.TopicReference
-	alias Liquio.ResultsCache
 
 	schema "votes" do
 		belongs_to :poll, Liquio.Poll
@@ -60,7 +60,7 @@ defmodule Liquio.Vote do
 		changeset = changeset
 		|> put_change(:is_last, true)
 		result = Repo.insert(changeset)
-		invalidate_results_cache(Repo.get!(Poll, changeset.params["poll_id"]))
+		Poll.invalidate_results_cache(Repo.get!(Poll, changeset.params["poll_id"]))
 		result
 	end
 	def set(poll, identity, choice) do
@@ -73,7 +73,7 @@ defmodule Liquio.Vote do
 				:choice => choice
 			}
 		})
-		invalidate_results_cache(poll)
+		Poll.invalidate_results_cache(poll)
 		result
 	end
 
@@ -85,25 +85,10 @@ defmodule Liquio.Vote do
 			:is_last => true,
 			:data => nil
 		})
-		invalidate_results_cache(poll)
+		Poll.invalidate_results_cache(poll)
 		result
 	end
 
-	defp invalidate_results_cache(poll) do
-		ResultsCache.unset({"results", poll.id})
-		ResultsCache.unset({"contributions", poll.id})
-		case poll.kind do
-			"is_reference" ->
-				reference = Repo.get_by(Reference, for_choice_poll_id: poll.id)
-				ResultsCache.unset({"references", reference.poll_id})
-				ResultsCache.unset({"inverse_references", reference.reference_poll_id})
-			"is_topic" ->
-				topic = Repo.get_by(TopicReference, relevance_poll_id: poll.id)
-				ResultsCache.unset({"topic_polls", topic.path})
-				ResultsCache.unset({"topics", topic.poll_id})
-			_ -> nil
-		end
-	end
 
 	defp remove_current_last(poll_id, identity_id) do
 		current_last = Repo.get_by(Vote,

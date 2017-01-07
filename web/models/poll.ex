@@ -242,4 +242,20 @@ defmodule Liquio.Poll do
 			}
 		end
 	end
+
+	def invalidate_results_cache(poll) do
+		ResultsCache.unset({"results", poll.id})
+		ResultsCache.unset({"contributions", poll.id})
+		case poll.kind do
+			"is_reference" ->
+				reference = Repo.get_by(Reference, for_choice_poll_id: poll.id)
+				ResultsCache.unset({"references", reference.poll_id})
+				ResultsCache.unset({"inverse_references", reference.reference_poll_id})
+			"is_topic" ->
+				topic = Repo.get_by(TopicReference, relevance_poll_id: poll.id)
+				ResultsCache.unset({"topic_polls", topic.path})
+				ResultsCache.unset({"topics", topic.poll_id})
+			_ -> nil
+		end
+	end
 end
