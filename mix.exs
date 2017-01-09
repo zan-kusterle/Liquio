@@ -18,11 +18,7 @@ defmodule Liquio.Mixfile do
 	def application do
 		[
 			mod: {Liquio, []},
-			applications: [
-				:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-				:phoenix_ecto, :postgrex, :ssl, :uuid, :httpotion, :timex, :timex_ecto,
-				:guardian, :cors_plug, :comeonin, :basic_auth, :floki, :secure_random, :mailgun, :cachex, :quantum, :edeliver
-			]
+			extra_applications: [:logger, :ssl]
 		]
 	end
 
@@ -31,15 +27,16 @@ defmodule Liquio.Mixfile do
 
 	defp deps do
 		[
+			{:distillery, "~> 1.0", runtime: false},
+			{:phoenix_live_reload, "~> 1.0", only: :dev, runtime: false},
+			{:credo, "~> 0.5", only: [:dev, :test], runtime: false},
 			{:phoenix, "~> 1.2.0"},
-			{:distillery, "~> 1.0", warn_missing: false},
 			{:edeliver, "~> 1.4.0"},
 			{:phoenix_pubsub, "~> 1.0"},
 			{:cors_plug, "~> 1.1"},
 			{:postgrex, ">= 0.0.0"},
 			{:phoenix_ecto, "~> 3.0"},
 			{:phoenix_html, "~> 2.4"},
-			{:phoenix_live_reload, "~> 1.0", only: :dev},
 			{:gettext, "~> 0.9"},
 			{:cowboy, "~> 1.0"},
 			{:guardian, "~> 0.13.0"},
@@ -49,7 +46,6 @@ defmodule Liquio.Mixfile do
 			{:timex_ecto, "~> 3.0"},
 			{:comeonin, "~> 2.5"},
 			{:basic_auth, "~> 1.0.0"},
-			{:credo, "~> 0.5", only: [:dev, :test]},
 			{:floki, "~> 0.10.0"},
 			{:secure_random, "~> 0.5"},
 			{:mailgun, "~> 0.1.2"},

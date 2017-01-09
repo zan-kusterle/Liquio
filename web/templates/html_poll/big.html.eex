@@ -23,7 +23,7 @@
     <% end %>
 </div>
 
-<paper-dialog id="topics_dialog_<%= @poll.id %>" style="width: 600px;">
+<paper-dialog id="topics_dialog_<%= @poll.key %>" style="width: 600px;">
     <h2 style="margin-bottom: 20px;">All topics</h2>
 
     <%= for topic <- @poll.topics do %>
@@ -41,7 +41,7 @@
 </paper-dialog>
 
 <%= if assigns[:link] != nil and @link do %>
-    <a href="<%= html_poll_path(@conn, :show, @poll.id) %>" class="title"><%= @poll.title %></a>
+    <a href="<%= html_poll_path(@conn, :show, Liquio.Node.encode(@poll)) %>" class="title"><%= @poll.title %></a>
 <% else %>
     <h1 class="title"><%= if assigns[:title] do @title else @poll.title end %></h1>
 <% end %>

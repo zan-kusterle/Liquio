@@ -22,7 +22,7 @@
 		<paper-button dialog-dismiss>Close</paper-button>
 		<%= if assigns[:poll] do %>
 			<paper-button dialog-confirm raised>
-				<button onclick="reference_to_poll_id_input.value = '<%= @poll.id %>'; create_poll();">CREATE AND REFERENCE</button>
+				<button onclick="reference_to_poll_id_input.value = '<%= @poll.key %>'; create_poll();">CREATE AND REFERENCE</button>
 			</paper-button>
 		<% end %>
 		<paper-button dialog-confirm raised class="primary" onclick="create_poll()">Create</paper-button>

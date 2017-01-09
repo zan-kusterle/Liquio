@@ -1,8 +1,6 @@
 defmodule Liquio.HtmlReferenceController do
 	use Liquio.Web, :controller
 
-	alias Liquio.Helpers.PollHelper
-
 	def index(conn, %{"html_poll_id" => poll_id, "reference_poll_id" => reference_poll_url}) do
 		url = URI.parse(reference_poll_url)
 		reference_poll_id =
@@ -25,20 +23,20 @@ defmodule Liquio.HtmlReferenceController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
-		:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id", validator: &Poll.is_custom/1]},
+		:node => {Plugs.NodeParam, [name: "html_poll_id"]},
+		:reference_node => {Plugs.NodeParam, [name: "id"]}
 	},
-	def show(conn, %{:user => user, :poll => poll, :reference_poll => reference_poll}) do
+	def show(conn, %{:user => user, :node => node, :reference_node => reference_node}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
-		reference = Reference.get(poll, reference_poll) |> Repo.preload([:for_choice_poll])
+		for_choice_node = Node.for_reference_key(node, reference_node.key)
 
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("show.html",
-			title: poll.title || "Liquio",
+			title: "References | #{node.title}",
 			calculation_opts: calculation_opts,
-			poll: PollHelper.prepare(poll, calculation_opts, user),
-			reference_poll: PollHelper.prepare(reference_poll, calculation_opts, user),
-			for_choice_poll: PollHelper.prepare(reference.for_choice_poll, calculation_opts, user))
+			poll: Node.preload(node, calculation_opts, user),
+			reference_poll: Node.preload(reference_node, calculation_opts, user),
+			for_choice_node: Node.preload(for_choice_node, calculation_opts, user))
 	end)
 end

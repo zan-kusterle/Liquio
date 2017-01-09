@@ -21,14 +21,22 @@ defmodule Liquio.Vote do
 
 	alias Liquio.Repo
 	alias Liquio.Poll
+	alias Liquio.Node
 	alias Liquio.Vote
 	alias Liquio.VoteData
 	alias Liquio.Reference
 	alias Liquio.TopicReference
+	alias Liquio.ResultsCache
 
 	schema "votes" do
 		belongs_to :poll, Liquio.Poll
 		belongs_to :identity, Liquio.Identity
+
+		field :title, :string
+		field :choice_type, :string
+		field :key, :string
+
+		field :reference_key, :string
 
 		timestamps(inserted_at: :datetime, updated_at: false, usec: true)
 		field :is_last, :boolean
@@ -36,8 +44,13 @@ defmodule Liquio.Vote do
 		embeds_one :data, VoteData
 	end
 
-	def current_by(poll, identity) do
-		vote = Repo.get_by(Vote, identity_id: identity.id, poll_id: poll.id, is_last: true)
+	def current_by(node, identity) do current_by(node, identity, nil) end
+	def current_by(node, identity, reference_node) do
+		vote = if reference_node == nil do
+			from(v in Vote, where: v.key == ^node.key and v.identity_id == ^identity.id and is_nil(v.reference_key) and v.is_last == true) |> Repo.one
+		else
+			Repo.get_by(Vote, key: node.key, identity_id: identity.id, reference_key: reference_node.key, is_last: true)
+		end
 		if vote != nil and vote.data != nil do
 			vote
 		else
@@ -56,45 +69,65 @@ defmodule Liquio.Vote do
 	end
 
 	def set(changeset) do
-		remove_current_last(changeset.params["poll_id"], changeset.params["identity_id"])
+		remove_current_last(changeset.params["poll_id"], changeset.params["identity_id"], nil)
 		changeset = changeset
 		|> put_change(:is_last, true)
 		result = Repo.insert(changeset)
 		Poll.invalidate_results_cache(Repo.get!(Poll, changeset.params["poll_id"]))
 		result
 	end
-	def set(poll, identity, choice) do
-		remove_current_last(poll.id, identity.id)
+	def set(node, identity, choice) do set(node, identity, choice, nil) end
+	def set(node, identity, choice, reference_node) do
+		reference_key = reference_node && reference_node.key
+		remove_current_last(node.key, identity.id, reference_key)
 		result = Repo.insert(%Vote{
-			:poll_id => poll.id,
+			:title => node.title,
+			:choice_type => node.choice_type,
+			:key => node.key,
+			:reference_key => reference_key,
 			:identity_id => identity.id,
 			:is_last => true,
 			:data => %VoteData{
 				:choice => choice
 			}
 		})
-		Poll.invalidate_results_cache(poll)
+		case result do
+			{:ok, vote} -> invalidate_results_cache(node, vote)
+			true -> nil
+		end
 		result
 	end
 
-	def delete(poll, identity) do
-		remove_current_last(poll.id, identity.id)
+	def delete(node, identity) do delete(node, identity, nil) end
+	def delete(node, identity, reference_node) do
+		reference_key = reference_node && reference_node.key
+		remove_current_last(node.key, identity.id, reference_key)
 		result = Repo.insert!(%Vote{
-			:poll_id => poll.id,
+			:title => node.title,
+			:choice_type => node.choice_type,
+			:key => node.key,
+			:reference_key=> reference_key,
 			:identity_id => identity.id,
 			:is_last => true,
 			:data => nil
 		})
-		Poll.invalidate_results_cache(poll)
+		invalidate_results_cache(node, result)
 		result
 	end
 
-
-	defp remove_current_last(poll_id, identity_id) do
-		current_last = Repo.get_by(Vote,
-			poll_id: poll_id, identity_id: identity_id, is_last: true)
+	defp remove_current_last(key, identity_id, reference_key) do
+		current_last = Vote.current_by(Node.from_key(key), %{:id => identity_id}, Node.from_key(reference_key))
 		if current_last do
 			Repo.update! Ecto.Changeset.change current_last, is_last: false
+		end
+	end
+
+	defp invalidate_results_cache(node, vote) do
+		ResultsCache.unset({"results", node.key})
+		ResultsCache.unset({"contributions", node.key})
+		if vote.reference_key != nil do
+			ResultsCache.unset({"references", node.key})
+			ResultsCache.unset({"inverse_references", vote.reference_key})
 		end
 	end
 end

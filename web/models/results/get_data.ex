@@ -21,12 +21,12 @@ defmodule Liquio.Results.GetData do
 		inverse_delegations
 	end
 
-	def get_votes(poll_id, datetime) do
+	def get_votes(key, datetime, reference_key) do
 		query = "SELECT DISTINCT ON (v.identity_id) v.identity_id, v.datetime, v.data
 			FROM votes AS v
-			WHERE v.poll_id = #{poll_id} AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			WHERE v.key = $1 AND v.reference_key #{if reference_key do "= $2" else "IS NULL" end} AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
-		rows = Ecto.Adapters.SQL.query!(Repo, query , []).rows |> Enum.filter(& Enum.at(&1, 2))
+		rows = Ecto.Adapters.SQL.query!(Repo, query , if reference_key do [key, reference_key] else [key] end).rows |> Enum.filter(& Enum.at(&1, 2))
 		votes = for row <- rows, into: %{} do
 			{date, {h, m, s, _}} = Enum.at(row, 1)
 			data = {
@@ -36,6 +36,12 @@ defmodule Liquio.Results.GetData do
 			{Enum.at(row, 0), data}
 		end
 		votes
+	end
+
+	def prepare_votes(votes) do
+		for vote <- votes, into: %{} do
+			{vote.identity_id, {vote.datetime, vote.data.choice}}
+		end
 	end
 
 	def create_random(filename, num_identities, num_votes, num_delegations_per_identity) do

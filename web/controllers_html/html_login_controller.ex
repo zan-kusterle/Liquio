@@ -9,10 +9,27 @@ defmodule Liquio.HtmlLoginController do
 	end
 
 	def create(conn, %{"email" => email}) do
-		Token.new(email)
-		conn
-		|> put_flash(:info, "Check your inbox at #{email}")
-		|> redirect(to: html_login_path(conn, :index))	
+		if Mix.env == :dev do
+			identity = Repo.get_by(Identity, email: email)
+			identity = if identity do
+				identity
+			else
+				name = case String.split(email, "@", parts: 2) do
+					[left, _] ->  left
+					[_] -> "dev"
+				end
+				identity = Identity.create(Identity.changeset(%Identity{email: email}, %{"username" => name, "name" => name}))
+			end
+			conn
+			|> Guardian.Plug.sign_in(identity)
+			|> put_flash(:info, "Hello, #{identity.name}")
+			|> redirect(to: html_identity_path(conn, :show, identity.id))
+		else
+			Token.new(email)
+			conn
+			|> put_flash(:info, "Check your inbox at #{email}")
+			|> redirect(to: html_login_path(conn, :index))
+		end
 	end
 
 	def show(conn, %{"id" => token}) do

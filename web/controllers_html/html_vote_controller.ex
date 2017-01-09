@@ -3,17 +3,22 @@ defmodule Liquio.HtmlVoteController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id"]},
+		:node => {Plugs.NodeParam, [name: "html_poll_id"]},
 		:choice => {Plugs.StringParam, [name: "choice", maybe: true]}
 	},
-	def create(conn, %{:user => user, :poll => poll, :choice => choice}) do
+	def create(conn, %{:user => user, :node => node, :choice => choice}) do
+		reference_node = if Map.has_key?(conn.params, "reference_key") do
+			Node.from_key(conn.params["reference_key"])
+		else
+			nil
+		end
 		calculation_opts = get_calculation_opts_from_conn(conn)
 
 		{level, message} =
 			if choice != nil and choice != "null" do
-				case parse_choice(choice, poll.choice_type) do
+				case parse_choice(choice, node.choice_type) do
 					{:ok, choice} ->
-						Vote.set(poll, user, choice)
+						Vote.set(node, user, choice, reference_node)
 						if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 							{:info, "Your vote is now live. Share the poll with other people."}
 						else
@@ -23,7 +28,7 @@ defmodule Liquio.HtmlVoteController do
 						{:error, message}
 				end
 			else
-				Vote.delete(poll, user)
+				Vote.delete(node, user, reference_node)
 				{:info, "You no longer have a vote in this poll."}
 			end
 

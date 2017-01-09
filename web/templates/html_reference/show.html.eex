@@ -18,7 +18,7 @@
 		<p class="heading">EVIDENCE FOR CHOICE</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Choice For Which Reference Poll Provides Evidence", contributions: @for_choice_poll.contributions, poll: @for_choice_poll, topics: [] %>
+			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Choice For Which Reference Poll Provides Evidence", poll: @for_choice_node %>
 		</main>
 	</div>
 

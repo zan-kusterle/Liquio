@@ -43,7 +43,7 @@ defmodule Liquio.Poll do
 	def create(choice_type, title) do
 		Repo.insert!(%Poll{
 			:kind => "custom",
-			:choice_type => choice_type,
+			:choice_type => to_string(choice_type),
 			:title => capitalize_title(title),
 		})
 	end
@@ -51,7 +51,7 @@ defmodule Liquio.Poll do
 	def force_get(choice_type, title) do
 		query = from(p in Poll, where:
 			p.kind == "custom" and
-			p.choice_type == ^choice_type and
+			p.choice_type == ^to_string(choice_type) and
 			p.title == ^capitalize_title(title)
 		)
 		poll = query

@@ -1,4 +1,4 @@
-<p class="heading"><%= @poll.choice_type |> String.replace("_", " ") |> String.upcase %> POLL</p>
+<p class="heading"><%= @poll.choice_type |> to_string |> String.replace("_", " ") |> String.upcase %> POLL</p>
 
 <main role="main" class="main">
 	<%= render "big.html", show_actions: true, add_topic: true, conn: @conn, poll: @poll %>
@@ -11,7 +11,7 @@
 		<%= render "references.html", poll: @poll, references: @poll.references %>
 	<% end %>
 
-	<form id="view_reference_form" action="/polls/<%= @poll.id %>/references" class="pure-form" <%= unless Enum.empty?(@poll.references) do %> style="margin-top: 40px;"<% end %>>
+	<form id="view_reference_form" action="/polls/<%= Liquio.Node.encode(@poll) %>/references" class="pure-form" <%= unless Enum.empty?(@poll.references) do %> style="margin-top: 40px;"<% end %>>
 		<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1 url-input" />
 		<paper-button raised class="poll-button" onclick="view_reference_form.submit()">View reference</paper-button>
 	</form>

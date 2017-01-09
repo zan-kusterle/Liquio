@@ -3,8 +3,14 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 
 	def change do
 		create table(:votes) do
-			add :poll_id, references(:polls, on_delete: :nothing), null: false
+			add :poll_id, references(:polls, on_delete: :nothing), null: true
 			add :identity_id, references(:identities, on_delete: :nothing), null: false
+
+			add :title, :string, null: false
+			add :choice_type, :string, null: false
+			add :key, :string, null: false
+
+			add :reference_key, :string, null: true
 
 			add :datetime, :datetime, null: false
 			add :is_last, :boolean, null: false
@@ -12,8 +18,10 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :data, :map, null: true
 		end
 
-		create index(:votes, [:poll_id])
 		create index(:votes, [:identity_id])
+		create index(:votes, [:choice_type])
+		create index(:votes, [:key])
+		create index(:votes, [:reference_key])
 		create index(:votes, [:datetime])
 		create index(:votes, [:is_last])
 	end
