@@ -45,14 +45,7 @@ defmodule Liquio.Identity do
 	end
 
 	def create(changeset) do
-		trust_metric_poll = Repo.insert!(%Liquio.Poll{
-			:kind => "is_human",
-			:choice_type => "probability",
-			:title => nil
-		})
-
 		changeset = changeset
-		|> put_change(:trust_metric_poll_id, trust_metric_poll.id)
 		Repo.insert(changeset)
 	end
 

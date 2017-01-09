@@ -3,39 +3,21 @@ defmodule Liquio.PollController do
 
 	alias Liquio.Helpers.PollHelper
 
-	plug :scrub_params, "poll" when action in [:create]
-	def create(conn, %{"poll" => params}) do
-		changeset = Poll.changeset(%Poll{}, params)
-		case Poll.create(changeset) do
-			{:ok, poll} ->
-				poll = Map.put(poll, :results, Poll.empty_result())
-				conn
-				|> put_status(:created)
-				|> put_resp_header("location", poll_path(conn, :show, poll))
-				|> render("show.json", poll: poll)
-			{:error, changeset} ->
-				conn
-				|> put_status(:unprocessable_entity)
-				|> render(Liquio.ChangesetView, "error.json", changeset: changeset)
-		end
-	end
-
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
+		:node => {Plugs.NodeParam, [name: "id"]},
 		:user => {Plugs.CurrentUser, [require: false]}
 	},
-	def show(conn, %{:poll => poll, :user => user}) do
+	def show(conn, %{:node => node, :user => user}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
-		|> render("show.json", poll: PollHelper.prepare(poll, calculation_opts, user))
+		|> render("show.json", poll: Node.preload(node, calculation_opts, user))
 	end)
 
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},
-		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
-		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url"]},
+		:node => {Plugs.NodeParam, [name: "id"]},
+		:user => {Plugs.CurrentUser, [require: false]}
 	},
-	def contributions(conn, %{:poll => poll}) do
+	def contributions(conn, %{:node => poll}) do
 		contributions = poll
 		|> Poll.calculate_contributions(get_calculation_opts_from_conn(conn))
 		|> Enum.map(fn(contribution) ->

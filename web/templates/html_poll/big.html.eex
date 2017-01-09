@@ -1,18 +1,10 @@
-<% {visible_topics, hidden_topics} = Liquio.TopicReference.partition_visible(@poll.topics) %>
-
 <div class="topics"<%= if assigns[:add_topic] != nil and @add_topic do %> style="margin-top: -25px;"<% end %>>
-    <%= for topic <- visible_topics do %>
+    <%= for topic <- @poll.topics do %>
         <p class="topic">
             <a href="<%= html_topic_path(@conn, :show, Enum.join(topic.path, ">")) %>/top">#<%= Enum.join(topic.path, ">") %></a>
             <%= if @show_actions do %>
                 <a href="<%= html_topic_path(@conn, :reference, Enum.join(topic.path, ">"), @poll.id) %>"><i class="fa fa-adjust" style="margin-left: 2px;"></i></a>
             <% end %>
-        </p>
-    <% end %>
-
-    <%= if Enum.count(hidden_topics) > 0 do %>
-        <p class="topic">
-            <a onclick="topics_dialog_<%= @poll.id %>.open()"><%= Enum.count(hidden_topics) %> more</a>
         </p>
     <% end %>
 
@@ -85,7 +77,7 @@
                             </div>
                         </td>
                         <td class="choice">
-                            <%= render "score_reference.html", choice_type: @poll.choice_type, results: Liquio.Poll.results_for_contribution(@poll, contribution) %>
+                            <%= render "score_reference.html", choice_type: @poll.choice_type, results: @poll.own_contribution %>
                         </td>
                         <td class="date"><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
                     </tr>

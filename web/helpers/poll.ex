@@ -1,32 +1,7 @@
 defmodule Liquio.Helpers.PollHelper do
-	alias Liquio.{Repo, Identity, Poll, TopicReference, Vote, Reference, HtmlHelper}
+	alias Liquio.{Repo, Identity}
 
 	def prepare(poll, calculation_opts, current_user, opts \\ []) do
-		poll = if opts[:from_default_cache] do
-			if poll.latest_default_results do
-				results = Liquio.Poll.unserialize_results(poll.latest_default_results)
-				topics = poll.latest_default_results["topics"] |> Enum.map(& %TopicReference{:path => String.split(&1, ">")})
-				poll |> Map.merge(%{
-					:topics => topics,
-					:results => results
-				})
-			else
-				poll |> Map.merge(%{
-					:topics => []
-				})
-			end
-		else
-			topics = TopicReference.for_poll(poll, calculation_opts)
-			contributions = poll |> Poll.calculate_contributions(calculation_opts) |> Enum.map(fn(contribution) ->
-				Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
-			end)
-			results = Poll.calculate(poll, calculation_opts)
-			poll |> Map.merge(%{
-				:topics => topics,
-				:contributions => contributions,
-				:results => results
-			})
-		end
 		
 		own_vote = if current_user do Vote.current_by(poll, current_user) else nil end
 		poll = Map.put(poll, :own_vote, own_vote)

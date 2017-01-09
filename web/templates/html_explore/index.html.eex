@@ -40,13 +40,6 @@
 				<%= if assigns[:topic_path] do %>
 					<a href="<%= html_topic_path(@conn, :reference, Enum.join(@topic_path, ">"), poll.id) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
 				<% end %>
-
-				<div class="topics">
-					<% {visible_topics, hidden_topics} = Liquio.TopicReference.partition_visible(poll.topics) %>
-					<%= for topic <- visible_topics do %>
-						<a href="<%= html_topic_path(@conn, :show, Enum.join(topic.path, ">")) %>/top" style="margin-right: 15px; font-size: 13px;">#<%= Enum.join(topic.path, ">") %></a>
-					<% end %>
-				</div>
 			</div>
 		</div>
 	<% end %>
