@@ -259,9 +259,6 @@ defmodule Liquio.LandingController do
 				references: []
 			}
 		]
-		polls = %{
-			:not_the_best_idea => Poll.force_get("probability", "Vanilla Ice Cream Flavor Rating")
-		}
 
 		calculate_opts = get_calculation_opts_from_conn(conn)
 		identity = Guardian.Plug.current_resource(conn)
@@ -277,7 +274,7 @@ defmodule Liquio.LandingController do
 			|> Map.put(:num_references, Enum.count(example.references))
 		end)
 
-		render conn, "index.html", examples: examples, polls: polls
+		render conn, "index.html", examples: examples
 	end
 
 	def learn(conn, _params) do

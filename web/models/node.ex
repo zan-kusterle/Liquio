@@ -24,7 +24,7 @@ defmodule Liquio.Node do
 		end
 		node = Map.put(node, :reference_key, nil)
 		node = Map.put(node, :title, node.title |> String.trim)
-		node = Map.put(node, :key, "#{node.title} #{node.choice_type}" |> String.downcase |> String.replace(" ", "_"))
+		node = Map.put(node, :key, get_key(node))
 
 		if String.length(node.title) > 0 do
 			{:ok, node}
@@ -35,25 +35,53 @@ defmodule Liquio.Node do
 
 	def encode(node) do
 		choice_types = %{
-			:probability => "Probability",
-			:quantity => "Quantity",
-			:time_quantity => "Time Series"
+			"probability" => "Probability",
+			"quantity" => "Quantity",
+			"time_quantity" => "Time Series",
+			nil => ""
 		}
 
-		"#{node.title} #{choice_types[String.to_atom(node.choice_type)]}" |> String.replace(" ", "-")
+		"#{node.title} #{choice_types[node.choice_type]}" |> String.trim |> String.replace(" ", "-")
 	end
 
 	def from_key(key) do
-		%Node{
-			:title => key,
-			:choice_type => "probability",
-			:key => key,
-			:reference_key => nil
+		choice_types = %{
+			"probability" => :probability, 
+			"quantity" => :quantity,
+			"time series" => :time_quantity
 		}
+
+		key_spaces = String.replace(key, "_", " ")
+		ends_with = Enum.find(Map.keys(choice_types), & String.ends_with?(key_spaces, &1))
+		if ends_with == nil do
+			%Node{
+				:title => key_spaces,
+				:choice_type => nil,
+				:key => key,
+				:reference_key => nil
+			}
+		else
+			title = key_spaces |> String.replace_trailing(ends_with, "") |> String.trim
+			%Node{
+				:title => title,
+				:choice_type => to_string(choice_types[ends_with]),
+				:key => key,
+				:reference_key => nil
+			}
+		end
 	end
 
 	def for_reference_key(node, reference_key) do
-		Map.put(node, :reference_key, reference_key)
+		node = node
+		|> Map.put(:reference_key, reference_key)
+		|> Map.put(:choice_type, if node.choice_type do node.choice_type else "probability" end)
+		
+		node = Map.put(node, :key, get_key(node))
+		node
+	end
+
+	defp get_key(node) do
+		"#{node.title} #{node.choice_type}" |> String.downcase |> String.replace(" ", "_")
 	end
 
 	def preload(node, calculation_opts) do
@@ -94,7 +122,7 @@ defmodule Liquio.Node do
 		end
 
 		key = {
-			{"contributions", node.key, calculation_opts.datetime},
+			{"contributions", {node.key, node.reference_key}, calculation_opts.datetime},
 			{calculation_opts.trust_metric_url}
 		}
 		cache_results = ResultsCache.get(key)
@@ -130,7 +158,7 @@ defmodule Liquio.Node do
 		reference_nodes = if cache_results do
 			cache_results
 		else
-			reference_nodes = from(v in Vote, where: v.key == ^node.key and not is_nil(v.reference_key))
+			reference_nodes = from(v in Vote, where: v.key == ^node.key and not is_nil(v.reference_key) and v.is_last == true and not is_nil(v.data))
 			|> Repo.all
 			|> Enum.group_by(& &1.reference_key)
 			|> prepare_reference_nodes(calculation_opts)
@@ -155,7 +183,7 @@ defmodule Liquio.Node do
 		inverse_reference_nodes = if cache_results do
 			cache_results
 		else
-			inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key)
+			inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key and v.is_last == true and not is_nil(v.data))
 			|> Repo.all
 			|> Enum.group_by(& &1.key)
 			|> prepare_reference_nodes(calculation_opts)

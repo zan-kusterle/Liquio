@@ -25,10 +25,10 @@
 			<div class="inverse-reference">
 				<div style="margin-right: 15px; display: inline-block;">
 					<%= render Liquio.HtmlPollView, "score_reference.html",
-						choice_type: reference.poll.choice_type,
-						results: reference.poll.results %>
+						choice_type: reference.choice_type,
+						results: reference.results %>
 				</div>
-				<a href="/polls/<%= reference.poll.id %>"><%= reference.poll.title %></a>
+				<a href="/polls/<%= Liquio.Node.encode(reference) %>"><%= reference.title %></a>
 			</div>
 		<% end %>
 	</main>

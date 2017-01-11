@@ -12,13 +12,15 @@ defmodule Liquio.HtmlVoteController do
 		else
 			nil
 		end
+		node = Node.for_reference_key(node, reference_node && reference_node.key)
+
 		calculation_opts = get_calculation_opts_from_conn(conn)
 
 		{level, message} =
 			if choice != nil and choice != "null" do
 				case parse_choice(choice, node.choice_type) do
 					{:ok, choice} ->
-						Vote.set(node, user, choice, reference_node)
+						Vote.set(node, user, choice)
 						if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 							{:info, "Your vote is now live. Share the poll with other people."}
 						else
@@ -28,7 +30,7 @@ defmodule Liquio.HtmlVoteController do
 						{:error, message}
 				end
 			else
-				Vote.delete(node, user, reference_node)
+				Vote.delete(node, user)
 				{:info, "You no longer have a vote in this poll."}
 			end
 

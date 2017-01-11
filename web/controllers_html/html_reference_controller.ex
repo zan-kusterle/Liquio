@@ -30,6 +30,9 @@ defmodule Liquio.HtmlReferenceController do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		for_choice_node = Node.for_reference_key(node, reference_node.key)
 
+		IO.inspect for_choice_node.key
+		IO.inspect for_choice_node.reference_key
+
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("show.html",
