@@ -91,7 +91,7 @@
 											</div>
 										<% end %>
 
-										<a href="/polls/<%= poll.id %>"><%= poll.title %></a>
+										<a href="/nodes/<%= poll.id %>"><%= poll.title %></a>
 									</div>
 								<% end %>
 							</div>
@@ -128,7 +128,7 @@
 		<% else %>
 			<div class="section-title" style="font-size: 20px; margin-top: 60px;">I trust this identity</div>
 
-			<form action="/polls/<%= @identity.trust_metric_poll_id %>/vote" method="POST" class="cast-vote">
+			<form action="/nodes/<%= @identity.trust_metric_poll_id %>/vote" method="POST" class="cast-vote">
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 				<input type="hidden" name="redirect" value="/identities/<%= @identity.id %>" />
 				<button type="submit" name="choice" value="0.0" class="pure-button false-choice<%= if @own_is_human_vote != nil and @own_is_human_vote.data.choice["main"] == 0.0 do %> pure-button-active<% end %>">
@@ -136,7 +136,7 @@
 				</button>
 			</form>
 
-			<form action="/polls/<%= @identity.trust_metric_poll_id %>/vote" method="POST" class="cast-vote">
+			<form action="/nodes/<%= @identity.trust_metric_poll_id %>/vote" method="POST" class="cast-vote">
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 				<input type="hidden" name="redirect" value="/identities/<%= @identity.id %>" />
 				<button type="submit" name="choice" value="1.0" class="pure-button true-choice<%= if @own_is_human_vote != nil and @own_is_human_vote.data.choice["main"] == 1.0 do %> pure-button-active<% end %>">

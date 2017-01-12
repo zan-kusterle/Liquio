@@ -43,8 +43,6 @@ defmodule Liquio.Web do
 			alias Liquio.Identity
 			alias Liquio.Delegation
 			alias Liquio.Vote
-			alias Liquio.Poll
-			alias Liquio.TopicReference
 			alias Liquio.Reference
 			alias Liquio.Token
 			alias Liquio.Node

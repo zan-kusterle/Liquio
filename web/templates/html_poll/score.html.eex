@@ -10,7 +10,7 @@
 		<%= if assigns[:editable] != nil and @editable do %>
 			<% current_choice = if @own_vote do @own_vote.data.choice["main"] else 0.5 end %>
 
-			<form id="vote_form" action="/polls/<%= Liquio.Node.encode(@poll) %>/vote" method="POST" class="pure-form">
+			<form id="vote_form" action="/nodes/<%= Liquio.Node.encode(@poll) %>/vote" method="POST" class="pure-form">
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 				<input type="hidden" name="reference_key" value="<%= @poll.reference_key %>" />
@@ -42,7 +42,7 @@
 				<%= if @own_vote do %>
 					<a onclick="remove_vote_form.submit()" class="vote-action" style="border-left: 2px solid rgba(0,0,0,0.08);">Remove <i class="fa fa-remove" aria-hidden="true" style="margin-right: 2px;"></i></a>
 
-					<form id="remove_vote_form" action="/polls/<%= Liquio.Node.encode(@poll) %>/vote" method="POST" style="display: none;">
+					<form id="remove_vote_form" action="/nodes/<%= Liquio.Node.encode(@poll) %>/vote" method="POST" style="display: none;">
 						<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 						<input type="hidden" name="reference_key" value="<%= @poll.reference_key %>" />
 						<input type="hidden" name="choice" value="null" />

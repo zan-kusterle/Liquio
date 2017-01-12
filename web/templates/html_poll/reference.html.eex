@@ -19,8 +19,8 @@
 		<%= render "score_reference.html", choice_type: @reference_poll.choice_type, results: @reference_poll.results %>
 
 		<p class="reference-text">
-			<a href="/polls/<%= Liquio.Node.encode(@reference_poll) %>"><%= truncate @reference_poll.title, 120 %></a>
-			<a href="/polls/<%= Liquio.Node.encode(@poll) %>/references/<%= Liquio.Node.encode(@reference_poll) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
+			<a href="/nodes/<%= Liquio.Node.encode(@reference_poll) %>"><%= truncate @reference_poll.title, 120 %></a>
+			<a href="/nodes/<%= Liquio.Node.encode(@poll) %>/references/<%= Liquio.Node.encode(@reference_poll) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
 		</p>
 	</div>
 </div>

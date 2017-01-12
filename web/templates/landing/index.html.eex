@@ -16,7 +16,7 @@
 	<div class="pure-g">
 		<%= for node <- @nodes do %>
 			<div class="example pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
-				<a class="liquio-inline" href="/polls/<%= Liquio.Node.encode(node) %>" style="text-decoration: none; display: inline-block;">
+				<a class="liquio-inline" href="/nodes/<%= Liquio.Node.encode(node) %>" style="text-decoration: none; display: inline-block;">
 					<i class="fa fa-<%= node.fa_icon %>" aria-hidden="true"></i>
 					<p class="title"><%= node.title %></p>
 					<%= render Liquio.HtmlPollView, "embed.html", poll: node %>

@@ -46,14 +46,10 @@ defmodule Liquio.Router do
 		end
 		post "/identities/me/preferences", HtmlIdentityController, :update
 
-		resources "/polls", HtmlPollController, only: [:create, :show] do
+		resources "/nodes", HtmlPollController, only: [:create, :show] do
 			resources "/vote", HtmlVoteController, only: [:create, :delete]
 			resources "/references", HtmlReferenceController, only: [:index, :show]
 		end
-
-		get "/topics/:path", HtmlTopicController, :show
-		get "/topics/:path/:sort", HtmlTopicController, :show
-		get "/topics/:path/polls/:poll_id", HtmlTopicController, :reference
 
 		get "/explore/:sort", HtmlExploreController, :index
 	
@@ -63,7 +59,7 @@ defmodule Liquio.Router do
 	scope "/", Liquio do
 		pipe_through :embed
 
-		get "/polls/:html_poll_id/embed", HtmlPollController, :embed
+		get "/nodes/:html_poll_id/embed", HtmlPollController, :embed
 		get "/topics/:path/:sort/embed", HtmlTopicController, :show_embed
 	end
 	
@@ -77,7 +73,7 @@ defmodule Liquio.Router do
 			resources "/delegations", DelegationController, only: [:create, :delete], singleton: true
 		end
 		
-		resources "/polls", PollController, only: [:create, :show] do
+		resources "/nodes", PollController, only: [:create, :show] do
 			resources "/votes", VoteController, only: [:create, :index, :show]
 			resources "/votes", VoteController, only: [:delete], singleton: true
 			get "/contributions", PollController, :contributions

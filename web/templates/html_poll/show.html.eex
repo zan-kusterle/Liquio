@@ -11,7 +11,7 @@
 		<%= render "references.html", poll: @poll, references: @poll.references %>
 	<% end %>
 
-	<form id="view_reference_form" action="/polls/<%= Liquio.Node.encode(@poll) %>/references" class="pure-form" <%= unless Enum.empty?(@poll.references) do %> style="margin-top: 40px;"<% end %>>
+	<form id="view_reference_form" action="/nodes/<%= Liquio.Node.encode(@poll) %>/references" class="pure-form" <%= unless Enum.empty?(@poll.references) do %> style="margin-top: 40px;"<% end %>>
 		<input name="reference_poll_id" type="url" required placeholder="Poll URL" class="pure-input-1 url-input" />
 		<paper-button raised class="poll-button" onclick="view_reference_form.submit()">View reference</paper-button>
 	</form>
@@ -28,7 +28,7 @@
 						choice_type: reference.choice_type,
 						results: reference.results %>
 				</div>
-				<a href="/polls/<%= Liquio.Node.encode(reference) %>"><%= reference.title %></a>
+				<a href="/nodes/<%= Liquio.Node.encode(reference) %>"><%= reference.title %></a>
 			</div>
 		<% end %>
 	</main>
