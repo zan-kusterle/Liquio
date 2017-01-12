@@ -7,6 +7,16 @@ defmodule Liquio.Node do
 	alias Liquio.{Node, Identity, Vote, ResultsCache, Repo}
 	alias Liquio.Results.{GetData, CalculateContributions, AggregateContributions}
 
+	def new(title, choice_type) do new(title, choice_type, nil) end
+	def new(title, choice_type, reference_key) do
+		%Node{
+			title: title,
+			choice_type: choice_type,
+			key: get_key(title, choice_type),
+			reference_key: reference_key
+		}
+	end
+
 	def decode(value) do
 		choice_types = %{
 			"Probability" => :probability, 
@@ -81,7 +91,10 @@ defmodule Liquio.Node do
 	end
 
 	defp get_key(node) do
-		"#{node.title} #{node.choice_type}" |> String.downcase |> String.replace(" ", "_")
+		get_key(node.title, node.choice_type)
+	end
+	defp get_key(title, choice_type) do
+		"#{title} #{choice_type}" |> String.downcase |> String.replace(" ", "_")
 	end
 
 	def preload(node, calculation_opts) do

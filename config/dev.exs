@@ -46,8 +46,5 @@ config :liquio, trust_metric_cache_time_seconds: 5
 config :liquio, admin_identity_ids: 1..10
 config :liquio, token_lifespan_minutes: 60
 config :liquio, results_cache_seconds: 20
-config :quantum, cron: [
-	"*/1 * * * *": {Liquio.DefaultResults, :update}
-]
 
 import_config "dev.secret.exs"

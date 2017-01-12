@@ -20,14 +20,13 @@ defmodule Liquio.HtmlPollController do
 
 	plug :put_layout, "minimal.html" when action in [:embed]
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "html_poll_id", validator: &Poll.is_custom/1]},
-		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url", maybe: true]},
+		:node => {Plugs.NodeParam, [name: "html_poll_id"]},
 	},
-	def embed(conn, %{:poll => poll}) do
+	def embed(conn, %{:node => node}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
-
 		conn
+		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("embed.html",
-			poll: PollHelper.prepare(poll, calculation_opts, nil, put_references: true))
+			poll: Node.preload(node, calculation_opts, nil))
 	end)
 end

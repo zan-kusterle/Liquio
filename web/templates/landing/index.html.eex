@@ -14,12 +14,12 @@
 	<h2 class="heading"><a href="/explore/top" style="text-decoration: none; color: #1f8dd6;">EXPLORE</a></h2>
 
 	<div class="pure-g">
-		<%= for poll <- @examples do %>
+		<%= for node <- @nodes do %>
 			<div class="example pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
-				<a class="liquio-inline" href="/polls/<%= poll.id %>" style="text-decoration: none; display: inline-block;">
-					<i class="fa fa-<%= poll.fa_icon %>" aria-hidden="true"></i>
-					<p class="title"><%= poll.title %></p>
-					<%= render Liquio.HtmlPollView, "embed.html", poll: poll %>
+				<a class="liquio-inline" href="/polls/<%= Liquio.Node.encode(node) %>" style="text-decoration: none; display: inline-block;">
+					<i class="fa fa-<%= node.fa_icon %>" aria-hidden="true"></i>
+					<p class="title"><%= node.title %></p>
+					<%= render Liquio.HtmlPollView, "embed.html", poll: node %>
 				</a>
 			</div>
 		<%= end %>
