@@ -18,6 +18,8 @@ config :liquio, Liquio.Endpoint,
 
 config :liquio, ecto_repos: [Liquio.Repo]
 
+config :mix_docker, image: "liquio/image"
+
 # Configures Elixir's Logger
 config :logger, :console,
 	format: "$time $metadata[$level] $message\n",

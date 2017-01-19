@@ -37,10 +37,18 @@ defmodule Liquio.Node do
 		node = Map.put(node, :key, get_key(node))
 
 		if String.length(node.title) > 0 do
-			{:ok, node}
+			node
 		else
-			{:ok, nil}
+			nil
 		end
+	end
+
+	def decode_many(value) do
+		nodes = value
+		|> String.split("_")
+		|> Enum.filter(& String.length(&1) > 0)
+		|> Enum.map(& decode(&1))
+		|> Enum.filter(& &1 != nil)
 	end
 
 	def encode(node) do
@@ -251,7 +259,7 @@ defmodule Liquio.Node do
 			node
 		end
 
-		contribution = Enum.find(node.contributions, & &1.identity.id == user.id)
+		contribution = if user do Enum.find(node.contributions, & &1.identity.id == user.id) else nil end
 		total_voting_power = node.contributions |> Enum.map(& &1.voting_power) |> Enum.sum
 
 		user_contribution = if contribution == nil do

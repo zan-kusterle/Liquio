@@ -23,20 +23,32 @@ defmodule Liquio.HtmlReferenceController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
-		:node => {Plugs.NodeParam, [name: "html_poll_id"]},
-		:reference_node => {Plugs.NodeParam, [name: "id"]}
+		:nodes => {Plugs.NodesParam, [name: "html_poll_id"]},
+		:reference_nodes => {Plugs.NodesParam, [name: "id"]}
 	},
-	def show(conn, %{:user => user, :node => node, :reference_node => reference_node}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
-		for_choice_node = Node.for_reference_key(node, reference_node.key)
-		
-		conn
-		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render("show.html",
-			title: "References | #{node.title}",
-			calculation_opts: calculation_opts,
-			poll: Node.preload(node, calculation_opts, user),
-			reference_poll: Node.preload(reference_node, calculation_opts, user),
-			for_choice_node: Node.preload(for_choice_node, calculation_opts, user))
+	def show(conn, params = %{:user => user, :nodes => nodes, :reference_nodes => reference_nodes}) do
+		node_unique_choice_types = nodes |> Enum.map(& &1.choice_type) |> Enum.uniq
+		reference_node_unique_choice_types = reference_nodes |> Enum.map(& &1.choice_type) |> Enum.uniq
+		if Enum.count(node_unique_choice_types) > 1 or Enum.count(reference_node_unique_choice_types) > 1 do
+			conn
+			|> put_flash(:info, "All nodes must be of same type.")
+			|> redirect(to: html_poll_html_reference_path(conn, :show, params["html_poll_id"], params["id"]))
+		else
+			calculation_opts = get_calculation_opts_from_conn(conn)
+			for_choice_nodes = nodes |> Enum.flat_map(fn(node) ->
+				reference_nodes |> Enum.map(fn(reference_node) ->
+					Node.for_reference_key(node, reference_node.key)
+				end)
+			end)
+			
+			conn
+			|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
+			|> render("show.html",
+				title: "Decide references",
+				calculation_opts: calculation_opts,
+				nodes: Enum.map(nodes, & Node.preload(&1, calculation_opts, user)),
+				reference_nodes: Enum.map(reference_nodes, & Node.preload(&1, calculation_opts, user)),
+				for_choice_nodes: Enum.map(for_choice_nodes, & Node.preload(&1, calculation_opts, user)))
+		end
 	end)
 end

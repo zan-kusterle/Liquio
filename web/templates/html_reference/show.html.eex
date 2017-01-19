@@ -2,23 +2,27 @@
 	<div class="pure-u-1-2" style="padding-right: 10px";>
 		<p class="heading">POLL</p>
 
-		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @poll %>
-		</main>
+		<%= for node <- @nodes do %>
+			<main role="main" class="main">
+				<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: node %>
+			</main>
+		<% end %>
 	</div>
 	<div class="pure-u-1-2" style="padding-left: 10px;">
 		<p class="heading">REFERENCE POLL</p>
 
-		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: @reference_poll %>
-		</main>
+		<%= for node <- @reference_nodes do %>
+			<main role="main" class="main">
+				<%= render Liquio.HtmlPollView, "big.html", conn: @conn, show_actions: false, link: true, poll: node %>
+			</main>
+		<% end %>
 	</div>
 
 	<div class="pure-u-1">
 		<p class="heading">EVIDENCE FOR CHOICE</p>
 
 		<main role="main" class="main">
-			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Choice For Which Reference Poll Provides Evidence", poll: @for_choice_node %>
+			<%= render Liquio.HtmlPollView, "big.html", show_actions: true, title: "Choice For Which Reference Poll Provides Evidence", poll: Enum.at(@for_choice_nodes, 0) %>
 		</main>
 	</div>
 

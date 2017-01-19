@@ -27,7 +27,7 @@ defmodule Liquio.Mixfile do
 
 	defp deps do
 		[
-			{:distillery, "~> 1.0", runtime: false},
+			{:distillery, "~> 0.10.0", runtime: false},
 			{:phoenix_live_reload, "~> 1.0", only: :dev, runtime: false},
 			{:credo, "~> 0.5", only: [:dev, :test], runtime: false},
 			{:phoenix, "~> 1.2.0"},
@@ -50,7 +50,8 @@ defmodule Liquio.Mixfile do
 			{:secure_random, "~> 0.5"},
 			{:mailgun, "~> 0.1.2"},
 			{:quantum, ">= 1.5.0"},
-			{:cachex, "~> 2.0"}
+			{:cachex, "~> 2.0"},
+			{:mix_docker, "~> 0.2.2"}
 		]
 	end
 

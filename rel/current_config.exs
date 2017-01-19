@@ -1,8 +1,8 @@
 use Mix.Releases.Config,
-    # This sets the default release built by `mix release`
-    default_release: :default,
-    # This sets the default environment used by `mix release`
-    default_environment: :dev
+		# This sets the default release built by `mix release`
+		default_release: :default,
+		# This sets the default environment used by `mix release`
+		default_environment: :dev
 
 # For a full list of config options for both releases
 # and environments, visit https://hexdocs.pm/distillery/configuration.html
@@ -14,15 +14,15 @@ use Mix.Releases.Config,
 # and environment configuration is called a profile
 
 environment :dev do
-  set dev_mode: true
-  set include_erts: false
-  set cookie: :">9n.)>UXhC2dxxz|d9Y+OgvT-gR-sl9PxL2HWeAcgF!:7gE(8pup.t@[Q-<M/6%c"
+	set dev_mode: true
+	set include_erts: false
+	set cookie: :"kBQtQ5B2CSx^Sw(%u86vgl>aolAxY=K7L$(^yHj(yj>>m90n6y6B;lpc_d)V%9Y]"
 end
 
 environment :prod do
-  set include_erts: true
-  set include_src: false
-  set cookie: :">9n.)>UXhC2dxxz|d9Y+OgvT-gR-sl9PxL2HWeAcgF!:7gE(8pup.t@[Q-<M/6%c"
+	set include_erts: true
+	set include_src: false
+	set cookie: :"%1ZFtp^gW[}e3pH5gn9L5{q*=xJkpVL>i*Hu=;61.wnNSqo0(DM}h3G>`!CA5[nI"
 end
 
 # You may define one or more releases in this file.
@@ -31,6 +31,5 @@ end
 # will be used by default
 
 release :liquio do
-  set version: current_version(:liquio)
+	set version: current_version(:liquio)
 end
-

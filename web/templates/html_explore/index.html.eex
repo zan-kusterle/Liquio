@@ -1,5 +1,10 @@
-<p class="heading"><%= @heading %></p>
-
+<input type="text" placeholder="Title" />
+<select>
+	<option>Topic</option>
+	<option>Probability</option>
+</select>
+<button>View</button>
+<button>Search</button>
 <%= if assigns[:url] != nil do %>
 	<p class="heading">
 		<a href="<%= @url %>/relevant" class="sort<%= if @sort == "relevant" do %> active<% end %>">relevant</a>
@@ -35,10 +40,8 @@
 			</div>
 
 			<div style="display: inline-block; vertical-align: middle; margin-left: 25px;">
-				<a href="/nodes/<%= poll.id %>"><%= poll.title %></a>
-				<%= if assigns[:topic_path] do %>
-					<a href="<%= html_topic_path(@conn, :reference, Enum.join(@topic_path, ">"), poll.id) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
-				<% end %>
+				<a href="/nodes/<%= Liquio.Node.encode(poll) %>"><%= poll.title %></a>
+				
 			</div>
 		</div>
 	<% end %>

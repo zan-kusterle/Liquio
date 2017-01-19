@@ -1,16 +1,22 @@
 defmodule Liquio.HtmlExploreController do
 	use Liquio.Web, :controller
-	alias Liquio.Helpers.PollHelper
 
-	def index(conn, %{"sort" => sort}) do
-		polls = Poll |> Poll.sorted_for_keyword(sort) |> Repo.all
-		|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
+	def index(conn, params) do
+		sort = Map.get(params, "sort", "top")
+		calculation_opts = get_calculation_opts_from_conn(conn)
+		nodes = Vote
+		|> Repo.all
+		|> Enum.map(& &1.key)
+		|> Enum.uniq
+		|> Enum.map(& Node.from_key(&1) |> Node.preload_results(calculation_opts))
+		#|> Node.sort(sort)
+
 		conn
 		|> render("index.html",
 			heading: "ALL POLLS",
-			url: "/explore",
+			url: "",
 			sort: sort,
-			polls: polls,
+			polls: nodes,
 			identities: [])
 	end
 
