@@ -13,9 +13,8 @@ defmodule Liquio.HtmlPollController do
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render(Liquio.NodeView, "show.html",
 			view: :full,
-			title: node.title,
 			calculation_opts: calculation_opts,
-			poll: Node.preload(node, calculation_opts, user))
+			node: Node.preload(node, calculation_opts, user))
 	end)
 
 	plug :put_layout, "minimal.html" when action in [:embed]

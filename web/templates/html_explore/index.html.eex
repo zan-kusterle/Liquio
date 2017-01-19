@@ -1,5 +1,7 @@
 <main role="main" class="main">
-	<paper-input label="Title" name="title" style="display: inline-block; width: 300px; text-align: left;"></paper-input>
+	<h1 class="title">View Any Node</h1>
+
+	<paper-input label="Title" name="title" style="display: inline-block; width: calc(100% - 455px); text-align: left;"></paper-input>
 	<paper-dropdown-menu label="Type" style="margin-left: 15px;">
 		<paper-listbox class="dropdown-content" selected="1">
 			<paper-item>Group</paper-item>
@@ -22,4 +24,4 @@
 	</main>
 <% end %>
 
-<%= render Liquio.NodeView, "show.html", view: :full, poll: @node, datetime: @calculation_opts.datetime, calculation_opts: @calculation_opts, virtual: true %>
+<%= render Liquio.NodeView, "show.html", view: :full, node: @node, calculation_opts: @calculation_opts, virtual: true %>

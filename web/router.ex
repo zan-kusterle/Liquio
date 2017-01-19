@@ -51,7 +51,6 @@ defmodule Liquio.Router do
 		end
 
 		get "/", HtmlExploreController, :index
-	
 		get "/search", HtmlExploreController, :search
 	end
 
@@ -78,8 +77,6 @@ defmodule Liquio.Router do
 			get "/contributions", PollController, :contributions
 			resources "/references", ReferenceController, only: [:create, :index, :show]
 		end
-
-		get "/topics/:path", TopicController, :show
 
 		get "/search", SearchController, :index
 	end

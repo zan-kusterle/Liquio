@@ -142,6 +142,8 @@ defmodule Liquio.Node do
 			node
 		end
 
+		node = Map.put(node, :calculation_opts, calculation_opts)
+
 		key = {
 			{"contributions", {node.key, node.reference_key}, calculation_opts.datetime},
 			{calculation_opts.trust_metric_url}

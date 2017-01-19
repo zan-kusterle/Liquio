@@ -3,21 +3,21 @@
 		<p class="heading">POLL</p>
 
 		<%= for node <- @nodes do %>
-			<%= render Liquio.NodeView, "show.html", conn: @conn, view: :simple, link: true, poll: node %>
+			<%= render Liquio.NodeView, "show.html", view: :simple, node: node %>
 		<% end %>
 	</div>
 	<div class="pure-u-1-2" style="padding-left: 10px;">
 		<p class="heading">REFERENCE POLL</p>
 
 		<%= for node <- @reference_nodes do %>
-			<%= render Liquio.NodeView, "show.html", conn: @conn, view: :simple, link: true, poll: node %>
+			<%= render Liquio.NodeView, "show.html", view: :simple, node: node %>
 		<% end %>
 	</div>
 
 	<div class="pure-u-1">
 		<p class="heading">EVIDENCE FOR CHOICE</p>
 
-		<%= render Liquio.NodeView, "show.html", view: :simple, poll: Enum.at(@for_choice_nodes, 0) |> Map.put(:title, "Choice For Which Reference Poll Provides Evidence") %>
+		<%= render Liquio.NodeView, "show.html", view: :full, node: Enum.at(@for_choice_nodes, 0) |> Map.put(:title, "Choice For Which Reference Poll Provides Evidence") %>
 	</div>
 
 	<div class="pure-u-1">

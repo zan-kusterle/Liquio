@@ -1,28 +1,28 @@
 <% referencing_node = if assigns[:referencing_node] do @referencing_node else nil end %>
 <% references_node = if assigns[:references_node] do @references_node else nil end %>
 <% virtual? = if assigns[:virtual] do @virtual else false end %>
-<% references_view = if @view == :full do if @poll.choice_type == nil do :inline else :main end else nil end %>
+<% references_view = if @view == :full do if @node.choice_type == nil do :inline else :main end else nil end %>
 
 <%= if @view == :inline do %>
 	<div class="reference">
-		<%= if Map.get(@poll, :reference_result) != nil and referencing_node != nil and @referencing_node.choice_type != "probability" do %>
+		<%= if Map.get(@node, :reference_result) != nil and referencing_node != nil and @referencing_node.choice_type != "probability" do %>
 			<div style="margin-right: 30px; display: inline-block;">
 				<%= render Liquio.NodeView, "score_reference.html",
 					choice_type: referencing_node.choice_type,
-					results: @poll.reference_result %>
+					results: @node.reference_result %>
 			</div>
 		<% end %>
 
-		<%= render "score_reference.html", choice_type: @poll.choice_type, results: @poll.results %>
+		<%= render "score_reference.html", choice_type: @node.choice_type, results: @node.results %>
 
 		<p class="reference-text">
-			<a href="/<%= Liquio.Node.encode(@poll) %>"><%= @poll.title %></a>
+			<a href="/<%= Liquio.Node.encode(@node) %>"><%= @node.title %></a>
 			<%= if not virtual? do %>
 				<%= if referencing_node do %>
-					<a href="/<%= Liquio.Node.encode(referencing_node) %>/references/<%= Liquio.Node.encode(@poll) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
+					<a href="/<%= Liquio.Node.encode(referencing_node) %>/references/<%= Liquio.Node.encode(@node) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
 				<% else %>
 					<%= if references_node do %>
-						<a href="/<%= Liquio.Node.encode(@poll) %>/references/<%= Liquio.Node.encode(@references_node) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
+						<a href="/<%= Liquio.Node.encode(@node) %>/references/<%= Liquio.Node.encode(@references_node) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
 					<% end %>
 				<% end %>
 			<% end %>
@@ -42,38 +42,38 @@
 	<% end %>
 
 	<main role="main" class="main">
-		<%= if assigns[:link] != nil and @link do %>
-			<a href="<%= html_poll_path(@conn, :show, Liquio.Node.encode(@poll)) %>" class="title"><%= @poll.title %></a>
+		<%= if @view == :simple do %>
+			<a href="/<%= Liquio.Node.encode(@node) %>" class="title"><%= @node.title %></a>
 		<% else %>
-			<%= if String.starts_with?(@poll.title, "http://") or String.starts_with?(@poll.title, "https://") do %>
-				<a href="<%= @poll.title %>" class="title"><%= @poll.title %></a>
+			<%= if String.starts_with?(@node.title, "http://") or String.starts_with?(@node.title, "https://") do %>
+				<a href="<%= @node.title %>" class="title"><%= @node.title %></a>
 			<% else %>
-				<h1 class="title"><%= @poll.title %></h1>
+				<h1 class="title"><%= @node.title %></h1>
 			<% end %>
 		<% end %>
 
-		<%= if @poll.choice_type do %>
+		<%= if @node.choice_type do %>
 			<div class="score-container">
-				<%= render "score.html", poll: @poll %>
+				<%= render "score.html", poll: @node %>
 
-				<%= if @poll.choice_type != nil and @view == :full do %>
+				<%= if @node.choice_type != nil and @view == :full do %>
 					<a style="display: inline-block; font-size: 12px; margin-top: 8px; color: #4aa5f3; font-weight: bold;" onclick="vote_choice.style.height = '150px'; vote_choice.style.opacity = 1; vote_choice.style['margin-top'] = '20px'; vote_choice.style.visibility = 'visible'; this.style.display = 'none';">
 						Vote <i class="fa fa-sticky-note" aria-hidden="true" style="margin-left: 2px;"></i>
 					</a>
 
 					<div id="vote_choice" style="margin-top: 0px; height: 0px; opacity: 0; visibility: hidden;">
 						<p style="margin-bottom: 5px;">Your current choice</p>
-						<%= render "score.html", poll: @poll, own_vote: @poll.own_vote, editable: true %>
+						<%= render "score.html", poll: @node, own_vote: @node.own_vote, editable: true %>
 					</div>
 				<% end %>
 			</div>
 		<% end %>
 
 		<%= if references_view == :inline do %>
-			<%= render "index.html", referencing_node: @poll, nodes: @poll.references, virtual: virtual? %>
+			<%= render "index.html", referencing_node: @node, nodes: @node.references, virtual: virtual? %>
 
 			<%= if not virtual? do %>
-				<form id="view_reference_form" action="/<%= Liquio.Node.encode(@poll) %>/references" class="pure-form" <%= unless Enum.empty?(@poll.references) do %> style="margin-top: 40px;"<% end %>>
+				<form id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
 					<paper-input label="Title" name="reference_poll_id" required style="display: inline-block; width: 300px;"></paper-input>
 					<paper-dropdown-menu style="margin-left: 15px;">
 						<paper-listbox class="dropdown-content" selected="0">
@@ -87,21 +87,21 @@
 			<% end %>
 		<% end %>
 
-		<%= if @poll.choice_type != nil and @view == :full do %>
-			<%= unless Enum.empty? @poll.contributions do %>
+		<%= if @node.choice_type != nil and @view == :full do %>
+			<%= unless Enum.empty? @node.contributions do %>
 				<div class="view-votes" onclick="votes_list.style.display = 'block'; this.style.height = 0; this.style.opacity = 0; setTimeout(function() {votes_list.classList.add('shown');}, 0);">
 					View votes
 					<i class="fa fa-long-arrow-down" aria-hidden="true" style="margin-right: 4px;"></i> 
 				</div>
 			<% end %>
 
-			<%= unless Enum.empty? @poll.contributions do %>
+			<%= unless Enum.empty? @node.contributions do %>
 				<div id="votes_list" class="votes" style="display: none;">
 					<p style="margin-bottom: 5px;">Votes</p>
 					<table class="contributions">
-						<% total_power = @poll.contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
-						<% max_ratio = @poll.contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
-						<%= for contribution <- @poll.contributions |> Enum.sort_by(& -&1.voting_power) do %>
+						<% total_power = @node.contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
+						<% max_ratio = @node.contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
+						<%= for contribution <- @node.contributions |> Enum.sort_by(& -&1.voting_power) do %>
 							<% width_ratio = contribution.voting_power / total_power / max_ratio %>
 							<tr class="contribution">
 								<td class="username"><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
@@ -111,7 +111,7 @@
 									</div>
 								</td>
 								<td class="choice">
-									<%= render "score_reference.html", choice_type: @poll.choice_type, results: @poll.own_contribution %>
+									<%= render "score_reference.html", choice_type: @node.choice_type, results: @node.own_contribution %>
 								</td>
 								<td class="date"><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
 							</tr>
@@ -135,10 +135,10 @@
 	</p>
 
 	<main role="main" class="main">
-		<%= render "index.html", referencing_node: @poll, nodes: @poll.references, virtual: virtual? %>
+		<%= render "index.html", referencing_node: @node, nodes: @node.references, virtual: virtual? %>
 
 		<%= if not virtual? do %>
-			<form id="view_reference_form" action="/<%= Liquio.Node.encode(@poll) %>/references" class="pure-form" <%= unless Enum.empty?(@poll.references) do %> style="margin-top: 40px;"<% end %>>
+			<form id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
 				<paper-input label="Title" name="reference_poll_id" required style="display: inline-block; width: 300px;"></paper-input>
 				<paper-dropdown-menu style="margin-left: 15px;">
 					<paper-listbox class="dropdown-content" selected="0">
@@ -152,7 +152,7 @@
 		<% end %>
 	</main>
 
-	<%= unless Enum.empty?(@poll.inverse_references) do %>
+	<%= unless Enum.empty?(@node.inverse_references) do %>
 		<p class="heading">REFERENCED BY</p>
 
 		<p class="heading">
@@ -164,18 +164,18 @@
 		</p>
 
 		<main role="main" class="main">
-			<%= render "index.html", references_node: @poll, nodes: @poll.inverse_references, virtual: virtual? %>
+			<%= render "index.html", references_node: @node, nodes: @node.inverse_references, virtual: virtual? %>
 		</main>
 	<% end %>
 <% end %>
 
 <%= if @view == :full do %>
-	<a class="after-link" onclick="snapshot_dialog.open()">Set viewing date: <b><%= Timex.format!(@calculation_opts.datetime, "{M}/{D}/{YYYY}") %></b></a>
+	<a class="after-link" onclick="snapshot_dialog.open()">Set viewing date: <b><%= Timex.format!(@node.calculation_opts.datetime, "{M}/{D}/{YYYY}") %></b></a>
 	<br/>
 	<a class="after-link" onclick="preferences_dialog.open()">Change preferences</a>
 
 	<paper-dialog id="snapshot_dialog" class="paper-date-picker-dialog" modal on-iron-overlay-closed="dismissDialog">
-		<paper-date-picker id="snapshot_date" name="datetime" date=<%= Timex.format!(@calculation_opts.datetime, "{ISOdate}") %> max-date="<%= Timex.now |> Timex.format!("{ISOdate}") %>"></paper-date-picker>
+		<paper-date-picker id="snapshot_date" name="datetime" date=<%= Timex.format!(@node.calculation_opts.datetime, "{ISOdate}") %> max-date="<%= Timex.now |> Timex.format!("{ISOdate}") %>"></paper-date-picker>
 		<div class="buttons">
 			<paper-button dialog-dismiss>Cancel</paper-button>
 			<paper-button dialog-confirm raised class="primary" onclick="document.location = '?datetime=' + snapshot_date.date.toISOString().substring(0, 10)">Set viewing date</paper-button>
@@ -189,14 +189,14 @@
 			<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 			<div class="range" style="margin-bottom: 20px;">
-				<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @calculation_opts.minimum_turnout || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" style="margin: 0 auto;" />
-				<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@calculation_opts.minimum_turnout || 0))}% turnout." %></output>
+				<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" value="<%= @node.calculation_opts.minimum_turnout || 0 %>" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" style="margin: 0 auto;" />
+				<output id="minimum_voting_power_value"><%= "Expecting at least #{round(100 * (@node.calculation_opts.minimum_turnout || 0))}% turnout." %></output>
 			</div>
 
 			<div class="range" style="margin-bottom: 20px;">
-				<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @calculation_opts.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" style="margin: 0 auto;" />
+				<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" value="<%= @node.calculation_opts.vote_weight_halving_days || 1000 %>" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" style="margin: 0 auto;" />
 				<output id="vote_weight_halving_days_value">
-					<%= if @calculation_opts.vote_weight_halving_days do "Votes will lose half remaining power every #{round(@calculation_opts.vote_weight_halving_days)} #{ngettext("day", "days", round(@calculation_opts.vote_weight_halving_days))}." else "Votes don't lose power with time." end %>
+					<%= if @node.calculation_opts.vote_weight_halving_days do "Votes will lose half remaining power every #{round(@node.calculation_opts.vote_weight_halving_days)} #{ngettext("day", "days", round(@node.calculation_opts.vote_weight_halving_days))}." else "Votes don't lose power with time." end %>
 				</output>
 			</div>
 		</form>

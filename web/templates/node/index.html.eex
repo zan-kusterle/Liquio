@@ -14,7 +14,7 @@
 					<div class="pole-list">
 						<%= for reference_node <- references do %>
 							<div class="reference-a">
-								<%= render "show.html", view: :inline, virtual: virtual?, poll: reference_node, referencing_node: referencing_node, references_node: references_node %>
+								<%= render "show.html", view: :inline, node: reference_node, referencing_node: referencing_node, references_node: references_node, virtual: virtual? %>
 							</div>
 						<% end %>
 					</div>
@@ -23,7 +23,7 @@
 		<% else %>
 			<div class="references-list pure-u-1">
 				<%= for reference_node <- @nodes do %>
-					<%= render "show.html", view: :inline, virtual: virtual?, poll: reference_node, referencing_node: referencing_node, references_node: references_node %>
+					<%= render "show.html", view: :inline, node: reference_node, referencing_node: referencing_node, references_node: references_node, virtual: virtual? %>
 				<% end %>
 			</div>
 		<% end %>
