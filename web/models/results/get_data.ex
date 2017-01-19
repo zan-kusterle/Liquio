@@ -22,7 +22,7 @@ defmodule Liquio.Results.GetData do
 	end
 
 	def get_votes(key, datetime, reference_key) do
-		query = "SELECT DISTINCT ON (v.identity_id) v.identity_id, v.datetime, v.data
+		query = "SELECT DISTINCT ON (v.identity_id) v.identity_id, v.datetime, v.data, v.title
 			FROM votes AS v
 			WHERE v.key = $1 AND v.reference_key #{if reference_key do "= $2" else "IS NULL" end} AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
@@ -31,7 +31,8 @@ defmodule Liquio.Results.GetData do
 			{date, {h, m, s, _}} = Enum.at(row, 1)
 			data = {
 				Timex.to_naive_datetime({date, {h, m, s}}),
-				Enum.at(row, 2)["choice"]
+				Enum.at(row, 2)["choice"],
+				Enum.at(row, 3)
 			}
 			{Enum.at(row, 0), data}
 		end
@@ -40,7 +41,7 @@ defmodule Liquio.Results.GetData do
 
 	def prepare_votes(votes) do
 		for vote <- votes, into: %{} do
-			{vote.identity_id, {vote.datetime, vote.data.choice}}
+			{vote.identity_id, {vote.datetime, vote.data.choice, vote.title}}
 		end
 	end
 

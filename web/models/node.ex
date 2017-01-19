@@ -161,7 +161,16 @@ defmodule Liquio.Node do
 			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
 		end)
 
-		# TODO: Set most common title
+		node = if not Enum.empty?(contributions) do
+			{best_title, _count} = contributions
+			|> Enum.group_by(& &1.title)
+			|> Enum.map(fn({k, v}) -> {k, Enum.count(v)} end)
+			|> Enum.max_by(fn({title, count}) -> count end)
+
+			Map.put(node, :title, best_title)
+		else
+			node
+		end
 
 		Map.put(node, :contributions, contributions)
 	end
