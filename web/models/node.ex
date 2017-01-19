@@ -127,7 +127,7 @@ defmodule Liquio.Node do
 
 		node = Map.put(node, :results, results_from_contributions(node.contributions, node.choice_type, calculation_opts))
 
-		embed_html = Phoenix.View.render_to_iodata(Liquio.HtmlPollView, "embed.html", poll: node)
+		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "embed.html", poll: node)
 		|> :erlang.iolist_to_binary
 		|> Liquio.HtmlHelper.minify
 		node = Map.put(node, :embed, embed_html)

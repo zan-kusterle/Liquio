@@ -1,0 +1,48 @@
+<div class="references pure-g">
+	<%= if @poll.choice_type == "probability" do %>
+		<% positive = @references |> Enum.filter(& &1.reference_result.mean >= 0.5) %>
+		<% negative = @references |> Enum.filter(& &1.reference_result.mean < 0.5) %>
+		
+		<%= for {references, text} <- [{positive, "Positive"}, {negative, "Negative"}] do %>
+			<div class="pole pure-u-1 pure-u-md-1-2">
+				<h3 class="pole-heading"><%= if references |> Enum.empty? do %>Nothing <% end %><%= text %></h3>
+				<div class="pole-list">
+					<%= for reference_node <- references do %>
+						<div class="reference-a">
+							<div class="reference">
+								<% for_choice_result =
+									cond do
+										assigns[:for_choice] -> Liquio.Poll.results_for_contribution(@poll, %{:choice => @for_choice})
+										assigns[:for_choice_result] -> @for_choice_result
+										true -> nil
+									end
+								%>
+
+								<%= if for_choice_result do %>
+									<div style="margin-right: 30px; display: inline-block;">
+										<%= render Liquio.NodeView, "score_reference.html",
+											choice_type: @poll.choice_type,
+											results: for_choice_result %>
+									</div>
+								<% end %>
+
+								<%= render "score_reference.html", choice_type: reference_node.choice_type, results: reference_node.results %>
+
+								<p class="reference-text">
+									<a href="/nodes/<%= Liquio.Node.encode(reference_node) %>"><%= truncate reference_node.title, 120 %></a>
+									<a href="/nodes/<%= Liquio.Node.encode(@poll) %>/references/<%= Liquio.Node.encode(reference_node) %>"><i class="fa fa-adjust" style="margin-left: 10px;"></i></a>
+								</p>
+							</div>
+						</div>
+					<% end %>
+				</div>
+			</div>
+		<% end %>
+	<% else %>
+		<div class="references-list pure-u-1">
+			<%= for reference <- @references do %>
+				<%= render "reference.html", poll: @poll, reference_poll: reference, for_choice_result: reference.reference_result %>
+			<% end %>
+		</div>
+	<% end %>
+</div>

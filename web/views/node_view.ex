@@ -1,5 +1,5 @@
-defmodule Liquio.HtmlPollView do
-	use Liquio.Web, :view
+defmodule Liquio.NodeView do
+		use Liquio.Web, :view
 
 	def score_color(poll) do
 		if poll.choice_type == "probability" do

@@ -11,7 +11,7 @@ defmodule Liquio.HtmlPollController do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-		|> render("show.html",
+		|> render(Liquio.NodeView, "show.html",
 			title: node.title,
 			calculation_opts: calculation_opts,
 			datetime: datetime,

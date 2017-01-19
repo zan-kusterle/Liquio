@@ -9,6 +9,7 @@ defmodule Liquio.HtmlExploreController do
 		|> Enum.map(& &1.key)
 		|> Enum.uniq
 		|> Enum.map(& Node.from_key(&1) |> Node.preload_results(calculation_opts))
+		|> Enum.filter(& &1.choice_type != nil)
 		#|> Node.sort(sort)
 
 		conn

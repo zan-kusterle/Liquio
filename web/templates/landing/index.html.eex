@@ -19,7 +19,7 @@
 				<a class="liquio-inline" href="/nodes/<%= Liquio.Node.encode(node) %>" style="text-decoration: none; display: inline-block;">
 					<i class="fa fa-<%= node.fa_icon %>" aria-hidden="true"></i>
 					<p class="title"><%= node.title %></p>
-					<%= render Liquio.HtmlPollView, "embed.html", poll: node %>
+					<%= render Liquio.NodeView, "embed.html", poll: node %>
 				</a>
 			</div>
 		<%= end %>

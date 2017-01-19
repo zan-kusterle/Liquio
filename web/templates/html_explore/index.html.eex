@@ -1,10 +1,4 @@
-<input type="text" placeholder="Title" />
-<select>
-	<option>Topic</option>
-	<option>Probability</option>
-</select>
-<button>View</button>
-<button>Search</button>
+
 <%= if assigns[:url] != nil do %>
 	<p class="heading">
 		<a href="<%= @url %>/relevant" class="sort<%= if @sort == "relevant" do %> active<% end %>">relevant</a>
@@ -29,19 +23,26 @@
 		</h2>
 	<% end %>
 
-	<%= if (Enum.empty? @polls) and (Enum.empty? @identities) do %>
-		There is nothing here.
-	<% end %>
+	<paper-input label="Title" name="title" style="display: inline-block; width: 300px; text-align: left;"></paper-input>
+	<paper-dropdown-menu label="Type" style="margin-left: 15px;">
+		<paper-listbox class="dropdown-content" selected="0">
+			<paper-item>Collection</paper-item>
+			<paper-item>Probability</paper-item>
+			<paper-item>Quantity</paper-item>
+			<paper-item>Quantity by time</paper-item>
+		</paper-listbox>
+	</paper-dropdown-menu>
+	<paper-button raised style="position: relative; top: -8px; margin-left: 30px;">Search</paper-button>
+	<paper-button raised style="position: relative; top: -8px; margin-left: 15px;">View</paper-button>
 
 	<%= for poll <- @polls do %>
 		<div class="poll-item">
 			<div style="display: inline-block; vertical-align: middle;">
-				<%= render Liquio.HtmlPollView, "score_reference.html", choice_type: poll.choice_type, results: poll.results %>
+				<%= render Liquio.NodeView, "score_reference.html", choice_type: poll.choice_type, results: poll.results %>
 			</div>
 
 			<div style="display: inline-block; vertical-align: middle; margin-left: 25px;">
 				<a href="/nodes/<%= Liquio.Node.encode(poll) %>"><%= poll.title %></a>
-				
 			</div>
 		</div>
 	<% end %>
@@ -53,7 +54,14 @@
 	<% end %>
 
 	<form id="poll_form">
-		<paper-input label="Poll URL" name="poll_url"></paper-input>
-		<paper-button raised onclick="poll_form.submit()">View poll in topic</paper-button>
+		<paper-input label="Title" name="reference_poll_id" required style="display: inline-block; width: 300px; text-align: left;"></paper-input>
+		<paper-dropdown-menu style="margin-left: 15px;">
+			<paper-listbox class="dropdown-content" selected="0">
+				<paper-item>Probability</paper-item>
+				<paper-item>Quantity</paper-item>
+				<paper-item>Quantity by time</paper-item>
+			</paper-listbox>
+		</paper-dropdown-menu>
+		<paper-button raised class="poll-button" onclick="view_reference_form.submit()" style="position: relative; top: -8px; margin-left: 30px;">View reference</paper-button>
 	</form>
 </main>
