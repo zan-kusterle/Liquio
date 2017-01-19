@@ -1,5 +1,3 @@
-<p class="heading"><%= @poll.choice_type |> to_string |> String.replace("_", " ") |> String.upcase %> POLL</p>
-
 <main role="main" class="main">
 	<%= render "big.html", show_actions: true, add_topic: true, conn: @conn, poll: @poll %>
 </main>
