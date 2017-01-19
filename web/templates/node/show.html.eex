@@ -58,7 +58,7 @@
 	<% end %>
 
 	<main role="main" class="main" style="margin-top: -8px;" id="main-node" style="display: none;">
-		<%= render "vote.html", node: @node, view: @view %>
+		<%= render "vote.html", conn: @conn, node: @node, view: @view %>
 
 		<%= if @view == :full and references_view == :inline do %>
 			<%= render "index.html", referencing_node: @node, nodes: @node.references, virtual: virtual? %>

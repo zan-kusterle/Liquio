@@ -24,4 +24,4 @@
 	</main>
 <% end %>
 
-<%= render Liquio.NodeView, "show.html", view: :full, node: @node, virtual: true %>
+<%= render Liquio.NodeView, "show.html", conn: nil, view: :full, node: @node, virtual: true %>

@@ -64,22 +64,23 @@ defmodule Liquio.Node do
 
 	def from_key(key) do
 		choice_types = %{
-			"probability" => :probability, 
-			"quantity" => :quantity,
-			"time series" => :time_quantity
+			"_probability" => :probability, 
+			"_quantity" => :quantity,
+			"_time series" => :time_quantity,
+			"_" => nil
 		}
 
-		key_spaces = String.replace(key, "_", " ")
-		ends_with = Enum.find(Map.keys(choice_types), & String.ends_with?(key_spaces, &1))
+		ends_with = Enum.find(Map.keys(choice_types), & String.ends_with?(key, &1))
 		if ends_with == nil do
+			title = key |> String.replace("_", " ") |> String.trim
 			%Node{
-				:title => key_spaces,
+				:title => title,
 				:choice_type => nil,
 				:key => key,
 				:reference_key => nil
 			}
 		else
-			title = key_spaces |> String.replace_trailing(ends_with, "") |> String.trim
+			title = key |> String.replace("_", " ") |> String.replace_trailing(ends_with, "") |> String.trim
 			%Node{
 				:title => title,
 				:choice_type => to_string(choice_types[ends_with]),

@@ -20,7 +20,7 @@
 
 			<div id="<%= tag_id %>" class="vote_own_choice" style="margin-top: 0px; height: 0px; opacity: 0; visibility: hidden;">
 				<p style="margin-bottom: 5px;">Your current choice</p>
-				<%= render "score.html", poll: @node, own_vote: @node.own_vote, editable: true %>
+				<%= render "score.html", poll: @node, own_vote: @node.own_vote, editable: true, conn: @conn %>
 
 				<%= unless Enum.empty? @node.contributions do %>
 					<div id="votes_list" class="votes">

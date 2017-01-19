@@ -46,8 +46,10 @@ defmodule Liquio.Router do
 		post "/identities/me/preferences", HtmlIdentityController, :update
 
 		resources "/", HtmlPollController, only: [:create, :show] do
-			resources "/vote", HtmlVoteController, only: [:create, :delete]
-			resources "/references", HtmlReferenceController, only: [:index, :show]
+			resources "/vote", HtmlVoteController, only: [:create]
+			resources "/references", HtmlReferenceController, only: [:index, :show] do
+				resources "/vote", HtmlReferenceVoteController, only: [:create]
+			end
 		end
 
 		get "/", HtmlExploreController, :index

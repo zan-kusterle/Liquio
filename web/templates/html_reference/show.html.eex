@@ -1,7 +1,7 @@
 <div class="pure-g main-g">
 	<div class="pure-u-2-5">
 		<%= for node <- @nodes do %>
-			<%= render Liquio.NodeView, "show.html", view: :simple, node: node %>
+			<%= render Liquio.NodeView, "show.html", conn: @conn, view: :simple, node: node %>
 		<% end %>
 	</div>
 	<div class="pure-u-1-5">
@@ -9,16 +9,16 @@
 	</div>
 	<div class="pure-u-2-5">
 		<%= for node <- @reference_nodes do %>
-			<%= render Liquio.NodeView, "show.html", view: :simple, node: node %>
+			<%= render Liquio.NodeView, "show.html", conn: @conn, view: :simple, node: node %>
 		<% end %>
 	</div>
 
 	<div class="pure-u-1">
 		<main role="main" class="main">
 			<%= if @for_choice_node != nil do %>
-				<%= render Liquio.NodeView, "vote.html", view: :full, node: @for_choice_node %>
+				<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @for_choice_node %>
 			<% end %>
-			<%= render Liquio.NodeView, "vote.html", view: :full, node: @relevance_node  %>
+			<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @relevance_node  %>
 		</main>
 	</div>
 

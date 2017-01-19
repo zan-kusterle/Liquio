@@ -10,10 +10,11 @@
 		<%= if assigns[:editable] != nil and @editable do %>
 			<% current_choice = if @own_vote do @own_vote.data.choice["main"] else 0.5 end %>
 
-			<form id="vote_form" action="/<%= Liquio.Node.encode(@poll) %>/vote" method="POST" class="pure-form">
+			<form id="vote_form" action="<%= @conn.request_path %>/vote" method="POST" class="pure-form">
 				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
 				<input type="hidden" name="reference_key" value="<%= @poll.reference_key %>" />
+				<input type="hidden" name="choice_type" value="<%= @poll.choice_type %>" />
 				
 				<%= if @poll.choice_type == "probability" do %>
 					<div class="range">
