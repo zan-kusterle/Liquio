@@ -12,23 +12,22 @@ defmodule Liquio.HtmlExploreController do
 		|> Enum.filter(& &1.choice_type != nil)
 		#|> Node.sort(sort)
 
+		node = Node.new("List Of All Polls", nil) |> Map.put(:references, nodes)
 		conn
 		|> render("index.html",
-			heading: "ALL POLLS",
-			url: "",
-			sort: sort,
-			polls: nodes,
+			calculation_opts: calculation_opts,
+			node: node,
 			identities: [])
 	end
 
 	def search(conn, %{"query" => query}) do
 		polls = Poll |> Poll.search(query) |> Repo.all
 		|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
+
+		node = Node.new("Results for: #{query}", nil) |> Map.put(:references, polls)
 		conn
 		|> render("index.html",
-			heading: "RESULTS",
-			query: query,
-			polls: polls,
+			node: node,
 			identities: Identity |> Identity.search(query) |> Repo.all)
 	end
 end
