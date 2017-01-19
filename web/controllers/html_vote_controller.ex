@@ -24,7 +24,7 @@ defmodule Liquio.HtmlVoteController do
 						if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 							{:info, "Your vote is now live. Share the poll with other people."}
 						else
-							{:error, "Your vote is now live. But because you're not in trust metric it will not be counted. Tell others to trust your identity by sharing it's URL to get into trust metric."}
+							{:error, "Your vote is now live, but because you're not in trust metric it will not be counted. Get others to trust your identity by sharing it's URL to get into trust metric or change it in preferences."}
 						end
 					{:error, message} ->
 						{:error, message}

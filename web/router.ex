@@ -57,8 +57,7 @@ defmodule Liquio.Router do
 	scope "/", Liquio do
 		pipe_through :embed
 
-		get "/nodes/:html_poll_id/embed", HtmlPollController, :embed
-		get "/topics/:path/:sort/embed", HtmlTopicController, :show_embed
+		get "/:html_poll_id/embed", HtmlPollController, :embed
 	end
 	
 	scope "/api", Liquio do

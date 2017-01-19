@@ -15,10 +15,9 @@ defmodule Liquio.HtmlExploreController do
 		|> Enum.filter(& &1.choice_type != nil)
 		#|> Node.sort(sort)
 
-		node = Node.new("List Of All Polls", nil) |> Map.put(:references, nodes)
+		node = Node.new("", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
 		conn
 		|> render("index.html",
-			calculation_opts: calculation_opts,
 			node: node,
 			identities: [])
 	end)

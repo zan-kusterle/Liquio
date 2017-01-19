@@ -20,7 +20,6 @@ defmodule Liquio.Vote do
 	use Liquio.Web, :model
 
 	alias Liquio.Repo
-	alias Liquio.Poll
 	alias Liquio.Node
 	alias Liquio.Vote
 	alias Liquio.VoteData
@@ -29,7 +28,6 @@ defmodule Liquio.Vote do
 	alias Liquio.ResultsCache
 
 	schema "votes" do
-		belongs_to :poll, Liquio.Poll
 		belongs_to :identity, Liquio.Identity
 
 		field :title, :string
@@ -72,7 +70,7 @@ defmodule Liquio.Vote do
 		changeset = changeset
 		|> put_change(:is_last, true)
 		result = Repo.insert(changeset)
-		Poll.invalidate_results_cache(Repo.get!(Poll, changeset.params["poll_id"]))
+		invalidate_results_cache(Node.new(changeset.params["key"], changeset.params["key"]))
 		result
 	end
 	def set(node, identity, choice) do

@@ -24,7 +24,7 @@ defmodule Liquio.Node do
 			"Time Series" => :time_quantity
 		}
 
-		value_spaces = String.replace(value, "-", " ")
+		value_spaces = value |> String.replace("-", " ") |> String.replace("_", " ")
 		ends_with = Enum.find(Map.keys(choice_types), & String.ends_with?(value_spaces, &1))
 
 		node = if ends_with == nil do
@@ -90,9 +90,9 @@ defmodule Liquio.Node do
 	end
 
 	def for_reference_key(node, reference_key) do
+		reference_key = if reference_key != "" do reference_key else nil end
 		node = node
 		|> Map.put(:reference_key, reference_key)
-		|> Map.put(:choice_type, if node.choice_type do node.choice_type else "probability" end)
 		
 		node = Map.put(node, :key, get_key(node))
 		node

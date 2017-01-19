@@ -8,16 +8,19 @@
 			<% positive = @nodes |> Enum.filter(& &1.reference_result.mean >= 0.5) %>
 			<% negative = @nodes |> Enum.filter(& &1.reference_result.mean < 0.5) %>
 			
-			<%= for {references, text} <- [{positive, "Positive"}, {negative, "Negative"}] do %>
+			<%= for {references, text} <- [{negative, "Negative"}, {positive, "Positive"}] do %>
 				<div class="pole pure-u-1 pure-u-md-1-2">
-					<h3 class="pole-heading"><%= if references |> Enum.empty? do %>Nothing <% end %><%= text %></h3>
-					<div class="pole-list">
-						<%= for reference_node <- references do %>
-							<div class="reference-a">
-								<%= render "show.html", view: :inline, node: reference_node, referencing_node: referencing_node, references_node: references_node, virtual: virtual? %>
-							</div>
-						<% end %>
-					</div>
+					<%= if not Enum.empty?(references)  do %>
+						<h3 class="pole-heading"><%= text %></h3>
+					
+						<div class="pole-list">
+							<%= for reference_node <- references do %>
+								<div class="reference-a">
+									<%= render "show.html", view: :inline, node: reference_node, referencing_node: referencing_node, references_node: references_node, virtual: virtual? %>
+								</div>
+							<% end %>
+						</div>
+					<% end %>
 				</div>
 			<% end %>
 		<% else %>

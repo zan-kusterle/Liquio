@@ -1,0 +1,52 @@
+<%= if @view == :simple do %>
+	<a href="/<%= Liquio.Node.encode(@node) %>" class="title"><%= @node.title %></a>
+<% else %>
+	<%= if String.starts_with?(@node.title, "http://") or String.starts_with?(@node.title, "https://") do %>
+		<a href="<%= @node.title %>" class="title"><%= @node.title %></a>
+	<% else %>
+		<h1 class="title"><%= @node.title %></h1>
+	<% end %>
+<% end %>
+
+<%= if @node.choice_type do %>
+	<div class="score-container">
+		<%= render "score.html", poll: @node %>
+
+		<%= if @view == :full do %>
+			<% tag_id = "vote_choice_#{@node.key}" %>
+			<a style="display: inline-block; font-size: 12px; margin-top: 8px; color: #4aa5f3; font-weight: bold;" onclick="<%= tag_id %>.style.height = '260px'; <%= tag_id %>.style.opacity = 1; <%= tag_id %>.style['margin-top'] = '20px'; <%= tag_id %>.style.visibility = 'visible'; this.style.display = 'none';">
+				Vote <i class="fa fa-sticky-note" aria-hidden="true" style="margin-left: 2px;"></i>
+			</a>
+
+			<div id="<%= tag_id %>" class="vote_own_choice" style="margin-top: 0px; height: 0px; opacity: 0; visibility: hidden;">
+				<p style="margin-bottom: 5px;">Your current choice</p>
+				<%= render "score.html", poll: @node, own_vote: @node.own_vote, editable: true %>
+
+				<%= unless Enum.empty? @node.contributions do %>
+					<div id="votes_list" class="votes">
+						<p style="margin-bottom: 5px;">Votes</p>
+						<table class="contributions">
+							<% total_power = @node.contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
+							<% max_ratio = @node.contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
+							<%= for contribution <- @node.contributions |> Enum.sort_by(& -&1.voting_power) do %>
+								<% width_ratio = contribution.voting_power / total_power / max_ratio %>
+								<tr class="contribution">
+									<td class="contribution">
+										<div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px; width: <%= round(100 * width_ratio) %>%;">
+											<%= number_format(100 * contribution.voting_power / total_power) %>%
+										</div>
+									</td>
+									<td class="choice">
+										<%= render "score_reference.html", choice_type: @node.choice_type, results: @node.own_contribution %>
+									</td>
+									<td class="username"><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
+									<td class="date"><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
+								</tr>
+							<% end %>
+						</table>
+					</div>
+				<% end %>
+			</div>
+		<% end %>
+	</div>
+<% end %>

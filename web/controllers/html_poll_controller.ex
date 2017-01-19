@@ -1,6 +1,5 @@
 defmodule Liquio.HtmlPollController do
 	use Liquio.Web, :controller
-	alias Liquio.Helpers.PollHelper
 
 	with_params(%{
 		:node => {Plugs.NodeParam, [name: "id"]},
@@ -13,6 +12,7 @@ defmodule Liquio.HtmlPollController do
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render(Liquio.NodeView, "show.html",
 			view: :full,
+			conn: conn,
 			calculation_opts: calculation_opts,
 			node: Node.preload(node, calculation_opts, user))
 	end)

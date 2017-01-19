@@ -46,7 +46,7 @@ defmodule Liquio.Identity do
 
 	def create(changeset) do
 		changeset = changeset
-		Repo.insert(changeset)
+		Repo.insert!(changeset)
 	end
 
 	def update_changeset(data, params) do

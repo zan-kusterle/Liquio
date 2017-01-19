@@ -7,8 +7,6 @@ defmodule Liquio.Repo.Migrations.CreateIdentity do
 			add :username, :string, null: false, size: 20
 			add :name, :string, null: false
 
-			add :trust_metric_poll_id, references(:polls, on_delete: :nothing), null: false
-
 			add :trust_metric_url, :string
 			add :minimum_turnout, :float
 			add :vote_weight_halving_days, :float
@@ -18,6 +16,7 @@ defmodule Liquio.Repo.Migrations.CreateIdentity do
 			timestamps
 		end
 
+		create unique_index(:identities, [:email])
 		create unique_index(:identities, [:username])
 	end
 end

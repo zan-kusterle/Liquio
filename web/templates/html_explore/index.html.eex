@@ -1,4 +1,4 @@
-<main role="main" class="main">
+<main role="main" class="main" style="display: none;">
 	<h1 class="title">View Any Node</h1>
 
 	<paper-input label="Title" name="title" style="display: inline-block; width: calc(100% - 455px); text-align: left;"></paper-input>
@@ -24,4 +24,4 @@
 	</main>
 <% end %>
 
-<%= render Liquio.NodeView, "show.html", view: :full, node: @node, calculation_opts: @calculation_opts, virtual: true %>
+<%= render Liquio.NodeView, "show.html", view: :full, node: @node, virtual: true %>

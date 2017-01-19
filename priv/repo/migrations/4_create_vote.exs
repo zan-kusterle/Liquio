@@ -3,7 +3,6 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 
 	def change do
 		create table(:votes) do
-			add :poll_id, references(:polls, on_delete: :nothing), null: true
 			add :identity_id, references(:identities, on_delete: :nothing), null: false
 
 			add :title, :string, null: false

@@ -1,8 +1,6 @@
 defmodule Liquio.HtmlLoginController do
 	use Liquio.Web, :controller
 
-	alias Liquio.Token
-
 	def index(conn, _params) do
 		conn
 		|> render("index.html")
@@ -16,7 +14,7 @@ defmodule Liquio.HtmlLoginController do
 			else
 				name = case String.split(email, "@", parts: 2) do
 					[left, _] ->  left
-					[_] -> "dev"
+					_ -> "dev"
 				end
 				identity = Identity.create(Identity.changeset(%Identity{email: email}, %{"username" => name, "name" => name}))
 			end
