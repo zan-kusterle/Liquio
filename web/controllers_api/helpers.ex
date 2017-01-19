@@ -29,8 +29,8 @@ defmodule Liquio.Controllers.Helpers do
 		now = Timex.now
 		datetime =
 			if Map.has_key?(conn.params, :datetime) do
-				param_datetime = Timex.shift(conn.params.datetime, days: 1)
-				if param_datetime < now do
+				param_datetime = Timex.shift(conn.params.datetime, days: 1, seconds: -1)
+				if not Timex.before?(now, param_datetime) do
 					param_datetime
 				else
 					now

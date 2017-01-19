@@ -1,6 +1,9 @@
 defmodule Liquio.HtmlExploreController do
 	use Liquio.Web, :controller
 
+	with_params(%{
+		:datetime => {Plugs.DatetimeParam, [name: "datetime"]}
+	},
 	def index(conn, params) do
 		sort = Map.get(params, "sort", "top")
 		calculation_opts = get_calculation_opts_from_conn(conn)
@@ -18,7 +21,7 @@ defmodule Liquio.HtmlExploreController do
 			calculation_opts: calculation_opts,
 			node: node,
 			identities: [])
-	end
+	end)
 
 	def search(conn, %{"query" => query}) do
 		polls = Poll |> Poll.search(query) |> Repo.all
