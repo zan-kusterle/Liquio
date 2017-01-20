@@ -35,7 +35,7 @@
 			<% end %>
 		<% else %>
 			<p>
-				<% mean = if @poll.results != nil and Map.has_key?(@poll.results.by_keys, "main") do @poll.results.by_keys["main"].mean else nil end %>
+				<% mean = if @poll.results != nil and Map.has_key?(@poll.results.by_keys, @poll.default_results_key) do @poll.results.by_keys[@poll.default_results_key].mean else nil end %>
 				<%= if mean != nil do %>
 					<%= if @poll.choice_type == "probability" do %>
 						<%= round(mean * 100) %>%

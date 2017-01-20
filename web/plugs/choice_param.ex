@@ -13,7 +13,7 @@ defmodule Liquio.Plugs.ChoiceParam do
 				case Float.parse(choice) do
 					{x, ""} ->
 						if x >= 0 and x <= 1 do
-							{:ok, %{:main => x}}
+							{:ok, %{"main" => x}}
 						else
 							{:error, "Choice must be between 0 (0%) and 1 (100%)."}
 						end
@@ -23,7 +23,7 @@ defmodule Liquio.Plugs.ChoiceParam do
 			"quantity" ->
 				case Float.parse(choice) do
 					{x, ""} ->
-						{:ok, %{:main => x}}
+						{:ok, %{"main" => x}}
 					_ ->
 						{:error, "Choice must be a number."}
 				end

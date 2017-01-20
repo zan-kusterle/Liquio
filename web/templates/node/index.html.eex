@@ -7,8 +7,8 @@
 <% else %>
 	<div class="references pure-g">
 		<%= if referencing_node != nil and referencing_node.choice_type == "probability" do %>
-			<% positive = @nodes |> Enum.filter(& &1.reference_result.by_keys["main"].mean >= 0.5) %>
-			<% negative = @nodes |> Enum.filter(& &1.reference_result.by_keys["main"].mean < 0.5) %>
+			<% positive = @nodes |> Enum.filter(& &1.reference_result.by_keys["main"] != nil and &1.reference_result.by_keys["main"].mean >= 0.5) %>
+			<% negative = @nodes |> Enum.filter(& &1.reference_result.by_keys["main"] != nil and &1.reference_result.by_keys["main"].mean < 0.5) %>
 			
 			<%= for {references, text} <- [{negative, "Negative"}, {positive, "Positive"}] do %>
 				<div class="pole pure-u-1 pure-u-md-1-2">

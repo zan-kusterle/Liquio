@@ -45,7 +45,7 @@ defmodule Liquio.HtmlReferenceController do
 
 			first_node = Enum.at(for_choice_nodes, 0)
 			for_choice_node = if first_node.choice_type == nil do nil else first_node |> Map.put(:title, "Choice For Which Reference Poll Provides Evidence") |> Node.update_key() end
-			relevance_node =  first_node |> Map.put(:title, "Relevance Score For This Reference") |> Map.put(:choice_type, "probability") |> Node.update_key()
+			relevance_node = first_node |> Map.put(:title, "Relevance Score For This Reference") |> Map.put(:choice_type, "probability") |> Node.update_key()
 			
 			conn
 			|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")

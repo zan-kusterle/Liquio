@@ -1,6 +1,6 @@
 defmodule Liquio.Node do
 	@enforce_keys [:choice_type, :key, :reference_key]
-	defstruct [:title, :choice_type, :key, :reference_key]
+	defstruct [:default_results_key, :title, :choice_type, :key, :reference_key]
 
 	import Ecto
 	import Ecto.Query, only: [from: 1, from: 2]
@@ -10,6 +10,7 @@ defmodule Liquio.Node do
 	def new(title, choice_type) do new(title, choice_type, nil) end
 	def new(title, choice_type, reference_key) do
 		%Node{
+			default_results_key: "main",
 			title: title,
 			choice_type: choice_type,
 			key: get_key(title, choice_type),
@@ -27,14 +28,12 @@ defmodule Liquio.Node do
 		value_spaces = value |> String.replace("-", " ") |> String.replace("_", " ")
 		ends_with = Enum.find(Map.keys(choice_types), & String.ends_with?(value_spaces, &1))
 
-		node = if ends_with == nil do
-			%{:title => value_spaces, :choice_type => nil}
+		{title, choice_type} = if ends_with == nil do
+			{value_spaces, nil}
 		else
-			%{:title => String.replace_suffix(value_spaces, ends_with, ""), :choice_type => to_string(choice_types[ends_with])}
+			{String.replace_suffix(value_spaces, ends_with, ""), to_string(choice_types[ends_with])}
 		end
-		node = Map.put(node, :reference_key, nil)
-		node = Map.put(node, :title, node.title |> String.trim)
-		node = Map.put(node, :key, get_key(node))
+		node = Node.new(title |> String.trim(), choice_type, nil)
 
 		if String.length(node.title) > 0 do
 			node
@@ -74,6 +73,7 @@ defmodule Liquio.Node do
 		if ends_with == nil do
 			title = key |> String.replace("_", " ") |> String.trim
 			%Node{
+				:default_results_key => "main",
 				:title => title,
 				:choice_type => nil,
 				:key => key,
@@ -82,6 +82,7 @@ defmodule Liquio.Node do
 		else
 			title = key |> String.replace("_", " ") |> String.replace_trailing(ends_with, "") |> String.trim
 			%Node{
+				:default_results_key => "main",
 				:title => title,
 				:choice_type => choice_types[ends_with],
 				:key => key,
@@ -101,13 +102,6 @@ defmodule Liquio.Node do
 
 	def update_key(node) do
 		Map.put(node, :key, get_key(node))
-	end
-
-	defp get_key(node) do
-		get_key(node.title, node.choice_type)
-	end
-	defp get_key(title, choice_type) do
-		"#{title} #{choice_type}" |> String.downcase |> String.replace(" ", "_")
 	end
 
 	def preload(node, calculation_opts) do
@@ -130,7 +124,8 @@ defmodule Liquio.Node do
 			node
 		end
 
-		node = Map.put(node, :results, AggregateContributions.aggregate(node.contributions, calculation_opts))
+		results = AggregateContributions.aggregate(node.contributions, calculation_opts)
+		node = Map.put(node, :results, results)
 
 		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "embed.html", poll: node)
 		|> :erlang.iolist_to_binary
@@ -184,18 +179,11 @@ defmodule Liquio.Node do
 		|> Enum.map(& Map.put(&1, :turnout_ratio, &1.voting_power / total_voting_power))
 		|> Enum.map(fn(contribution) ->
 			if contribution.choice_type == "time_quantity" do
-				data_points = contribution.choice
-				|> Enum.map(fn({time_key, value}) ->
+				points = contribution.choice |> Enum.map(fn({time_key, value}) ->
 					{year, ""} = Integer.parse(time_key)
-					%{
-						:total => 1,
-						:turnout_ratio => 1,
-						:datetime => Timex.to_date({year, 1, 1}),
-						:mean => value
-					}
+					{Timex.to_date({year, 1, 1}), value}
 				end)
-
-				Map.put(contribution, :points, data_points)
+				Map.put(contribution, :points, points)
 			else
 				contribution
 			end
@@ -283,6 +271,13 @@ defmodule Liquio.Node do
 		|> Map.put(:own_contribution, user_contribution)
 		|> Map.put(:own_results, user_results)
 	end
+
+	defp get_key(node) do
+		get_key(node.title, node.choice_type)
+	end
+	defp get_key(title, choice_type) do
+		"#{title} #{choice_type}" |> String.downcase |> String.replace(" ", "_")
+	end
 	
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do
 		keys_with_votes
@@ -302,13 +297,5 @@ defmodule Liquio.Node do
 			|> Map.put(:reference_result, result)
 		end)
 		|> Enum.sort(&(&1.results.total > &2.results.total))
-	end
-
-	defp ensure_rounding_sums_to(numbers, precision, target) do
-		rounded = Enum.map(numbers, & Float.round(&1, precision))
-		off = target - Enum.sum(rounded)
-		numbers
-		|> Enum.sort_by(& Float.round(&1, precision) - &1)
-		|> Enum.map(& Float.round(&1, precision))
 	end
 end

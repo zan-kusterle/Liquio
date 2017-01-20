@@ -30,10 +30,6 @@ defmodule Liquio.Vote do
 		embeds_one :data, VoteData
 	end
 
-	def choice(vote) do
-
-	end
-
 	def current_by(node, identity) do
 		votes = get_last(node, identity)
 		if Enum.empty?(votes) or Enum.at(votes, 0).data == nil do
@@ -44,10 +40,8 @@ defmodule Liquio.Vote do
 	end
 
 	def set(node, identity, choice) do
-		current = get_and_remove_current_last(node.key, identity.id, node.reference_key)
-		current_choice = if current != nil and current.data != nil do current.data.choice else %{} end
-		new_choice = Map.merge(current_choice, choice)
-		new_choice = if Enum.count(new_choice) == 0 do nil else new_choice end
+		Map.keys(choice) |> Enum.filter(& String.ends_with?(&1, "?")) |> Enum.map(& String.replace(&1, "?", ""))
+		remove_current_last(node.key, identity.id, node.reference_key)
 		result = Repo.insert(%Vote{
 			:title => node.title,
 			:choice_type => node.choice_type,
@@ -56,7 +50,7 @@ defmodule Liquio.Vote do
 			:identity_id => identity.id,
 			:is_last => true,
 			:data => %VoteData{
-				:choice => new_choice
+				:choice => choice
 			}
 		})
 		invalidate_results_cache(node)
@@ -64,7 +58,7 @@ defmodule Liquio.Vote do
 	end
 
 	def delete(node, identity) do
-		get_and_remove_current_last(node.key, identity.id, node.reference_key)
+		remove_current_last(node.key, identity.id, node.reference_key)
 		result = Repo.insert!(%Vote{
 			:title => node.title,
 			:choice_type => node.choice_type,
@@ -78,12 +72,15 @@ defmodule Liquio.Vote do
 		result
 	end
 
-	defp get_and_remove_current_last(key, identity_id, reference_key) do
-		current_last = get_last(Node.for_reference_key(Node.from_key(key), reference_key), %{:id => identity_id})
-		Enum.each(current_last,fn(vote) ->
-			Repo.update! Ecto.Changeset.change vote, is_last: false
-		end)
-		current_last |> Enum.at(0)
+	defp remove_current_last(key, identity_id, reference_key) do
+		from(v in Vote,
+			where:
+				v.key == ^key and
+				v.identity_id == ^identity_id and
+				v.reference_key == ^reference_key and
+				v.is_last == true,
+			update: [set: [is_last: false]])
+		|> Repo.update_all([])
 	end
 
 	def get_last(node, identity) do
@@ -92,7 +89,7 @@ defmodule Liquio.Vote do
 				v.key == ^node.key and
 				v.identity_id == ^identity.id and
 				is_nil(v.reference_key) and
-				v.is_last == true
+				v.is_last
 			)
 			Repo.all(query)
 		else
@@ -100,7 +97,7 @@ defmodule Liquio.Vote do
 				v.key == ^node.key and
 				v.identity_id == ^identity.id and
 				v.reference_key == ^node.reference_key and
-				v.is_last == true
+				v.is_last
 			)
 			Repo.all(query)
 		end

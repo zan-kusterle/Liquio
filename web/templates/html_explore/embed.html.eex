@@ -6,8 +6,7 @@
 	<%= for poll <- @polls do %>
 		<div class="poll-item">
 			<div style="display: inline-block; vertical-align: middle;">
-				<%= render Liquio.NodeView, "score.html",
-					choice_type: poll.choice_type %>
+				<%= render Liquio.NodeView, "choice.html", view: :simple, node: poll %>
 			</div>
 
 			<div class="main-content" style="display: inline-block; vertical-align: middle; margin-left: 25px;">

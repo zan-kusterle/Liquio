@@ -16,12 +16,12 @@
 	<div class="pure-u-1">
 		<%= if @for_choice_node != nil do %>
 			<main role="main" class="main">
-				<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @for_choice_node, name: "for_choice", choice_key: "for_choice" %>
+				<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @for_choice_node |> Map.put(:default_results_key, "for_choice") %>
 			</main>
 		<% end %>
 		
 		<main role="main" class="main">
-			<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @relevance_node, name: "relevance"  %>
+			<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @relevance_node |> Map.put(:default_results_key, "relevance")  %>
 		</main>
 	</div>
 

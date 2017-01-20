@@ -6,7 +6,7 @@ defmodule Liquio.HtmlReferenceVoteController do
 		:nodes => {Plugs.NodesParam, [name: "html_poll_id"]},
 		:reference_nodes => {Plugs.NodesParam, [name: "html_reference_id"]},
 		:choice => {Plugs.ChoiceParam, [name: "choice", maybe: true]},
-		:choice_name => {Plugs.StringParam, [name: "name"]}
+		:choice_name => {Plugs.StringParam, [name: "choice_name"]}
 	},
 	def create(conn, params = %{:user => user, :nodes => nodes, :reference_nodes => reference_nodes, :choice => choice, :choice_name => choice_name}) do
 		node_unique_choice_types = nodes |> Enum.map(& &1.choice_type) |> Enum.uniq
@@ -23,19 +23,25 @@ defmodule Liquio.HtmlReferenceVoteController do
 					|> Node.preload(calculation_opts, user)
 				end)
 			end)
+			first_node = Enum.at(for_choice_nodes, 0) |> Node.preload(calculation_opts, user)
 			
 			{level, message} = if choice != nil do
-				main_choice =
-					if choice_name == "for_choice" do
-						if choice["main"] != nil do
-							%{:for_choice => choice["main"], :main => 1.0}
-						else
-							%{:main => 1.0}
-						end
+				current_choice = if vote = Vote.current_by(first_node, user) do vote.data.choice else %{} end
+				new_choice = if choice_name == "for_choice" do
+					current_choice = current_choice
+					|> Map.put("for_choice", choice["main"])
+					if not Map.has_key?(current_choice, "relevance") do
+						current_choice = current_choice
+						|> Map.put("relevance", 1.0)
 					else
-						choice
+						current_choice
 					end
-				Enum.map(for_choice_nodes, & Vote.set(&1, user, main_choice))
+				else
+					current_choice = current_choice
+					|> Map.put("relevance", choice["main"])
+				end
+				Enum.map(for_choice_nodes, & Vote.set(&1, user, new_choice))
+
 				if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 					{:info, "Your vote is now live. Share the poll with other people."}
 				else

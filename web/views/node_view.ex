@@ -6,7 +6,7 @@ defmodule Liquio.NodeView do
 			if node.results == nil do
 				"#ddd"
 			else
-				score = if Map.has_key?(node.results.by_keys, "main") do node.results.by_keys["main"].mean else nil end
+				score = if Map.has_key?(node.results.by_keys, node.default_results_key) do node.results.by_keys[node.default_results_key].mean else nil end
 				cond do
 					score == nil -> "#ddd"
 					score < 0.25 -> "rgb(255, 164, 164)"
