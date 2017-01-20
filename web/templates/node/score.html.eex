@@ -1,69 +1,21 @@
-<%= if @poll.choice_type == "time_quantity" do %>
-	<%= if Enum.empty?(@poll.results.by_datetime) do %>
-		<div class="chart-no-data">No data available.</div>
-	<% else %>
-		<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}) %>
-		<div class="chart-turnout"><%= round(@poll.results.total) %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
-	<% end %>
+<%= if @choice_type == "time_quantity" do %>
+    <div class="reference-score" style="background-color: <%= default_score_color %>;">
+        <%= if @results != nil and not Enum.empty?(@results.by_datetime) do %>
+            <%= render "chart.html", points: @results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
+        <% else %>
+            ?
+        <% end %>
+    </div>
 <% else %>
-	<div class="score-box" style="background-color: <%= if @poll.results.mean != nil do score_color(@poll) else default_score_color() end %>;<%= if assigns[:editable] != nil and @editable do %> padding: 0;<% end %>">
-		<%= if assigns[:editable] != nil and @editable do %>
-			<% current_choice = if @own_vote do @own_vote.data.choice["main"] else 0.5 end %>
-
-			<form id="vote_form" action="<%= @conn.request_path %>/vote" method="POST" class="pure-form">
-				<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-
-				<input type="hidden" name="reference_key" value="<%= @poll.reference_key %>" />
-				<input type="hidden" name="choice_type" value="<%= @poll.choice_type %>" />
-				
-				<%= if @poll.choice_type == "probability" do %>
-					<div class="range">
-						<input type="range" name="choice" id="choice_range" value="<%= current_choice %>" min="0" max="1" step="any" oninput="let o = document.getElementsByClassName('number-value')[1]; o.innerHTML = Math.round(100 * choice_range.value)" style="width: 90%; margin: 0 auto;" />
-					</div>
-					<div class="number">
-						<span class="number-value"><%= round(100 * current_choice) %></span>
-						<span class="percent">%</span>
-					</div>
-					<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
-				<% else %>
-					<%= if @poll.choice_type == "quantity" do %>
-						<div class="number">
-							<input type="text" class="score-input" name="choice"<%= if @own_vote != nil do %> value="<%= number_format_simple(current_choice, 10) %>"<% end %> />
-						</div>
-						<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>	
-					<% else %>
-						<textarea class="score-input" name="choice" style="height: 150px; resize: vertical; text-align: left;" placeholder="2010: 10"><%= if @own_vote != nil do %><%= @own_vote.data.choice |> Enum.map(fn({k, v}) -> "#{k}: #{number_format_simple v}" end) |> Enum.join("\n\r") %><% end %></textarea>
-					<% end %>
-				<% end %>
-			</form>
-
-			<div class="links vote-links">
-				<a onclick="vote_form.submit()" class="vote-action"<%= if @own_vote == nil do %> style="width: 100%;"<% end %>><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Vote</a>
-
-				<%= if @own_vote do %>
-					<a onclick="remove_vote_form.submit()" class="vote-action" style="border-left: 2px solid rgba(0,0,0,0.08);">Remove <i class="fa fa-remove" aria-hidden="true" style="margin-right: 2px;"></i></a>
-
-					<form id="remove_vote_form" action="/<%= Liquio.Node.encode(@poll) %>/vote" method="POST" style="display: none;">
-						<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-						<input type="hidden" name="reference_key" value="<%= @poll.reference_key %>" />
-						<input type="hidden" name="choice" value="null" />
-					</form>
-				<% end %>
-			</div>
-		<% else %>
-			<div class="number">
-				<%= if @poll.results.mean != nil do %>
-					<%= if @poll.choice_type == "probability" do %>
-						<span class="number-value"><%= round(@poll.results.mean * 100) %></span>
-						<span class="percent">%</span>
-					<% else %>
-						<%= number_format(@poll.results.mean) %>
-					<% end %>
-				<% else %>
-					?
-				<% end %>
-			</div>
-			<div class="subtext"><%= @poll.results.total %> <%= ngettext("vote", "votes", round(@poll.results.total)) %> (<%= round(@poll.results.turnout_ratio * 100) %>%)</div>
-		<% end %>
-	</div>
+    <div class="reference-score" style="background-color: <%= if @results != nil and @results.mean != nil do score_color(%{:choice_type => @choice_type, :results => @results}) else default_score_color() end %>;">
+        <%= if @results != nil and @results.mean != nil do %>
+            <%= if @choice_type == "probability" do %>
+                <%= round(@results.mean * 100) %>%
+            <% else %>
+                <%= number_format(@results.mean) %>
+            <% end %>
+        <% else %>
+            ?
+        <% end %>
+    </div>
 <% end %>

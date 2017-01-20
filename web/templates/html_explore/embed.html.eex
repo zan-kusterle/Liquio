@@ -6,7 +6,7 @@
 	<%= for poll <- @polls do %>
 		<div class="poll-item">
 			<div style="display: inline-block; vertical-align: middle;">
-				<%= render Liquio.NodeView, "score_reference.html",
+				<%= render Liquio.NodeView, "score.html",
 					choice_type: poll.choice_type,
 					results: (if poll.latest_default_results do Liquio.Poll.unserialize_results(poll.latest_default_results) else nil end) %>
 			</div>

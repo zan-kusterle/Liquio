@@ -24,7 +24,6 @@ defmodule Liquio.HtmlExploreController do
 
 	def search(conn, %{"query" => query}) do
 		polls = Poll |> Poll.search(query) |> Repo.all
-		|> Enum.map(& PollHelper.prepare(&1, nil, nil, from_default_cache: true))
 
 		node = Node.new("Results for: #{query}", nil) |> Map.put(:references, polls)
 		conn

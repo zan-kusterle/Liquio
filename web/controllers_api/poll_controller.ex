@@ -1,8 +1,6 @@
 defmodule Liquio.PollController do
 	use Liquio.Web, :controller
-
-	alias Liquio.Helpers.PollHelper
-
+	
 	with_params(%{
 		:node => {Plugs.NodeParam, [name: "id"]},
 		:user => {Plugs.CurrentUser, [require: false]}

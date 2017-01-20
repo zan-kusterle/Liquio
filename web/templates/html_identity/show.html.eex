@@ -77,7 +77,7 @@
 									<div style="margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
 										<%= if poll.reference != nil do %>
 											<div style="margin-right: 10px; display: inline-block; opacity: 0.7;">
-												<%= render Liquio.NodeView, "score_reference.html",
+												<%= render Liquio.NodeView, "score.html",
 													choice_type: poll.reference.poll.choice_type,
 													results: Liquio.Poll.results_for_contribution(poll.reference.poll, %{:choice => poll.reference.for_choice}) %>
 											</div>
@@ -85,7 +85,7 @@
 
 										<%= if poll.choice != nil do %>
 											<div style="margin-right: 10px; display: inline-block;">
-												<%= render Liquio.NodeView, "score_reference.html",
+												<%= render Liquio.NodeView, "score.html",
 													choice_type: poll.choice_type,
 													results: Liquio.Poll.results_for_contribution(poll, %{:choice => poll.choice}) %>
 											</div>

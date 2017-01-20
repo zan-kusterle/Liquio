@@ -64,9 +64,9 @@ defmodule Liquio.Node do
 
 	def from_key(key) do
 		choice_types = %{
-			"_probability" => :probability, 
-			"_quantity" => :quantity,
-			"_time series" => :time_quantity,
+			"_probability" => "probability", 
+			"_quantity" => "quantity",
+			"_time series" => "time_quantity",
 			"_" => nil
 		}
 
@@ -83,7 +83,7 @@ defmodule Liquio.Node do
 			title = key |> String.replace("_", " ") |> String.replace_trailing(ends_with, "") |> String.trim
 			%Node{
 				:title => title,
-				:choice_type => to_string(choice_types[ends_with]),
+				:choice_type => choice_types[ends_with],
 				:key => key,
 				:reference_key => nil
 			}
@@ -97,6 +97,10 @@ defmodule Liquio.Node do
 		
 		node = Map.put(node, :key, get_key(node))
 		node
+	end
+
+	def update_key(node) do
+		Map.put(node, :key, get_key(node))
 	end
 
 	defp get_key(node) do

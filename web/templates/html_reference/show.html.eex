@@ -14,15 +14,18 @@
 	</div>
 
 	<div class="pure-u-1">
-		<main role="main" class="main">
-			<%= if @for_choice_node != nil do %>
+		<%= if @for_choice_node != nil do %>
+			<main role="main" class="main">
 				<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @for_choice_node %>
-			<% end %>
+			</main>
+		<% end %>
+		
+		<main role="main" class="main">
 			<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @relevance_node  %>
 		</main>
 	</div>
 
 	<div class="pure-u-1">
-		<%= render Liquio.NodeView, "calculation_opts.html", node: @relevance_node %>
+		<%= render Liquio.NodeView, "preferences.html", node: @relevance_node %>
 	</div>
 </div>

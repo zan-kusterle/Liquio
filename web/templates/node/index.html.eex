@@ -2,7 +2,9 @@
 <% references_node = if assigns[:references_node] do @references_node else nil end %>
 <% virtual? = if assigns[:virtual] do @virtual else false end %>
 
-<%= if not Enum.empty?(@nodes) do %>
+<%= if Enum.empty?(@nodes) do %>
+	<h3 style="font-weight: normal; font-size: 20px;">There is nothing here.</h3>
+<% else %>
 	<div class="references pure-g">
 		<%= if referencing_node != nil and referencing_node.choice_type == "probability" do %>
 			<% positive = @nodes |> Enum.filter(& &1.reference_result.mean >= 0.5) %>

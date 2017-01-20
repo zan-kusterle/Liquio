@@ -23,8 +23,6 @@ defmodule Liquio.Vote do
 	alias Liquio.Node
 	alias Liquio.Vote
 	alias Liquio.VoteData
-	alias Liquio.Reference
-	alias Liquio.TopicReference
 	alias Liquio.ResultsCache
 
 	schema "votes" do
@@ -43,15 +41,11 @@ defmodule Liquio.Vote do
 	end
 
 	def current_by(node, identity) do
-		vote = if node.reference_key == nil do
-			from(v in Vote, where: v.key == ^node.key and v.identity_id == ^identity.id and is_nil(v.reference_key) and v.is_last == true) |> Repo.one
-		else
-			Repo.get_by(Vote, key: node.key, identity_id: identity.id, reference_key: node.reference_key, is_last: true)
-		end
-		if vote != nil and vote.data != nil do
-			vote
-		else
+		votes = get_last(node, identity)
+		if Enum.empty?(votes) or Enum.at(votes, 0).data == nil do
 			nil
+		else
+			Enum.at(votes, 0)
 		end
 	end
 
@@ -106,9 +100,29 @@ defmodule Liquio.Vote do
 	end
 
 	defp remove_current_last(key, identity_id, reference_key) do
-		current_last = Vote.current_by(Node.for_reference_key(Node.from_key(key), reference_key), %{:id => identity_id})
-		if current_last do
-			Repo.update! Ecto.Changeset.change current_last, is_last: false
+		current_last = get_last(Node.for_reference_key(Node.from_key(key), reference_key), %{:id => identity_id})
+		Enum.each(current_last,fn(vote) ->
+			Repo.update! Ecto.Changeset.change vote, is_last: false
+		end)
+	end
+
+	def get_last(node, identity) do
+		if node.reference_key == nil do
+			query = from(v in Vote, where:
+				v.key == ^node.key and
+				v.identity_id == ^identity.id and
+				is_nil(v.reference_key) and
+				v.is_last == true
+			)
+			Repo.all(query)
+		else
+			query = from(v in Vote, where:
+				v.key == ^node.key and
+				v.identity_id == ^identity.id and
+				v.reference_key == ^node.reference_key and
+				v.is_last == true
+			)
+			Repo.all(query)
 		end
 	end
 

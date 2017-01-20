@@ -5,18 +5,20 @@
 
 <%= if @view == :inline do %>
 	<div class="reference">
-		<%= if Map.get(@node, :reference_result) != nil and referencing_node != nil and @referencing_node.choice_type != "probability" do %>
+		<%= if Map.get(@node, :reference_result) != nil and referencing_node != nil and not @referencing_node.choice_type in ["probability", nil] do %>
 			<div style="margin-right: 30px; display: inline-block;">
-				<%= render Liquio.NodeView, "score_reference.html",
+				<%= render Liquio.NodeView, "score.html",
 					choice_type: referencing_node.choice_type,
 					results: @node.reference_result %>
 			</div>
 		<% end %>
 
-		<%= render "score_reference.html", choice_type: @node.choice_type, results: @node.results %>
-
+		<%= if @node.choice_type do %>
+			<%= render "score.html", choice_type: @node.choice_type, results: @node.results %>
+		<% end %>
+		
 		<p class="reference-text">
-			<a href="/<%= Liquio.Node.encode(@node) %>"><%= @node.title %></a>
+			<a href="/<%= Liquio.Node.encode(@node) %>"><%= if @node.choice_type == nil do %>#<% end %><%= @node.title %></a>
 			<%= if not virtual? do %>
 				<%= if referencing_node do %>
 					<a href="/<%= Liquio.Node.encode(referencing_node) %>/references/<%= Liquio.Node.encode(@node) %>"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
@@ -54,14 +56,16 @@
 			<%= render "index.html", references_node: @node, nodes: @node.inverse_references, virtual: virtual? %>
 		</main>
 
-		<img src="/images/references.png" class="inverse-references-arrows"></img>
+		<img src="/images/references.png" class="references-arrows"></img>
 	<% end %>
 
-	<main role="main" class="main" style="margin-top: -8px;" id="main-node" style="display: none;">
+	<main role="main" class="main" id="main-node">
 		<%= render "vote.html", conn: @conn, node: @node, view: @view %>
 
 		<%= if @view == :full and references_view == :inline do %>
-			<%= render "index.html", referencing_node: @node, nodes: @node.references, virtual: virtual? %>
+			<div <%= if String.length(@node.title) > 0 do %>style="margin-top: 40px;"<% end %>>
+				<%= render "index.html", referencing_node: @node, nodes: @node.references, virtual: virtual? %>
+			</div>
 
 			<%= if not virtual? do %>
 				<form id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
@@ -112,7 +116,7 @@
 <% end %>
 
 <%= if @view == :full do %>
-	<%= render "calculation_opts.html", node: @node %>
+	<%= render "preferences.html", node: @node %>
 <% end %>
 
 <script>
