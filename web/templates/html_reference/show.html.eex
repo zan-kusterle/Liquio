@@ -4,7 +4,7 @@
 			<%= render Liquio.NodeView, "show.html", conn: @conn, view: :simple, node: node %>
 		<% end %>
 	</div>
-	<div class="pure-u-1-5">
+	<div class="pure-u-1-5" style="text-align: left;">
 		<img src="/images/reference.png" class="reference-arrow"></img>
 	</div>
 	<div class="pure-u-2-5">
@@ -16,12 +16,12 @@
 	<div class="pure-u-1">
 		<%= if @for_choice_node != nil do %>
 			<main role="main" class="main">
-				<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @for_choice_node %>
+				<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @for_choice_node, name: "for_choice", choice_key: "for_choice" %>
 			</main>
 		<% end %>
 		
 		<main role="main" class="main">
-			<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @relevance_node  %>
+			<%= render Liquio.NodeView, "vote.html", conn: @conn, view: :full, node: @relevance_node, name: "relevance"  %>
 		</main>
 	</div>
 

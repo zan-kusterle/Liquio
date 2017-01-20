@@ -7,8 +7,7 @@
 		<div class="poll-item">
 			<div style="display: inline-block; vertical-align: middle;">
 				<%= render Liquio.NodeView, "score.html",
-					choice_type: poll.choice_type,
-					results: (if poll.latest_default_results do Liquio.Poll.unserialize_results(poll.latest_default_results) else nil end) %>
+					choice_type: poll.choice_type %>
 			</div>
 
 			<div class="main-content" style="display: inline-block; vertical-align: middle; margin-left: 25px;">

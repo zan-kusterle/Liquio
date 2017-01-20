@@ -1,5 +1,5 @@
 <%= if @choice_type == "time_quantity" do %>
-    <div class="reference-score" style="background-color: <%= default_score_color %>;">
+    <div class="reference-score" style="background-color: #ccc;">
         <%= if @results != nil and not Enum.empty?(@results.by_datetime) do %>
             <%= render "chart.html", points: @results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
         <% else %>
@@ -7,12 +7,13 @@
         <% end %>
     </div>
 <% else %>
-    <div class="reference-score" style="background-color: <%= if @results != nil and @results.mean != nil do score_color(%{:choice_type => @choice_type, :results => @results}) else default_score_color() end %>;">
-        <%= if @results != nil and @results.mean != nil do %>
+    <div class="reference-score" style="background-color: <%= results_color(%{:choice_type => @choice_type, :results => @results}) %>;">
+        <% mean = if @results != nil and Map.has_key?(@results.by_keys, "main") do @results.by_keys["main"].mean else nil end %>
+        <%= if mean != nil do %>
             <%= if @choice_type == "probability" do %>
-                <%= round(@results.mean * 100) %>%
+                <%= round(mean * 100) %>%
             <% else %>
-                <%= number_format(@results.mean) %>
+                <%= number_format(mean) %>
             <% end %>
         <% else %>
             ?

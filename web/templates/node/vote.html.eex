@@ -18,14 +18,15 @@
 				<div class="chart-turnout"><%= round(@node.results.total) %> <%= ngettext("vote", "votes", round(@node.results.total)) %> (<%= round(@node.results.turnout_ratio * 100) %>%)</div>
 			<% end %>
 		<% else %>
-			<div class="score-box" style="background-color: <%= if @node.results.mean != nil do score_color(@node) else default_score_color() end %>;">
+			<div class="score-box" style="background-color: <%= results_color(@node) %>;">
 				<div class="number">
-					<%= if @node.results.mean != nil do %>
+					<%= if @node.results.by_keys["main"] != nil do %>
+						<% mean = @node.results.by_keys["main"].mean %>
 						<%= if @node.choice_type == "probability" do %>
-							<span class="number-value"><%= round(@node.results.mean * 100) %></span>
+							<span class="number-value"><%= round(mean * 100) %></span>
 							<span class="percent">%</span>
 						<% else %>
-							<%= number_format(@node.results.mean) %>
+							<%= number_format(mean) %>
 						<% end %>
 					<% else %>
 						?
@@ -37,6 +38,7 @@
 
 		<%= if @view == :full do %>
 			<% tag_id = UUID.uuid1(:urn) |> String.replace("-", "") |> String.replace(":", "") %>
+			<% name = if assigns[:name] do @name else tag_id end %>
 			<a style="display: inline-block; font-size: 12px; margin-top: 8px; color: #4aa5f3; font-weight: bold;" onclick="vote_choice_<%= tag_id %>.style.height = '260px'; vote_choice_<%= tag_id %>.style.opacity = 1; vote_choice_<%= tag_id %>.style['margin-top'] = '20px'; vote_choice_<%= tag_id %>.style.visibility = 'visible'; this.style.display = 'none';">
 				Vote <i class="fa fa-sticky-note" aria-hidden="true" style="margin-left: 2px;"></i>
 			</a>
@@ -44,7 +46,15 @@
 			<div id="vote_choice_<%= tag_id %>" class="vote_own_choice" style="margin-top: 0px; height: 0px; opacity: 0; visibility: hidden;">
 				<p style="margin-bottom: 5px;">Your current choice</p>
 
-				<% current_choice = if @node.own_vote do @node.own_vote.data.choice["main"] else 0.5 end %>
+				<%
+					choice_key = if assigns[:choice_key] do @choice_key else "main" end
+					current_choice = if @node.own_vote != nil and @node.own_vote.data != nil and Map.has_key?(@node.own_vote.data.choice, choice_key) do
+						@node.own_vote.data.choice[choice_key]
+					else
+						nil
+					end
+					current_choice = current_choice || 0.2
+				%>
 
 				<div class="score-box" style="padding: 0px;">
 					<form id="vote_form_<%= tag_id %>" action="<%= @conn.request_path %>/vote" method="POST">
@@ -52,6 +62,8 @@
 
 						<input type="hidden" name="reference_key" value="<%= @node.reference_key %>" />
 						<input type="hidden" name="choice_type" value="<%= @node.choice_type %>" />
+
+						<input type="hidden" name="name" value="<%= name %>">
 						
 						<%= if @node.choice_type == "probability" do %>
 							<div class="range">
@@ -105,7 +117,7 @@
 										</div>
 									</td>
 									<td class="choice">
-										<%= render "score.html", choice_type: @node.choice_type, results: @node.own_contribution %>
+										<%= render "score.html", choice_type: @node.choice_type, results: @node.own_results %>
 									</td>
 									<td class="username"><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
 									<td class="date"><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>

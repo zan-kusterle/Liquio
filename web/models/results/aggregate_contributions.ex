@@ -1,5 +1,6 @@
 defmodule Liquio.Results.AggregateContributions do
-	def aggregate(contributions, datetime, vote_weight_halving_days, choice_type, trust_metric_ids) do
+	def aggregate(contributions, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+		choice_type = if Enum.empty?(contributions) do nil else Enum.at(contributions, 0).choice_type end
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		trust_metric_size = MapSet.size(trust_metric_ids)
 
@@ -20,12 +21,25 @@ defmodule Liquio.Results.AggregateContributions do
 		end)
 		|> Enum.into(%{})
 
-		%{
+		results = %{
 			:total => total_power,
 			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(contributions),
 			:by_keys => by_keys
 		}
+		
+		results = if choice_type == "time_quantity" do
+			results_with_datetime = results.by_keys
+			|> Enum.map(fn({time_key, time_results}) ->
+				{year, ""} = Integer.parse(time_key)
+				Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
+			end)
+			results |> Map.put(:by_datetime, results_with_datetime)
+		else
+			results
+		end
+
+		results
 	end
 
 	def by_key(aggregations_by_key, key) do
@@ -69,7 +83,10 @@ defmodule Liquio.Results.AggregateContributions do
 
 	defp mean(contributions) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		total_score = Enum.sum(Enum.map(contributions, & &1.choice * &1.voting_power))
+		total_score = Enum.sum(Enum.map(contributions, fn(contribution) ->
+			value = if is_number(contribution.choice) do contribution.choice else if Map.has_key?(contribution.choice, "main") do contribution.choice["main"] else contribution.choice end end
+			value * contribution.voting_power
+		end))
 		if total_power > 0 do
 			1.0 * total_score / total_power
 		else

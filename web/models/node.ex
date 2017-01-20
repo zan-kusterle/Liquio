@@ -130,7 +130,7 @@ defmodule Liquio.Node do
 			node
 		end
 
-		node = Map.put(node, :results, results_from_contributions(node.contributions, node.choice_type, calculation_opts))
+		node = Map.put(node, :results, AggregateContributions.aggregate(node.contributions, calculation_opts))
 
 		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "embed.html", poll: node)
 		|> :erlang.iolist_to_binary
@@ -165,7 +165,7 @@ defmodule Liquio.Node do
 		end
 
 		contributions = contributions |> Enum.map(fn(contribution) ->
-			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity_id))
+			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity.id))
 		end)
 
 		node = if not Enum.empty?(contributions) do
@@ -178,6 +178,28 @@ defmodule Liquio.Node do
 		else
 			node
 		end
+
+		total_voting_power = contributions |> Enum.map(& &1.voting_power) |> Enum.sum
+		contributions = contributions
+		|> Enum.map(& Map.put(&1, :turnout_ratio, &1.voting_power / total_voting_power))
+		|> Enum.map(fn(contribution) ->
+			if contribution.choice_type == "time_quantity" do
+				data_points = contribution.choice
+				|> Enum.map(fn({time_key, value}) ->
+					{year, ""} = Integer.parse(time_key)
+					%{
+						:total => 1,
+						:turnout_ratio => 1,
+						:datetime => Timex.to_date({year, 1, 1}),
+						:mean => value
+					}
+				end)
+
+				Map.put(contribution, :points, data_points)
+			else
+				contribution
+			end
+		end)
 
 		Map.put(node, :contributions, contributions)
 	end
@@ -238,13 +260,37 @@ defmodule Liquio.Node do
 		node
 	end
 
+	def preload_user_vote(node, user) do
+		vote = if user do Vote.current_by(node, user) else nil end
+		Map.put(node, :own_vote, vote)
+	end
+
+	def preload_user_contribution(node, calculation_opts, user) do
+		node = if not Map.has_key?(node, :own_vote) do
+			node |> preload_user_vote(user)
+		else
+			node
+		end
+		node = if not Map.has_key?(node, :contributions) do
+			node |> preload_contributions(calculation_opts)
+		else
+			node
+		end
+
+		user_contribution = if user do Enum.find(node.contributions, & &1.identity.id == user.id) else nil end
+		user_results = if user_contribution == nil do nil else AggregateContributions.aggregate([user_contribution], calculation_opts) end
+		node
+		|> Map.put(:own_contribution, user_contribution)
+		|> Map.put(:own_results, user_results)
+	end
+	
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do
 		keys_with_votes
 		|> Enum.map(fn({key, votes}) ->
 			votes = GetData.prepare_votes(votes)
 			inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 			contributions = CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new)
-			results = results_from_contributions(contributions, "probability", calculation_opts)
+			results = AggregateContributions.aggregate(contributions, calculation_opts)
 			{key, results}
 		end)
 		|> Enum.filter(fn({_key, result}) ->
@@ -258,86 +304,11 @@ defmodule Liquio.Node do
 		|> Enum.sort(&(&1.results.total > &2.results.total))
 	end
 
-	def preload_user_vote(node, user) do
-		vote = if user do Vote.current_by(node, user) else nil end
-		Map.put(node, :own_vote, vote)
-	end
-
-	defp preload_user_contribution(node, calculation_opts, user) do
-		node = if not Map.has_key?(node, :own_vote) do
-			node |> preload_user_vote(user)
-		else
-			node
-		end
-		node = if not Map.has_key?(node, :contributions) do
-			node |> preload_contributions(calculation_opts)
-		else
-			node
-		end
-
-		contribution = if user do Enum.find(node.contributions, & &1.identity.id == user.id) else nil end
-		total_voting_power = node.contributions |> Enum.map(& &1.voting_power) |> Enum.sum
-
-		user_contribution = if contribution == nil do
-			nil
-		else
-			if node.choice_type == "time_quantity" do
-				by_datetime = contribution.choice
-				|> Enum.map(fn({time_key, value}) ->
-					{year, ""} = Integer.parse(time_key)
-					%{
-						:total => 1,
-						:turnout_ratio => 1,
-						:datetime => Timex.to_date({year, 1, 1}),
-						:mean => value
-					}
-				end)
-
-				%{
-					:total => contribution.voting_power,
-					:turnout_ratio => contribution.voting_power / total_voting_power,
-					:by_datetime => by_datetime
-				}
-			else
-				%{
-					:total => contribution.voting_power,
-					:turnout_ratio => contribution.voting_power / total_voting_power,
-					:mean => contribution.choice["main"]
-				}
-			end
-		end
-		
-		Map.put(node, :own_contribution, user_contribution)
-	end
-
 	defp ensure_rounding_sums_to(numbers, precision, target) do
 		rounded = Enum.map(numbers, & Float.round(&1, precision))
 		off = target - Enum.sum(rounded)
 		numbers
 		|> Enum.sort_by(& Float.round(&1, precision) - &1)
 		|> Enum.map(& Float.round(&1, precision))
-	end
-
-	defp results_from_contributions(contributions, choice_type, calculation_opts) do
-		results = AggregateContributions.aggregate(contributions, calculation_opts.datetime, calculation_opts.vote_weight_halving_days, choice_type, calculation_opts.trust_metric_ids)
-
-		results = if choice_type == "time_quantity" do
-			results_with_datetime = results.by_keys
-			|> Enum.map(fn({time_key, time_results}) ->
-				{year, ""} = Integer.parse(time_key)
-				Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
-			end)
-			|> Enum.filter(fn(datetime_result) ->
-				datetime_result.total >= calculation_opts.minimum_voting_power
-			end)
-			results |> Map.put(:by_datetime, results_with_datetime)
-		else
-			main_results = AggregateContributions.by_key(results.by_keys, "main")
-			if main_results.total >= calculation_opts.minimum_voting_power do
-				main_results
-			else
-				Map.put(main_results, :mean, nil)
-			end
-		end
 	end
 end

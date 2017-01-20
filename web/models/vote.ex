@@ -4,19 +4,9 @@ defmodule Liquio.VoteData do
 	embedded_schema do
 		field :choice, {:map, :float}
 	end
-
-	def changeset(data, params) do
-		data
-		|> cast(params, ["choice"])
-		|> validate_required(:choice)
-	end
 end
 
 defmodule Liquio.Vote do
-	@moduledoc """
-	Describes vote schema and provides functions for finding, adding and removing votes.
-	"""
-
 	use Liquio.Web, :model
 
 	alias Liquio.Repo
@@ -40,6 +30,10 @@ defmodule Liquio.Vote do
 		embeds_one :data, VoteData
 	end
 
+	def choice(vote) do
+
+	end
+
 	def current_by(node, identity) do
 		votes = get_last(node, identity)
 		if Enum.empty?(votes) or Enum.at(votes, 0).data == nil do
@@ -49,26 +43,11 @@ defmodule Liquio.Vote do
 		end
 	end
 
-	def changeset(data, params) do
-		data
-		|> cast(params, ["poll_id", "identity_id"])
-		|> validate_required(:poll_id)
-		|> validate_required(:identity_id)
-		|> assoc_constraint(:poll)
-		|> assoc_constraint(:identity)
-		|> put_embed(:data, VoteData.changeset(%VoteData{}, params))
-	end
-
-	def set(changeset) do
-		remove_current_last(changeset.params["poll_id"], changeset.params["identity_id"], nil)
-		changeset = changeset
-		|> put_change(:is_last, true)
-		result = Repo.insert(changeset)
-		invalidate_results_cache(Node.new(changeset.params["key"], changeset.params["key"]))
-		result
-	end
 	def set(node, identity, choice) do
-		remove_current_last(node.key, identity.id, node.reference_key)
+		current = get_and_remove_current_last(node.key, identity.id, node.reference_key)
+		current_choice = if current != nil and current.data != nil do current.data.choice else %{} end
+		new_choice = Map.merge(current_choice, choice)
+		new_choice = if Enum.count(new_choice) == 0 do nil else new_choice end
 		result = Repo.insert(%Vote{
 			:title => node.title,
 			:choice_type => node.choice_type,
@@ -77,7 +56,7 @@ defmodule Liquio.Vote do
 			:identity_id => identity.id,
 			:is_last => true,
 			:data => %VoteData{
-				:choice => choice
+				:choice => new_choice
 			}
 		})
 		invalidate_results_cache(node)
@@ -85,7 +64,7 @@ defmodule Liquio.Vote do
 	end
 
 	def delete(node, identity) do
-		remove_current_last(node.key, identity.id, node.reference_key)
+		get_and_remove_current_last(node.key, identity.id, node.reference_key)
 		result = Repo.insert!(%Vote{
 			:title => node.title,
 			:choice_type => node.choice_type,
@@ -99,11 +78,12 @@ defmodule Liquio.Vote do
 		result
 	end
 
-	defp remove_current_last(key, identity_id, reference_key) do
+	defp get_and_remove_current_last(key, identity_id, reference_key) do
 		current_last = get_last(Node.for_reference_key(Node.from_key(key), reference_key), %{:id => identity_id})
 		Enum.each(current_last,fn(vote) ->
 			Repo.update! Ecto.Changeset.change vote, is_last: false
 		end)
+		current_last |> Enum.at(0)
 	end
 
 	def get_last(node, identity) do

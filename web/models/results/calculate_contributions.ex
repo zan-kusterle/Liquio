@@ -8,24 +8,20 @@ defmodule Liquio.Results.CalculateContributions do
 
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
 
-		trust_votes = votes |> Enum.filter(fn({identity_id, {_datetime, _choice, _title}}) ->
+		trust_votes = votes |> Enum.filter(fn({identity_id, _vote}) ->
 			MapSet.member?(trust_identity_ids, to_string(identity_id))
 		end)
 
-		Enum.each(trust_votes, fn({identity_id, {_datetime, _choice, _title}}) ->
+		Enum.each(trust_votes, fn({identity_id, _vote}) ->
 			calculate_total_weights(identity_id, state, uuid, MapSet.new)
 		end)
 		
 		CalculateResultServer.reset_visited(uuid)
 
-		contributions = trust_votes |> Enum.map(fn({identity_id, {datetime, choice, title}}) ->
-			%{
-				identity_id: identity_id,
-				voting_power: get_power(identity_id, state, uuid, MapSet.new) / 1,
-				choice: choice,
-				datetime: datetime,
-				title: title
-			}
+		contributions = trust_votes |> Enum.map(fn({identity_id, vote}) ->
+			vote
+			|> Map.put(:voting_power, get_power(identity_id, state, uuid, MapSet.new) / 1)
+			|> Map.put(:identity, %Liquio.Identity{:id => identity_id})
 		end)
 
 		CalculateResultServer.stop uuid

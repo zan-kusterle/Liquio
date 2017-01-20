@@ -22,17 +22,18 @@ defmodule Liquio.Results.GetData do
 	end
 
 	def get_votes(key, datetime, reference_key) do
-		query = "SELECT DISTINCT ON (v.identity_id) v.identity_id, v.datetime, v.data, v.title
+		query = "SELECT DISTINCT ON (v.identity_id) v.identity_id, v.datetime, v.data, v.title, v.choice_type
 			FROM votes AS v
 			WHERE v.key = $1 AND v.reference_key #{if reference_key do "= $2" else "IS NULL" end} AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
 		rows = Ecto.Adapters.SQL.query!(Repo, query , if reference_key do [key, reference_key] else [key] end).rows |> Enum.filter(& Enum.at(&1, 2))
 		votes = for row <- rows, into: %{} do
 			{date, {h, m, s, _}} = Enum.at(row, 1)
-			data = {
-				Timex.to_naive_datetime({date, {h, m, s}}),
-				Enum.at(row, 2)["choice"],
-				Enum.at(row, 3)
+			data = %{
+				:datetime => Timex.to_naive_datetime({date, {h, m, s}}),
+				:choice => Enum.at(row, 2)["choice"],
+				:title => Enum.at(row, 3),
+				:choice_type => Enum.at(row, 4)
 			}
 			{Enum.at(row, 0), data}
 		end
@@ -41,7 +42,7 @@ defmodule Liquio.Results.GetData do
 
 	def prepare_votes(votes) do
 		for vote <- votes, into: %{} do
-			{vote.identity_id, {vote.datetime, vote.data.choice, vote.title}}
+			{vote.identity_id, %{:datetime => vote.datetime, :choice => vote.data.choice, :choice_type => vote.choice_type, :title => vote.title}}
 		end
 	end
 

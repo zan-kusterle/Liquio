@@ -25,21 +25,22 @@
 	}
 </style>
 
-<div class="area" style="background: <%= score_color(@poll) %>;">
+<div class="area" style="background: <%= results_color(@poll) %>;">
 	<div class="bubble">
 		<%= if @poll.choice_type == "time_quantity" do %>
 			<%= if Enum.empty?(@poll.results.by_datetime) do %>
 				<p>?</p>
 			<% else %>
-				<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
+				<%= render "chart.html", points: @poll.results.by_datetime |> Enum.map(& {&1.datetime, &1.points, &1.turnout_ratio}), tooltips: false %>
 			<% end %>
 		<% else %>
 			<p>
-				<%= if @poll.results.mean != nil do %>
+				<% mean = if @poll.results != nil and Map.has_key?(@poll.results.by_keys, "main") do @poll.results.by_keys["main"].mean else nil end %>
+				<%= if mean != nil do %>
 					<%= if @poll.choice_type == "probability" do %>
-						<%= round(@poll.results.mean * 100) %>%
+						<%= round(mean * 100) %>%
 					<% else %>
-						<%= number_format(@poll.results.mean) %>
+						<%= number_format(mean) %>
 					<% end %>
 				<% else %>
 					?
