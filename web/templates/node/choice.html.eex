@@ -57,7 +57,7 @@
         else
             nil
         end
-        current_choice = current_choice || 0.2
+        current_choice = current_choice || 0.5
         tag_id = UUID.uuid1(:urn) |> String.replace("-", "") |> String.replace(":", "")
     %>
     

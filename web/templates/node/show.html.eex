@@ -124,6 +124,6 @@
 	var container = document.getElementById('main-wrap');
 	var rowToScrollTo = document.getElementById('main-node');
 	if(rowToScrollTo != null) {
-		container.scrollTop = rowToScrollTo.offsetTop - 60;
+		container.scrollTop = rowToScrollTo.offsetTop - 40;
 	}
 </script>

@@ -14,7 +14,7 @@ defmodule Liquio.IdentityView do
 			id: identity.id,
 			username: identity.username,
 			name: identity.name,
-			trust_metric_poll_id: identity.trust_metric_poll_id
+			trusted_by_ids: [] 
 		}
 		v = if Map.has_key?(identity, :insecure_password) do
 			Map.put(v, :password, identity.insecure_password)

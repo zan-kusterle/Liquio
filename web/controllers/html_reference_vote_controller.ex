@@ -43,7 +43,7 @@ defmodule Liquio.HtmlReferenceVoteController do
 				Enum.map(for_choice_nodes, & Vote.set(&1, user, new_choice))
 
 				if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
-					{:info, "Your vote is now live. Share the poll with other people."}
+					{:info, "Your vote is now live."}
 				else
 					{:error, "Your vote is now live, but because you're not in trust metric it will not be counted. Get others to trust your identity by sharing it's URL to get into trust metric or change it in preferences."}
 				end

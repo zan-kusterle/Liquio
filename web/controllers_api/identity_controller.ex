@@ -2,7 +2,7 @@ defmodule Liquio.IdentityController do
 	use Liquio.Web, :controller
 
 	def index(conn, %{}) do
-		identities = Identity |> Repo.all |> Repo.preload([:trust_metric_poll_votes])
+		identities = Identity |> Repo.all
 		render(conn, "index.json", identities: identities)
 	end
 
@@ -27,7 +27,6 @@ defmodule Liquio.IdentityController do
 		:identity => {Plugs.IdentityParam, [name: "id"]}
 	},
 	def show(conn, %{:identity => identity}) do
-		identity = identity |> Repo.preload([:trust_metric_poll_votes])
 		render(conn, "show.json", identity: identity)
 	end)
 

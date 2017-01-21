@@ -49,7 +49,7 @@
 						<div class="pure-u-1 pure-u-sm-1-6">
 							<div class="actions">
 								<%= if user = Guardian.Plug.current_resource(@conn) do %>
-									<a href="/identities/<%= user.id %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></a>
+									<a href="/identities/<%= user.username %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></a>
 									<a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
 								<% else %>
 									<a href="/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</a>

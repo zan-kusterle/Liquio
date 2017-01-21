@@ -21,7 +21,7 @@ defmodule Liquio.HtmlIdentityController do
 	end
 
 	with_params(%{
-		:identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
+		:identity => {Plugs.ItemParam, [schema: Identity, name: "id", column: :username]}
 	},
 	def show(conn, %{:identity => identity}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
@@ -29,17 +29,7 @@ defmodule Liquio.HtmlIdentityController do
 		current_identity = Guardian.Plug.current_resource(conn)
 		is_me = current_identity != nil and identity.id == current_identity.id
 		is_in_trust_metric = Enum.member?(calculation_opts[:trust_metric_ids], to_string(identity.id))
-		own_is_human_vote =
-			if current_identity != nil do
-				vote = Repo.get_by(Vote, identity_id: current_identity.id, poll_id: identity.trust_metric_poll_id, is_last: true)
-				if vote == nil or vote.data == nil do
-					nil
-				else
-					vote
-				end
-			else
-				nil
-			end
+		own_is_human_vote = nil
 
 		delegation = if current_identity != nil and not is_me do
 			delegation = Repo.get_by(Delegation, %{from_identity_id: current_identity.id, to_identity_id: identity.id, is_last: true})
@@ -55,19 +45,18 @@ defmodule Liquio.HtmlIdentityController do
 		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
-		|> Enum.sort(& &1.data.weight > &2.data.weight)
+		|> Enum.sort_by(& &1.data.weight)
 
 		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
-		|> Enum.sort(& &1.data.weight > &2.data.weight)
+		|> Enum.sort_by(& &1.data.weight)
 
-		identity = identity |> Repo.preload([:trust_metric_poll_votes])
-		trusted_by_votes =  identity.trust_metric_poll_votes
+		trusted_by_votes =  []
 		|> Repo.preload([:identity])
 		|> Enum.filter(& &1.is_last and &1.data != nil)
 		|> Enum.map(& Map.put(&1, :trust_identity, &1.identity))
-		|> Enum.sort(& &1.trust_identity.username > &2.trust_identity.username)
+		|> Enum.sort_by(& &1.trust_identity.username)
 
 		is_human_votes = []
 		votes = []
