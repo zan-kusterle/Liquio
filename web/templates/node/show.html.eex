@@ -57,7 +57,7 @@
 			<%= render "index.html", references_node: @node, nodes: @node.inverse_references, virtual: virtual? %>
 		</main>
 
-		<img src="/images/references.png" class="references-arrows"></img>
+		<img src="/images/inverse_references.svg" class="inverse-references-arrows"></img>
 	<% end %>
 
 	<main role="main" class="main" id="main-node">
@@ -86,7 +86,7 @@
 <% end %>
 
 <%= if references_view == :main do %>
-	<img src="/images/references.png" class="references-arrows"></img>
+	<img src="/images/references.svg" class="references-arrows"></img>
 
 	<p class="heading">
 		<a href="relevant" class="sort active">relevant</a>

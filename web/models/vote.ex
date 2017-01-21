@@ -73,14 +73,25 @@ defmodule Liquio.Vote do
 	end
 
 	defp remove_current_last(key, identity_id, reference_key) do
-		from(v in Vote,
+		query = if reference_key == nil do
+			from(v in Vote,
+			where:
+				v.key == ^key and
+				v.identity_id == ^identity_id and
+				is_nil(v.reference_key) and
+				v.is_last == true,
+			update: [set: [is_last: false]])
+		else
+			from(v in Vote,
 			where:
 				v.key == ^key and
 				v.identity_id == ^identity_id and
 				v.reference_key == ^reference_key and
 				v.is_last == true,
 			update: [set: [is_last: false]])
-		|> Repo.update_all([])
+		end
+		
+		query |> Repo.update_all([])
 	end
 
 	def get_last(node, identity) do

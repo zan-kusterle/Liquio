@@ -34,7 +34,7 @@
         tag_id = UUID.uuid1(:urn) |> String.replace("-", "") |> String.replace(":", "")
     %>
     
-    <div class="score-box" style="padding: 0px;">
+    <div class="score-box" style="padding: 0px; background-color: <%= results_color(@node) %>;">
         <form id="vote_form_<%= tag_id %>" action="<%= @conn.request_path %>/vote" method="POST">
             <input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
 
@@ -72,6 +72,7 @@
 
                 <form id="remove_vote_form_<%= tag_id %>" action="<%= @conn.request_path %>/vote" method="POST" style="display: none;">
                     <input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
+                    <input type="hidden" name="choice_name" value="<%= @node.default_results_key %>">
                     <input type="hidden" name="reference_key" value="<%= @node.reference_key %>" />
                     <input type="hidden" name="choice" value="null" />
                 </form>

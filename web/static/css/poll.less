@@ -10,11 +10,31 @@
 		}
 	}
 
-	.references-arrows {
-		width: 140px;
-		opacity: 0.3;
-		margin-top: -53px;
+	.inverse-references-arrows {
+		width: 300px;
+		height: 160px;
+		opacity: 0.2;
+		margin-top: -63px;
 		margin-bottom: 20px;
+		transition: opacity 0.5s ease-in;
+	}
+
+	.references-arrows {
+		height: 300px;
+		width: 240px;
+		opacity: 0.2;
+		margin-top: -108px;
+		margin-bottom: 20px;
+		transition: opacity 0.5s ease-in;
+		transform: rotate(90deg);
+	}
+
+	.inverse-references-arrows:hover {
+		opacity: 0.6;
+	}
+
+	.references-arrows:hover {
+		opacity: 0.6;
 	}
 
 	.sort {
@@ -100,13 +120,14 @@
 		width: 100%;
 		text-align: center;
 		margin-top: 10px;
+		background: rgba(0, 0, 0, 0.05);
 
 		a {
 			color: #4aa5f3;
 			font-weight: bold;
 			margin: 0px auto;
 			width: calc(50% - 1px);
-			background: rgba(0, 0, 0, 0.05);
+			
 			padding: 5px;
 
 			i {
