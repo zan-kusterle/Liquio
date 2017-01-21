@@ -69,7 +69,7 @@
 			</div>
 
 			<%= if not virtual? do %>
-				<form id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
+				<form style="display: none;" id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
 					<paper-input label="Title" name="reference_poll_id" required style="display: inline-block; width: 300px;"></paper-input>
 					<paper-dropdown-menu style="margin-left: 15px;">
 						<paper-listbox class="dropdown-content" selected="0">

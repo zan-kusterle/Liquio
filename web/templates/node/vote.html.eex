@@ -10,31 +10,7 @@
 
 <%= if @node.choice_type do %>
 	<div class="score-container">
-		<%= if @node.choice_type == "time_quantity" do %>
-			<%= if Enum.empty?(@node.results.by_datetime) do %>
-				<div class="chart-no-data">No data available.</div>
-			<% else %>
-				<%= render "chart.html", points: @node.results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}) %>
-				<div class="chart-turnout"><%= round(@node.results.turnout_ratio * 100) %>% turnout</div>
-			<% end %>
-		<% else %>
-			<div class="score-box" style="background-color: <%= results_color(@node) %>;">
-				<div class="number">
-					<% mean = if @node.results != nil and Map.has_key?(@node.results.by_keys, @node.default_results_key) do @node.results.by_keys[@node.default_results_key].mean else nil end %>
-					<%= if mean != nil do %>
-						<%= if @node.choice_type == "probability" do %>
-							<span class="number-value"><%= round(mean * 100) %></span>
-							<span class="percent">%</span>
-						<% else %>
-							<%= number_format(mean) %>
-						<% end %>
-					<% else %>
-						?
-					<% end %>
-				</div>
-				<div class="subtext"><%= round(@node.results.turnout_ratio * 100) %>% turnout</div>
-			</div>
-		<% end %>
+		<%= render "choice.html", view: :full, node: @node %>
 
 		<%= if @view == :full do %>
 			<% tag_id = UUID.uuid1(:urn) |> String.replace("-", "") |> String.replace(":", "") %>
@@ -75,4 +51,6 @@
 			</div>
 		<% end %>
 	</div>
+<% else %>
+	<p style="font-size: 18px; margin-top: 10px;">contains <%= Enum.count(@node.references) %> <%= ngettext("item", "items", Enum.count(@node.references)) %></p>
 <% end %>

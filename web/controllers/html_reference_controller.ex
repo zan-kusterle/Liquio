@@ -50,7 +50,7 @@ defmodule Liquio.HtmlReferenceController do
 			conn
 			|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 			|> render("show.html",
-				title: "Decide references",
+				title: "Reference",
 				conn: conn,
 				calculation_opts: calculation_opts,
 				nodes: Enum.map(nodes, & Node.preload(&1, calculation_opts, user)),
