@@ -15,7 +15,7 @@ defmodule Liquio.IdentityController do
 				conn
 				|> put_status(:created)
 				|> put_resp_header("location", identity_path(conn, :show, identity))
-				|> render("show.json", identity: Map.put(identity, :insecure_password, password))
+				|> render("show.json", identity: identity)
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)

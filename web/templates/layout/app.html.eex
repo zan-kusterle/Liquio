@@ -37,8 +37,17 @@
 	</head>
 
 	<body>
+		<script>
+			<%
+				token = if user = Guardian.Plug.current_resource(@conn) do
+					Guardian.Plug.current_token(Guardian.Plug.sign_in(@conn, user))
+				else
+					nil
+				end
+			%>
+			var token = <%= if token do %>'<%= token %>'<% else %><%= "null" %><% end %>;
+		</script>
 		<div id="app" class="container">
-			
 			<div class="header">
 				<div class="header-contents">
 					<div class="pure-g">

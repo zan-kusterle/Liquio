@@ -4,17 +4,19 @@ var choiceComponent = Vue.component('choice', {
 	data: function() {
 		let self = this;
 		return {
+			latest_node: self.node,
 			set_value: 0.5,
 			set: function (event) {
 				let title = self.node.title.replace('_', ' ').replace(' ', '-')
-				self.$http.post('/api/nodes/' + title + '/votes', {choice: {main: self.set_value}}).then((response) => {
-					console.log(response)
-					self.$http.get('/api/nodes/' + title).then((response) => {
-						console.log(response)
-						self.results = mapResults(response.body.data.results)
-						console.log(mapResults(response.body.data.results))
-					}, (response) => {
-					})
+				let choice = {'main': parseFloat(self.set_value)}
+
+				self.$http.post('/api/nodes/' + title + '/votes', {choice: choice}, {
+					headers: {
+						'authorization': 'Bearer ' + token
+					}
+				}).then((response) => {
+					let new_node = response.body.data
+					self.latest_node.results = new_node.results
 				}, (response) => {
 				});
 			},
@@ -25,13 +27,13 @@ var choiceComponent = Vue.component('choice', {
 	},
 	computed: {
 		mean: function() {
-			return this.node.results.by_keys["main"].mean
+			return this.latest_node.results.by_keys["main"].mean
 		},
 		turnout: function() {
-			return this.node.results.turnout_ratio
+			return this.latest_node.results.turnout_ratio
 		},
 		points: function() {
-			if(this.node.choice_type == "time_quantity") {
+			if(this.latest_node.choice_type == "time_quantity") {
 
 			} else {
 				return [];
@@ -49,7 +51,9 @@ var app = new Vue({
 	},
 	http: {
 		root: '/api',
-		headers: {}
+		headers: {
+			'Authorization': 'Bearer ' + token
+		}
 	}
 })
 

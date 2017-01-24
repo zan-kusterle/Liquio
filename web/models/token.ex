@@ -31,10 +31,13 @@ defmodule Liquio.Token do
 			token: token,
 			is_valid: true
 		})
+		token_item
+	end
 
-		url = Router.Helpers.html_login_url(Endpoint, :show, token)
+	def send_token(token) do
+		url = Router.Helpers.html_login_url(Endpoint, :show, token.token)
 		send_email(
-			to: email,
+			to: token.email,
 			from: "Liquio <login@liqu.io>",
 			subject: "Instantly login to Liquio",
 			html: "<a href=\"#{url}\" style=\"background-color: #1f8dd6; color: white; display: block; padding: 20px 30px; text-align: center; max-width: 200px; margin: 0 auto; font-size: 22px; text-decoration: none; border-radius: 5px;\">Login to Liquio</a>"

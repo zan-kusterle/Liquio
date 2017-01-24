@@ -1,6 +1,6 @@
-<div v-if="node">
+<div v-if="latest_node">
 	<div class="score-box" style="background-color: #ddd;">
-		<div v-if="node.choice_type === 'probability'">	
+		<div v-if="latest_node.choice_type === 'probability'">	
 			<div class="number">
 				<span class="number-value">{{ Math.round(mean * 100) }}</span><span class="percent">%</span>
 			</div>
@@ -8,7 +8,7 @@
 		</div>
 	</div>
 
-	<div class="score-box" style="background-color:  #ddd;" v-if="node.choice_type === 'quantity'">
+	<div class="score-box" style="background-color:  #ddd;" v-if="latest_node.choice_type === 'quantity'">
 		<div class="number">
 			{{ mean }}
 		</div>
@@ -22,7 +22,7 @@
 	<div class="score-box" style="padding: 0px; background-color: #ddd;">
 		<form action="<%= @conn.request_path %>/vote" method="POST">
 
-			<div v-if="node.choice_type === 'probability'">
+			<div v-if="latest_node.choice_type === 'probability'">
 				<div class="range">
 					<input type="range" name="choice" min="0" max="1" step="any" v-model="set_value" style="width: 90%; margin: 0 auto;" />
 				</div>
@@ -32,14 +32,14 @@
 				<div class="subtext">{{ Math.round(turnout * 100) }}% turnout</div>
 			</div>
 
-			<div v-if="node.choice_type === 'quantity'">	
+			<div v-if="latest_node.choice_type === 'quantity'">	
 				<div class="number">
 					<input type="text" class="score-input" name="choice" v-model="mean" />
 				</div>
 				<div class="subtext">{{ Math.round(turnout * 100) }}% turnout</div>
 			</div>
 			
-			<div v-if="node.choice_type === 'time_quantity'">	
+			<div v-if="latest_node.choice_type === 'time_quantity'">	
 				<textarea class="score-input" name="choice" style="height: 150px; resize: vertical; text-align: left;" placeholder="2010: 10"></textarea>
 			</div>
 		</form>
@@ -50,10 +50,10 @@
 		</div>
 	</div>
 	
-	<div class="votes" ng-if="node.results.contributions.length > 0">
+	<div class="votes" ng-if="latest_node.results.contributions.length > 0">
 		<p style="margin-bottom: 5px;">Votes</p>
 		<table class="contributions">
-			<tr class="contribution" v-for="contribution in node.results.contributions">
+			<tr class="contribution" v-for="contribution in latest_node.results.contributions">
 				<td class="contribution">
 					<div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px; width: {{ contribution.width_ratio * 100 }}%;">
 						123

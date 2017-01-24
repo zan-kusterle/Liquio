@@ -1,11 +1,11 @@
 defmodule Liquio.LoginController do
 	use Liquio.Web, :controller
 
-	plug :scrub_params, "identity" when action in [:create]
-
-	def create(conn, %{"identity" => %{"username" => username, "password" => password}}) do
-		identity = Repo.get_by(Identity, username: username)
-		if identity != nil and Comeonin.Bcrypt.checkpw(password, "identity.password_hash") do
+	def create(conn, %{"token" => token}) do
+		email = Token.get_email(token)
+		if email != nil do
+			identity = Repo.get_by(Identity, email: email)
+			Token.use(token)
 			conn = Guardian.Plug.sign_in(conn, identity)
 			
 			access_token = Guardian.Plug.current_token(conn)

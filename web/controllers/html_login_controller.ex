@@ -23,7 +23,8 @@ defmodule Liquio.HtmlLoginController do
 			|> put_flash(:info, "Hello, #{identity.name}")
 			|> redirect(to: html_identity_path(conn, :show, identity.id))
 		else
-			Token.new(email)
+			token = Token.new(email)
+			Token.send_token(token)
 			conn
 			|> put_flash(:info, "Check your inbox at #{email}")
 			|> redirect(to: html_login_path(conn, :index))
