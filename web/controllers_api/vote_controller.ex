@@ -1,54 +1,38 @@
 defmodule Liquio.VoteController do
 	use Liquio.Web, :controller
-
+	
+	plug :scrub_params, "choice" when action in [:create]
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]}
-	},
-	def index(conn, %{:poll => poll}) do
-		votes = Repo.all(from(v in Vote, where: v.poll_id == ^poll.id and v.is_last and not is_nil(v.data)))
-		render(conn, "index.json", votes: votes)
-	end)
-
-	plug :scrub_params, "vote" when action in [:create]
-	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},
+		:node => {Plugs.NodeParam, [name: "node_id"]},
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
-	def create(conn, %{:poll => poll, :user => user, "vote" => params}) do
-		params = params |> Map.put("poll_id", poll.id) |> Map.put("identity_id", user.id)
-		changeset = Vote.changeset(%Vote{}, params)
-		case Vote.set(changeset) do
-			{:ok, vote} ->						
-				conn
-				|> put_status(:created)
-				|> put_resp_header("location", poll_vote_path(conn, :show, poll, vote.id))
-				|> render("show.json", vote: vote)
-			{:error, changeset} ->
-				conn
-				|> put_status(:unprocessable_entity)
-				|> render(Liquio.ChangesetView, "error.json", changeset: changeset)
-		end
+	def create(conn, %{:node => node, :user => user, "choice" => choice}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
+
+		{status, message} =
+			if choice != nil do
+				Vote.set(node, user, choice)
+				if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
+					{:info, "Your vote is now live."}
+				else
+					{:error, "Your vote is now live, but because you're not in trust metric it will not be counted. Get others to trust your identity by sharing it's URL to get into trust metric or change it in preferences."}
+				end
+			else
+				Vote.delete(node, user)
+				{:info, "You no longer have a vote in this poll."}
+			end
+
+		conn
+		|> put_status(:created)
+		|> put_resp_header("location", node_path(conn, :show, Liquio.Node.encode(node)))
 	end)
 
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},
-		:identity => {Plugs.IdentityParam, [name: "id"]}
-	},
-	def show(conn, %{:poll => poll, :identity => identity}) do
-		vote = Repo.get_by!(Vote, identity_id: identity.id, poll_id: poll.id, is_last: true)
-		if vote do
-			conn |> render("show.json", vote: vote)
-		else
-			conn |> put_status(:not_found)
-		end
-	end)
-
-	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},
+		:node => {Plugs.NodeParam, [name: "node_id"]},
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
-	def delete(conn, %{:poll => poll, :user => user}) do
-		vote = Vote.delete(poll, user)
+	def delete(conn, %{:node => node, :user => user}) do
+		vote = Vote.delete(node, user)
 		render(conn, "show.json", vote: vote)
 	end)
 end

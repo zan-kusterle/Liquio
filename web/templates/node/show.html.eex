@@ -5,20 +5,25 @@
 
 <%= if @view == :inline do %>
 	<div class="reference">
-		<%= if Map.get(@node, :reference_result) != nil and referencing_node != nil and not @referencing_node.choice_type in ["probability", nil] do %>
-			<div style="margin-right: 30px; display: inline-block;">
+		<%= if @node.choice_type == nil do %>
+			<%= render Liquio.NodeView, "choice.html",
+				view: :simple,
+				text: ngettext("item", "items", Enum.count(@node.references)),
+				node: %{:choice_type => "quantity", :default_results_key => "main", :results => %{:by_keys => %{"main" => %{:mean => Enum.count(@node.references)}}}} %>
+		<% else %>
+			<%= if Map.get(@node, :reference_result) != nil and referencing_node != nil and not @referencing_node.choice_type in ["probability", nil] do %>
 				<%= render Liquio.NodeView, "choice.html",
 					view: :simple,
-					choice_type: referencing_node.choice_type,
-					results: @node.reference_result %>
-			</div>
-		<% end %>
+					node: %{:choice_type => referencing_node.choice_type, :default_results_key => "main", :results => @node.reference_result} %>
+			<% end %>
 
-		<%= if @node.choice_type do %>
-			<%= render "choice.html", view: :simple, node: @node %>
+			<%= if @node.choice_type do %>
+				<%= render "choice.html", view: :simple, node: @node %>
+			<% end %>
 		<% end %>
 		
-		<p class="reference-text">
+		<p class="reference-text" style="margin-left: 10px;">
+		
 			<a href="/<%= Liquio.Node.encode(@node) %>"><%= if @node.choice_type == nil do %>#<% end %><%= @node.title %></a>
 			<%= if not virtual? do %>
 				<%= if referencing_node do %>
@@ -70,7 +75,7 @@
 
 			<%= if not virtual? do %>
 				<form style="display: none;" id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
-					<paper-input label="Title" name="reference_poll_id" required style="display: inline-block; width: 300px;"></paper-input>
+					<paper-input label="Title" name="reference_node_id" required style="display: inline-block; width: 300px;"></paper-input>
 					<paper-dropdown-menu style="margin-left: 15px;">
 						<paper-listbox class="dropdown-content" selected="0">
 							<paper-item>Probability</paper-item>
@@ -101,7 +106,7 @@
 
 		<%= if not virtual? do %>
 			<form style="display: none;" id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
-				<paper-input label="Title" name="reference_poll_id" required style="display: inline-block; width: 300px;"></paper-input>
+				<paper-input label="Title" name="reference_node_id" required style="display: inline-block; width: 300px;"></paper-input>
 				<paper-dropdown-menu style="margin-left: 15px;">
 					<paper-listbox class="dropdown-content" selected="0">
 						<paper-item>Probability</paper-item>

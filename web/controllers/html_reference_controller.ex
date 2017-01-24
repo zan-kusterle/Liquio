@@ -1,29 +1,29 @@
 defmodule Liquio.HtmlReferenceController do
 	use Liquio.Web, :controller
 
-	def index(conn, %{"html_poll_id" => poll_id, "reference_poll_id" => reference_poll_url}) do
-		url = URI.parse(reference_poll_url)
-		reference_poll_id =
+	def index(conn, %{"html_node_id" => node_id, "reference_node_id" => reference_node_url}) do
+		url = URI.parse(reference_node_url)
+		reference_node_id =
 			if url.path != nil and url.path |> String.starts_with?("/polls/") do
 				String.replace(url.path, "/polls/", "")
 			else
-				reference_poll_url
+				reference_node_url
 			end
-		reference_poll = Repo.get(Poll, reference_poll_id)
+		reference_poll = Repo.get(Poll, reference_node_id)
 
 		if reference_poll != nil and reference_poll.kind == "custom" do
 			conn
-			|> redirect(to: html_poll_html_reference_path(conn, :show, poll_id, reference_poll_id))
+			|> redirect(to: html_node_html_reference_path(conn, :show, node_id, reference_node_id))
 		else
 			conn
 			|> put_flash(:info, "The poll you want to reference does not exist.")
-			|> redirect(to: html_poll_path(conn, :show, poll_id))
+			|> redirect(to: html_node_path(conn, :show, node_id))
 		end
 	end
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
-		:nodes => {Plugs.NodesParam, [name: "html_poll_id"]},
+		:nodes => {Plugs.NodesParam, [name: "html_node_id"]},
 		:reference_nodes => {Plugs.NodesParam, [name: "id"]},
 		:datetime => {Plugs.DatetimeParam, [name: "datetime"]}
 	},
@@ -33,7 +33,7 @@ defmodule Liquio.HtmlReferenceController do
 		if Enum.count(node_unique_choice_types) > 1 or Enum.count(reference_node_unique_choice_types) > 1 do
 			conn
 			|> put_flash(:info, "All nodes must be of same type.")
-			|> redirect(to: html_poll_html_reference_path(conn, :show, params["html_poll_id"], params["id"]))
+			|> redirect(to: html_node_html_reference_path(conn, :show, params["html_node_id"], params["id"]))
 		else
 			calculation_opts = get_calculation_opts_from_conn(conn)
 			for_choice_nodes = nodes |> Enum.flat_map(fn(node) ->

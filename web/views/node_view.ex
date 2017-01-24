@@ -18,4 +18,32 @@ defmodule Liquio.NodeView do
 			"#ddd"
 		end
 	end
+
+	def render("index.json", %{nodes: nodes}) do
+		%{data: render_many(nodes, Liquio.NodeView, "node.json")}
+	end
+
+	def render("show.json", %{node: node}) do
+		%{data: render_one(node, Liquio.NodeView, "node.json")}
+	end
+
+	def render("node.json", %{node: node}) do
+		contributions = node.contributions
+		|> Enum.map(fn(contribution) ->
+			%{
+				:datetime => Timex.format!(contribution.datetime, "{ISO:Basic}"),
+				:choice => contribution.choice,
+				:voting_power => contribution.voting_power,
+				:identity_id => contribution.identity.id
+			}
+		end)
+
+		%{
+			:title => node.title,
+			:choice_type => node.choice_type,
+			:key => node.key,
+			:results => node.results,
+			:contributions => contributions
+		}
+	end
 end

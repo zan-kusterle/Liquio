@@ -1,12 +1,12 @@
 exports.config = {
 	files: {
+		javascripts: {
+			joinTo: "js/app.js"
+		},
 		stylesheets: {
 			joinTo: "css/app.css",
 			order: {
-				before: [
-					'web/static/css/lib/pure.css',
-					'web/static/css/app.less'
-				]
+				before: ['web/static/css/lib/pure.css', 'web/static/css/app.less']
 			}
 		}
 	},
@@ -22,7 +22,7 @@ exports.config = {
 		],
 		public: "priv/static"
 	},
-
+  
 	plugins: {
 		cleancss: {
 			keepSpecialComments: 0,
@@ -30,10 +30,19 @@ exports.config = {
 		},
 		less: {
 			dumpLineNumbers: 'comments'
+		},
+		babel: {
+			ignore: [/web\/static\/vendor/]
 		}
 	},
 
-	modules: {},
+	modules: {
+		autoRequire: {
+			"js/app.js": ["web/static/js/app"]
+		}
+	},
 
-	npm: {}
+	npm: {
+		enabled: true
+	}
 };

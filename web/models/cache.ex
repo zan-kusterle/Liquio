@@ -1,8 +1,7 @@
 defmodule Liquio.ResultsCache do
 	def get({{name, id, datetime}, preferences_key}) do
 		cache = Cachex.get!(:results_cache, {name, id, datetime_key(datetime)})
-		cache = nil
-		if Mix.env == :prod and cache != nil do
+		if cache != nil do
 			Map.get(cache, preferences_key)
 		else
 			nil

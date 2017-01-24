@@ -145,9 +145,9 @@ defmodule Liquio.Identity do
 		visited = MapSet.put(visited, id)
 
 		current = polls_by_ids[id] |> Map.put(:level, level) |> Map.put(:reference, reference)
-		sub = Enum.flat_map(polls_by_ids[id].references, fn(reference = %{:reference_poll => %{:id => reference_poll_id}}) ->
-			if Map.has_key?(polls_by_ids, reference_poll_id) do
-				traverse_polls(polls_by_ids, reference_poll_id, visited, level + 1, reference)
+		sub = Enum.flat_map(polls_by_ids[id].references, fn(reference = %{:reference_poll => %{:id => reference_node_id}}) ->
+			if Map.has_key?(polls_by_ids, reference_node_id) do
+				traverse_polls(polls_by_ids, reference_node_id, visited, level + 1, reference)
 			else
 				[]
 			end
@@ -170,7 +170,7 @@ defmodule Liquio.Identity do
 				[prepare_poll(poll, %{:choice => poll.choice})]
 			"is_reference" ->
 				reference = Reference
-				|> Repo.get_by!(for_choice_poll_id: poll.id)
+				|> Repo.get_by!(for_choice_node_id: poll.id)
 				|> Repo.preload([:poll, :reference_poll])
 
 				[

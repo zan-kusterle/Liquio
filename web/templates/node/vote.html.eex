@@ -3,59 +3,29 @@
 		<a href="/<%= Liquio.Node.encode(@node) %>" class="title">
 			<%= @node.title %>
 			<%= if @node.choice_type == nil do %>
-				<p style="font-size: 18px; margin-top: 15px;"><%= Enum.count(@node.references) %> <%= ngettext("poll", "polls", Enum.count(@node.references)) %> inside</p>
+				<p style="font-size: 18px; margin-top: 15px;"><i class="fa fa-th-list" style="vertical-align: middle; margin-right: 10px;"></i> <%= Enum.count(@node.references) %> <%= ngettext("item", "items", Enum.count(@node.references)) %></p>
 			<% end %>
 		</a>
 	<% else %>
+		<%= if @node.choice_type == nil do %><span style="font-size: 18px; vertical-align: middle;"><span style="vertical-align: middle;">2</span> <i class="fa fa-th-list" style="vertical-align: middle; margin-right: 10px;"></i></span><% end %>
 		<%= if String.starts_with?(@node.title, "http://") or String.starts_with?(@node.title, "https://") do %>
-			<a href="<%= @node.title %>" class="title"><%= @node.title %></a>
+			<a href="<%= @node.title %>" class="title" style="display: inline; vertical-align: middle;">
+				<%= @node.title %>
+			</a>
 		<% else %>
-			<h1 class="title"><%= @node.title %></h1>
+			<h1 class="title" style="display: inline; vertical-align: middle;">
+				<%= @node.title %>
+			</h1>
 		<% end %>
 	<% end %>
 <% end %>
 
 <%= if @node.choice_type do %>
 	<div class="score-container">
-		<%= render "choice.html", view: :full, node: @node %>
-
-		<%= if @view == :full do %>
-			<% tag_id = UUID.uuid1(:urn) |> String.replace("-", "") |> String.replace(":", "") %>
-
-			<a style="display: inline-block; font-size: 12px; margin-top: 8px; color: #4aa5f3; font-weight: bold;" onclick="vote_choice_<%= tag_id %>.style.height = '260px'; vote_choice_<%= tag_id %>.style.opacity = 1; vote_choice_<%= tag_id %>.style['margin-top'] = '20px'; vote_choice_<%= tag_id %>.style.visibility = 'visible'; this.style.display = 'none';">
-				Vote <i class="fa fa-sticky-note" aria-hidden="true" style="margin-left: 2px;"></i>
-			</a>
-
-			<div id="vote_choice_<%= tag_id %>" class="vote_own_choice" style="margin-top: 0px; height: 0px; opacity: 0; visibility: hidden;">
-				<p style="margin-bottom: 5px;">Your current choice</p>
-
-				<%= render "choice.html", conn: @conn, view: :input, node: @node %>
-
-				<%= unless Enum.empty? @node.contributions do %>
-					<div class="votes">
-						<p style="margin-bottom: 5px;">Votes</p>
-						<table class="contributions">
-							<% total_power = @node.contributions |> Enum.map(& &1.voting_power) |> Enum.sum %>
-							<% max_ratio = @node.contributions |> Enum.map(& &1.voting_power / total_power) |> Enum.max %>
-							<%= for contribution <- @node.contributions |> Enum.sort_by(& -&1.voting_power) do %>
-								<% width_ratio = contribution.voting_power / total_power / max_ratio %>
-								<tr class="contribution">
-									<td class="contribution">
-										<div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px; width: <%= round(100 * width_ratio) %>%;">
-											<%= number_format(100 * contribution.voting_power / total_power) %>%
-										</div>
-									</td>
-									<td class="choice">
-										<%= render "choice.html", view: :simple, node: @node %>
-									</td>
-									<td class="username"><a href="/identities/<%= contribution.identity.id %>"><%= contribution.identity.username %></a></td>
-									<td class="date"><%= Timex.format!(contribution.datetime, "{M}/{D}/{YYYY}") %></td>
-								</tr>
-							<% end %>
-						</table>
-					</div>
-				<% end %>
-			</div>
-		<% end %>
+		<script>
+			<% data = render(Liquio.NodeView, "node.json", %{node: @node}) %>
+			const mainNode = <%= raw(Poison.Encoder.encode(data, [])) %>
+		</script>
+		<choice v-bind:node="mainNode"></choice>
 	</div>	
 <% end %>

@@ -15,6 +15,7 @@
                     <%= round(mean * 100) %>%
                 <% else %>
                     <%= number_format(mean) %>
+                    <%= if assigns[:text] do %><%= @text %><% end %>
                 <% end %>
             <% else %>
                 ?

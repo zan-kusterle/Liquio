@@ -10,7 +10,7 @@
 				<span class="weight"><%= round(100 * delegation.data.weight / total_weights) %>%</span>
 				<%= if delegation.data.topics != nil do %>
 					<%= for topic <- delegation.data.topics do %>
-						<a href="<%= html_poll_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
+						<a href="<%= html_node_path(@conn, :show, topic) %>/top" class="topic">#<%= topic %></a>
 					<% end %>
 				<% else %>
 					<span class="all-topics">All topics</span>

@@ -6,9 +6,8 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :identity_id, references(:identities, on_delete: :nothing), null: false
 
 			add :title, :string, null: false
-			add :choice_type, :string, null: true # if reference_key is present
+			add :choice_type, :string, null: true
 			add :key, :string, null: false
-
 			add :reference_key, :string, null: true
 
 			add :datetime, :datetime, null: false

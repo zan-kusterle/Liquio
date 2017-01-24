@@ -3,7 +3,7 @@ defmodule Liquio.HtmlReferenceVoteController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
-		:nodes => {Plugs.NodesParam, [name: "html_poll_id"]},
+		:nodes => {Plugs.NodesParam, [name: "html_node_id"]},
 		:reference_nodes => {Plugs.NodesParam, [name: "html_reference_id"]},
 		:choice => {Plugs.ChoiceParam, [name: "choice", maybe: true]},
 		:choice_name => {Plugs.StringParam, [name: "choice_name"]}
@@ -14,7 +14,7 @@ defmodule Liquio.HtmlReferenceVoteController do
 		if Enum.count(node_unique_choice_types) > 1 or Enum.count(reference_node_unique_choice_types) > 1 do
 			conn
 			|> put_flash(:info, "All nodes must be of same type.")
-			|> redirect(to: html_poll_html_reference_path(conn, :show, params["html_poll_id"], params["id"]))
+			|> redirect(to: html_node_html_reference_path(conn, :show, params["html_node_id"], params["id"]))
 		else
 			calculation_opts = get_calculation_opts_from_conn(conn)
 			for_choice_nodes = nodes |> Enum.flat_map(fn(node) ->

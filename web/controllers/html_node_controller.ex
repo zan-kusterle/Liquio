@@ -1,4 +1,4 @@
-defmodule Liquio.HtmlPollController do
+defmodule Liquio.HtmlNodeController do
 	use Liquio.Web, :controller
 
 	with_params(%{
@@ -19,7 +19,7 @@ defmodule Liquio.HtmlPollController do
 
 	plug :put_layout, "minimal.html" when action in [:embed]
 	with_params(%{
-		:node => {Plugs.NodeParam, [name: "html_poll_id"]},
+		:node => {Plugs.NodeParam, [name: "html_node_id"]},
 	},
 	def embed(conn, %{:node => node}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)

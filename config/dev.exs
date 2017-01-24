@@ -45,6 +45,6 @@ config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metri
 config :liquio, trust_metric_cache_time_seconds: 5
 config :liquio, admin_identity_ids: 1..10
 config :liquio, token_lifespan_minutes: 60
-config :liquio, results_cache_seconds: 20
+config :liquio, results_cache_seconds: 5
 
 import_config "dev.secret.exs"

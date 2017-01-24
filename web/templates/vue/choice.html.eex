@@ -1,0 +1,70 @@
+<div v-if="node">
+	<div class="score-box" style="background-color: #ddd;">
+		<div v-if="node.choice_type === 'probability'">	
+			<div class="number">
+				<span class="number-value">{{ Math.round(mean * 100) }}</span><span class="percent">%</span>
+			</div>
+			<div class="subtext">{{ Math.round(turnout * 100) }}% turnout</div>
+		</div>
+	</div>
+
+	<div class="score-box" style="background-color:  #ddd;" v-if="node.choice_type === 'quantity'">
+		<div class="number">
+			{{ mean }}
+		</div>
+		<div class="subtext">{{ Math.round(turnout * 100) }}% turnout</div>
+	</div>
+
+	<a style="display: inline-block; font-size: 12px; margin-top: 8px; color: #4aa5f3; font-weight: bold;">
+		Vote <i class="fa fa-sticky-note" aria-hidden="true" style="margin-left: 2px;"></i>
+	</a>
+
+	<div class="score-box" style="padding: 0px; background-color: #ddd;">
+		<form action="<%= @conn.request_path %>/vote" method="POST">
+
+			<div v-if="node.choice_type === 'probability'">
+				<div class="range">
+					<input type="range" name="choice" min="0" max="1" step="any" v-model="set_value" style="width: 90%; margin: 0 auto;" />
+				</div>
+				<div class="number">
+					<span class="number-value">{{ Math.round(set_value * 100) }}</span><span class="percent">%</span>
+				</div>
+				<div class="subtext">{{ Math.round(turnout * 100) }}% turnout</div>
+			</div>
+
+			<div v-if="node.choice_type === 'quantity'">	
+				<div class="number">
+					<input type="text" class="score-input" name="choice" v-model="mean" />
+				</div>
+				<div class="subtext">{{ Math.round(turnout * 100) }}% turnout</div>
+			</div>
+			
+			<div v-if="node.choice_type === 'time_quantity'">	
+				<textarea class="score-input" name="choice" style="height: 150px; resize: vertical; text-align: left;" placeholder="2010: 10"></textarea>
+			</div>
+		</form>
+
+		<div class="links vote-links">
+			<a class="vote-action" v-on:click="set"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Vote</a>
+			<a class="vote-action" v-on:click="remove" style="border-left: 2px solid rgba(0,0,0,0.08);">Remove <i class="fa fa-remove" aria-hidden="true" style="margin-right: 2px;"></i></a>
+		</div>
+	</div>
+	
+	<div class="votes" ng-if="node.results.contributions.length > 0">
+		<p style="margin-bottom: 5px;">Votes</p>
+		<table class="contributions">
+			<tr class="contribution" v-for="contribution in node.results.contributions">
+				<td class="contribution">
+					<div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px; width: {{ contribution.width_ratio * 100 }}%;">
+						123
+					</div>
+				</td>
+				<td class="choice">
+					{{ contribution.choice_html }}
+				</td>
+				<td class="username"><a href="/identities/{{ contribution.username }}">{{ contribution.username }}</a></td>
+				<td class="date">{{ contribution.datetime }}</td>
+			</tr>
+		</table>
+	</div>
+</div>

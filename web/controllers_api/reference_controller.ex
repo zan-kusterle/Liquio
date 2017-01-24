@@ -2,7 +2,7 @@ defmodule Liquio.ReferenceController do
 	use Liquio.Web, :controller
 
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "node_id"]},
 		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
 		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", whole: true]},
 		:trust_metric_url => {Plugs.StringParam, [name: "trust_metric_url"]},
@@ -14,7 +14,7 @@ defmodule Liquio.ReferenceController do
 	end)
 
 	with_params(%{
-		:poll => {Plugs.ItemParam, [schema: Poll, name: "poll_id"]},
+		:poll => {Plugs.ItemParam, [schema: Poll, name: "node_id"]},
 		:reference_poll => {Plugs.ItemParam, [schema: Poll, name: "id"]},
 		:datetime => {Plugs.DatetimeParam, [name: "datetime"]},
 		:vote_weight_halving_days => {Plugs.NumberParam, [name: "vote_weight_halving_days", whole: true]},

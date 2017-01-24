@@ -26,8 +26,8 @@ defmodule Liquio.IdentityView do
 		else
 			v
 		end
-		v = if is_list(identity.trust_metric_poll_votes) do
-			votes_by_choice = identity.trust_metric_poll_votes
+		v = if is_list(identity.trust_metric_node_votes) do
+			votes_by_choice = identity.trust_metric_node_votes
 				|> Enum.filter(&(&1.data != nil and &1.is_last))
 				|> Enum.group_by(& &1.data.choice["main"] == 1)
 			v

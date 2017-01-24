@@ -3,17 +3,10 @@ defmodule Liquio.HtmlVoteController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
-		:node => {Plugs.NodeParam, [name: "html_poll_id"]},
+		:node => {Plugs.NodeParam, [name: "html_node_id"]},
 		:choice => {Plugs.ChoiceParam, [name: "choice", maybe: true]}
 	},
 	def create(conn, %{:user => user, :node => node, :choice => choice}) do
-		reference_node = if Map.has_key?(conn.params, "reference_key") do
-			Node.from_key(conn.params["reference_key"])
-		else
-			nil
-		end
-		node = Node.for_reference_key(node, reference_node && reference_node.key)
-
 		calculation_opts = get_calculation_opts_from_conn(conn)
 
 		{level, message} =
