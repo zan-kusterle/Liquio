@@ -80,7 +80,9 @@
 						<% end %>
 					<% end %>
 					
-					<%= render @view_module, @view_template, assigns %>
+					<div class="main-container">
+						<%= render @view_module, @view_template, assigns %>
+					</div>
 				</div>
 			</div>
 		</div>

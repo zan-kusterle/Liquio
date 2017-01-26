@@ -1,6 +1,6 @@
 defmodule Liquio.Node do
 	@enforce_keys [:choice_type, :key, :reference_key]
-	defstruct [:default_results_key, :title, :choice_type, :key, :reference_key]
+	defstruct [:default_results_key, :title, :choice_type, :key, :url_key, :reference_key]
 
 	import Ecto
 	import Ecto.Query, only: [from: 1, from: 2]
@@ -14,6 +14,7 @@ defmodule Liquio.Node do
 			title: title,
 			choice_type: choice_type,
 			key: get_key(title, choice_type),
+			url_key: get_url_key(title, choice_type),
 			reference_key: reference_key
 		}
 	end
@@ -77,6 +78,7 @@ defmodule Liquio.Node do
 				:title => title,
 				:choice_type => nil,
 				:key => key,
+				:url_key => get_url_key(title, nil),
 				:reference_key => nil
 			}
 		else
@@ -86,6 +88,7 @@ defmodule Liquio.Node do
 				:title => title,
 				:choice_type => choice_types[ends_with],
 				:key => key,
+				:url_key => get_url_key(title, choice_types[ends_with]),
 				:reference_key => nil
 			}
 		end
@@ -301,6 +304,17 @@ defmodule Liquio.Node do
 	end
 	defp get_key(title, choice_type) do
 		"#{title} #{choice_type}" |> String.downcase |> String.replace(" ", "_")
+	end
+
+	defp get_url_key(node) do
+		get_key(node.title, node.choice_type)
+	end
+	defp get_url_key(title, choice_type) do
+		if choice_type == nil do
+			title |> String.replace(" ", "-")
+		else
+			"#{title}-#{String.capitalize(choice_type)}" |> String.replace(" ", "-")
+		end
 	end
 	
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do

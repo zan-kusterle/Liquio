@@ -32,6 +32,7 @@ defmodule Liquio.NodeView do
 			:title => node.title,
 			:choice_type => node.choice_type,
 			:key => node.key,
+			:url_key => node.url_key,
 			:results => node.results,
 			:contributions => node.contributions |> Enum.map(fn(contribution) ->
 				%{

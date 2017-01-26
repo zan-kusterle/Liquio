@@ -35,6 +35,11 @@ defmodule Liquio.VoteController do
 	},
 	def delete(conn, %{:node => node, :user => user}) do
 		vote = Vote.delete(node, user)
-		render(conn, "show.json", vote: vote)
+
+		calculation_opts = get_calculation_opts_from_conn(conn)
+		conn
+		|> put_status(:created)
+		|> put_resp_header("location", node_path(conn, :show, Liquio.Node.encode(node)))
+		|> render(Liquio.NodeView, "show.json", node: Node.preload(node, calculation_opts, user))
 	end)
 end

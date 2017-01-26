@@ -22,8 +22,7 @@
 			<% end %>
 		<% end %>
 		
-		<p class="reference-text" style="margin-left: 10px;">
-		
+		<p class="reference-text">
 			<a href="/<%= Liquio.Node.encode(@node) %>"><%= if @node.choice_type == nil do %>#<% end %><%= @node.title %></a>
 			<%= if not virtual? do %>
 				<%= if referencing_node do %>
@@ -62,7 +61,8 @@
 			<%= render "index.html", references_node: @node, nodes: @node.inverse_references, virtual: virtual? %>
 		</main>
 
-		<img src="/images/inverse_references.svg" class="inverse-references-arrows"></img>
+		<hr>
+		<img src="/images/arrow.svg" class="reference-arrow" style="width: 50px; height: 100%; transform: rotate(180deg);"></img>
 	<% end %>
 
 	<main role="main" class="main" id="main-node">
@@ -91,7 +91,8 @@
 <% end %>
 
 <%= if references_view == :main do %>
-	<img src="/images/references.svg" class="references-arrows"></img>
+	<hr>
+	<img src="/images/arrow.svg" class="reference-arrow" style="width: 50px; height: 100%; transform: rotate(180deg);"></img>
 
 	<p class="heading">
 		<a href="relevant" class="sort active">relevant</a>

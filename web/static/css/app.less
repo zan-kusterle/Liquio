@@ -1,13 +1,16 @@
 @import "base";
 
+html {
+    height: 100%;
+}
 body {
-	margin: 0px;
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 	cursor: default !important;
 	line-height: 1.4;
-	background-color: white;
-	@media @sm {
-		background: #f0f0f0;
-	}
+	background: linear-gradient(white 0%, #49aff3 80%, #337cad 100%);
 }
 
 p {
@@ -334,7 +337,6 @@ p {
 		left: 0px;
 		right: 0px;
 		bottom: 0px;
-		padding-top: 40px;
 		top: 120px;
 		overflow-y: scroll;
 		@media @md {
@@ -377,23 +379,36 @@ p {
 		}
 
 		.scrollable {
-			margin-bottom: 100px;
+			
 		}
 
-		.main {
-			margin-top: 0px;
-			margin-bottom: 50px;
-			border-radius: 0px;
-			color: #333;
-			background-color: white;
+		.main-container {
+			background: white;
 			max-width: 1200px;
 			margin-left: auto;
 			margin-right: auto;
-			border: 1px solid rgba(0,0,0,.15);
-			padding: 20px 5px;
-			@media @sm {
-				padding: 50px 30px;
+			padding-top: 40px;
+			min-height: 1000px;
+			padding-bottom: 100px;
+			border: 1px solid rgba(51, 124, 173, 0.7);
+			border-top: none;
+			border-bottom: none;
+			margin-bottom: 2px;
+
+			hr {
+				border-color: rgba(51, 124, 173, 0.7);
 			}
+		}
+
+		.main {
+			margin-top: 10px;
+			margin-bottom: 10px;
+			border-radius: 0px;
+			color: #333;
+			width: 100%;
+			padding: 25px 20px;
+			border-top: none;
+			background: white;
 		}
 
 		.main-g {
