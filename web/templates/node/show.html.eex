@@ -26,10 +26,10 @@
 			<a href="/<%= Liquio.Node.encode(@node) %>"><%= if @node.choice_type == nil do %>#<% end %><%= @node.title %></a>
 			<%= if not virtual? do %>
 				<%= if referencing_node do %>
-					<a href="/<%= Liquio.Node.encode(referencing_node) %>/references/<%= Liquio.Node.encode(@node) %>"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
+					<a href="/<%= Liquio.Node.encode(referencing_node) %>/references/<%= Liquio.Node.encode(@node) %>" style="float: right;"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
 				<% else %>
 					<%= if references_node do %>
-						<a href="/<%= Liquio.Node.encode(@node) %>/references/<%= Liquio.Node.encode(@references_node) %>"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
+						<a href="/<%= Liquio.Node.encode(@node) %>/references/<%= Liquio.Node.encode(@references_node) %>" style="float: right;"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
 					<% end %>
 				<% end %>
 			<% end %>
@@ -57,7 +57,7 @@
 			<a href="least-certain" class="sort">least certain</a>
 		</p>
 
-		<main role="main" class="main">
+		<main role="main" class="main inverse-references-main">
 			<%= render "index.html", references_node: @node, nodes: @node.inverse_references, virtual: virtual? %>
 		</main>
 

@@ -1,10 +1,7 @@
 <%= if String.length(@node.title) > 0 do %>
 	<%= if @view == :simple do %>
 		<a href="/<%= Liquio.Node.encode(@node) %>" class="title">
-			<%= @node.title %>
-			<%= if @node.choice_type == nil do %>
-				<p style="font-size: 18px; margin-top: 15px;"><i class="fa fa-th-list" style="vertical-align: middle; margin-right: 10px;"></i> <%= Enum.count(@node.references) %> <%= ngettext("item", "items", Enum.count(@node.references)) %></p>
-			<% end %>
+			<%= if @node.choice_type == nil do %>#<% end %><%= @node.title %>
 		</a>
 	<% else %>
 		<%= if String.starts_with?(@node.title, "http://") or String.starts_with?(@node.title, "https://") do %>
