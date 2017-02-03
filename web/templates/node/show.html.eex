@@ -3,128 +3,41 @@
 <% virtual? = if assigns[:virtual] do @virtual else false end %>
 <% references_view = if @view == :full do if @node.choice_type == nil do :inline else :main end else nil end %>
 
-<%= if @view == :inline do %>
-	<div class="reference">
-		<%= if @node.choice_type == nil do %>
-			<%= render Liquio.NodeView, "choice.html",
-				view: :simple,
-				text: ngettext("item", "items", Enum.count(@node.references)),
-				node: %{:choice_type => "quantity", :default_results_key => "main", :results => %{:by_keys => %{"main" => %{:mean => Enum.count(@node.references)}}}} %>
-		<% else %>
-			<%= if Map.get(@node, :reference_result) != nil and referencing_node != nil and not @referencing_node.choice_type in ["probability", nil] do %>
-				<%= render Liquio.NodeView, "choice.html",
-					view: :simple,
-					node: %{:choice_type => referencing_node.choice_type, :default_results_key => "main", :results => @node.reference_result} %>
-			<% end %>
+<script>
+	defaultVueData.node = null;
+	defaultVueData.referenceNodes = [];
+	defaultVueData.inverseReferenceNodes = [];
+</script>
 
-			<%= if @node.choice_type do %>
-				<%= render "choice.html", view: :simple, node: @node %>
-			<% end %>
-		<% end %>
-		
-		<p class="reference-text">
-			<a href="/<%= Liquio.Node.encode(@node) %>"><%= if @node.choice_type == nil do %>#<% end %><%= @node.title %></a>
-			<%= if not virtual? do %>
-				<%= if referencing_node do %>
-					<a href="/<%= Liquio.Node.encode(referencing_node) %>/references/<%= Liquio.Node.encode(@node) %>" style="float: right;"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
-				<% else %>
-					<%= if references_node do %>
-						<a href="/<%= Liquio.Node.encode(@node) %>/references/<%= Liquio.Node.encode(@references_node) %>" style="float: right;"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
-					<% end %>
-				<% end %>
-			<% end %>
-		</p>
-	</div>
-<% end %>
-
-<%= if @view in [:simple, :full] do %>
-	<%= if references_view == :inline do %>
-		<p class="heading">
-			<a href="relevant" class="sort active">relevant</a>
-			<a href="top" class="sort">top</a>
-			<a href="new" class="sort">new</a>
-			<a href="most-certain" class="sort">most certain</a>
-			<a href="least-certain" class="sort">least certain</a>
-		</p>
-	<% end %>
-
-	<%= if references_view == :main and not Enum.empty?(@node.inverse_references) do %>
-		<p class="heading">
-			<a href="relevant" class="sort active">relevant</a>
-			<a href="top" class="sort">top</a>
-			<a href="new" class="sort">new</a>
-			<a href="most-certain" class="sort">most certain</a>
-			<a href="least-certain" class="sort">least certain</a>
-		</p>
-
-		<main role="main" class="main inverse-references-main">
-			<%= render "index.html", references_node: @node, nodes: @node.inverse_references, virtual: virtual? %>
-		</main>
-
-		<hr>
-		<img src="/images/arrow.svg" class="reference-arrow" style="width: 50px; height: 100%; transform: rotate(180deg);"></img>
-	<% end %>
-
-	<main role="main" class="main" id="main-node">
-		<%= render "vote.html", conn: @conn, node: @node, view: @view %>
-
-		<%= if @view == :full and references_view == :inline do %>
-			<div <%= if String.length(@node.title) > 0 do %>style="margin-top: 40px;"<% end %>>
-				<%= render "index.html", referencing_node: @node, nodes: @node.references, virtual: virtual? %>
-			</div>
-
-			<%= if not virtual? do %>
-				<form style="display: none;" id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
-					<paper-input label="Title" name="reference_node_id" required style="display: inline-block; width: 300px;"></paper-input>
-					<paper-dropdown-menu style="margin-left: 15px;">
-						<paper-listbox class="dropdown-content" selected="0">
-							<paper-item>Probability</paper-item>
-							<paper-item>Quantity</paper-item>
-							<paper-item>Quantity by time</paper-item>
-						</paper-listbox>
-					</paper-dropdown-menu>
-					<paper-button raised class="poll-button" onclick="view_reference_form.submit()" style="position: relative; top: -8px; margin-left: 30px;">View reference</paper-button>
-				</form>
-			<% end %>
-		<% end %>
+<%= if not Enum.empty?(@node.inverse_references) do %>
+	<main role="main" class="main inverse-references-main">
+		<liquio-list v-bind:nodes="inverseReferenceNodes" v-bind:references-node="node"></liquio-list>
 	</main>
-<% end %>
 
-<%= if references_view == :main do %>
-	<hr>
 	<img src="/images/arrow.svg" class="reference-arrow" style="width: 50px; height: 100%; transform: rotate(180deg);"></img>
-
-	<p class="heading">
-		<a href="relevant" class="sort active">relevant</a>
-		<a href="top" class="sort">top</a>
-		<a href="new" class="sort">new</a>
-		<a href="most-certain" class="sort">most certain</a>
-		<a href="least-certain" class="sort">least certain</a>
-	</p>
-
-	<main role="main" class="main">
-		<%= render "index.html", referencing_node: @node, nodes: @node.references, virtual: virtual? %>
-
-		<%= if not virtual? do %>
-			<form style="display: none;" id="view_reference_form" action="/<%= Liquio.Node.encode(@node) %>/references" class="pure-form" <%= unless Enum.empty?(@node.references) do %> style="margin-top: 40px;"<% end %>>
-				<paper-input label="Title" name="reference_node_id" required style="display: inline-block; width: 300px;"></paper-input>
-				<paper-dropdown-menu style="margin-left: 15px;">
-					<paper-listbox class="dropdown-content" selected="0">
-						<paper-item>Probability</paper-item>
-						<paper-item>Quantity</paper-item>
-						<paper-item>Quantity by time</paper-item>
-					</paper-listbox>
-				</paper-dropdown-menu>
-				<paper-button raised class="poll-button" onclick="view_reference_form.submit()" style="position: relative; top: -8px; margin-left: 30px;">View reference</paper-button>
-			</form>
-		<% end %>
-	</main>
-
 <% end %>
 
-<%= if @view == :full do %>
-	<%= render "preferences.html", node: @node %>
-<% end %>
+<main role="main" class="main" id="main-node">
+	<script>
+		<% data = render(Liquio.NodeView, "node.json", %{node: @node}) %>
+		defaultVueData.mainNode = <%= raw(Poison.Encoder.encode(data, [])) %>;
+	</script>
+	<liquio-node v-bind:node="mainNode" v-bind:votable="<%= if @view == :full do "true" else "false" end %>"></liquio-node>
+
+	<%= if @view == :full and references_view == :inline do %>
+		<div <%= if String.length(@node.title) > 0 do %>style="margin-top: 40px;"<% end %>>
+			<liquio-list v-bind:nodes="referenceNodes" v-bind:referencing-node="node"></liquio-list>
+		</div>
+	<% end %>
+</main>
+
+<img src="/images/references_2.svg" class="reference-arrow2"></img>
+
+<main role="main" class="main">
+	<liquio-list v-bind:nodes="referenceNodes" v-bind:referencing-node="node"></liquio-list>
+</main>
+
+<%#= render "preferences.html", node: @node %>
 
 <script>
 	var container = document.getElementById('main-wrap');

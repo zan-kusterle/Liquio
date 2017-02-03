@@ -1,0 +1,15 @@
+<%= if Enum.empty?(@trust_votes) do %>
+	<h2 class="identity-no-items">There is nothing here.</h2>
+<% else %>
+	<div class="identities">
+		<%= for vote <- @trust_votes do %>
+			<% identity = vote.trust_identity  %>
+			<div  class="name">
+				<a href="/identities/<%= identity.id %>"><%= identity.username %></a>
+				<%= if vote.data.choice["main"] < 1 - 0.0001 do %>
+					<span style="margin-left: 10px; font-weight: bold;"><%= number_format_simple(vote.data.choice["main"]) %>%</span>
+				<% end %>
+			</div>
+		<% end %>
+	</div>
+<% end %>

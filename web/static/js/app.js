@@ -1,4 +1,32 @@
+let setVote = function($http, url_key, choice, cb) {
+	return $http.post('/api/nodes/' + url_key + '/votes', {choice: {'main': choice}}, {
+		headers: {
+			'authorization': 'Bearer ' + token
+		}
+	}).then((response) => {
+		cb(transformVote(response.body.data))
+	}, (response) => {
+	})
+}
+
+let unsetVote = function($http, url_key, cb) {
+	return $http.delete('/api/nodes/' + url_key + '/votes', {
+		headers: {
+			'authorization': 'Bearer ' + token
+		}
+	}).then((response) => {
+		cb(transformVote(response.body.data))
+	}, (response) => {
+	})
+}
+
+let transformVote = function(node) {
+	node.default_results = node.results && node.results.by_keys['main'] ? node.results.by_keys['main'].mean : null
+	return node
+}
+
 const getColor = function(mean) {
+	if(!mean) return "#ddd"
 	if(mean < 0.25)
 		return "rgb(255, 164, 164)"
 	else if(mean < 0.75)
@@ -7,81 +35,103 @@ const getColor = function(mean) {
 		return "rgb(140, 232, 140)"
 }
 
-const choiceComponent = Vue.component('choice', {
-	template: '#choice_template',
-	props: ['node'],
-	data: function() {
-		let self = this;
-		return {
-			vote_shown: false,
-			latest_node: self.node,
-			set_value: 0.5,
-			set: function (event) {
-				let choice_value = parseFloat(self.set_value)
 
-				self.$http.post('/api/nodes/' + self.node.url_key + '/votes', {choice: {'main': choice_value}}, {
-					headers: {
-						'authorization': 'Bearer ' + token
-					}
-				}).then((response) => {
-					let new_node = response.body.data
-					self.latest_node.results = new_node.results
-					self.vote_shown = false
-				}, (response) => {
-				});
-			},
-			unset: function (event) {
-				self.$http.delete('/api/nodes/' + self.node.url_key + '/votes', {
-					headers: {
-						'authorization': 'Bearer ' + token
-					}
-				}).then((response) => {
-					let new_node = response.body.data
-					self.latest_node.results = new_node.results
-					self.vote_shown = false
-				}, (response) => {
-				});
-			}
+const resultsComponent = Vue.component('results', {
+	template: '#results_template',
+	props: ['node', 'resultsKey'],
+	data: function() {
+		return {
+			results_key: this.resultsKey || 'main'
 		}
 	},
 	computed: {
 		mean: function() {
-			return this.latest_node.results && this.latest_node.results.by_keys["main"] && this.latest_node.results.by_keys["main"].mean
+			return this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean
 		},
 		turnout: function() {
-			return this.latest_node.results.turnout_ratio
+			return this.node.results.turnout_ratio
 		},
-		points: function() {
-			if(this.latest_node.choice_type == "time_quantity") {
+		color: function() {
+			return getColor(this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean)
+		}
+	}
+})
 
-			} else {
-				return [];
+const ownVoteComponent = Vue.component('own-vote', {
+	template: '#own_vote_template',
+	props: ['node'],
+	data: function() {
+		let self = this
+		return {
+			mean: 0.5,
+			set: function (event) {
+				let choice_value = parseFloat(self.mean)
+				setVote(self.$http, self.node.url_key, choice_value, function(new_node) {
+					self.node.results = new_node.results
+					self.node.own_results = new_node.own_results
+				})
+			},
+			unset: function (event) {
+				unsetVote(self.$http, self.node.url_key, function(new_node) {
+					self.node.results = new_node.results
+					self.node.own_results = new_node.own_results
+				})
 			}
+		}
+	},
+	calculated: {
+		turnout: function() {
+			return this.node.own_results.turnout
 		},
-		style: function() {
-			if(this.latest_node.results && this.latest_node.results.by_keys["main"] && this.latest_node.choice_type == "probability") {
-				return "background-color: " + getColor(this.latest_node.results.by_keys["main"].mean) + ";"
-			} else {
-				return "background-color: #ddd;"
-			}
-		},
-		set_style: function() {
-			if(this.latest_node.choice_type == "probability") {
-				return "background-color: " + getColor(this.set_value) + ";"
-			} else {
-				return "background-color: #ddd;"
+		color: function() {
+			return getColor(this.mean)
+		}
+	}
+})
+
+const nodeComponent = Vue.component('liquio-node', {
+	template: '#liquio_node_template',
+	props: ['node', 'resultsKey', 'votable'],
+	data: function() {
+		return {
+			isOpen: false,
+			mean: 0.5,
+			set: function (event) {
+				let choice_value = parseFloat(this.mean)
+				Api.set(this.node.url_key, choice_value, function(new_node) {
+					this.node.results = new_node.results
+				})
+			},
+			unset: function (event) {
+				Api.unset(this.node.url_key, function(new_node) {
+					this.node.results = new_node.results
+				})
 			}
 		}
 	}
 })
 
+const inlineComponent = Vue.component('liquio-inline', {
+	template: '#liquio_inline_template',
+	props: ['node'],
+	data: function() {
+		return {}
+	}
+})
+
+const listComponent = Vue.component('liquio-list', {
+	template: '#liquio_list_template',
+	props: ['nodes'],
+	data: function() {
+		return {}
+	}
+})
+
+
 var app = new Vue({
 	el: '#app',
-	components: {'choice': choiceComponent},
-	data: {
-		message: 'Hello Vue.js!',
-		mainNode: mainNode
-	},
+	components: {'liquio-node': nodeComponent, 'liquio-inline': inlineComponent, 'liquio-list': listComponent, 'results': resultsComponent, 'own-vote': ownVoteComponent},
+	data: defaultVueData,
 	http: {
 		root: '/api',
 		headers: {

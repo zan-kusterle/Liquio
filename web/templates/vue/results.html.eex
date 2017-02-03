@@ -1,0 +1,9 @@
+<div class="score-box" v-if="this.node.choice_type == 'probability'" v-bind:style="{'background-color': this.color}">
+	<div class="data">
+		<div class="number" v-if="turnout > 0">
+			<span class="number-value">{{ Math.round(mean * 100) }}</span><span class="percent">%</span>
+		</div>
+		<div class="number" v-if="turnout == 0">?</div>
+		<div class="subtext">{{ Math.round(turnout * 100) }}% turnout</div>
+	</div>
+</div>

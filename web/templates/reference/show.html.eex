@@ -1,0 +1,48 @@
+<script>
+	<%= if @for_choice_node != nil do %>
+		<% data = render(Liquio.NodeView, "node.json", %{node: @for_choice_node |> Map.put(:default_results_key, "for_choice")}) %>
+		defaultVueData.forChoiceNode = <%= raw(Poison.Encoder.encode(data, [])) %>;
+	<% end %>
+
+	<% data = render(Liquio.NodeView, "node.json", %{node: @relevance_node |> Map.put(:default_results_key, "relevance")}) %>
+	defaultVueData.relevanceNode = <%= raw(Poison.Encoder.encode(data, [])) %>;
+
+	defaultVueData.nodes = {};
+
+	<%= for node <- @nodes ++ @reference_nodes do %>
+		<% data = render(Liquio.NodeView, "node.json", %{node: node}) %>
+		defaultVueData.nodes['<%= node.key %>'] = <%= raw(Poison.Encoder.encode(data, [])) %>;
+	<% end %>
+</script>
+
+<div class="pure-g main-g">
+	<div class="pure-u-2-5">
+		<%= for node <- @nodes do %>
+			<liquio-node v-bind:node="nodes['<%= node.key %>']" votable="false"></liquio-node>
+		<% end %>
+	</div>
+	<div class="pure-u-1-5">
+		<img src="/images/arrow.svg" class="reference-arrow"></img>
+	</div>
+	<div class="pure-u-2-5">
+		<%= for node <- @reference_nodes do %>
+			<liquio-node v-bind:node="nodes['<%= node.key %>']" votable="false"></liquio-node>
+		<% end %>
+	</div>
+
+	<div class="pure-u-1">
+		<%= if @for_choice_node != nil do %>
+			<main role="main" class="main">
+				<liquio-node v-bind:node="forChoiceNode" results-key="for_choice" votable="true"></liquio-node>
+			</main>
+		<% end %>
+		
+		<main role="main" class="main">
+			<liquio-node v-bind:node="relevanceNode" results-key="relevance" votable="true"></liquio-node>
+		</main>
+	</div>
+
+	<div class="pure-u-1">
+		<%= render Liquio.NodeView, "preferences.html", node: @relevance_node %>
+	</div>
+</div>

@@ -40,16 +40,13 @@ defmodule Liquio.Router do
 		resources "/login", HtmlLoginController, only: [:index, :show, :create]
 		get "/logout", HtmlLoginController, :delete
 
+		post "/identities/me/preferences", HtmlIdentityController, :update
 		resources "/identities", HtmlIdentityController, only: [:create, :show] do
 			resources "/delegations", HtmlDelegationController, only: [:create]
 		end
-		post "/identities/me/preferences", HtmlIdentityController, :update
 
-		resources "/", HtmlNodeController, only: [:create, :show] do
-			resources "/vote", HtmlVoteController, only: [:create]
-			resources "/references", HtmlReferenceController, only: [:index, :show] do
-				resources "/vote", HtmlReferenceVoteController, only: [:create]
-			end
+		resources "/", HtmlNodeController, only: [:show, :create] do
+			resources "/references", HtmlReferenceController, only: [:index, :show, :create]
 		end
 
 		get "/", HtmlExploreController, :index

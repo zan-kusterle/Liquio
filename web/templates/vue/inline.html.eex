@@ -1,0 +1,10 @@
+<div class="reference">
+	{{{ node.embed_html }}}
+	
+	<p class="reference-text">
+		<a href="/"><span v-if="this.node.choice_type == null"#>{{ node.title }}</a>
+		
+		<a v-if="referencing_node" href="//references/" style="float: right;"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
+		<a v-else-if="references_node" href="//references/" style="float: right;"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
+	</p>
+</div>

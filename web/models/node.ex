@@ -66,7 +66,7 @@ defmodule Liquio.Node do
 		choice_types = %{
 			"_probability" => "probability", 
 			"_quantity" => "quantity",
-			"_time series" => "time_quantity",
+			"_time_series" => "time_quantity",
 			"_" => nil
 		}
 
@@ -113,9 +113,9 @@ defmodule Liquio.Node do
 
 	def preload(node, calculation_opts, user) do
 		node
-		|> preload_results(calculation_opts)
 		|> preload_references(calculation_opts)
 		|> preload_inverse_references(calculation_opts)
+		|> preload_results(calculation_opts)
 		|> preload_user_vote(user)
 		|> preload_user_contribution(calculation_opts, user)
 	end
@@ -130,7 +130,7 @@ defmodule Liquio.Node do
 		results = AggregateContributions.aggregate(node.contributions, calculation_opts)
 		node = Map.put(node, :results, results)
 
-		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "embed.html", poll: node)
+		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", poll: node)
 		|> :erlang.iolist_to_binary
 		|> Liquio.HtmlHelper.minify
 		node = Map.put(node, :embed, embed_html)
@@ -235,7 +235,7 @@ defmodule Liquio.Node do
 			node = Map.put(node, :topics, [])
 			node
 		else
-			%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)
+			%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)			
 
 			key = {
 				{"inverse_references", node.key, calculation_opts.datetime},

@@ -19,7 +19,7 @@
 				<h1 class="identity-name"><%= @identity.name %></h1>
 				<h1 class="identity-username"><%= @identity.username %></h1>
 				
-				<h2>Votes made</h2>
+					<h2>Votes made</h2>
 
 				<div style="text-align: left;">
 					<%= if Enum.empty?(@vote_groups) and Enum.empty?(@is_human_votes) do %>
@@ -57,19 +57,7 @@
 					<% end %>
 				<% end %>
 
-				<%= if @is_me do %>
-					<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 15px;">Trust metric URL</div>
-
-					<form method="POST" action="preferences" class="pure-form preferences">
-						<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-
-						<input type="url" name="trust_metric_url" value="<%= @calculation_opts.trust_metric_url %>" style="max-width: 500px; display: block; margin: 0 auto;" />
-
-						<p style="margin-top: 15px;"><%= Enum.count(@calculation_opts[:trust_metric_ids]) %> <%= ngettext("person", "people", Enum.count(@calculation_opts[:trust_metric_ids])) %> in current trust metric.</p>
-
-						<button type="submit" class="pure-button pure-button-primary">Update</button>
-					</form>
-				<% else %>
+				<%= if not @is_me do %>
 					<div class="section-title" style="font-size: 20px; margin-top: 60px;">I trust this identity</div>
 
 					<form action="/nodes/<%= @identity.trust_metric_node_id %>/vote" method="POST" class="cast-vote">

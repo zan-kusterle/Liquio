@@ -33,6 +33,10 @@
 
 		<script src="/bower_components/moment/min/locales.js"></script>
 
+		<script>
+			var defaultVueData = {}
+		</script>
+
 		<%= render "google_analytics.html", conn: @conn %>
 	</head>
 
@@ -87,9 +91,11 @@
 			</div>
 		</div>
 
-		<div id="choice_template" style="display: none;">
-			<%= render Liquio.VueView, "choice.html", conn: @conn %>
-		</div>
+		<div id="results_template" style="display: none;"><%= render Liquio.VueView, "results.html", conn: @conn %></div>
+		<div id="own_vote_template" style="display: none;"><%= render Liquio.VueView, "own_vote.html", conn: @conn %></div>
+		<div id="liquio_node_template" style="display: none;"><%= render Liquio.VueView, "big.html", conn: @conn %></div>
+		<div id="liquio_inline_template" style="display: none;"><%= render Liquio.VueView, "inline.html", conn: @conn %></div>
+		<div id="liquio_list_template" style="display: none;"><%= render Liquio.VueView, "list.html", conn: @conn %></div>
 
 		<script src="/bower_components/vue/dist/vue.js"></script>
 		<script src="/bower_components/vue-resource/dist/vue-resource.js"></script>

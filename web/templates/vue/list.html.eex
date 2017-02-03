@@ -1,0 +1,53 @@
+<% referencing_node = if assigns[:referencing_node] do @referencing_node else nil end %>
+<% references_node = if assigns[:references_node] do @references_node else nil end %>
+
+<div>
+	<!--
+	<p class="heading">
+		<a href="relevant" class="sort active">relevant</a>
+		<a href="top" class="sort">top</a>
+		<a href="new" class="sort">new</a>
+		<a href="most-certain" class="sort">most certain</a>
+		<a href="least-certain" class="sort">least certain</a>
+	</p>
+	-->
+
+	<div class="references pure-g">
+		<%= if referencing_node != nil and referencing_node.choice_type == "probability" do %>
+			<% positive = @nodes |> Enum.filter(& &1.reference_result.by_keys["for_choice"] != nil and &1.reference_result.by_keys["for_choice"].mean >= 0.5) %>
+			<% negative = @nodes |> Enum.filter(& &1.reference_result.by_keys["for_choice"] != nil and &1.reference_result.by_keys["for_choice"].mean < 0.5) %>
+			
+			<%= for {references, text} <- [{negative, "Negative"}, {positive, "Positive"}] do %>
+				<div class="pole pure-u-1 pure-u-md-1-2">
+					<%= if not Enum.empty?(references)  do %>
+						<h3 class="pole-heading"><%= text %></h3>
+					
+						<div class="pole-list">
+							<%= for reference_node <- references do %>
+								<div class="reference-a">
+									<%= render "show.html", view: :inline, node: reference_node, referencing_node: referencing_node, references_node: references_node %>
+								</div>
+							<% end %>
+						</div>
+					<% end %>
+				</div>
+			<% end %>
+		<% else %>
+			<div class="references-list pure-u-1">
+				<liquio-inline v-for="node in nodes" v-bind:node="node"></liquo-inline>
+			</div>
+		<% end %>
+	</div>
+
+	<form style="display: none;" id="view_reference_form" action="//references" class="pure-form">
+		<paper-input label="Title" name="reference_node_id" required style="display: inline-block; width: 300px;"></paper-input>
+		<paper-dropdown-menu style="margin-left: 15px;">
+			<paper-listbox class="dropdown-content" selected="0">
+				<paper-item>Probability</paper-item>
+				<paper-item>Quantity</paper-item>
+				<paper-item>Quantity by time</paper-item>
+			</paper-listbox>
+		</paper-dropdown-menu>
+		<paper-button raised class="poll-button" onclick="view_reference_form.submit()" style="position: relative; top: -8px; margin-left: 30px;">View reference</paper-button>
+	</form>
+</div>
