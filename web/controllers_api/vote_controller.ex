@@ -25,7 +25,7 @@ defmodule Liquio.VoteController do
 		calculation_opts = Map.put(calculation_opts, :datetime, Timex.now)
 		conn
 		|> put_status(:created)
-		|> put_resp_header("location", node_path(conn, :show, Liquio.Node.encode(node)))
+		|> put_resp_header("location", node_path(conn, :show, node.url_key))
 		|> render(Liquio.NodeView, "show.json", node: Node.preload(node, calculation_opts, user))
 	end)
 
@@ -39,7 +39,7 @@ defmodule Liquio.VoteController do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		conn
 		|> put_status(:created)
-		|> put_resp_header("location", node_path(conn, :show, Liquio.Node.encode(node)))
+		|> put_resp_header("location", node_path(conn, :show, node.url_key))
 		|> render(Liquio.NodeView, "show.json", node: Node.preload(node, calculation_opts, user))
 	end)
 end

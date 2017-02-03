@@ -1,0 +1,53 @@
+<transition name="modal">
+	<div class="modal-mask">
+		<div class="modal-wrapper">
+			<div class="modal-container">
+				<div class="modal-header">
+					<slot name="header">
+						<h2>Fine tune how results are calculated</h2>
+					</slot>
+				</div>
+
+				<div class="modal-body">
+					<slot name="body">
+						<div class="section-title" style="font-size: 22px; margin-top: 90px; margin-bottom: 15px;">Trust metric URL</div>
+
+						<input type="url" name="trust_metric_url" style="max-width: 500px; display: block; margin: 0 auto;" />
+
+						<!--<date-picker :date="opts.datetime"></date-picker>-->
+
+						<div class="range" style="margin-bottom: 20px;">
+							<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" style="margin: 0 auto;" />
+							<output id="minimum_voting_power_value"></output>
+						</div>
+
+						<div class="range" style="margin-bottom: 20px;">
+							<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" style="margin: 0 auto;" />
+							<output id="vote_weight_halving_days_value">
+							</output>
+						</div>
+
+						<div class="range" style="margin: 20px 0px;">
+							<input type="range" name="reference_minimum_turnout" id="reference_minimum_turnout_range" min="0" max="1" step="any" oninput="reference_minimum_turnout_value.value = 'Expecting at least ' + Math.round(100 * reference_minimum_turnout_range.value) + '% turnout.'" style="margin: 0 auto;">
+							<output id="reference_minimum_turnout_value"></output>
+						</div>
+
+						<div class="range" style="margin: 20px 0px;">
+							<input type="range" name="reference_minimum_agree" id="minimum_score_range" min="0" max="1" step="any" oninput="minimum_score_value.value = 'At least ' + Math.round(100 * minimum_score_range.value) + '% votes must be positive.'" style="margin: 0 auto;">
+							<output id="minimum_score_value"></output>
+						</div>
+					</slot>
+				</div>
+
+				<div class="modal-footer">
+					<slot name="footer">
+						<div class="buttons">
+							<button dialog-dismiss @click="$emit('close')">Close</button>
+							<button dialog-confirm raised class="primary">Change</button>
+						</div>
+					</slot>
+				</div>
+			</div>
+		</div>
+	</div>
+</transition>

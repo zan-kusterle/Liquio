@@ -26,7 +26,7 @@ let transformVote = function(node) {
 }
 
 const getColor = function(mean) {
-	if(!mean) return "#ddd"
+	if(mean == null) return "#ddd"
 	if(mean < 0.25)
 		return "rgb(255, 164, 164)"
 	else if(mean < 0.75)
@@ -34,7 +34,6 @@ const getColor = function(mean) {
 	else
 		return "rgb(140, 232, 140)"
 }
-
 
 const resultsComponent = Vue.component('results', {
 	template: '#results_template',
@@ -48,7 +47,7 @@ const resultsComponent = Vue.component('results', {
 		mean: function() {
 			return this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean
 		},
-		turnout: function() {
+		turnout_ratio: function() {
 			return this.node.results.turnout_ratio
 		},
 		color: function() {
@@ -79,19 +78,19 @@ const ownVoteComponent = Vue.component('own-vote', {
 			}
 		}
 	},
-	calculated: {
-		turnout: function() {
-			return this.node.own_results.turnout
+	computed: {
+		turnout_ratio: function() {
+			return this.node.own_results ? this.node.own_results.turnout_ratio : 0
 		},
 		color: function() {
-			return getColor(this.mean)
+			return getColor(parseFloat(this.mean))
 		}
 	}
 })
 
 const nodeComponent = Vue.component('liquio-node', {
 	template: '#liquio_node_template',
-	props: ['node', 'resultsKey', 'votable'],
+	props: ['node', 'resultsKey', 'votable', 'link'],
 	data: function() {
 		return {
 			isOpen: false,
@@ -113,7 +112,7 @@ const nodeComponent = Vue.component('liquio-node', {
 
 const inlineComponent = Vue.component('liquio-inline', {
 	template: '#liquio_inline_template',
-	props: ['node', 'referencing_node', 'references_node'],
+	props: ['node', 'referencingNode', 'referencesNode'],
 	data: function() {
 		return {}
 	}
@@ -121,16 +120,43 @@ const inlineComponent = Vue.component('liquio-inline', {
 
 const listComponent = Vue.component('liquio-list', {
 	template: '#liquio_list_template',
-	props: ['nodes'],
+	props: ['nodes', 'referencingNode', 'referencesNode'],
 	data: function() {
 		return {}
 	}
 })
 
+const calculationOptionsComponent = Vue.component('calculation-opts', {
+	template: '#options_template',
+	props: ['opts'],
+	data: function() {
+		return {}
+	}
+})
+
+const fullNodeComponent = Vue.component('liquio-full', {
+	template: '#liquio_full_template',
+	props: ['node'],
+	data: function() {
+		return {
+			optionsOpen: false,
+			inverseReferencesOpen: false,
+			referencesOpen: true
+		}
+	}
+})
 
 var app = new Vue({
 	el: '#app',
-	components: {'liquio-node': nodeComponent, 'liquio-inline': inlineComponent, 'liquio-list': listComponent, 'results': resultsComponent, 'own-vote': ownVoteComponent},
+	components: {
+		//'date-picker': datepickerComponent,
+		'liquio-node': nodeComponent,
+		'liquio-inline': inlineComponent,
+		'liquio-list': listComponent,
+		'results': resultsComponent,
+		'own-vote': ownVoteComponent,
+		'calculation-opts': calculationOptionsComponent
+	},
 	data: defaultVueData,
 	http: {
 		root: '/api',

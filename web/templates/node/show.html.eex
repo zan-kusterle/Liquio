@@ -1,48 +1,12 @@
-<% referencing_node = if assigns[:referencing_node] do @referencing_node else nil end %>
-<% references_node = if assigns[:references_node] do @references_node else nil end %>
-<% virtual? = if assigns[:virtual] do @virtual else false end %>
-<% references_view = if @view == :full do if @node.choice_type == nil do :inline else :main end else nil end %>
-
 <script>
-	defaultVueData.node = null;
-	<% data = @node.references |> Enum.map(& render(Liquio.NodeView, "node.json", %{node: &1})) %>
-	defaultVueData.referenceNodes = <%= raw(Poison.Encoder.encode(data, [])) %>;
-	<% data = @node.inverse_references |> Enum.map(& render(Liquio.NodeView, "node.json", %{node: &1})) %>
-	defaultVueData.inverseReferenceNodes = <%= raw(Poison.Encoder.encode(data, [])) %>;
 	<% data = render(Liquio.NodeView, "node.json", %{node: @node}) %>
-	defaultVueData.mainNode = <%= raw(Poison.Encoder.encode(data, [])) %>;
+	defaultVueData.node = <%= raw(Poison.Encoder.encode(data, [])) %>;
+	defaultVueData.optionsOpen = false
 </script>
 
-<%= if not Enum.empty?(@node.inverse_references) do %>
-	<main role="main" class="main inverse-references-main">
-		<liquio-list v-bind:nodes="inverseReferenceNodes" v-bind:references-node="node"></liquio-list>
-	</main>
+<div class="main">
+	<liquio-full v-bind:node="node"></liquio-full>
+</div>
 
-	<img src="/images/arrow.svg" class="reference-arrow" style="width: 50px; height: 100%; transform: rotate(180deg);"></img>
-<% end %>
-
-<main role="main" class="main" id="main-node">
-	<liquio-node v-bind:node="mainNode" v-bind:votable="<%= if @view == :full do "true" else "false" end %>"></liquio-node>
-
-	<%= if @view == :full and references_view == :inline do %>
-		<div <%= if String.length(@node.title) > 0 do %>style="margin-top: 40px;"<% end %>>
-			<liquio-list v-bind:nodes="referenceNodes" v-bind:referencing-node="node"></liquio-list>
-		</div>
-	<% end %>
-</main>
-
-<img src="/images/references_2.svg" class="reference-arrow2"></img>
-
-<main role="main" class="main">
-	<liquio-list v-bind:nodes="referenceNodes" v-bind:referencing-node="node"></liquio-list>
-</main>
-
-<%#= render "preferences.html", node: @node %>
-
-<script>
-	var container = document.getElementById('main-wrap');
-	var rowToScrollTo = document.getElementById('main-node');
-	if(rowToScrollTo != null) {
-		container.scrollTop = rowToScrollTo.offsetTop - 40;
-	}
-</script>
+<a @click="optionsOpen = true">Options</a>
+<calculation-opts v-bind:opts="node.calculation_opts" v-if="optionsOpen" @close="optionsOpen = false"></calculation-opts>

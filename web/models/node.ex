@@ -51,17 +51,6 @@ defmodule Liquio.Node do
 		|> Enum.filter(& &1 != nil)
 	end
 
-	def encode(node) do
-		choice_types = %{
-			"probability" => "Probability",
-			"quantity" => "Quantity",
-			"time_quantity" => "Time Series",
-			nil => ""
-		}
-
-		"#{node.title} #{choice_types[node.choice_type]}" |> String.trim |> String.replace(" ", "-")
-	end
-
 	def from_key(key) do
 		choice_types = %{
 			"_probability" => "probability", 
@@ -82,7 +71,7 @@ defmodule Liquio.Node do
 				:reference_key => nil
 			}
 		else
-			title = key |> String.replace("_", " ") |> String.replace_trailing(ends_with, "") |> String.trim
+			title = key |> String.replace_trailing(ends_with, "") |> String.replace("_", " ") |> String.trim
 			%Node{
 				:default_results_key => "main",
 				:title => title,
@@ -167,7 +156,7 @@ defmodule Liquio.Node do
 			
 			results = %{
 				:choice_type => nil,
-				:by_keys => contribution.choice
+				:by_keys => %{:main => %{:mean => contribution.choice, :turnout_ratio => 0.5}, :relevance => %{:mean => 0.0, turnout_ratio: 0.2}}
 			}
 			embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: results, results_key: node.default_results_key)
 			|> :erlang.iolist_to_binary
@@ -181,7 +170,7 @@ defmodule Liquio.Node do
 			|> Enum.map(fn({k, v}) -> {k, Enum.count(v)} end)
 			|> Enum.max_by(fn({title, count}) -> count end)
 
-			Map.put(node, :title, best_title)
+			node |> Map.put(:title, best_title) |> update_keys
 		else
 			node
 		end
@@ -307,6 +296,12 @@ defmodule Liquio.Node do
 		|> Map.put(:own_results, user_results)
 	end
 
+	defp update_keys(node) do
+		node
+		|> Map.put(:key, get_key(node))
+		|> Map.put(:url_key, get_url_key(node))
+	end
+
 	defp get_key(node) do
 		get_key(node.title, node.choice_type)
 	end
@@ -315,13 +310,20 @@ defmodule Liquio.Node do
 	end
 
 	defp get_url_key(node) do
-		get_key(node.title, node.choice_type)
+		get_url_key(node.title, node.choice_type)
 	end
 	defp get_url_key(title, choice_type) do
 		if choice_type == nil do
 			title |> String.replace(" ", "-")
 		else
-			"#{title}-#{String.capitalize(choice_type)}" |> String.replace(" ", "-")
+			choice_types = %{
+				"probability" => "Probability",
+				"quantity" => "Quantity",
+				"time_quantity" => "Time Series",
+				nil => ""
+			}
+
+			"#{title} #{choice_types[choice_type]}" |> String.trim |> String.replace(" ", "-")
 		end
 	end
 	

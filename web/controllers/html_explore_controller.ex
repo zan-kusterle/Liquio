@@ -17,7 +17,7 @@ defmodule Liquio.HtmlExploreController do
 
 		node = Node.new("", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
 		conn
-		|> render("index.html",
+		|> render(Liquio.ExploreView, "index.html",
 			node: node,
 			identities: [])
 	end)

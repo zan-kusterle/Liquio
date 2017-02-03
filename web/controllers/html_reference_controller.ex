@@ -49,7 +49,7 @@ defmodule Liquio.HtmlReferenceController do
 			
 			conn
 			|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
-			|> render("show.html",
+			|> render(Liquio.ReferenceView, "show.html",
 				title: "Reference",
 				conn: conn,
 				calculation_opts: calculation_opts,

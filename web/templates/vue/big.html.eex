@@ -1,18 +1,22 @@
 <div>
-	<h1 class="title" style="display: inline; vertical-align: middle;">
-		{{ node.title }}
-	</h1>
+	<a :href="'/' + node.url_key" v-if="link == 'true'" class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</a>
+	<h1 v-else class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</h1>
 
 	<div class="score-container" v-if="node && node.choice_type">		
 		<div v-if="node">
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
 
-			<a v-if="!isOpen" v-on:click="isOpen = true" style="display: inline-block; font-size: 12px; margin-top: 8px; color: #4aa5f3; font-weight: bold;">
-				Vote <i class="fa fa-sticky-note" aria-hidden="true" style="margin-left: 2px;"></i>
+			<a v-if="votable != 'false' && !isOpen" v-on:click="isOpen = true" style="margin-top: 5px; font-size: 36px; color: #444;">
+				<i class="fa fa-plus-circle"></i>
 			</a>
 
 			<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
-				<p style="margin-top: 15px;">Your choice</p>
+				<p style="margin-top: 15px; margin-bottom: 5px;">
+					Your choice
+					<a v-on:click="isOpen = false">
+						<i class="fa fa-plus-circle"></i>
+					</a>
+				</p>
 				
 				<own-vote v-bind:node="node"></own-vote>
 				<div class="votes" ng-if="node.results.contributions.length > 0">

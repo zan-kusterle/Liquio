@@ -13,12 +13,14 @@
 		<% data = render(Liquio.NodeView, "node.json", %{node: node}) %>
 		defaultVueData.nodes['<%= node.key %>'] = <%= raw(Poison.Encoder.encode(data, [])) %>;
 	<% end %>
+
+	defaultVueData.optionsOpen = false;
 </script>
 
-<div class="pure-g main-g">
+<div class="main pure-g">
 	<div class="pure-u-2-5">
 		<%= for node <- @nodes do %>
-			<liquio-node v-bind:node="nodes['<%= node.key %>']" votable="false"></liquio-node>
+			<liquio-node v-bind:node="nodes['<%= node.key %>']" votable="false" link="true"></liquio-node>
 		<% end %>
 	</div>
 	<div class="pure-u-1-5">
@@ -26,23 +28,18 @@
 	</div>
 	<div class="pure-u-2-5">
 		<%= for node <- @reference_nodes do %>
-			<liquio-node v-bind:node="nodes['<%= node.key %>']" votable="false"></liquio-node>
+			<liquio-node v-bind:node="nodes['<%= node.key %>']" votable="false" link="true"></liquio-node>
 		<% end %>
 	</div>
 
 	<div class="pure-u-1">
 		<%= if @for_choice_node != nil do %>
-			<main role="main" class="main">
-				<liquio-node v-bind:node="forChoiceNode" results-key="for_choice" votable="true"></liquio-node>
-			</main>
+			<liquio-node v-bind:node="forChoiceNode" results-key="for_choice"></liquio-node>
 		<% end %>
 		
-		<main role="main" class="main">
-			<liquio-node v-bind:node="relevanceNode" results-key="relevance" votable="true"></liquio-node>
-		</main>
-	</div>
-
-	<div class="pure-u-1">
-		<%= render Liquio.NodeView, "preferences.html", node: @relevance_node %>
+		<liquio-node v-bind:node="relevanceNode" results-key="relevance"></liquio-node>
 	</div>
 </div>
+
+<a @click="optionsOpen = true">Options</a>
+<calculation-opts v-bind:opts="nodes['<%= Enum.at(@nodes, 0).key %>'].calculation_opts" v-if="optionsOpen" @close="optionsOpen = false"></calculation-opts>
