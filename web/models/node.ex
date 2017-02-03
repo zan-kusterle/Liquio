@@ -118,7 +118,7 @@ defmodule Liquio.Node do
 
 		results = AggregateContributions.aggregate(node.contributions, calculation_opts)
 		node = Map.put(node, :results, results)
-
+		
 		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: node.results, results_key: node.default_results_key)
 		|> :erlang.iolist_to_binary
 		|> Liquio.HtmlHelper.minify

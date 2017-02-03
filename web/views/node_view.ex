@@ -38,7 +38,7 @@ defmodule Liquio.NodeView do
 				|> Map.take([:choice, :choice_tyoe, :datetime, :embed_html, :identity, :title, :turnout_ratio, :voting_power, :weight])
 			end),
 			:embed_html => node.embed,
-			:references => render_many(node.references, Liquio.NodeView, "node.json"),
+			:references => render_many(Map.get(node, :references, []), Liquio.NodeView, "node.json"),
 			:inverse_references => render_many(Map.get(node, :inverse_references, []), Liquio.NodeView, "node.json"),
 			:calculation_opts => node.calculation_opts
 		}

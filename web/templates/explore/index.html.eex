@@ -1,27 +1,18 @@
-<main role="main" class="main" style="display: none;">
-	<h1 class="title">View Any Node</h1>
+<script>
+	<% data = Enum.map(@nodes, & render(Liquio.NodeView, "node.json", %{node: &1})) %>
+	defaultVueData.nodes = <%= raw(Poison.Encoder.encode(data, [])) %>;
+	defaultVueData.optionsOpen = false
+</script>
 
-	<paper-input label="Title" name="title" style="display: inline-block; width: calc(100% - 455px); text-align: left;"></paper-input>
-	<paper-dropdown-menu label="Type" style="margin-left: 15px;">
-		<paper-listbox class="dropdown-content" selected="1">
-			<paper-item>Group</paper-item>
-			<paper-item>Probability</paper-item>
-			<paper-item>Quantity</paper-item>
-			<paper-item>Quantity by time</paper-item>
-		</paper-listbox>
-	</paper-dropdown-menu>
-	<paper-button raised style="position: relative; top: -8px; margin-left: 30px;">Search</paper-button>
-	<paper-button raised style="position: relative; top: -8px; margin-left: 15px;">View</paper-button>
-</main>
+<div class="main">
+	<%= for identity <- @identities do %>
+		<div class="poll-item">
+			<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
+		</div>
+	<% end %>
 
-<%= if not Enum.empty?(@identities) do %>
-	<main role="main" class="main">
-		<%= for identity <- @identities do %>
-			<div class="poll-item">
-				<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
-			</div>
-		<% end %>
-	</main>
-<% end %>
+	<liquio-list v-bind:nodes="nodes"></liquio-list>
+</div>
 
-<%= render Liquio.NodeView, "show.html", conn: nil, view: :full, node: @node, virtual: true %>
+<a @click="optionsOpen = true">Options</a>
+<calculation-opts v-bind:opts="nodes[0].calculation_opts" v-if="optionsOpen" @close="optionsOpen = false"></calculation-opts>
