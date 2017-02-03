@@ -1,3 +1,3 @@
-defmodule Liquio.HtmlExploreView do
+defmodule Liquio.ExploreView do
 	use Liquio.Web, :view
 end

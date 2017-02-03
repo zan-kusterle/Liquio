@@ -1,4 +1,3 @@
-defmodule Liquio.HtmlReferenceView do
+defmodule Liquio.ReferenceView do
 	use Liquio.Web, :view
-
 end

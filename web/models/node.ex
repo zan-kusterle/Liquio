@@ -130,7 +130,7 @@ defmodule Liquio.Node do
 		results = AggregateContributions.aggregate(node.contributions, calculation_opts)
 		node = Map.put(node, :results, results)
 
-		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", poll: node)
+		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: node.results, results_key: node.default_results_key)
 		|> :erlang.iolist_to_binary
 		|> Liquio.HtmlHelper.minify
 		node = Map.put(node, :embed, embed_html)
@@ -163,7 +163,16 @@ defmodule Liquio.Node do
 		end
 
 		contributions = contributions |> Enum.map(fn(contribution) ->
-			Map.put(contribution, :identity, Repo.get(Identity, contribution.identity.id))
+			contribution = Map.put(contribution, :identity, Repo.get(Identity, contribution.identity.id))
+			
+			results = %{
+				:choice_type => nil,
+				:by_keys => contribution.choice
+			}
+			embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: results, results_key: node.default_results_key)
+			|> :erlang.iolist_to_binary
+			|> Liquio.HtmlHelper.minify
+			contribution = Map.put(contribution, :embed, embed_html)
 		end)
 
 		node = if not Enum.empty?(contributions) do
@@ -177,9 +186,8 @@ defmodule Liquio.Node do
 			node
 		end
 
-		total_voting_power = contributions |> Enum.map(& &1.voting_power) |> Enum.sum
 		contributions = contributions
-		|> Enum.map(& Map.put(&1, :turnout_ratio, &1.voting_power / total_voting_power))
+		
 		|> Enum.map(fn(contribution) ->
 			if contribution.choice_type == "time_quantity" do
 				points = contribution.choice |> Enum.map(fn({time_key, value}) ->

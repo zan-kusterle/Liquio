@@ -5,8 +5,12 @@
 
 <script>
 	defaultVueData.node = null;
-	defaultVueData.referenceNodes = [];
-	defaultVueData.inverseReferenceNodes = [];
+	<% data = @node.references |> Enum.map(& render(Liquio.NodeView, "node.json", %{node: &1})) %>
+	defaultVueData.referenceNodes = <%= raw(Poison.Encoder.encode(data, [])) %>;
+	<% data = @node.inverse_references |> Enum.map(& render(Liquio.NodeView, "node.json", %{node: &1})) %>
+	defaultVueData.inverseReferenceNodes = <%= raw(Poison.Encoder.encode(data, [])) %>;
+	<% data = render(Liquio.NodeView, "node.json", %{node: @node}) %>
+	defaultVueData.mainNode = <%= raw(Poison.Encoder.encode(data, [])) %>;
 </script>
 
 <%= if not Enum.empty?(@node.inverse_references) do %>
@@ -18,10 +22,6 @@
 <% end %>
 
 <main role="main" class="main" id="main-node">
-	<script>
-		<% data = render(Liquio.NodeView, "node.json", %{node: @node}) %>
-		defaultVueData.mainNode = <%= raw(Poison.Encoder.encode(data, [])) %>;
-	</script>
 	<liquio-node v-bind:node="mainNode" v-bind:votable="<%= if @view == :full do "true" else "false" end %>"></liquio-node>
 
 	<%= if @view == :full and references_view == :inline do %>

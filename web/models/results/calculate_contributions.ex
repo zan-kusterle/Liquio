@@ -26,6 +26,13 @@ defmodule Liquio.Results.CalculateContributions do
 
 		CalculateResultServer.stop uuid
 
+		total_voting_power = contributions |> Enum.map(& &1.voting_power) |> Enum.sum
+		contributions = contributions |> Enum.map(fn(contribution) ->
+			contribution
+			|> Map.put(:turnout_ratio, contribution.voting_power / total_voting_power)
+			|> Map.put(:weight, contribution.voting_power / total_voting_power)
+		end)
+		
 		contributions
 	end
 

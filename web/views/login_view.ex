@@ -1,3 +1,3 @@
-defmodule Liquio.HtmlLoginView do
+defmodule Liquio.LoginView do
 	use Liquio.Web, :view
 end

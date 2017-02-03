@@ -113,7 +113,7 @@ const nodeComponent = Vue.component('liquio-node', {
 
 const inlineComponent = Vue.component('liquio-inline', {
 	template: '#liquio_inline_template',
-	props: ['node'],
+	props: ['node', 'referencing_node', 'references_node'],
 	data: function() {
 		return {}
 	}
