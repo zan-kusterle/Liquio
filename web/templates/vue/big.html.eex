@@ -7,19 +7,16 @@
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
 
 			<a v-if="votable != 'false' && !isOpen" v-on:click="isOpen = true" style="margin-top: 5px; font-size: 36px; color: #444;">
-				<i class="fa fa-plus-circle"></i>
+				<i class="fa fa-chevron-circle-down"></i>
 			</a>
 
 			<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
-				<p style="margin-top: 15px; margin-bottom: 5px;">
+				<p style="margin-top: 15px; margin-bottom: 5px;" v-on:click="isOpen = false">
 					Your choice
-					<a v-on:click="isOpen = false">
-						<i class="fa fa-plus-circle"></i>
-					</a>
 				</p>
 				
 				<own-vote v-bind:node="node"></own-vote>
-				<div class="votes" ng-if="node.results.contributions.length > 0">
+				<div class="votes" ng-if="node.results.contributions.length > 0" style="max-width: 800px; margin-left: auto; margin-right: auto;">
 					<p style="margin-bottom: 5px;">Votes</p>
 					<table class="contributions">
 						<tr class="contribution" v-for="contribution in node.contributions">
