@@ -9,8 +9,8 @@
 		position: absolute;
 		left: 0px;
 		top: 0px;
-		width: 120px;
-		height: 45px;
+		width: inherit;
+		height: inherit;
 		display: table;
 	}
 

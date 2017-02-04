@@ -1,16 +1,6 @@
 {
   "name": "liquio",
   "dependencies": {
-    "paper-dialog-scrollable": "^1.1.5",
-    "paper-dialog": "^1.1.0",
-    "paper-button": "^1.0.14",
-    "paper-date-picker": "polymer-paper-date-picker#^1.2.0",
-    "paper-date-picker-item": "^1.2.1",
-    "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^1.4.3",
-    "paper-listbox": "PolymerElements/paper-listbox#^1.1.2",
-    "paper-item": "PolymerElements/paper-item#^1.2.1",
-    "paper-input": "PolymerElements/paper-input#^1.1.22",
-    "iron-form": "PolymerElements/iron-form#^1.1.4",
     "vue-resource": "^1.1.2",
     "vue": "^2.1.10"
   }
