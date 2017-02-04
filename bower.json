@@ -10,6 +10,8 @@
     "paper-listbox": "PolymerElements/paper-listbox#^1.1.2",
     "paper-item": "PolymerElements/paper-item#^1.2.1",
     "paper-input": "PolymerElements/paper-input#^1.1.22",
-    "iron-form": "PolymerElements/iron-form#^1.1.4"
+    "iron-form": "PolymerElements/iron-form#^1.1.4",
+    "vue-resource": "^1.1.2",
+    "vue": "^2.1.10"
   }
 }
