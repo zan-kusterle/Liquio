@@ -6,7 +6,7 @@
 		<div v-if="node">
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
 
-			<a v-if="votable != 'false' && !isOpen" v-on:click="isOpen = true" style="margin-top: 5px; font-size: 36px; color: #444;">
+			<a v-if="votable != 'false' && !isOpen" v-on:click="isOpen = true" style="display: inline-block; margin-top: 10px; font-size: 32px; color: #444;">
 				<i class="fa fa-chevron-circle-down"></i>
 			</a>
 
@@ -15,7 +15,7 @@
 					Your choice
 				</p>
 				
-				<own-vote v-bind:node="node"></own-vote>
+				<own-vote v-bind:node="node" v-bind:results-key="resultsKey"></own-vote>
 				<div class="votes" ng-if="node.results.contributions.length > 0" style="max-width: 800px; margin-left: auto; margin-right: auto;">
 					<p style="margin-bottom: 5px;">Votes</p>
 					<table class="contributions">

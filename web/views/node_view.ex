@@ -30,17 +30,20 @@ defmodule Liquio.NodeView do
 			:key => node.key,
 			:url_key => node.url_key,
 			:results => node.results,
-			:contributions => Enum.map(node.contributions, fn(contribution) ->
-				contribution
-				|> Map.put(:datetime, Timex.format!(contribution.datetime, "{ISO:Basic}"))
-				|> Map.put(:identity, render_one(contribution.identity, Liquio.IdentityView, "identity.json"))
-				|> Map.put(:embed_html, contribution.embed)
-				|> Map.take([:choice, :choice_tyoe, :datetime, :embed_html, :identity, :title, :turnout_ratio, :voting_power, :weight])
-			end),
+			:contributions => Enum.map(node.contributions, & map_contribution(&1)),
+			:own_contribution => if Map.get(node, :own_contribution) do map_contribution(node.own_contribution) else nil end,
 			:embed_html => node.embed,
 			:references => render_many(Map.get(node, :references, []), Liquio.NodeView, "node.json"),
 			:inverse_references => render_many(Map.get(node, :inverse_references, []), Liquio.NodeView, "node.json"),
 			:calculation_opts => node.calculation_opts
 		}
+	end
+
+	def map_contribution(contribution) do
+		contribution
+		|> Map.put(:datetime, Timex.format!(contribution.datetime, "{ISO:Basic}"))
+		|> Map.put(:identity, render_one(contribution.identity, Liquio.IdentityView, "identity.json"))
+		|> Map.put(:embed_html, contribution.embed)
+		|> Map.take([:choice, :choice_tyoe, :datetime, :embed_html, :identity, :title, :turnout_ratio, :voting_power, :weight, :results])
 	end
 end

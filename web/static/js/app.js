@@ -58,29 +58,32 @@ const resultsComponent = Vue.component('results', {
 
 const ownVoteComponent = Vue.component('own-vote', {
 	template: '#own_vote_template',
-	props: ['node'],
+	props: ['node', 'resultsKey'],
 	data: function() {
 		let self = this
+		let results_key = this.resultsKey || 'main'
+		let initial = this.node.own_contribution && this.node.own_contribution.results.by_keys[results_key] && this.node.own_contribution.results.by_keys[results_key].mean
 		return {
-			mean: 0.5,
+			mean: initial || 0.5,
 			set: function (event) {
 				let choice_value = parseFloat(self.mean)
 				setVote(self.$http, self.node.url_key, choice_value, function(new_node) {
 					self.node.results = new_node.results
-					self.node.own_results = new_node.own_results
+					self.node.own_contribution = new_node.own_contribution
 				})
 			},
 			unset: function (event) {
 				unsetVote(self.$http, self.node.url_key, function(new_node) {
 					self.node.results = new_node.results
-					self.node.own_results = new_node.own_results
+					self.node.own_contribution = null
+					self.mean = 0.5
 				})
 			}
 		}
 	},
 	computed: {
 		turnout_ratio: function() {
-			return this.node.own_results ? this.node.own_results.turnout_ratio : 0
+			return this.node.own_contribution ? this.node.own_contribution.results.turnout_ratio : 0
 		},
 		color: function() {
 			return getColor(parseFloat(this.mean))

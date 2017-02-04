@@ -23,7 +23,7 @@
 		<div class="number">
 			<span class="number-value">{{ Math.round(mean * 100) }}</span><span class="percent">%</span>
 		</div>
-		<div class="subtext">{{ Math.round(this.node.own_results.turnout_ratio * 100) }}% turnout</div>
+		<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
 	</form>
 
 	<div class="links vote-links">

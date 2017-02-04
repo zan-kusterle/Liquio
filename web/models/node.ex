@@ -154,14 +154,15 @@ defmodule Liquio.Node do
 		contributions = contributions |> Enum.map(fn(contribution) ->
 			contribution = Map.put(contribution, :identity, Repo.get(Identity, contribution.identity.id))
 			
-			results = %{
-				:choice_type => nil,
-				:by_keys => %{:main => %{:mean => contribution.choice, :turnout_ratio => 0.5}, :relevance => %{:mean => 0.0, turnout_ratio: 0.2}}
-			}
+			results = AggregateContributions.aggregate([contribution], calculation_opts)
+
 			embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: results, results_key: node.default_results_key)
 			|> :erlang.iolist_to_binary
 			|> Liquio.HtmlHelper.minify
-			contribution = Map.put(contribution, :embed, embed_html)
+
+			contribution = contribution
+			|> Map.put(:embed, embed_html)
+			|> Map.put(:results, results)
 		end)
 
 		node = if not Enum.empty?(contributions) do
@@ -290,10 +291,8 @@ defmodule Liquio.Node do
 		end
 
 		user_contribution = if user do Enum.find(node.contributions, & &1.identity.id == user.id) else nil end
-		user_results = if user_contribution == nil do nil else AggregateContributions.aggregate([user_contribution], calculation_opts) end
 		node
 		|> Map.put(:own_contribution, user_contribution)
-		|> Map.put(:own_results, user_results)
 	end
 
 	defp update_keys(node) do
