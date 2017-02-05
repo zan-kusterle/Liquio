@@ -1,5 +1,5 @@
 let setVote = function($http, url_key, choice, cb) {
-	return $http.post('/api/nodes/' + url_key + '/votes', {choice: {'main': choice}}, {
+	return $http.post('/api/nodes/' + url_key + '/votes', {choice: choice}, {
 		headers: {
 			'authorization': 'Bearer ' + token
 		}
@@ -56,18 +56,53 @@ const resultsComponent = Vue.component('results', {
 	}
 })
 
+const choiceForNode = function(node, results_key) {
+	if(node.own_contribution) {
+		if(node.choice_type == 'time_quantity') {
+			let by_keys = node.own_contribution.results.by_keys
+			var values = []
+			for(var year in by_keys) {
+				values.push({'value': by_keys[year].mean, 'year': '2000'})
+			}
+			return values
+		} else {
+			let d = node.own_contribution.results.by_keys[results_key] && node.own_contribution.results.by_keys[results_key].mean
+			return [{'value': d || 0.5, 'year': '2000'}]
+		}
+	} else {
+		return null
+	}
+}
+
+const number_format = function(number) {
+	return Math.round(number * 10) / 10
+}
+
+const getCurrentChoice = function(node, values) {
+	var choice = {}
+
+	if(node.choice_type == 'time_quantity') {
+		for(var i in values) {
+			let point = values[i]
+			choice[point.year] = point.value
+		}
+	} else {
+		choice['main'] = parseFloat(self.value)
+	}
+
+	return choice
+}
+
 const ownVoteComponent = Vue.component('own-vote', {
 	template: '#own_vote_template',
 	props: ['node', 'resultsKey'],
 	data: function() {
 		let self = this
-		let results_key = this.resultsKey || 'main'
-		let initial = this.node.own_contribution && this.node.own_contribution.results.by_keys[results_key] && this.node.own_contribution.results.by_keys[results_key].mean
 		return {
-			mean: initial || 0.5,
+			values: choiceForNode(this.node, this.resultsKey || 'main'),
 			set: function (event) {
-				let choice_value = parseFloat(self.mean)
-				setVote(self.$http, self.node.url_key, choice_value, function(new_node) {
+				let choice = getCurrentChoice(self.node, self.values)
+				setVote(self.$http, self.node.url_key, choice, function(new_node) {
 					self.node.results = new_node.results
 					self.node.own_contribution = new_node.own_contribution
 				})
@@ -76,9 +111,10 @@ const ownVoteComponent = Vue.component('own-vote', {
 				unsetVote(self.$http, self.node.url_key, function(new_node) {
 					self.node.results = new_node.results
 					self.node.own_contribution = null
-					self.mean = 0.5
+					self.value = 0.5
 				})
-			}
+			},
+			number_format: number_format
 		}
 	},
 	computed: {
@@ -86,7 +122,7 @@ const ownVoteComponent = Vue.component('own-vote', {
 			return this.node.own_contribution ? this.node.own_contribution.results.turnout_ratio : 0
 		},
 		color: function() {
-			return getColor(parseFloat(this.mean))
+			return getColor(parseFloat(this.values[0].value))
 		}
 	}
 })

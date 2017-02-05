@@ -1,7 +1,6 @@
 <style>
 	.area {
-		width: 120px;
-		height: 45px;
+		width: 100%;
 		position: relative;
 	}
 
@@ -25,7 +24,7 @@
 	}
 </style>
 
-<div class="area" style="background: <%= results_color(@results, @results_key) %>;">
+<div class="area"<%= if @results.choice_type != "time_quantity" do %> style="background: <%= results_color(@results, @results_key) %>;"<% end %>>
 	<div class="bubble">
 		<%= if @results.choice_type == "time_quantity" do %>
 			<%= if Enum.empty?(@results.by_datetime) do %>

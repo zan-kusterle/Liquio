@@ -122,7 +122,7 @@ defmodule Liquio.Node do
 		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: node.results, results_key: node.default_results_key)
 		|> :erlang.iolist_to_binary
 		|> Liquio.HtmlHelper.minify
-		node = Map.put(node, :embed, embed_html)
+		node = Map.put(node, :embed, embed_html |> String.replace("\"", "'"))
 
 		node
 	end
@@ -161,7 +161,7 @@ defmodule Liquio.Node do
 			|> Liquio.HtmlHelper.minify
 
 			contribution = contribution
-			|> Map.put(:embed, embed_html)
+			|> Map.put(:embed, embed_html |> String.replace("\"", "'"))
 			|> Map.put(:results, results)
 		end)
 

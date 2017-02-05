@@ -1,10 +1,10 @@
 <div class="score-box" v-bind:style="{'background-color': color}" v-if="this.node.choice_type == 'probability'">
 	<form class="data" action="<%= @conn.request_path %>/vote" method="POST">
 		<div class="range">
-			<input type="range" name="choice" min="0" max="1" step="any" v-model="mean" style="width: 90%; margin: 0 auto;" />
+			<input type="range" name="choice" min="0" max="1" step="any" v-model="values[0].value" style="width: 90%; margin: 0 auto;" />
 		</div>
 		<div class="number">
-			<span class="number-value">{{ Math.round(mean * 100) }}</span><span class="percent">%</span>
+			<span class="number-value">{{ Math.round(values[0].value * 100) }}</span><span class="percent">%</span>
 		</div>
 		<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
 	</form>
@@ -17,12 +17,28 @@
 
 <div class="score-box" v-bind:style="{'background-color': color}" v-else-if="this.node.choice_type == 'quantity'">
 	<form class="data" action="<%= @conn.request_path %>/vote" method="POST">
-		<div class="range">
-			<input type="range" name="choice" min="0" max="1" step="any" v-model="mean" style="width: 90%; margin: 0 auto;" />
-		</div>
 		<div class="number">
-			<span class="number-value">{{ Math.round(mean * 100) }}</span><span class="percent">%</span>
+			<span class="number-value">{{ number_format(values[0].value) }}</span>
 		</div>
+		<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
+	</form>
+
+	<div class="links vote-links">
+		<a class="vote-action" v-on:click="set"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Vote</a>
+		<a class="vote-action" v-on:click="unset" style="border-left: 1px solid rgba(0,0,0,0.1);">Remove <i class="fa fa-remove" aria-hidden="true" style="margin-left: 2px;"></i></a>
+	</div>
+</div>
+
+<div class="score-box" v-else-if="this.node.choice_type == 'time_quantity'">
+	<form class="data" action="<%= @conn.request_path %>/vote" method="POST">
+		<ul style="list-style: none;">
+			<li v-for="point in values">
+				<div class="number">
+					<input class="number-value" v-model="point.year" />
+					<input class="number-value" v-model="point.value" />
+				</div>
+			</li>
+		</ul>
 		<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
 	</form>
 
