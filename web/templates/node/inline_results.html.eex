@@ -31,7 +31,7 @@
 			<%= if Enum.empty?(@results.by_datetime) do %>
 				<p>?</p>
 			<% else %>
-				<%= render "chart.html", points: @results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
+				<%= render Liquio.ComponentsView, "chart.html", points: @results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
 			<% end %>
 		<% else %>
 			<p>
