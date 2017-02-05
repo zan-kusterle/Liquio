@@ -91,6 +91,7 @@
 		<script type="text/x-template" id="liquio_list_template"><%= render Liquio.VueView, "list.html", conn: @conn %></script>
 		<script type="text/x-template" id="options_template"><%= render Liquio.VueView, "options.html", conn: @conn %></script>
 		<script type="text/x-template" id="liquio_full_template"><%= render Liquio.VueView, "full.html", conn: @conn %></script>
+		<script type="text/x-template" id="get_reference"><%= render Liquio.VueView, "get_reference.html", conn: @conn %></script>
 
 		<script src="/bower_components/vue/dist/vue.js"></script>
 		<script src="/bower_components/vue-resource/dist/vue-resource.js"></script>

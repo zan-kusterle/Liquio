@@ -8,7 +8,7 @@
 	</div>
 </div>
 
-<div class="score-box" v-else-if="this.node.choice_type == 'quantity'" v-bind:style="{'background-color': this.color}">
+<div class="score-box" v-else-if="this.node.choice_type == 'quantity'">
 	<div class="data">
 		<div class="number" v-if="turnout_ratio > 0">
 			<span class="number-value">{{ Math.round(mean) }}</span>

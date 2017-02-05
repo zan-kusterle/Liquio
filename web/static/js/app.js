@@ -1,4 +1,7 @@
 let setVote = function($http, url_key, choice, cb) {
+	for(var key in choice) {
+		choice[key + ''] = parseFloat(choice[key])
+	}
 	return $http.post('/api/nodes/' + url_key + '/votes', {choice: choice}, {
 		headers: {
 			'authorization': 'Bearer ' + token
@@ -62,15 +65,15 @@ const choiceForNode = function(node, results_key) {
 			let by_keys = node.own_contribution.results.by_keys
 			var values = []
 			for(var year in by_keys) {
-				values.push({'value': by_keys[year].mean, 'year': '2000'})
+				values.push({'value': by_keys[year].mean, 'year': year})
 			}
 			return values
 		} else {
 			let d = node.own_contribution.results.by_keys[results_key] && node.own_contribution.results.by_keys[results_key].mean
-			return [{'value': d || 0.5, 'year': '2000'}]
+			return [{'value': d || 0.5, 'year': year}]
 		}
 	} else {
-		return null
+		return []
 	}
 }
 
@@ -84,10 +87,11 @@ const getCurrentChoice = function(node, values) {
 	if(node.choice_type == 'time_quantity') {
 		for(var i in values) {
 			let point = values[i]
-			choice[point.year] = point.value
+			if(point.value != '' && point.year != '')
+				choice[point.year] = point.value
 		}
 	} else {
-		choice['main'] = parseFloat(self.value)
+		choice['main'] = parseFloat(values[0].value)
 	}
 
 	return choice
@@ -98,21 +102,47 @@ const ownVoteComponent = Vue.component('own-vote', {
 	props: ['node', 'resultsKey'],
 	data: function() {
 		let self = this
+
+		function updateInputs() {
+			let last_value = self.values[self.values.length - 1]
+			var empty_index = self.values.length
+			for(var i = self.values.length - 1; i >= 0; i--) {
+				let value = self.values[i]
+				if(value.value == '' && value.year == '')
+					empty_index = i
+			}
+			if(empty_index >= self.values.length) {
+				self.values.push({'value': '', 'year': ''})
+			} else {
+				self.values = self.values.slice(0, empty_index + 1)
+			}
+		}
+
+		setTimeout(() => updateInputs(), 0)
+
+		let choiceValues = choiceForNode(this.node, this.resultsKey || 'main')
+		choiceValues.push([{'value': '', 'year': ''}])
+
 		return {
-			values: choiceForNode(this.node, this.resultsKey || 'main'),
-			set: function (event) {
+			values: choiceValues,
+			set: function(event) {
 				let choice = getCurrentChoice(self.node, self.values)
 				setVote(self.$http, self.node.url_key, choice, function(new_node) {
 					self.node.results = new_node.results
 					self.node.own_contribution = new_node.own_contribution
+					self.node.embed_html = new_node.embed_html
 				})
 			},
-			unset: function (event) {
+			unset: function(event) {
 				unsetVote(self.$http, self.node.url_key, function(new_node) {
 					self.node.results = new_node.results
 					self.node.own_contribution = null
-					self.value = 0.5
+					self.node.embed_html = new_node.embed_html
+					self.values = [{'value': '', 'year': ''}]
 				})
+			},
+			keyup: function(event) {
+				updateInputs()
 			},
 			number_format: number_format
 		}
@@ -185,6 +215,31 @@ const fullNodeComponent = Vue.component('liquio-full', {
 	}
 })
 
+const getUrlKey = function(title, choice_type) {
+	return (title + ' ' + choice_type).replace(/ /g, '-')
+}
+
+const getReferenceComponent = Vue.component('get-reference', {
+	template: '#get_reference',
+	props: ['node'],
+	data: function() {
+		let self = this
+		return {
+			title: '',
+			choice_type: 'Probability',
+			options: [
+				{ text: 'Probability', value: 'Probability' },
+				{ text: 'Quantity', value: 'Quantity' },
+				{ text: 'Time Series', value: 'Time-Series' }
+			],
+			view: function(event) {
+				let path = '/' + self.node.url_key + '/references/' + getUrlKey(self.title, self.choice_type)
+				document.location = path
+			}
+		}
+	}
+})
+
 var app = new Vue({
 	el: '#app',
 	components: {
@@ -194,6 +249,7 @@ var app = new Vue({
 		'liquio-list': listComponent,
 		'results': resultsComponent,
 		'own-vote': ownVoteComponent,
+		'get-reference': getReferenceComponent,
 		'calculation-opts': calculationOptionsComponent
 	},
 	data: defaultVueData,

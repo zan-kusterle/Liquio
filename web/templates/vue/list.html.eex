@@ -38,14 +38,4 @@
 			</div>
 		<% end %>
 	</div>
-
-	<form style="display: none;" id="view_reference_form" action="//references" class="pure-form">
-		<input label="Title" name="reference_node_id" required style="display: inline-block; width: 300px;"></input>
-		<select style="margin-left: 15px;">
-			<option>Probability</option>
-			<option>Quantity</option>
-			<option>Quantity by time</option>
-		</select>
-		<button raised class="poll-button" onclick="view_reference_form.submit()" style="position: relative; top: -8px; margin-left: 30px;">View reference</paper-button>
-	</form>
 </div>

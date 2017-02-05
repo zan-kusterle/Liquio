@@ -9,7 +9,8 @@
 
 	<div class="inset-bottom">
 		<img src="/images/references_2.svg" class="reference-arrow2" @click="referencesOpen = false"></img>
-		<liquio-list v-if="referencesOpen" v-bind:nodes="node.references" v-bind:referencing-node="node" style="text-align: left;"></liquio-list>
-		<div v-else-if="node.references.length > 0" @click="referencesOpen = true" style="margin: 10px auto; width: 60px; height: 60px; border-radius: 100%; line-height: 61px; font-size: 24px; background: #444; color: #fff;">{{ node.references.length }}</div>
+		<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node" style="text-align: left;"></liquio-list>
+		
+		<get-reference v-bind:node="node"></get-reference>
 	</div>
 </div>

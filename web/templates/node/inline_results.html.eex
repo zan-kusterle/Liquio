@@ -1,6 +1,7 @@
 <style>
 	.area {
-		width: 100%;
+		width: inherit;
+		height: inherit;
 		position: relative;
 	}
 

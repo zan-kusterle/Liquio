@@ -1,5 +1,5 @@
 <div class="reference">
-	<div v-html="this.node.embed_html" v-if="this.node.choice_type != null" style="display: inline-block; vertical-align: middle;"></div>
+	<div v-html="this.node.embed_html" v-if="this.node.choice_type != null" style="display: inline-block; vertical-align: middle; width: 120px; height: 45px;"></div>
 	
 	<p class="reference-text" style="line-height: 40px;">
 		<a :href="'/' + node.url_key"><span v-if="this.node.choice_type == null">#</span>{{ node.title }}</a>
