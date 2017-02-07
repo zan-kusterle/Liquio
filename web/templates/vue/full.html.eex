@@ -1,14 +1,17 @@
 <div>
-	<div class="inset-top" v-if="node.inverse_references.length > 0">
-		<liquio-list v-if="inverseReferencesOpen" v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
-		<div v-else @click="inverseReferencesOpen = true" style="font-weight: bold; margin: 10px auto; width: 60px; height: 60px; border-radius: 100%; line-height: 61px; font-size: 24px; background: #444; color: #fff;">{{ node.inverse_references.length }}</div>
-		<img src="/images/arrow.svg" @click="inverseReferencesOpen = false" class="reference-arrow" style="width: 50px; height: 100%; transform: rotate(180deg);"></img>
+	<div class="inset-top" v-if="inverseReferencesOpen">
+		<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
+		<i class="fa fa-long-arrow-down" style="font-size: 48px; font-weight: bold; margin-top: 10px;"></i>
+	</div>
+
+	<div class="inset-top" style="padding: 15px 20px;" v-else-if="node.inverse_references.length > 0" @click="inverseReferencesOpen = true">
+		<i class="fa fa-arrow-up" style="margin-right: 5px;"></i> {{ node.inverse_references.length }} incoming {{ node.inverse_references.length == 1 ? 'reference' : 'references' }}
 	</div>
 	
 	<liquio-node v-bind:node="node" class="main-node"></liquio-node>
 
 	<div class="inset-bottom">
-		<img src="/images/references_2.svg" class="reference-arrow2" @click="referencesOpen = false"></img>
+		<i class="fa fa-long-arrow-down" style="font-size: 48px; font-weight: bold; margin-bottom: 15px;"></i>
 		<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node" style="text-align: left;"></liquio-list>
 		
 		<get-reference v-bind:node="node"></get-reference>

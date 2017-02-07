@@ -34,11 +34,13 @@
 		</div>
 	</div>
 
-	<%= if @for_choice_node != nil do %>
-		<liquio-node v-bind:node="forChoiceNode" results-key="for_choice" style="margin: 40px 0px;"></liquio-node>
-	<% end %>
-	
-	<liquio-node v-bind:node="relevanceNode" results-key="relevance" style="margin: 40px 0px;"></liquio-node>
+	<div class="main-node">
+		<%= if @for_choice_node != nil do %>
+			<liquio-node v-bind:node="forChoiceNode" results-key="for_choice" style="margin: 40px 0px;"></liquio-node>
+		<% end %>
+		
+		<liquio-node v-bind:node="relevanceNode" results-key="relevance" style="margin: 40px 0px;"></liquio-node>
+	</div>
 </div>
 
 <a @click="optionsOpen = true">Options</a>

@@ -5,13 +5,15 @@
 </script>
 
 <div class="main">
-	<%= for identity <- @identities do %>
-		<div class="poll-item">
-			<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
-		</div>
-	<% end %>
+	<div class="main-node">
+		<%= for identity <- @identities do %>
+			<div class="poll-item">
+				<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
+			</div>
+		<% end %>
 
-	<liquio-list v-bind:nodes="nodes" style="margin: 40px 0px;"></liquio-list>
+		<liquio-list v-bind:nodes="nodes" style="margin: 40px 0px;"></liquio-list>
+	</div>
 </div>
 
 <a @click="optionsOpen = true">Options</a>

@@ -33,6 +33,14 @@ exports.config = {
 		},
 		babel: {
 			ignore: [/web\/static\/vendor/]
+		},
+		uglify: {
+			mangle: false,
+			compress: {
+				global_defs: {
+					DEBUG: false
+				}
+			}
 		}
 	},
 
