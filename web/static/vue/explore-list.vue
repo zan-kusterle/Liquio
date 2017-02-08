@@ -1,0 +1,30 @@
+<template>
+<div>
+	<div class="main">
+		<div class="main-node">
+			<el-input placeholder="Variable description">
+				<el-select slot="prepend" placeholder="Select">
+					<el-option label="Search" value=""></el-option>
+					<el-option label="Group" value=""></el-option>
+					<el-option label="Probability" value="probability"></el-option>
+					<el-option label="Quantity" value="quantity"></el-option>
+					<el-option label="Time Series" value="time_quantity"></el-option>
+				</el-select>
+				<el-button slot="append" icon="search"></el-button>
+			</el-input>
+
+			<%= for identity <- @identities do %>
+				<div class="poll-item">
+					<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
+				</div>
+			<% end %>
+
+			<liquio-list v-bind:nodes="nodes" style="margin: 40px 0px;"></liquio-list>
+		</div>
+	</div>
+
+	<a @click="optionsOpen = true">Options</a>
+	<calculation-opts v-bind:opts="nodes[0].calculation_opts" v-if="optionsOpen" @close="optionsOpen = false"></calculation-opts>
+</div>
+</template>
+

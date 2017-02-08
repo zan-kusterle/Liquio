@@ -46,7 +46,7 @@ defmodule Liquio.Router do
 		end
 
 		resources "/", HtmlNodeController, only: [:show, :create] do
-			resources "/references", HtmlReferenceController, only: [:index, :show, :create]
+			resources "/references", HtmlReferenceController, only: [:show, :create]
 		end
 
 		get "/", HtmlExploreController, :index

@@ -1,26 +1,6 @@
 defmodule Liquio.HtmlReferenceController do
 	use Liquio.Web, :controller
 
-	def index(conn, %{"html_node_id" => node_id, "reference_node_id" => reference_node_url}) do
-		url = URI.parse(reference_node_url)
-		reference_node_id =
-			if url.path != nil and url.path |> String.starts_with?("/polls/") do
-				String.replace(url.path, "/polls/", "")
-			else
-				reference_node_url
-			end
-		reference_poll = Repo.get(Poll, reference_node_id)
-
-		if reference_poll != nil and reference_poll.kind == "custom" do
-			conn
-			|> redirect(to: html_node_html_reference_path(conn, :show, node_id, reference_node_id))
-		else
-			conn
-			|> put_flash(:info, "The poll you want to reference does not exist.")
-			|> redirect(to: html_node_path(conn, :show, node_id))
-		end
-	end
-
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: false]},
 		:nodes => {Plugs.NodesParam, [name: "html_node_id"]},

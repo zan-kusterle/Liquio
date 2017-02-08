@@ -82,6 +82,40 @@ let unsetVote = function($http, url_key, cb) {
 	})
 }
 
+
+const choiceForNode = function(node, results_key) {
+	if(node.own_contribution) {
+		if(node.choice_type == 'time_quantity') {
+			let by_keys = node.own_contribution.results.by_keys
+			var values = []
+			for(var year in by_keys) {
+				values.push({'value': by_keys[year].mean, 'year': year})
+			}
+			return values
+		} else {
+			let d = node.own_contribution.results.by_keys[results_key] && node.own_contribution.results.by_keys[results_key].mean
+			return [{'value': d || 0.5, 'year': year}]
+		}
+	} else {
+		return []
+	}
+}
+
+const number_format = function(number) {
+	return Math.round(number * 10) / 10
+}
+
+
+const getColor = function(mean) {
+	if(mean == null) return "#ddd"
+	if(mean < 0.25)
+		return "rgb(255, 164, 164)"
+	else if(mean < 0.75)
+		return "rgb(249, 226, 110)"
+	else
+		return "rgb(140, 232, 140)"
+}
+
 export default {
 	props: ['node', 'resultsKey'],
 	data: function() {

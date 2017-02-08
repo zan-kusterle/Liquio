@@ -1,16 +1,21 @@
 <template>
 <div>
-	<input v-model="title" label="Title" required style="display: inline-block; width: 300px;"></input>
-	<select v-model="choice_type">
-		<option v-for="option in options" v-bind:value="option.value">
-			{{ option.text }}
-		</option>
-	</select>
-	<button v-on:click="view">View reference</paper-button>
+	<el-input placeholder="Variable description" v-model="title">
+		<el-select slot="prepend" placeholder="Select" v-model="choice_type">
+			<el-option v-for="item in options" v-bind:value="item.value" v-bind:label="item.text"></el-option>
+		</el-select>
+		<el-button slot="append" icon="search" @click="view">View reference</el-button>
+	</el-input>
 </div>
 </template>
 
 <script>
+
+
+const getUrlKey = function(title, choice_type) {
+	return (title + ' ' + choice_type).replace(/ /g, '-')
+}
+
 export default {
 	props: ['node'],
 	data: function() {
@@ -24,8 +29,10 @@ export default {
 				{ text: 'Time Series', value: 'Time-Series' }
 			],
 			view: function(event) {
-				let path = '/' + self.node.url_key + '/references/' + getUrlKey(self.title, self.choice_type)
-				document.location = path
+				if(self.title.length >= 3) {
+					let path = '/' + self.node.url_key + '/references/' + getUrlKey(self.title, self.choice_type)
+					self.$router.push(path)
+				}
 			}
 		}
 	}

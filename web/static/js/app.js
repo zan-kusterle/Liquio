@@ -18,27 +18,7 @@ let getNode = function($http, url_key, cb) {
 
 
 
-const choiceForNode = function(node, results_key) {
-	if(node.own_contribution) {
-		if(node.choice_type == 'time_quantity') {
-			let by_keys = node.own_contribution.results.by_keys
-			var values = []
-			for(var year in by_keys) {
-				values.push({'value': by_keys[year].mean, 'year': year})
-			}
-			return values
-		} else {
-			let d = node.own_contribution.results.by_keys[results_key] && node.own_contribution.results.by_keys[results_key].mean
-			return [{'value': d || 0.5, 'year': year}]
-		}
-	} else {
-		return []
-	}
-}
 
-const number_format = function(number) {
-	return Math.round(number * 10) / 10
-}
 
 const getCurrentChoice = function(node, values) {
 	var choice = {}
@@ -64,18 +44,13 @@ import inlineComponent from '../vue/liquio-inline.vue'
 import listComponent from '../vue/liquio-list.vue'
 import ownVoteComponent from '../vue/own-vote.vue'
 import getReferenceComponent from '../vue/get-reference.vue'
+import referenceComponent from '../vue/reference-full.vue'
 import calculationOptionsComponent from '../vue/calculation-options.vue'
 
 
 
 
-
-const getUrlKey = function(title, choice_type) {
-	return (title + ' ' + choice_type).replace(/ /g, '-')
-}
-
 const Reference = { template: '<div>bar</div>' }
-const Explore = { template: '<div>bar</div>' }
 
 
 // 2. Define some routes
@@ -84,9 +59,9 @@ const Explore = { template: '<div>bar</div>' }
 // Vue.extend(), or just a component options object.
 // We'll talk about nested routes later.
 const routes = [
-	{ path: '/', component: Explore },
+	{ path: '/', component: listComponent },
 	{ path: '/:urlKey', component: fullComponent },
-	{ path: '/:urlKey/references/:referenceUrlKey', component: Reference },
+	{ path: '/:urlKey/references/:referenceUrlKey', component: referenceComponent },
 ]
 
 // 3. Create the router instance and pass the `routes` option

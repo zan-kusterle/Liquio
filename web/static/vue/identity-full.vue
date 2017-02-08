@@ -1,3 +1,4 @@
+<template>
 <div class="pure-g main-g">
 	<div class="pure-u-1-6">
 		<main role="main" class="main">
@@ -120,3 +121,4 @@
 		</main>
 	</div>
 </div>
+</template>

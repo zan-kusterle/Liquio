@@ -11,7 +11,7 @@
 
 		<div class="block">
 			<span class="demonstration">Customized initial value</span>
-			<el-slider></el-slider>
+			<el-slider v-model="value"></el-slider>
 		</div>
 
 		<div class="range" style="margin-bottom: 20px;">
@@ -48,7 +48,8 @@ export default {
 	props: ['opts'],
 	data: function() {
 		return {
-			dialogVisible: false
+			dialogVisible: false,
+			value: 0.5
 		}
 	}
 }

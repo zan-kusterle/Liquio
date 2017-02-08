@@ -7,7 +7,7 @@
 		<div class="score-container">
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
 
-			<i class="el-icon-caret-bottom"></i>
+			<i class="el-icon-caret-bottom" @click="isOpen = true"></i>
 
 			<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
 				<p style="margin-top: 15px; margin-bottom: 5px;" v-on:click="isOpen = false">
@@ -15,7 +15,7 @@
 				</p>
 				
 				<own-vote v-bind:node="node" v-bind:results-key="resultsKey"></own-vote>
-				<div class="votes" ng-if="node.results.contributions.length > 0" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+				<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0" style="max-width: 800px; margin-left: auto; margin-right: auto;">
 					<p style="margin-bottom: 5px;">Votes</p>
 					<table class="contributions">
 						<tr class="contribution" v-for="contribution in node.contributions">
