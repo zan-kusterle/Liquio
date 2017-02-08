@@ -1,9 +1,5 @@
 <div>
 	<div class="inset-top" v-if="inverseReferencesOpen">
-	<el-date-picker
-      type="date"
-      placeholder="Pick a day">
-    </el-date-picker>
 		<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 		<i class="fa fa-long-arrow-down" style="font-size: 48px; font-weight: bold; margin-top: 10px;"></i>
 	</div>

@@ -8,5 +8,4 @@
 	<liquio-full v-bind:node="node"></liquio-full>
 </div>
 
-<a @click="optionsOpen = true">Options</a>
-<calculation-opts v-bind:opts="node.calculation_opts" v-if="optionsOpen" @close="optionsOpen = false"></calculation-opts>
+<calculation-opts v-bind:opts="node.calculation_opts"></calculation-opts>

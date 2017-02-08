@@ -5,7 +5,7 @@ defmodule Liquio.Endpoint do
 		at: "/",
 		from: :liquio,
 		gzip: true,
-		only: ~w(css fonts images js icons robots.txt bower_components polymer)
+		only: ~w(css fonts images js icons robots.txt)
 
 	plug Plug.Static,
 		at: "/",

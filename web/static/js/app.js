@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
+import css from 'element-ui/lib/theme-default/index.css'
 
 Vue.use(ElementUI, {locale})
 
@@ -205,7 +206,9 @@ const calculationOptionsComponent = Vue.component('calculation-opts', {
 	template: '#options_template',
 	props: ['opts'],
 	data: function() {
-		return {}
+		return {
+			dialogVisible: false
+		}
 	}
 })
 
