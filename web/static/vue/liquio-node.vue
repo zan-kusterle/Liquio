@@ -68,3 +68,15 @@ export default {
 	}
 }
 </script>
+
+<style scoped>
+	.title {
+		display: block;
+		margin: 0px;
+		font-size: 26px;
+		font-weight: normal;
+		color: #333;
+		opacity: 1;
+		word-wrap: break-word;
+	}
+</style>

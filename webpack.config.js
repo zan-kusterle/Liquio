@@ -5,7 +5,6 @@ module.exports = {
 	entry: ["./web/static/css/app.less", "./web/static/js/app.js"],
 	output: {
 		path: "./priv/static",
-		publicPath: "/dist/",
 		filename: "js/app.js"
 	},
 	module: {
@@ -40,13 +39,13 @@ module.exports = {
 			test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
 			loader: 'file-loader',
 			query: {
-				name: 'js/[name].[ext]?[hash]'
+				name: '/fonts/[name].[ext]?[hash]'
 			}
 		}, {
 			test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/,
 			loader: 'file-loader',
 			query: {
-				name: 'js/[name].[ext]?[hash]'
+				name: '/images/[name].[ext]?[hash]'
 			}
 		}]
 	},
@@ -57,7 +56,7 @@ module.exports = {
 		}
 	},
 	plugins: [
-		new ExtractTextPlugin("./web/static/css/app.css"),
+		new ExtractTextPlugin("css/app.css"),
 		new CopyWebpackPlugin([{from: "./web/static/assets"}])
 	]
 };

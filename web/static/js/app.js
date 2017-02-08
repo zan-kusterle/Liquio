@@ -8,31 +8,6 @@ import 'element-ui/lib/theme-default/index.css'
 Vue.use(VueRouter)
 Vue.use(ElementUI, {locale})
 
-function setVote($http, url_key, choice, cb) {
-	for(var key in choice) {
-		choice[key + ''] = parseFloat(choice[key])
-	}
-	return $http.post('/api/nodes/' + url_key + '/votes', {choice: choice}, {
-		headers: {
-			'authorization': 'Bearer ' + token
-		}
-	}).then((response) => {
-		cb(transformVote(response.body.data))
-	}, (response) => {
-	})
-}
-
-let unsetVote = function($http, url_key, cb) {
-	return $http.delete('/api/nodes/' + url_key + '/votes', {
-		headers: {
-			'authorization': 'Bearer ' + token
-		}
-	}).then((response) => {
-		cb(transformVote(response.body.data))
-	}, (response) => {
-	})
-}
-
 let getNode = function($http, url_key, cb) {
 	return $http.get('/api/nodes/' + url_key).then((response) => {
 		cb(transformNode(response.body.data))

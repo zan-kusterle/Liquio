@@ -11,28 +11,28 @@
 	</p>
 	-->
 
-	<div class="references pure-g">
-		<div v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
-			<div class="pole pure-u-1 pure-u-md-1-2" >
-				<h3 class="pole-heading">Negative</h3>
-			
-				<div class="pole-list">
-					<div class="reference-a" v-for="node in nodes">
-					</div>
+	<el-row class="references" v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
+		<el-col :span="12">
+			<h3 class="pole-heading">Negative</h3>
+		
+			<div class="pole-list">
+				<div class="reference-a" v-for="node in nodes">
+					<liquio-inline v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode" style="display: block; text-align: left;"></liquo-inline>
 				</div>
 			</div>
-			<div class="pole pure-u-1 pure-u-md-1-2" >
-				<h3 class="pole-heading">Positive</h3>
-			
-				<div class="pole-list">
-					<div class="reference-a" v-for="node in nodes">
-					</div>
+		</el-col>
+		<el-col :span="12">
+			<h3 class="pole-heading">Positive</h3>
+		
+			<div class="pole-list">
+				<div class="reference-a" v-for="node in nodes">
+					<liquio-inline v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode" style="display: block; text-align: left;"></liquo-inline>
 				</div>
 			</div>
-		</div>
-		<div class="references-list pure-u-1" v-else>
-			<liquio-inline v-for="node in nodes" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode" style="display: block; text-align: left;"></liquo-inline>
-		</div>
+		</el-col>
+	</el-row>
+	<div class="references-list" v-else>
+		<liquio-inline v-for="node in nodes" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode" style="display: block; text-align: left;"></liquo-inline>
 	</div>
 </div>
 </template>
@@ -48,3 +48,76 @@ export default {
 	}
 }
 </script>
+
+<style scoped>
+	.references {
+		text-align: inherit;
+	}
+
+	.references, .pole {
+		padding: 0 15px;
+	}
+	.references, .pole, .pole-heading {
+		text-align: left;
+		font-size: 18px;
+		font-weight: normal;
+		margin: 0px;
+		margin-bottom: 15px;
+	}
+
+	.references-list {
+		padding: 0px 20px;
+	}
+
+	.references-list, .reference-text {
+			width: initial !important;
+		}
+
+	.reference-a:hover {
+		color: inherit;
+	}
+
+	.reference-a, .reference-text {
+		color: #4aa5f3 !important;
+	}
+
+	.reference {
+		display: inline-block;
+		margin: 12px 0px;
+		font-size: 0px;
+		background: rgba(0, 0, 0, 0.05);
+		margin-right: 25px;
+	}
+
+
+	.reference, .reference-text {
+		font-size: 16px;
+		width: calc("100% - 90px");
+		line-height: 16px;
+		min-width: 200px;
+		text-align: left;
+	}
+
+	.reference, .reference-score {
+		height: 40px;
+	}
+
+	.reference-text {
+		color: #333;
+		display: inline-block;
+		padding: 0px 20px;
+		vertical-align: middle;
+	}
+
+	.reference-score {
+		font-weight: bold;
+		display: inline-block;
+		text-align: center;
+		font-size: 13px;
+		color: #333;
+		vertical-align: middle;
+		width: 80px;
+		height: 40px;
+		line-height: 42px;
+	}
+</style>

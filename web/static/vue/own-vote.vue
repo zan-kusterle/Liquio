@@ -57,6 +57,31 @@
 </template>
 
 <script>
+function setVote($http, url_key, choice, cb) {
+	for(var key in choice) {
+		choice[key + ''] = parseFloat(choice[key])
+	}
+	return $http.post('/api/nodes/' + url_key + '/votes', {choice: choice}, {
+		headers: {
+			'authorization': 'Bearer ' + token
+		}
+	}).then((response) => {
+		cb(transformVote(response.body.data))
+	}, (response) => {
+	})
+}
+
+let unsetVote = function($http, url_key, cb) {
+	return $http.delete('/api/nodes/' + url_key + '/votes', {
+		headers: {
+			'authorization': 'Bearer ' + token
+		}
+	}).then((response) => {
+		cb(transformVote(response.body.data))
+	}, (response) => {
+	})
+}
+
 export default {
 	props: ['node', 'resultsKey'],
 	data: function() {
