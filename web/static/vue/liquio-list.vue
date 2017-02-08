@@ -1,3 +1,5 @@
+<template>
+	
 <div>
 	<!--
 	<p class="heading">
@@ -33,3 +35,16 @@
 		</div>
 	</div>
 </div>
+</template>
+
+<script>
+import LiquioInline from '../vue/liquio-inline.vue'
+
+export default {
+	props: ['nodes', 'referencingNode', 'referencesNode'],
+	components: { LiquioInline },
+	data: function() {
+		return {}
+	}
+}
+</script>

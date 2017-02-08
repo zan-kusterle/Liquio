@@ -84,15 +84,6 @@
 			</div>
 		</div>
 
-		<script type="text/x-template" id="results_template"><%= render Liquio.VueView, "results.html", conn: @conn %></script>
-		<script type="text/x-template" id="own_vote_template"><%= render Liquio.VueView, "own_vote.html", conn: @conn %></script>
-		<script type="text/x-template" id="liquio_node_template"><%= render Liquio.VueView, "big.html", conn: @conn %></script>
-		<script type="text/x-template" id="liquio_inline_template"><%= render Liquio.VueView, "inline.html", conn: @conn %></script>
-		<script type="text/x-template" id="liquio_list_template"><%= render Liquio.VueView, "list.html", conn: @conn %></script>
-		<script type="text/x-template" id="options_template"><%= render Liquio.VueView, "options.html", conn: @conn %></script>
-		<script type="text/x-template" id="liquio_full_template"><%= render Liquio.VueView, "full.html", conn: @conn %></script>
-		<script type="text/x-template" id="get_reference"><%= render Liquio.VueView, "get_reference.html", conn: @conn %></script>
-
 		<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
 	</body>
 </html>

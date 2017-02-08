@@ -1,3 +1,4 @@
+<template>
 <div class="score-box" v-if="this.node.choice_type == 'probability'" v-bind:style="{'background-color': this.color}">
 	<div class="data">
 		<div class="number" v-if="turnout_ratio > 0">
@@ -24,3 +25,27 @@
 		<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
 	</div>
 </div>
+</template>
+
+
+<script>
+export default {
+	props: ['node', 'resultsKey'],
+	data: function() {
+		return {
+			results_key: this.resultsKey || 'main'
+		}
+	},
+	computed: {
+		mean: function() {
+			return this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean
+		},
+		turnout_ratio: function() {
+			return this.node.results.turnout_ratio
+		},
+		color: function() {
+			return getColor(this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean)
+		}
+	}
+}
+</script>

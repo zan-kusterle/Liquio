@@ -1,3 +1,4 @@
+<template>
 <div class="score-box" v-bind:style="{'background-color': color}" v-if="this.node.choice_type == 'probability'">
 	<form class="data" action="<%= @conn.request_path %>/vote" method="POST">
 		<div class="range">
@@ -53,3 +54,65 @@
 		<a class="vote-action" v-on:click="unset" style="border-left: 1px solid rgba(0,0,0,0.1);">Remove <i class="fa fa-remove" aria-hidden="true" style="margin-left: 2px;"></i></a>
 	</div>
 </div>
+</template>
+
+<script>
+export default {
+	props: ['node', 'resultsKey'],
+	data: function() {
+		let self = this
+
+		function updateInputs() {
+			let last_value = self.values[self.values.length - 1]
+			var empty_index = self.values.length
+			for(var i = self.values.length - 1; i >= 0; i--) {
+				let value = self.values[i]
+				if(value.value == '' && value.year == '')
+					empty_index = i
+			}
+			if(empty_index >= self.values.length) {
+				self.values.push({'value': '', 'year': ''})
+			} else {
+				self.values = self.values.slice(0, empty_index + 1)
+			}
+		}
+
+		setTimeout(() => updateInputs(), 0)
+
+		let choiceValues = choiceForNode(this.node, this.resultsKey || 'main')
+		choiceValues.push([{'value': '', 'year': ''}])
+
+		return {
+			values: choiceValues,
+			set: function(event) {
+				let choice = getCurrentChoice(self.node, self.values)
+				setVote(self.$http, self.node.url_key, choice, function(new_node) {
+					self.node.results = new_node.results
+					self.node.own_contribution = new_node.own_contribution
+					self.node.embed_html = new_node.embed_html
+				})
+			},
+			unset: function(event) {
+				unsetVote(self.$http, self.node.url_key, function(new_node) {
+					self.node.results = new_node.results
+					self.node.own_contribution = null
+					self.node.embed_html = new_node.embed_html
+					self.values = [{'value': '', 'year': ''}]
+				})
+			},
+			keyup: function(event) {
+				updateInputs()
+			},
+			number_format: number_format
+		}
+	},
+	computed: {
+		turnout_ratio: function() {
+			return this.node.own_contribution ? this.node.own_contribution.results.turnout_ratio : 0
+		},
+		color: function() {
+			return getColor(parseFloat(this.values[0].value))
+		}
+	}
+}
+</script>

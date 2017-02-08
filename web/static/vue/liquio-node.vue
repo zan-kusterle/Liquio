@@ -1,3 +1,4 @@
+<template>
 <div>
 	<a :href="'/' + node.url_key" v-if="link == 'true'" class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</a>
 	<h1 v-else class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</h1>
@@ -35,3 +36,27 @@
 		</div>
 	</div>
 </div>
+</template>
+
+<script>
+export default {
+	props: ['node', 'resultsKey', 'votable', 'link'],
+	data: function() {
+		return {
+			isOpen: false,
+			mean: 0.5,
+			set: function (event) {
+				let choice_value = parseFloat(this.mean)
+				Api.set(this.node.url_key, choice_value, function(new_node) {
+					this.node.results = new_node.results
+				})
+			},
+			unset: function (event) {
+				Api.unset(this.node.url_key, function(new_node) {
+					this.node.results = new_node.results
+				})
+			}
+		}
+	}
+}
+</script>

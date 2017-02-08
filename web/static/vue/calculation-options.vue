@@ -1,3 +1,4 @@
+<template>
 <div>
 	<el-button type="text" @click="dialogVisible = !dialogVisible">Options</el-button>
 
@@ -40,3 +41,15 @@
 		</span>
 	</el-dialog>
 </div>
+</template>
+
+<script>
+export default {
+	props: ['opts'],
+	data: function() {
+		return {
+			dialogVisible: false
+		}
+	}
+}
+</script>

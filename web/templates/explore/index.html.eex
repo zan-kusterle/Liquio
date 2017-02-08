@@ -8,7 +8,7 @@
 	<div class="main-node">
 		<el-input placeholder="Variable description">
 			<el-select slot="prepend" placeholder="Select">
-				<el-option label="Search"></el-option>
+				<el-option label="Search" value=""></el-option>
 				<el-option label="Group" value=""></el-option>
 				<el-option label="Probability" value="probability"></el-option>
 				<el-option label="Quantity" value="quantity"></el-option>

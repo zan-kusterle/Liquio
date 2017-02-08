@@ -1,3 +1,4 @@
+<template>
 <div>
 	<div class="inset-top" v-if="inverseReferencesOpen">
 		<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
@@ -17,3 +18,17 @@
 		<get-reference v-bind:node="node"></get-reference>
 	</div>
 </div>
+</template>
+
+<script>
+export default {
+	props: ['node'],
+	data: function() {
+		return {
+			optionsOpen: false,
+			inverseReferencesOpen: false,
+			referencesOpen: true
+		}
+	}
+}
+</script>

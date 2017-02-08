@@ -33,6 +33,9 @@ module.exports = {
 			test: /\.css$/,
 			loader: ExtractTextPlugin.extract({fallback: "style-loader", use: "css-loader"})
 		}, {
+			test: /\.vue$/,
+			loader: "vue-loader"
+		}, {
 		    test: /\.(eot|woff|woff2|ttf|svg|png|jpg)$/,
     		loader: 'url-loader?limit=30000&name=[name]-[hash].[ext]'
 		}]
