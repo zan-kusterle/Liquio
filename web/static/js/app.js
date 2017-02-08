@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import Element from 'element-ui';
+import "purecss"
 
 Vue.use(Element)
 

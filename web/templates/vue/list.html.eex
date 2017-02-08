@@ -1,6 +1,3 @@
-<% referencing_node = if assigns[:referencing_node] do @referencing_node else nil end %>
-<% references_node = if assigns[:references_node] do @references_node else nil end %>
-
 <div>
 	<!--
 	<p class="heading">
@@ -13,20 +10,21 @@
 	-->
 
 	<div class="references pure-g">
-		<div class="pole pure-u-1 pure-u-md-1-2" v-if="referencing_node != null && referencing_node.choice_type == 'probability'">
-			<h3 class="pole-heading">Negative</h3>
-		
-			<div class="pole-list">
-				<div class="reference-a" v-for="reference_node in nodes |> Enum.filter(& &1.reference_result.by_keys['for_choice'] != nil and &1.reference_result.by_keys['for_choice'].mean < 0.5)">
-					<liquio-inline v-bind:node="reference_node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode" style="text-align: left;"></liquo-inline>
+		<div v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
+			<div class="pole pure-u-1 pure-u-md-1-2" >
+				<h3 class="pole-heading">Negative</h3>
+			
+				<div class="pole-list">
+					<div class="reference-a" v-for="node in nodes">
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="pole pure-u-1 pure-u-md-1-2" v-if="referencing_node != null && referencing_node.choice_type == 'probability'">
-			<h3 class="pole-heading">Positive</h3>
-		
-			<div class="pole-list">
-				<div class="reference-a" v-for="reference_node in @nodes |> Enum.filter(& &1.reference_result.by_keys["for_choice"] != nil and &1.reference_result.by_keys["for_choice"].mean >= 0.5)">
+			<div class="pole pure-u-1 pure-u-md-1-2" >
+				<h3 class="pole-heading">Positive</h3>
+			
+				<div class="pole-list">
+					<div class="reference-a" v-for="node in nodes">
+					</div>
 				</div>
 			</div>
 		</div>

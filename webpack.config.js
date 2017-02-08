@@ -12,21 +12,26 @@ module.exports = {
 			test: /\.js$/,
 			exclude: /node_modules/,
 			loader: "babel-loader",
-			include: __dirname,
 			query: {
 				presets: ["es2015"]
 			}
 		}, {
-			test: /\.less$/,
-			loader: ExtractTextPlugin.extract({fallback: 'style', use: 'css'})
-		}],
-		rules: [{
 			test: /\.less$/,
 			use: [
 				'style-loader',
 				{ loader: 'css-loader', options: { importLoaders: 1 } },
 				'less-loader'
 			]
+		}, {
+			test: /\.scss$/,
+			use: [
+				'style-loader',
+				{ loader: 'css-loader', options: { importLoaders: 1 } },
+				'sass-loader'
+			]
+		}, {
+			test: /\.css$/,
+			loader: ExtractTextPlugin.extract({fallback: "style-loader", use: "css-loader"})
 		}]
 	},
 	resolve: {
@@ -36,7 +41,7 @@ module.exports = {
 		}
 	},
 	plugins: [
-		new ExtractTextPlugin("css/app.css"),
-		new CopyWebpackPlugin([{ from: "./web/static/assets" }])
+		new ExtractTextPlugin("./web/static/css/app.css"),
+		new CopyWebpackPlugin([{from: "./web/static/assets"}])
 	]
 };
