@@ -3,7 +3,7 @@ defmodule Liquio.HtmlLoginController do
 
 	def index(conn, _params) do
 		conn
-		|> render("index.html")
+		|> render(Liquio.LoginView, "index.html")
 	end
 
 	def create(conn, %{"email" => email}) do
@@ -41,7 +41,7 @@ defmodule Liquio.HtmlLoginController do
 			identity = Repo.get_by(Identity, email: email)
 			if identity == nil do
 				conn
-				|> render("new.html", token: token, email: email)
+				|> render(Liquio.LoginView, "new.html", token: token, email: email)
 			else
 				Token.use(token)
 				conn

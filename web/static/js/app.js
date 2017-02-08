@@ -1,9 +1,8 @@
 import Vue from 'vue'
-import VueResource from 'vue-resource'
-import Element from 'element-ui';
-import "purecss"
+import ElementUI from 'element-ui';
+import locale from 'element-ui/lib/locale/lang/en'
 
-Vue.use(Element)
+Vue.use(ElementUI, {locale})
 
 function setVote($http, url_key, choice, cb) {
 	for(var key in choice) {
@@ -250,7 +249,6 @@ const getReferenceComponent = Vue.component('get-reference', {
 var app = new Vue({
 	el: '#app',
 	components: {
-		//'date-picker': datepickerComponent,
 		'liquio-node': nodeComponent,
 		'liquio-inline': inlineComponent,
 		'liquio-list': listComponent,
