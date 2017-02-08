@@ -20,8 +20,8 @@ pre_erlang_clean_compile() {
     set -e
     cd '$BUILD_AT'
     mkdir -p priv/static
-    brunch build --production
-    bower install
+    npm install
+    webpack -p
     MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest
   "
 }
