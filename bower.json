@@ -1,7 +1,0 @@
-{
-  "name": "liquio",
-  "dependencies": {
-    "vue-resource": "^1.1.2",
-    "vue": "^2.1.10"
-  }
-}

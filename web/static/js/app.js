@@ -1,4 +1,10 @@
-let setVote = function($http, url_key, choice, cb) {
+import Vue from 'vue'
+import VueResource from 'vue-resource'
+import Element from 'element-ui';
+
+Vue.use(Element)
+
+function setVote($http, url_key, choice, cb) {
 	for(var key in choice) {
 		choice[key + ''] = parseFloat(choice[key])
 	}

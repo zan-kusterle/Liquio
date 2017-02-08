@@ -23,9 +23,7 @@
 		<link rel="manifest" href="/icons/manifest.json">
 		<link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5">
 		<meta name="theme-color" content="#1f8dd6">
-
-		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
-
+		
 		<script>
 			var defaultVueData = {}
 		</script>
@@ -93,8 +91,6 @@
 		<script type="text/x-template" id="liquio_full_template"><%= render Liquio.VueView, "full.html", conn: @conn %></script>
 		<script type="text/x-template" id="get_reference"><%= render Liquio.VueView, "get_reference.html", conn: @conn %></script>
 
-		<script src="/bower_components/vue/dist/vue.js"></script>
-		<script src="/bower_components/vue-resource/dist/vue-resource.js"></script>
 		<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
 	</body>
 </html>
