@@ -1,15 +1,13 @@
 <template>
 <div>
-	<a :href="'/' + node.url_key" v-if="link == 'true'" class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</a>
-	<h1 v-else class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</h1>
+	<div v-if="node">
+		<a :href="'/' + node.url_key" v-if="link == 'true'" class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</a>
+		<h1 v-else class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</h1>
 
-	<div class="score-container" v-if="node && node.choice_type">		
-		<div v-if="node">
+		<div class="score-container">
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
 
-			<a v-if="votable != 'false' && !isOpen" v-on:click="isOpen = true" style="display: inline-block; margin-top: 10px; font-size: 32px; color: #444;">
-				<i class="fa fa-chevron-circle-down"></i>
-			</a>
+			<i class="el-icon-caret-bottom"></i>
 
 			<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
 				<p style="margin-top: 15px; margin-bottom: 5px;" v-on:click="isOpen = false">
@@ -39,8 +37,18 @@
 </template>
 
 <script>
+import Results from '../vue/results.vue'
+import OwnVote from '../vue/own-vote.vue'
+
+import Vue from 'vue'
+import ElementUI from 'element-ui';
+import locale from 'element-ui/lib/locale/lang/en'
+
+Vue.use(ElementUI, {locale})
+
 export default {
 	props: ['node', 'resultsKey', 'votable', 'link'],
+	components: {Results, OwnVote},
 	data: function() {
 		return {
 			isOpen: false,

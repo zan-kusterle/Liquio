@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
-import css from 'element-ui/lib/theme-default/index.css'
+import VueRouter from 'vue-router'
 
+import 'element-ui/lib/theme-default/index.css'
+
+Vue.use(VueRouter)
 Vue.use(ElementUI, {locale})
 
 function setVote($http, url_key, choice, cb) {
@@ -30,20 +33,14 @@ let unsetVote = function($http, url_key, cb) {
 	})
 }
 
-let transformVote = function(node) {
-	node.default_results = node.results && node.results.by_keys['main'] ? node.results.by_keys['main'].mean : null
-	return node
+let getNode = function($http, url_key, cb) {
+	return $http.get('/api/nodes/' + url_key).then((response) => {
+		cb(transformNode(response.body.data))
+	}, (response) => {
+	})
 }
 
-const getColor = function(mean) {
-	if(mean == null) return "#ddd"
-	if(mean < 0.25)
-		return "rgb(255, 164, 164)"
-	else if(mean < 0.75)
-		return "rgb(249, 226, 110)"
-	else
-		return "rgb(140, 232, 140)"
-}
+
 
 
 const choiceForNode = function(node, results_key) {
@@ -86,6 +83,7 @@ const getCurrentChoice = function(node, values) {
 
 
 import resultsComponent from '../vue/results.vue'
+import fullComponent from '../vue/liquio-full.vue'
 import nodeComponent from '../vue/liquio-node.vue'
 import inlineComponent from '../vue/liquio-inline.vue'
 import listComponent from '../vue/liquio-list.vue'
@@ -101,9 +99,33 @@ const getUrlKey = function(title, choice_type) {
 	return (title + ' ' + choice_type).replace(/ /g, '-')
 }
 
-var app = new Vue({
-	el: '#app',
+const Reference = { template: '<div>bar</div>' }
+const Explore = { template: '<div>bar</div>' }
+
+
+// 2. Define some routes
+// Each route should map to a component. The "component" can
+// either be an actual component constructor created via
+// Vue.extend(), or just a component options object.
+// We'll talk about nested routes later.
+const routes = [
+	{ path: '/', component: Explore },
+	{ path: '/:urlKey', component: fullComponent },
+	{ path: '/:urlKey/references/:referenceUrlKey', component: Reference },
+]
+
+// 3. Create the router instance and pass the `routes` option
+// You can pass in additional options here, but let's
+// keep it simple for now.
+const router = new VueRouter({
+  routes // short for routes: routes
+})
+
+
+const app = new Vue({
+	router: router,
 	components: {
+		'liquio-full': fullComponent,
 		'liquio-node': nodeComponent,
 		'liquio-inline': inlineComponent,
 		'liquio-list': listComponent,
@@ -119,6 +141,4 @@ var app = new Vue({
 			'Authorization': 'Bearer ' + token
 		}
 	}
-})
-
-window['vue'] = app
+}).$mount('#app')

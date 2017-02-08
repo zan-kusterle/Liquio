@@ -78,7 +78,7 @@
 					<% end %>
 					
 					<div class="main-container">
-						<%= render @view_module, @view_template, assigns %>
+						  <router-view></router-view>
 					</div>
 				</div>
 			</div>
