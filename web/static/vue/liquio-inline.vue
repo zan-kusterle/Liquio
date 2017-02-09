@@ -4,8 +4,8 @@
 	
 	<a :href="'/' + node.url_key"><span v-if="this.node.choice_type == null">#</span>{{ node.title }}</a>
 	
-	<a v-if="referencingNode" :href="'/' + referencingNode.url_key + '/references/' + node.url_key" style="float: right;"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
-	<a v-else-if="referencesNode" :href="'/' + node.url_key + '/references/' + referencesNode.url_key" style="float: right;"><i class="fa fa-arrow-right" style="margin-left: 10px;"></i></a>
+	<a v-if="referencingNode" :href="'/' + referencingNode.url_key + '/references/' + node.url_key" style="float: right;"><i class="el-icon-caret-right" style="margin-left: 10px;"></i></a>
+	<a v-else-if="referencesNode" :href="'/' + node.url_key + '/references/' + referencesNode.url_key" style="float: right;"><i class="el-icon-caret-right" style="margin-left: 10px;"></i></a>
 </div>
 </template>
 

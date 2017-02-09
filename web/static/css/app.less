@@ -3,6 +3,7 @@
 @sm: ~"screen and (min-width: 35.5em)";
 @xs: ~"screen and (max-width: 35.5em)";
 
+@import "../../../node_modules/vue2-animate/src/vue2-animate.less";
 
 html {
     height: 100%;
@@ -15,6 +16,8 @@ body {
     background-attachment: fixed;
 	cursor: default;
 	line-height: 1.4;
+	font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+
 	
 }
 
@@ -49,7 +52,6 @@ p {
 		width: 100%;
 		background-color: #2a9fec;
 		text-align: left;
-		border-bottom: 2px solid rgba(0, 0, 0, 0.2);
 		height: 70px;
 
 		.header-contents {
@@ -347,14 +349,8 @@ p {
 		left: 0px;
 		right: 0px;
 		bottom: 0px;
-		top: 120px;
+		top: 70px;
 		overflow-y: scroll;
-		@media @md {
-			top: 128px;
-		}
-		@media @lg {
-			top: 70px;
-		}
 
 		.alert {
 			margin: 0px auto;
@@ -389,14 +385,15 @@ p {
 		}
 
 		.scrollable {
-			
+			margin-top: -20px;
 		}
 
 		.main-container {
 			margin: 0px auto;
 			max-width: 1200px;
-			padding-top: 40px;
 			padding-bottom: 100px;
+			padding-top: 50px;
+			background: linear-gradient(#63b7ef 0%, rgba(154, 201, 232, 0.1) 85%, transparent 95%);
 		}
 
 		.main {
@@ -404,24 +401,19 @@ p {
 			color: #333;
 			width: 100%;
 			padding: 0px;
-			box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.3);
 			overflow: hidden;
 
 			.inset-top {
-				background-color: rgba(255, 255, 255, 0.6);
 				padding: 40px 20px;
-				box-shadow: inset 0 -10px 15px -10px rgba(0, 0, 0, 0.2);
 			}
 
 			.inset-bottom {
-				background-color: rgba(255, 255, 255, 0.6);
 				padding: 40px 20px;
-				box-shadow: inset 0 10px 15px -10px rgba(0, 0, 0, 0.2);
 			}
 
 			.main-node {
 				padding: 40px 20px;
-				background-color: white;
+				background-color: rgba(255, 255, 255, 0.9);
 			}
 		}
 

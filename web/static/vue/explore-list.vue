@@ -2,23 +2,6 @@
 <div>
 	<div class="main">
 		<div class="main-node">
-			<el-input placeholder="Variable description">
-				<el-select slot="prepend" placeholder="Select">
-					<el-option label="Search" value=""></el-option>
-					<el-option label="Group" value=""></el-option>
-					<el-option label="Probability" value="probability"></el-option>
-					<el-option label="Quantity" value="quantity"></el-option>
-					<el-option label="Time Series" value="time_quantity"></el-option>
-				</el-select>
-				<el-button slot="append" icon="search"></el-button>
-			</el-input>
-
-			<%= for identity <- @identities do %>
-				<div class="poll-item">
-					<a href="/identities/<%= identity.id %>"><b><%= identity.username %></b>: <%= identity.name %></a>
-				</div>
-			<% end %>
-
 			<liquio-list v-bind:nodes="nodes" style="margin: 40px 0px;"></liquio-list>
 		</div>
 	</div>
@@ -28,3 +11,24 @@
 </div>
 </template>
 
+<script>
+export default {
+	data: function() {
+		let self = this
+		return {
+			title: '',
+			choice_type: 'search',
+			optionsOpen: false,
+			view: function(event) {
+				if(self.choice_type == 'search') {
+					let path = '/search/' + getUrlKey(self.title, '')
+					self.$router.push(path)
+				} else {
+					let path = '/' + getUrlKey(self.title, self.choice_type)
+					self.$router.push(path)
+				}
+			}
+		}
+	}
+}
+</script>

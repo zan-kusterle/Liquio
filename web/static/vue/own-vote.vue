@@ -175,3 +175,15 @@ export default {
 	}
 }
 </script>
+
+<style scoped>
+	.score-box {
+		display: block;
+		margin: 0 auto;
+		width: 220px;
+		padding: 0px;
+		text-align: center;
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		background-color: #ddd;
+	}
+</style>

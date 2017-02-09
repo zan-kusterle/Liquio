@@ -9,28 +9,30 @@
 
 			<i class="el-icon-caret-bottom" @click="isOpen = true"></i>
 
-			<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
-				<p style="margin-top: 15px; margin-bottom: 5px;" v-on:click="isOpen = false">
-					Your choice
-				</p>
-				
-				<own-vote v-bind:node="node" v-bind:results-key="resultsKey"></own-vote>
-				<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0" style="max-width: 800px; margin-left: auto; margin-right: auto;">
-					<p style="margin-bottom: 5px;">Votes</p>
-					<table class="contributions">
-						<tr class="contribution" v-for="contribution in node.contributions">
-							<td class="contribution">
-								<div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px;" v-bind:style="{'width': (contribution.weight * 100) + '%'}">
-									{{ Math.round(contribution.weight * 100) + '%' }} 
-								</div>
-							</td>
-							<td class="choice" v-html="contribution.embed_html"></td>
-							<td class="username"><a :href="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</a></td>
-							<td class="date">{{ contribution.datetime }}</td>
-						</tr>
-					</table>
+			<transition name="fade">
+				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
+					<p style="margin-top: 15px; margin-bottom: 5px;" v-on:click="isOpen = false">
+						Your choice
+					</p>
+					
+					<own-vote v-bind:node="node" v-bind:results-key="resultsKey"></own-vote>
+					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+						<p style="margin-bottom: 5px;">Votes</p>
+						<table class="contributions">
+							<tr class="contribution" v-for="contribution in node.contributions">
+								<td class="contribution">
+									<div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px;" v-bind:style="{'width': (contribution.weight * 100) + '%'}">
+										{{ Math.round(contribution.weight * 100) + '%' }} 
+									</div>
+								</td>
+								<td class="choice" v-html="contribution.embed_html"></td>
+								<td class="username"><a :href="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</a></td>
+								<td class="date">{{ contribution.datetime }}</td>
+							</tr>
+						</table>
+					</div>
 				</div>
-			</div>
+			</transition>
 		</div>
 	</div>
 </div>

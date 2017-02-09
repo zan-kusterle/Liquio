@@ -62,49 +62,40 @@ export default {
 </script>
 
 <style scoped>
+.score-container {
+	margin-top: 30px;
+	width: 100%;
+}
 
-	.score-container {
-		margin-top: 30px;
-		width: 100%;
-	}
-	.score-box {
-			display: block;
-		}
-		.chart-turnout {
-			font-size: 15px;
-			margin-bottom: 20px;
-		}
-
-
-
-		.score-box {
+.score-box {
+	display: block;
 	margin: 0 auto;
 	width: 220px;
 	padding: 0px;
 	text-align: center;
 	border: 1px solid rgba(0, 0, 0, 0.1);
 	background-color: #ddd;
+}
 
-	.data {
-		padding: 16px 0px;
-	}
-	
-	.number {
-		line-height: 24px;
-		font-size: 28px;
-	}
+.data {
+	padding: 16px 0px;
+}
 
-	.percent {
-		font-size: 24px;
-	}
+.number {
+	line-height: 24px;
+	font-size: 28px;
+}
 
-	.units {
-		font-size: 16px;
-	}
+.percent {
+	font-size: 24px;
+}
 
-	.subtext {
-		font-size: 12px;
-		font-weight: bold;
-	}
+.units {
+	font-size: 16px;
+}
+
+.subtext {
+	font-size: 12px;
+	font-weight: bold;
 }
 </style>
