@@ -1,13 +1,13 @@
 <template>
 <div>
 	<div v-if="node">
-		<a :href="'/' + node.url_key" v-if="link == 'true'" class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</a>
+		<router-link :to="'/' + node.url_key" v-if="link == 'true'" class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</router-link>
 		<h1 v-else class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</h1>
 
 		<div class="score-container">
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
 
-			<i class="el-icon-caret-bottom" @click="isOpen = true"></i>
+			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="!isOpen"></i>
 
 			<transition name="fade">
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
@@ -26,7 +26,7 @@
 									</div>
 								</td>
 								<td class="choice" v-html="contribution.embed_html"></td>
-								<td class="username"><a :href="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</a></td>
+								<td class="username"><router-link :to="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</router-link></td>
 								<td class="date">{{ contribution.datetime }}</td>
 							</tr>
 						</table>
@@ -55,17 +55,6 @@ export default {
 		return {
 			isOpen: false,
 			mean: 0.5,
-			set: function (event) {
-				let choice_value = parseFloat(this.mean)
-				Api.set(this.node.url_key, choice_value, function(new_node) {
-					this.node.results = new_node.results
-				})
-			},
-			unset: function (event) {
-				Api.unset(this.node.url_key, function(new_node) {
-					this.node.results = new_node.results
-				})
-			}
 		}
 	}
 }

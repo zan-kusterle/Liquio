@@ -33,27 +33,33 @@ import CalculationOptions from '../vue/calculation-options.vue'
 import GetReference from '../vue/get-reference.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 import LiquioList from '../vue/liquio-list.vue'
-
-let axios = require('axios')
-
-function loadNode(vm, key) {
-	axios.get('/api/nodes/' + key).then(function (response) {
-		vm.node = response.data.data
-	}).catch(function (error) {
-	});
-}
+let Api = require('api.js')
 
 export default {
 	props: ['urlKey'],
 	components: {CalculationOptions, GetReference, LiquioNode, LiquioList},
 	data: function() {
-		loadNode(this, this.$route.params.urlKey)
+		let self = this
+		Api.getNode(this.$route.params.urlKey || '', (node) => self.node = node)
 		
 		return {
 			node: null,
 			optionsOpen: false,
 			inverseReferencesOpen: false,
-			referencesOpen: true
+			referencesOpen: true,
+
+			title: '',
+			choice_type: 'search',
+			optionsOpen: false,
+			view: function(event) {
+				if(self.choice_type == 'search') {
+					let path = '/search/' + getUrlKey(self.title, '')
+					self.$router.push(path)
+				} else {
+					let path = '/' + getUrlKey(self.title, self.choice_type)
+					self.$router.push(path)
+				}
+			}
 		}
 	},
 	watch: {

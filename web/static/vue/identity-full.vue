@@ -1,124 +1,18 @@
 <template>
-<div class="pure-g main-g">
-	<div class="pure-u-1-6">
-		<main role="main" class="main">
-			<h2>Trusted by</h2>
-			<%= render "identities.html", trust_votes: @trusted_by_votes %>
-
-			<h2>Receiving delegations</h2>
-			<%= render "delegations.html", conn: @conn, delegations: @delegations_to, direction: "to" %>
-		</main>
+	<div>
+		identity content {{ this.username }} a
 	</div>
-
-	<div class="pure-u-1-12">
-		<img src="/images/arrow.svg" class="reference-arrow"></img>
-	</div>
-
-	<div class="pure-u-1-2">
-		<main role="main" class="main">
-			<div class="identity">
-				<h1 class="identity-name"><%= @identity.name %></h1>
-				<h1 class="identity-username"><%= @identity.username %></h1>
-				
-					<h2>Votes made</h2>
-
-				<div style="text-align: left;">
-					<%= if Enum.empty?(@vote_groups) and Enum.empty?(@is_human_votes) do %>
-						<h2 class="identity-no-items">There are no votes here.</h2>
-					<% else %>
-						<%= for group <- @vote_groups do %>
-							<div>
-								<%= for poll <- group do %>
-									<div style="margin-bottom: 12px; margin-left: <%= to_string(poll.level * 25) %>px;">
-										<%= if poll.reference != nil do %>
-											<div style="margin-right: 10px; display: inline-block; opacity: 0.7;">
-												<%= render Liquio.NodeView, "choice.html", view: :simple, node: poll.reference_poll %>
-											</div>
-										<% end %>
-
-										<%= if poll.choice != nil do %>
-											<div style="margin-right: 10px; display: inline-block;">
-												<%= render Liquio.NodeView, "choice.html", view: :simple, node: poll %>
-											</div>
-										<% end %>
-
-										<a href="/nodes/<%= poll.id %>"><%= poll.title %></a>
-									</div>
-								<% end %>
-							</div>
-						<% end %>
-					<% end %>
-				</div>
-					
-				<%= unless @is_in_trust_metric do %>
-					<p style="color: #e80606; margin: 0px; margin-top: 50px; font-weight: bold;">NOT IN TRUST METRIC</p>
-
-					<%= if @is_me do %>
-						<div class="section-title" style="margin-top: 5px;">Share the URL of your identity with others.<br>If they want they can trust you or delegate you their voting power.</div>
-					<% end %>
-				<% end %>
-
-				<%= if not @is_me do %>
-					<div class="section-title" style="font-size: 20px; margin-top: 60px;">I trust this identity</div>
-
-					<form action="/nodes/<%= @identity.trust_metric_node_id %>/vote" method="POST" class="cast-vote">
-						<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-						<input type="hidden" name="redirect" value="/identities/<%= @identity.id %>" />
-						<button type="submit" name="choice" value="0.0" class="pure-button false-choice<%= if @own_is_human_vote != nil and @own_is_human_vote.data.choice["main"] == 0.0 do %> pure-button-active<% end %>">
-							FALSE
-						</button>
-					</form>
-
-					<form action="/nodes/<%= @identity.trust_metric_node_id %>/vote" method="POST" class="cast-vote">
-						<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-						<input type="hidden" name="redirect" value="/identities/<%= @identity.id %>" />
-						<button type="submit" name="choice" value="1.0" class="pure-button true-choice<%= if @own_is_human_vote != nil and @own_is_human_vote.data.choice["main"] == 1.0 do %> pure-button-active<% end %>">
-							TRUE
-						</button>
-					</form>
-
-					<a onclick="delegation_dialog.open()" class="add-delegation-button">Delegate your vote</a>
-
-					<paper-dialog id="delegation_dialog" modal on-iron-overlay-closed="dismissDialog" style="width: 600px;">
-						<h2>Delegate your vote to <%= @identity.name %></h2>
-						
-						<form id="delegation_form" method="POST" action="/identities/<%= @identity.id %>/delegations" class="preferences">
-							<input type="hidden" name="_csrf_token" value="<%= get_csrf_token() %>" />
-
-							<paper-input id="topics" name="topics" label="For topics" value='<%= if @delegation != nil and @delegation.data != nil and @delegation.data.topics != nil do @delegation.data.topics |> Enum.join(", ") else "" end %>' placeholder="Delegate regardless of topics"></paper-input>
-
-							<% relative_weight = if @delegation != nil and @delegation.data != nil do @delegation.data.weight else 1.0 end %>
-							<div class="range">
-								<input type="range" name="weight" id="weight_range" value="<%= number_format_simple(relative_weight) %>" min="0" max="1" step="any" oninput="weight_value.value = 'Relative weight set to ' + Math.round(100 * weight_range.value) + '%'" />
-								<output id="weight_value"><%= "Relative weight set to #{round(100 * relative_weight)}%" %></output>
-							</div>
-						</form>
-
-						<div class="buttons">
-							<paper-button dialog-dismiss>Close</paper-button>
-							<paper-button dialog-confirm raised class="warning">
-								<button name="weight" value="0" onclick="weight_range.value = 0; delegation_form.submit()">REMOVE DELEGATION</button>
-							</paper-button>
-							<paper-button dialog-confirm raised class="primary" onclick="delegation_form.submit()">Delegate</paper-button>
-						</div>
-					</paper-dialog>
-				<% end %>
-			</div>
-		</main>
-	</div>
-
-	<div class="pure-u-1-12">
-		<img src="/images/arrow.svg" class="reference-arrow"></img>
-	</div>
-
-	<div class="pure-u-1-6">
-		<main role="main" class="main">
-			<h2>Trusts</h2>
-			<%= render "identities.html", trust_votes: @is_human_votes %>
-
-			<h2>Made delegations</h2>
-			<%= render "delegations.html", conn: @conn, delegations: @delegations_from, direction: "from" %>
-		</main>
-	</div>
-</div>
 </template>
+
+<script>
+let Api = require('api.js')
+
+export default {
+	data: function() {
+		let username = this.$route.params.username
+		return {
+			username: username
+		}
+	}
+}
+</script>

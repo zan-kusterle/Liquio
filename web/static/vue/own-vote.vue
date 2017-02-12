@@ -57,31 +57,7 @@
 </template>
 
 <script>
-function setVote($http, url_key, choice, cb) {
-	for(var key in choice) {
-		choice[key + ''] = parseFloat(choice[key])
-	}
-	return $http.post('/api/nodes/' + url_key + '/votes', {choice: choice}, {
-		headers: {
-			'authorization': 'Bearer ' + token
-		}
-	}).then((response) => {
-		cb(transformVote(response.body.data))
-	}, (response) => {
-	})
-}
-
-let unsetVote = function($http, url_key, cb) {
-	return $http.delete('/api/nodes/' + url_key + '/votes', {
-		headers: {
-			'authorization': 'Bearer ' + token
-		}
-	}).then((response) => {
-		cb(transformVote(response.body.data))
-	}, (response) => {
-	})
-}
-
+let Api = require('api.js')
 
 const choiceForNode = function(node, results_key) {
 	if(node.own_contribution) {
@@ -105,7 +81,6 @@ const number_format = function(number) {
 	return Math.round(number * 10) / 10
 }
 
-
 const getColor = function(mean) {
 	if(mean == null) return "#ddd"
 	if(mean < 0.25)
@@ -114,6 +89,22 @@ const getColor = function(mean) {
 		return "rgb(249, 226, 110)"
 	else
 		return "rgb(140, 232, 140)"
+}
+
+const getCurrentChoice = function(node, values) {
+	var choice = {}
+
+	if(node.choice_type == 'time_quantity') {
+		for(var i in values) {
+			let point = values[i]
+			if(point.value != '' && point.year != '')
+				choice[point.year] = point.value
+		}
+	} else {
+		choice['main'] = parseFloat(values[0].value)
+	}
+
+	return choice
 }
 
 export default {
@@ -145,17 +136,17 @@ export default {
 			values: choiceValues,
 			set: function(event) {
 				let choice = getCurrentChoice(self.node, self.values)
-				setVote(self.$http, self.node.url_key, choice, function(new_node) {
-					self.node.results = new_node.results
-					self.node.own_contribution = new_node.own_contribution
-					self.node.embed_html = new_node.embed_html
+				Api.setVote(self.node.url_key, choice, function(node) {
+					self.node.results = node.results
+					self.node.own_contribution = node.own_contribution
+					self.node.embed_html = node.embed_html
 				})
 			},
 			unset: function(event) {
-				unsetVote(self.$http, self.node.url_key, function(new_node) {
-					self.node.results = new_node.results
+				Api.unsetVote(self.node.url_key, function(node) {
+					self.node.results = node.results
 					self.node.own_contribution = null
-					self.node.embed_html = new_node.embed_html
+					self.node.embed_html = node.embed_html
 					self.values = [{'value': '', 'year': ''}]
 				})
 			},
