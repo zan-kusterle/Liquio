@@ -53,19 +53,19 @@
 </template>
 
 <script>
-var Api = require('api.js')
+let Api = require('api.js')
 
 const choiceForNode = function(node, results_key) {
 	if(node.own_contribution) {
 		if(node.choice_type == 'time_quantity') {
-			var by_keys = node.own_contribution.results.by_keys
-			var values = []
-			for(var year in by_keys) {
+			let by_keys = node.own_contribution.results.by_keys
+			let values = []
+			for(let year in by_keys) {
 				values.push({'value': by_keys[year].mean, 'year': year})
 			}
 			return values
 		} else {
-			var d = node.own_contribution.results.by_keys[results_key] && node.own_contribution.results.by_keys[results_key].mean
+			let d = node.own_contribution.results.by_keys[results_key] && node.own_contribution.results.by_keys[results_key].mean
 			return [{'value': d || 0.5, 'year': year}]
 		}
 	} else {
@@ -88,11 +88,11 @@ const getColor = function(mean) {
 }
 
 const getCurrentChoice = function(node, values) {
-	var choice = {}
+	let choice = {}
 
 	if(node.choice_type == 'time_quantity') {
-		for(var i in values) {
-			var point = values[i]
+		for(let i in values) {
+			let point = values[i]
 			if(point.value != '' && point.year != '')
 				choice[point.year] = point.value
 		}
@@ -106,13 +106,13 @@ const getCurrentChoice = function(node, values) {
 export default {
 	props: ['node', 'resultsKey'],
 	data: function() {
-		var self = this
+		let self = this
 
 		function updateInputs() {
-			var last_value = self.values[self.values.length - 1]
-			var empty_index = self.values.length
-			for(var i = self.values.length - 1; i >= 0; i--) {
-				var value = self.values[i]
+			let last_value = self.values[self.values.length - 1]
+			let empty_index = self.values.length
+			for(let i = self.values.length - 1; i >= 0; i--) {
+				let value = self.values[i]
 				if(value.value == '' && value.year == '')
 					empty_index = i
 			}
@@ -125,13 +125,13 @@ export default {
 
 		setTimeout(() => updateInputs(), 0)
 
-		var choiceValues = choiceForNode(this.node, this.resultsKey || 'main')
+		let choiceValues = choiceForNode(this.node, this.resultsKey || 'main')
 		choiceValues.push([{'value': '', 'year': ''}])
 
 		return {
 			values: choiceValues,
 			set: function(event) {
-				var choice = getCurrentChoice(self.node, self.values)
+				let choice = getCurrentChoice(self.node, self.values)
 				Api.setVote(self.node.url_key, choice, function(node) {
 					self.node.results = node.results
 					self.node.own_contribution = node.own_contribution

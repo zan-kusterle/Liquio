@@ -5,11 +5,11 @@
 </template>
 
 <script>
-var Api = require('api.js')
+let Api = require('api.js')
 
 export default {
 	data: function() {
-		var username = this.$route.params.username
+		let username = this.$route.params.username
 		return {
 			username: username
 		}

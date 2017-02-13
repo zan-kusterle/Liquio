@@ -6,12 +6,12 @@
 </template>
 
 <script>
-var Api = require('api.js')
+let Api = require('api.js')
 
 export default {
 	props: [],
 	data: function() {
-		var self = this
+		let self = this
 
 		return {
 			email: '',
