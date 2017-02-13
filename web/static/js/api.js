@@ -1,4 +1,4 @@
-let axios = require('axios')
+var axios = require('axios')
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 axios.defaults.headers.post['Content-Type'] = 'application/json';

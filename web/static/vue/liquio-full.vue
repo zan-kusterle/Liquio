@@ -33,12 +33,12 @@ import CalculationOptions from '../vue/calculation-options.vue'
 import GetReference from '../vue/get-reference.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 import LiquioList from '../vue/liquio-list.vue'
-let Api = require('api.js')
+var Api = require('api.js')
 
 export default {
 	components: {CalculationOptions, GetReference, LiquioNode, LiquioList},
 	data: function() {
-		let self = this
+		var self = this
 		Api.getNode(this.$route.params.key || '', (node) => self.node = node)
 		
 		return {
@@ -47,8 +47,8 @@ export default {
 		}
 	},
 	watch: {
-		'$route' (to, from) {
-			let self = this
+		'$route': function(to, from) {
+			var self = this
 			Api.getNode(to.params.key || '', function(node) {
 				self.node = node
 				self.inverseReferencesOpen = false

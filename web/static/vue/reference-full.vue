@@ -29,7 +29,7 @@
 </template>
 
 <script>
-let Api = require('api.js')
+var Api = require('api.js')
 import CalculationOptions from '../vue/calculation-options.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 
@@ -37,7 +37,7 @@ export default {
 	components: {LiquioNode, CalculationOptions},
 	
 	data: function() {
-		let self = this
+		var self = this
 		Api.getNode(this.$route.params.key, (node) => self.nodes = [node])
 		Api.getNode(this.$route.params.referenceKey, (node) => self.referenceNodes = [node])
 		return {

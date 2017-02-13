@@ -1,5 +1,6 @@
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
+var webpack = require("webpack");
 
 module.exports = {
 	entry: ["./web/static/css/app.less", "./web/static/js/app.js"],
@@ -57,6 +58,7 @@ module.exports = {
 	},
 	plugins: [
 		new ExtractTextPlugin("css/app.css"),
-		new CopyWebpackPlugin([{from: "./web/static/assets"}])
+		new CopyWebpackPlugin([{from: "./web/static/assets"}]),
+		new webpack.optimize.UglifyJsPlugin({ output: {comments: false} })
 	]
 };

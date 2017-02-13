@@ -10,26 +10,26 @@
 </template>
 
 <script>
-let Api = require('api.js')
+var Api = require('api.js')
 
 export default {
 	props: ['node'],
 	data: function() {
-		let self = this
+		var self = this
 		return {
 			title: '',
 			choice_type: '',
 			view: function(event) {
 				if(self.title.length >= 3) {
 					if(self.choice_type == 'search') {
-						let path = '/search/' + encodeURIComponent(self.title)
+						var path = '/search/' + encodeURIComponent(self.title)
 						self.$router.push(path)
 					} else {
 						if(self.node.title == '') {
-							let path = '/' + Api.getKey(self.title, self.choice_type)
+							var path = '/' + Api.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						} else {
-							let path = '/' + self.node.url_key + '/references/' + Api.getKey(self.title, self.choice_type)
+							var path = '/' + self.node.url_key + '/references/' + Api.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						}
 					}
@@ -39,7 +39,7 @@ export default {
 	},
 	computed: {
 		options: function() {
-			let opts = []
+			var opts = []
 			if(this.node.title == '') {
 				opts.push({text: 'Search', value: 'search'})
 				opts.push({text: 'Group', value: ''})
