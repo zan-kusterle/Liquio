@@ -30,15 +30,7 @@
 </template>
 
 <script>
-const getColor = function(mean) {
-	if(mean == null) return "#ddd"
-	if(mean < 0.25)
-		return "rgb(255, 164, 164)"
-	else if(mean < 0.75)
-		return "rgb(249, 226, 110)"
-	else
-		return "rgb(140, 232, 140)"
-}
+let Api = require('api.js')
 
 export default {
 	props: ['node', 'resultsKey'],
@@ -55,7 +47,7 @@ export default {
 			return this.node.results.turnout_ratio
 		},
 		color: function() {
-			return getColor(this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean)
+			return Api.getColor(this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean)
 		}
 	}
 }

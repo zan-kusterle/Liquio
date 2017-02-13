@@ -73,19 +73,6 @@ const choiceForNode = function(node, results_key) {
 	}
 }
 
-const number_format = function(number) {
-	return Math.round(number * 10) / 10
-}
-
-const getColor = function(mean) {
-	if(mean == null) return "#ddd"
-	if(mean < 0.25)
-		return "rgb(255, 164, 164)"
-	else if(mean < 0.75)
-		return "rgb(249, 226, 110)"
-	else
-		return "rgb(140, 232, 140)"
-}
 
 const getCurrentChoice = function(node, values) {
 	let choice = {}
@@ -149,7 +136,7 @@ export default {
 			keyup: function(event) {
 				updateInputs()
 			},
-			number_format: number_format
+			number_format: Api.formatNumber
 		}
 	},
 	computed: {
@@ -157,7 +144,7 @@ export default {
 			return this.node.own_contribution ? this.node.own_contribution.results.turnout_ratio : 0
 		},
 		color: function() {
-			return getColor(parseFloat(this.values[0].value))
+			return Api.getColor(parseFloat(this.values[0].value))
 		}
 	}
 }
