@@ -35,6 +35,7 @@ defmodule Liquio.NodeView do
 			:embed_html => if node.choice_type != nil do node.embed else "" end,
 			:references => render_many(Map.get(node, :references, []), Liquio.NodeView, "node.json"),
 			:inverse_references => render_many(Map.get(node, :inverse_references, []), Liquio.NodeView, "node.json"),
+			:reference_result => Map.get(node, :reference_result),
 			:calculation_opts => node.calculation_opts
 		}
 	end

@@ -35,3 +35,6 @@ export function unsetVote(url_key, cb) {
 	})
 }
 
+export function getKey(title, choice_type) {
+	return (title + ' ' + choice_type).trim().replace(/ /g, '-')
+}

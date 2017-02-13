@@ -17,8 +17,8 @@ import referenceComponent from '../vue/reference-full.vue'
 const routes = [
 	{ path: '/login', component: loginComponent },
 	{ path: '/identities/:username', component: identityComponent },
-	{ path: '/', component: nodeComponent }, { path: '/:urlKey', component: nodeComponent },
-	{ path: '/:urlKey/references/:referenceUrlKey', component: referenceComponent },
+	{ path: '/', component: nodeComponent }, { path: '/:key', component: nodeComponent },
+	{ path: '/:key/references/:referenceKey', component: referenceComponent },
 ]
 
 const router = new VueRouter({

@@ -9,15 +9,15 @@
 				</div>
 			</transition>
 			
-			<div class="inset-top" style="padding: 15px 20px;" v-if="!inverseReferencesOpen && node.inverse_references.length > 0" @click="inverseReferencesOpen = true">
+			<div class="inset-top" style="padding: 15px 20px;" v-if="node.choice_type != null && !inverseReferencesOpen && node.inverse_references.length > 0" @click="inverseReferencesOpen = true">
 				<i class="el-icon-arrow-up" style="margin-right: 5px;"></i> {{ node.inverse_references.length }} incoming {{ node.inverse_references.length == 1 ? 'reference' : 'references' }}
 			</div>
 
-			<liquio-node v-bind:node="node" class="main-node"></liquio-node>
+			<liquio-node v-if="node.title.length > 0" v-bind:node="node" class="main-node"></liquio-node>
 
 			<div class="inset-bottom">
-				<i class="el-icon-arrow-down" style="font-size: 48px; font-weight: bold; margin-bottom: 15px;"></i>
-				<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node" style="text-align: left;"></liquio-list>
+				<i class="el-icon-arrow-down" v-if="node.title.length > 0" style="font-size: 48px; font-weight: bold; margin-bottom: 15px;"></i>
+				<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title.length > 0 && node" style="text-align: left;"></liquio-list>
 				
 				<get-reference v-bind:node="node"></get-reference>
 			</div>
@@ -46,11 +46,9 @@ export default {
 			node: null,
 			optionsOpen: false,
 			inverseReferencesOpen: false,
-			referencesOpen: true,
 
 			title: '',
 			choice_type: 'search',
-			optionsOpen: false,
 			view: function(event) {
 				if(self.choice_type == 'search') {
 					let path = '/search/' + getUrlKey(self.title, '')
@@ -64,7 +62,12 @@ export default {
 	},
 	watch: {
 		'$route' (to, from) {
-			loadNode(this, to.params.urlKey)
+			let self = this
+			Api.getNode(to.params.key || '', function(node) {
+				self.node = node
+				self.inverseReferencesOpen = false
+				self.optionsOpen = false
+			})
 		}
 	}
 }

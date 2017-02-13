@@ -1,16 +1,18 @@
 <template>
 <div>
 	<div class="main">
-		<div class="inset-top pure-g">
-			<div class="pure-u-2-5">
-				<liquio-node v-for="node in nodes" v-bind:node="node" votable="false" link="true"></liquio-node>
-			</div>
-			<div class="pure-u-1-5">
-				<img src="/images/arrow.svg" class="reference-arrow"></img>
-			</div>
-			<div class="pure-u-2-5">
-				<liquio-node v-for="node in reference_nodes" v-bind:node="node" votable="false" link="true"></liquio-node>
-			</div>
+		<div class="inset-top">
+			<el-row>
+				<el-col :span="11">
+					<liquio-node v-for="node in nodes" v-bind:node="node" votable="false" link="true"></liquio-node>
+				</el-col>
+				<el-col :span="2">
+					<i class="el-icon-arrow-right" style="font-size: 48px;"></i>
+				</el-col>
+				<el-col :span="11">
+					<liquio-node v-for="node in referenceNodes" v-bind:node="node" votable="false" link="true"></liquio-node>
+				</el-col>
+			</el-row>
 		</div>
 
 		<div class="main-node">
@@ -26,6 +28,7 @@
 </template>
 
 <script>
+let Api = require('api.js')
 import CalculationOptions from '../vue/calculation-options.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 
@@ -33,10 +36,12 @@ export default {
 	components: {LiquioNode, CalculationOptions},
 	
 	data: function() {
-		loadNode(this, this.$route.params.urlKey, this.$route.params.referenceUrlKey)
+		let self = this
+		Api.getNode(this.$route.params.key, (node) => self.nodes = [node])
+		Api.getNode(this.$route.params.referenceKey, (node) => self.referenceNodes = [node])
 		return {
 			nodes: [],
-			reference_nodes: [],
+			referenceNodes: [],
 			optionsOpen: false,
 			relevanceNode: null,
 			forChoiceNode: null

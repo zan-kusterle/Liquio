@@ -2,6 +2,7 @@ defmodule Liquio.Identity do
 	use Liquio.Web, :model
 
 	alias Liquio.Repo
+	alias Liquio.Vote
 
 	schema "identities" do
 		field :email, :string
