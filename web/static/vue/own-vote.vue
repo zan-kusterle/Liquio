@@ -1,14 +1,12 @@
 <template>
 <div class="score-box" v-bind:style="{'background-color': color}" v-if="this.node.choice_type == 'probability'">
-	<form class="data" action="<%= @conn.request_path %>/vote" method="POST">
-		<div class="range">
-			<input type="range" name="choice" min="0" max="1" step="any" v-model="values[0].value" style="width: 90%; margin: 0 auto;" />
-		</div>
-		<div class="number">
-			<span class="number-value">{{ Math.round((values[0].value || 0.5) * 100) }}</span><span class="percent">%</span>
-		</div>
-		<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
-	</form>
+	<div class="range">
+		<input type="range" name="choice" min="0" max="1" step="any" v-model="values[0].value" style="width: 90%; margin: 0 auto;" />
+	</div>
+	<div class="number">
+		<span class="number-value">{{ Math.round((values[0].value || 0.5) * 100) }}</span><span class="percent">%</span>
+	</div>
+	<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
 
 	<div class="links vote-links">
 		<a class="vote-action" v-on:click="set"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Vote</a>
@@ -17,12 +15,10 @@
 </div>
 
 <div class="score-box" v-else-if="this.node.choice_type == 'quantity'">
-	<form class="data" action="<%= @conn.request_path %>/vote" method="POST">
-		<div class="number">
-			<input class="number-value" v-model="values[0].value" style="width: 140px; text-align: center;"></input>
-		</div>
-		<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
-	</form>
+	<div class="number">
+		<input class="number-value" v-model="values[0].value" style="width: 140px; text-align: center;"></input>
+	</div>
+	<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
 
 	<div class="links vote-links">
 		<a class="vote-action" v-on:click="set"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Vote</a>

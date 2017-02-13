@@ -2,7 +2,7 @@
 <div>
 	<div v-if="node">
 		<div class="main">
-			<transition name="fadeDown">
+			<transition name="fade">
 				<div class="inset-top" v-if="inverseReferencesOpen">
 					<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 					<i class="el-icon-arrow-down" style="font-size: 48px; font-weight: bold; margin-top: 10px;"></i>
@@ -36,28 +36,14 @@ import LiquioList from '../vue/liquio-list.vue'
 let Api = require('api.js')
 
 export default {
-	props: ['urlKey'],
 	components: {CalculationOptions, GetReference, LiquioNode, LiquioList},
 	data: function() {
 		let self = this
-		Api.getNode(this.$route.params.urlKey || '', (node) => self.node = node)
+		Api.getNode(this.$route.params.key || '', (node) => self.node = node)
 		
 		return {
 			node: null,
-			optionsOpen: false,
-			inverseReferencesOpen: false,
-
-			title: '',
-			choice_type: 'search',
-			view: function(event) {
-				if(self.choice_type == 'search') {
-					let path = '/search/' + getUrlKey(self.title, '')
-					self.$router.push(path)
-				} else {
-					let path = '/' + getUrlKey(self.title, self.choice_type)
-					self.$router.push(path)
-				}
-			}
+			inverseReferencesOpen: false
 		}
 	},
 	watch: {
@@ -66,7 +52,6 @@ export default {
 			Api.getNode(to.params.key || '', function(node) {
 				self.node = node
 				self.inverseReferencesOpen = false
-				self.optionsOpen = false
 			})
 		}
 	}

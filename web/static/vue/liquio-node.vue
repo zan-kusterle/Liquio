@@ -7,29 +7,25 @@
 		<div class="score-container">
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
 
-			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="!isOpen"></i>
+			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="votable != 'false' && !isOpen"></i>
 
 			<transition name="fade">
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
-					<p style="margin-top: 15px; margin-bottom: 5px;" v-on:click="isOpen = false">
+					<p style="margin-top: 20px; margin-bottom: 5px;" v-on:click="isOpen = false">
 						Your choice
 					</p>
 					
 					<own-vote v-bind:node="node" v-bind:results-key="resultsKey"></own-vote>
 					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0" style="max-width: 800px; margin-left: auto; margin-right: auto;">
 						<p style="margin-bottom: 5px;">Votes</p>
-						<table class="contributions">
-							<tr class="contribution" v-for="contribution in node.contributions">
-								<td class="contribution">
-									<div style="background: #1f8dd6; text-align: center; color: white; line-height: 32px; height: 32px;" v-bind:style="{'width': (contribution.weight * 100) + '%'}">
-										{{ Math.round(contribution.weight * 100) + '%' }} 
-									</div>
-								</td>
-								<td class="choice" v-html="contribution.embed_html"></td>
-								<td class="username"><router-link :to="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</router-link></td>
-								<td class="date">{{ contribution.datetime }}</td>
-							</tr>
-						</table>
+						<div class="contribution" v-for="contribution in node.contributions">
+							<div class="weight">
+								<el-progress :text-inside="true" :stroke-width="18" :percentage="contribution.weight * 100"></el-progress>
+							</div>
+							<div class="choice" v-html="contribution.embed_html" style="height: 40px;"></div>
+							<div class="username"><router-link :to="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</router-link></div>
+							<div class="date">{{ contribution.datetime }}</div>
+						</div>
 					</div>
 				</div>
 			</transition>
@@ -54,7 +50,7 @@ export default {
 	data: function() {
 		return {
 			isOpen: false,
-			mean: 0.5,
+			mean: 0.5
 		}
 	}
 }
@@ -69,5 +65,23 @@ export default {
 		color: #333;
 		opacity: 1;
 		word-wrap: break-word;
+	}
+
+	.username {
+		width: 100px;
+		display: inline-block;
+	}
+	.weight {
+		width: 350px;
+		display: inline-block;
+	}
+	.choice {
+		height: 40px;
+		width: 100px;
+		display: inline-block;
+	}
+	.date {
+		width: 100px;
+		display: inline-block;
 	}
 </style>
