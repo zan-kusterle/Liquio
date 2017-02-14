@@ -44,7 +44,7 @@ export default {
 			return this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean
 		},
 		turnout_ratio: function() {
-			return this.node.results.turnout_ratio
+			return this.node.results ? this.node.results.turnout_ratio : 0
 		},
 		color: function() {
 			return Api.getColor(this.node.results && this.node.results.by_keys[this.results_key] && this.node.results.by_keys[this.results_key].mean)

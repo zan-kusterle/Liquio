@@ -1,5 +1,5 @@
 <template>
-<div class="score-box" v-bind:style="{'background-color': color}" v-if="this.node.choice_type == 'probability'">
+<div class="score-box" v-bind:style="{'background-color': color}" v-if="choice_type == 'probability'">
 	<div class="range">
 		<el-slider v-model="values[0].value" style="width: 90%; margin: 0 auto;" />
 	</div>
@@ -14,7 +14,7 @@
 	</div>
 </div>
 
-<div class="score-box" v-else-if="this.node.choice_type == 'quantity'">
+<div class="score-box" v-else-if="choice_type == 'quantity'">
 	<div class="number">
 		<input class="number-value" v-model="values[0].value" style="width: 140px; text-align: center;"></input>
 	</div>
@@ -26,7 +26,7 @@
 	</div>
 </div>
 
-<div class="score-box" v-else-if="this.node.choice_type == 'time_quantity'">
+<div class="score-box" v-else-if="choice_type == 'time_quantity'">
 	<form class="data" action="<%= @conn.request_path %>/vote" method="POST">
 		<ul class="time-series-list">
 			<li>
@@ -55,9 +55,9 @@
 <script>
 let Api = require('api.js')
 
-const choiceForNode = function(node, results_key) {
+const choiceForNode = function(node, results_key, choiceType) {
 	if(node.own_contribution) {
-		if(node.choice_type == 'time_quantity') {
+		if(choiceType == 'time_quantity') {
 			let by_keys = node.own_contribution.results.by_keys
 			let values = []
 			for(let year in by_keys) {
@@ -73,10 +73,10 @@ const choiceForNode = function(node, results_key) {
 	}
 }
 
-const getCurrentChoice = function(node, values, resultsKey) {
+const getCurrentChoice = function(node, values, resultsKey, choiceType) {
 	let choice = {}
 
-	if(node.choice_type == 'time_quantity') {
+	if(choiceType == 'time_quantity') {
 		for(let i in values) {
 			let point = values[i]
 			if(point.value != '' && point.year != '')
@@ -90,12 +90,13 @@ const getCurrentChoice = function(node, values, resultsKey) {
 }
 
 export default {
-	props: ['node', 'resultsKey', 'referenceKey'],
+	props: ['node', 'resultsKey', 'referenceKey', 'choiceType'],
 	data: function() {
 		let self = this
+		let choiceType = self.choiceType || self.node.choice_type
 
 		function updateInputs() {
-			if(self.node.choice_type == 'time_quantity') {
+			if(choiceType == 'time_quantity') {
 				let last_value = self.values[self.values.length - 1]
 				let empty_index = self.values.length
 				for(let i = self.values.length - 1; i >= 0; i--) {
@@ -113,13 +114,14 @@ export default {
 
 		setTimeout(() => updateInputs(), 0)
 
-		let choiceValues = choiceForNode(this.node, this.resultsKey || 'main')
+		let choiceValues = choiceForNode(this.node, this.resultsKey || 'main', choiceType)
 		choiceValues.push({'value': 50, 'year': ''})
 
 		return {
+			choice_type: choiceType,
 			values: choiceValues,
 			set: function(event) {
-				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main')
+				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main', choiceType)
 				Api.setVote(self.node.url_key, self.referenceKey, choice, function(node) {
 					self.node.results = node.results
 					self.node.own_contribution = node.own_contribution

@@ -87,6 +87,7 @@ defmodule Liquio.Node do
 		reference_key = if reference_key != "" do reference_key else nil end
 		node = node
 		|> Map.put(:reference_key, reference_key)
+		|> Map.put(:choice_type, "probability")
 		
 		node = Map.put(node, :key, get_key(node))
 		node
