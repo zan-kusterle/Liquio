@@ -18,7 +18,7 @@
 		
 			<div class="pole-list">
 				<div class="reference-a" v-for="node in nodes">
-					<liquio-inline v-if="node.reference_result.by_keys['for_choice'].mean <= 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquo-inline>
+					<liquio-inline v-if="node.reference_result.by_keys['for_choice'] && node.reference_result.by_keys['for_choice'].mean <= 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquo-inline>
 				</div>
 			</div>
 		</el-col>
@@ -27,7 +27,7 @@
 		
 			<div class="pole-list">
 				<div class="reference-a" v-for="node in nodes">
-					<liquio-inline v-if="node.reference_result.by_keys['for_choice'].mean > 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquo-inline>
+					<liquio-inline v-if="node.reference_result.by_keys['for_choice'] && node.reference_result.by_keys['for_choice'].mean > 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquo-inline>
 				</div>
 			</div>
 		</el-col>

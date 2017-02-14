@@ -34,9 +34,10 @@ export default {
 		background: rgba(255, 255, 255, 0.75);
 		min-width: 200px;
 		padding-right: 20px;
-		margin-left: -4px;
+		margin-left: -5px;
 		height: 45px;
 		line-height: 45px;
+		vertical-align: middle;
 	}
 
 	.reference-text {

@@ -27,58 +27,17 @@ defmodule Liquio.HtmlIdentityController do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 
 		current_identity = Guardian.Plug.current_resource(conn)
-		is_me = current_identity != nil and identity.id == current_identity.id
+
 		is_in_trust_metric = Enum.member?(calculation_opts[:trust_metric_ids], to_string(identity.id))
 		own_is_human_vote = nil
-
-		delegation = if current_identity != nil and not is_me do
-			delegation = Repo.get_by(Delegation, %{from_identity_id: current_identity.id, to_identity_id: identity.id, is_last: true})
-			if delegation != nil and delegation.data != nil do
-				delegation
-			else
-				nil
-			end
-		else
-			nil
-		end
-
-		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
-		|> Repo.all
-		|> Repo.preload([:from_identity, :to_identity])
-		|> Enum.sort_by(& &1.data.weight)
-
-		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
-		|> Repo.all
-		|> Repo.preload([:from_identity, :to_identity])
-		|> Enum.sort_by(& &1.data.weight)
-
-		trusted_by_votes =  []
-		|> Repo.preload([:identity])
-		|> Enum.filter(& &1.is_last and &1.data != nil)
-		|> Enum.map(& Map.put(&1, :trust_identity, &1.identity))
-		|> Enum.sort_by(& &1.trust_identity.username)
-
-		is_human_votes = []
-		votes = []
-		vote_groups = []
-
+		
 		conn
 		|> put_resp_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0")
 		|> render("show.html",
 			title: identity.name,
 			identity: identity,
-			is_me: is_me,
 			default_trust_metric_url: Liquio.TrustMetric.default_trust_metric_url(),
-			calculation_opts: calculation_opts,
-			is_in_trust_metric: is_in_trust_metric,
-			own_is_human_vote: own_is_human_vote,
-			delegation: delegation,
-			delegations_to: delegations_to,
-			delegations_from: delegations_from,
-			trusted_by_votes: trusted_by_votes,
-			is_human_votes: is_human_votes,
-			votes: votes,
-			vote_groups: vote_groups)
+			calculation_opts: calculation_opts)
 	end)
 
 	with_params(%{

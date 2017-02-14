@@ -82,7 +82,42 @@ defmodule Liquio.Identity do
 		name |> String.downcase |> String.split(" ") |> Enum.map(&String.capitalize/1) |> Enum.join(" ")
 	end
 
-	def preload_wip(identity) do
+	def preload_wip(identity, user) do
+		is_me = user != nil and identity.id == user.id
+		delegation = if user != nil and not is_me do
+			delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: identity.id, is_last: true})
+			if delegation != nil and delegation.data != nil do
+				delegation
+			else
+				nil
+			end
+		else
+			nil
+		end
+
+		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
+		|> Enum.sort_by(& &1.data.weight)
+
+		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		|> Repo.all
+		|> Repo.preload([:from_identity, :to_identity])
+		|> Enum.sort_by(& &1.data.weight)
+
+		trusted_by_votes =  []
+		|> Repo.preload([:identity])
+		|> Enum.filter(& &1.is_last and &1.data != nil)
+		|> Enum.map(& Map.put(&1, :trust_identity, &1.identity))
+		|> Enum.sort_by(& &1.trust_identity.username)
+
+		is_human_votes = []
+		votes = []
+		vote_groups = []
+
+
+
+
 		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
 		|> Repo.all
 		|> Repo.preload([:poll, :identity])

@@ -10,7 +10,7 @@
 
 	<div class="links vote-links">
 		<a class="vote-action" v-on:click="set"><i class="el-icon-circle-check" style="margin-right: 6px;"></i> Vote</a>
-		<a class="vote-action" v-if="node.own_vote" v-on:click="unset" style="border-left: 1px solid rgba(0,0,0,0.1);">Remove <i class="el-icon-circle-close" style="margin-left: 5px;"></i></a>
+		<a class="vote-action" v-if="node.own_contribution" v-on:click="unset" style="border-left: 1px solid rgba(0,0,0,0.1);">Remove <i class="el-icon-circle-close" style="margin-left: 5px;"></i></a>
 	</div>
 </div>
 
