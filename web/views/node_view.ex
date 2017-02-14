@@ -42,7 +42,7 @@ defmodule Liquio.NodeView do
 
 	def map_contribution(contribution) do
 		contribution
-		|> Map.put(:datetime, Timex.format!(contribution.datetime, "{ISO:Basic}"))
+		|> Map.put(:datetime, Timex.format!(contribution.datetime, "{ISO:Extended}"))
 		|> Map.put(:identity, render_one(contribution.identity, Liquio.IdentityView, "identity.json"))
 		|> Map.put(:embed_html, contribution.embed)
 		|> Map.take([:choice, :choice_tyoe, :datetime, :embed_html, :identity, :title, :turnout_ratio, :voting_power, :weight, :results])

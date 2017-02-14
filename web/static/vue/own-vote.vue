@@ -1,16 +1,16 @@
 <template>
 <div class="score-box" v-bind:style="{'background-color': color}" v-if="this.node.choice_type == 'probability'">
 	<div class="range">
-		<input type="range" name="choice" min="0" max="1" step="any" v-model="values[0].value" style="width: 90%; margin: 0 auto;" />
+		<el-slider v-model="values[0].value" style="width: 90%; margin: 0 auto;" />
 	</div>
 	<div class="number">
-		<span class="number-value">{{ Math.round((values[0].value || 0.5) * 100) }}</span><span class="percent">%</span>
+		<span class="number-value">{{ Math.round(values[0].value) }}</span><span class="percent">%</span>
 	</div>
 	<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
 
 	<div class="links vote-links">
-		<a class="vote-action" v-on:click="set"><i class="fa fa-check" aria-hidden="true" style="margin-right: 2px;"></i> Vote</a>
-		<a class="vote-action" v-on:click="unset" style="border-left: 1px solid rgba(0,0,0,0.1);">Remove <i class="fa fa-remove" aria-hidden="true" style="margin-left: 2px;"></i></a>
+		<a class="vote-action" v-on:click="set"><i class="el-icon-circle-check" style="margin-right: 6px;"></i> Vote</a>
+		<a class="vote-action" v-on:click="unset" style="border-left: 1px solid rgba(0,0,0,0.1);">Remove <i class="el-icon-circle-close" style="margin-left: 5px;"></i></a>
 	</div>
 </div>
 
@@ -66,13 +66,12 @@ const choiceForNode = function(node, results_key) {
 			return values
 		} else {
 			let d = node.own_contribution.results.by_keys[results_key] && node.own_contribution.results.by_keys[results_key].mean
-			return [{'value': d || 0.5, 'year': year}]
+			return [{'value': (d || 0.5) * 100, 'year': ''}]
 		}
 	} else {
 		return []
 	}
 }
-
 
 const getCurrentChoice = function(node, values) {
 	let choice = {}
@@ -84,7 +83,7 @@ const getCurrentChoice = function(node, values) {
 				choice[point.year] = point.value
 		}
 	} else {
-		choice['main'] = parseFloat(values[0].value)
+		choice['main'] = parseFloat(values[0].value) / 100
 	}
 
 	return choice
@@ -96,24 +95,26 @@ export default {
 		let self = this
 
 		function updateInputs() {
-			let last_value = self.values[self.values.length - 1]
-			let empty_index = self.values.length
-			for(let i = self.values.length - 1; i >= 0; i--) {
-				let value = self.values[i]
-				if(value.value == '' && value.year == '')
-					empty_index = i
-			}
-			if(empty_index >= self.values.length) {
-				self.values.push({'value': '', 'year': ''})
-			} else {
-				self.values = self.values.slice(0, empty_index + 1)
+			if(self.node.choice_type == 'time_quantity') {
+				let last_value = self.values[self.values.length - 1]
+				let empty_index = self.values.length
+				for(let i = self.values.length - 1; i >= 0; i--) {
+					let value = self.values[i]
+					if(value.value == '' && value.year == '')
+						empty_index = i
+				}
+				if(empty_index >= self.values.length) {
+					self.values.push({'value': '', 'year': ''})
+				} else {
+					self.values = self.values.slice(0, empty_index + 1)
+				}
 			}
 		}
 
 		setTimeout(() => updateInputs(), 0)
 
 		let choiceValues = choiceForNode(this.node, this.resultsKey || 'main')
-		choiceValues.push([{'value': '', 'year': ''}])
+		choiceValues.push({'value': 50, 'year': ''})
 
 		return {
 			values: choiceValues,
@@ -123,6 +124,7 @@ export default {
 					self.node.results = node.results
 					self.node.own_contribution = node.own_contribution
 					self.node.embed_html = node.embed_html
+					self.$emit('change')
 				})
 			},
 			unset: function(event) {
@@ -131,6 +133,7 @@ export default {
 					self.node.own_contribution = null
 					self.node.embed_html = node.embed_html
 					self.values = [{'value': '', 'year': ''}]
+					self.$emit('change')
 				})
 			},
 			keyup: function(event) {
@@ -159,5 +162,28 @@ export default {
 		text-align: center;
 		border: 1px solid rgba(0, 0, 0, 0.1);
 		background-color: #ddd;
+	}
+
+	.number {
+		font-size: 28px;
+		line-height: 24px;
+	}
+
+	.subtext {
+		font-weight: bold;
+		font-size: 12px;
+	}
+
+	.vote-links {
+		margin-top: 10px;
+		border-top: 1px solid rgba(0, 0, 0, 0.1);
+	}
+
+	.vote-action {
+		width: 46%;
+		font-size: 13px;
+		display: inline-block;
+		text-align: center;
+		line-height: 30px;
 	}
 </style>

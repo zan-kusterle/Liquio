@@ -11,20 +11,18 @@
 
 			<transition name="fade">
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
-					<p style="margin-top: 20px; margin-bottom: 5px;" v-on:click="isOpen = false">
-						Your choice
-					</p>
+					<p class="ui-title">Your choice</p>
 					
-					<own-vote v-bind:node="node" v-bind:results-key="resultsKey"></own-vote>
-					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0" style="max-width: 800px; margin-left: auto; margin-right: auto;">
-						<p style="margin-bottom: 5px;">Votes</p>
+					<own-vote v-on:change="refreshNode()" v-bind:node="node" v-bind:results-key="resultsKey"></own-vote>
+					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0">
+						<p class="ui-title">Votes</p>
 						<div class="contribution" v-for="contribution in node.contributions">
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="18" :percentage="contribution.weight * 100"></el-progress>
 							</div>
 							<div class="choice" v-html="contribution.embed_html" style="height: 40px;"></div>
 							<div class="username"><router-link :to="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</router-link></div>
-							<div class="date">{{ contribution.datetime }}</div>
+							<div class="date">{{ moment(contribution.datetime).fromNow() }}</div>
 						</div>
 					</div>
 				</div>
@@ -50,13 +48,20 @@ export default {
 	data: function() {
 		return {
 			isOpen: false,
-			mean: 0.5
+			mean: 0.5,
+			moment: require('moment')
 		}
 	}
 }
 </script>
 
 <style scoped>
+	.ui-title {
+		margin-top: 30px;
+		margin-bottom: 10px;
+		font-weight: bold;
+	}
+
 	.title {
 		display: block;
 		margin: 0px;
@@ -67,10 +72,12 @@ export default {
 		word-wrap: break-word;
 	}
 
-	.username {
-		width: 100px;
-		display: inline-block;
+	.contribution {
+		text-align: left;
+		padding: 10px 30px
 	}
+
+	
 	.weight {
 		width: 350px;
 		display: inline-block;
@@ -79,9 +86,17 @@ export default {
 		height: 40px;
 		width: 100px;
 		display: inline-block;
+		vertical-align: middle;
+		margin-left: 30px;
+	}
+	.username {
+		width: 150px;
+		display: inline-block;
+		margin-left: 25px;
 	}
 	.date {
-		width: 100px;
+		width: 120px;
 		display: inline-block;
+		margin-left: 10px;
 	}
 </style>
