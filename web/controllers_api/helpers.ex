@@ -25,6 +25,7 @@ defmodule Liquio.Controllers.Helpers do
 	end
 
 	def get_calculation_opts_from_conn(conn) do
+		# ADD SORT PARAM?
 		identity = Guardian.Plug.current_resource(conn)
 		now = Timex.now
 		datetime =

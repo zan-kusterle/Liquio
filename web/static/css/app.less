@@ -32,20 +32,6 @@ p {
 	height: 100%;
 	max-width: none;
 
-	paper-button.default {
-		background-color: white;
-		color: #555;
-		text-align: center;
-	}
-	paper-button.primary {
-		background-color: #1f8dd6;
-		color: white;
-	}
-	paper-button.warning {
-		background-color: #f44336;
-		color: white;
-	}
-
 	.header {
 		width: 100%;
 		background-color: #2a9fec;
@@ -201,147 +187,6 @@ p {
 		box-shadow: none;
 	}
 
-	input[type=range] {
-		/*removes default webkit styles*/
-		-webkit-appearance: none;
-		-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-		
-		/*fix for FF unable to apply focus style bug */
-		border: none;
-		background: none;
-		
-		/*required for proper track sizing in FF*/
-		width: 300px;
-		height: 30px;
-	}
-	input[type=range]::-webkit-slider-runnable-track {
-		width: 300px;
-		height: 5px;
-		border: none;
-		border-radius: 3px;
-		background: rgba(0, 0, 0, 0.1);
-	}
-	input[type=range]::-webkit-slider-thumb {
-		-webkit-appearance: none;
-		border: none;
-		height: 15px;
-		width: 15px;
-		border-radius: 50%;
-		background: #1f8dd6;
-		margin-top: -5px;
-	}
-	input[type=range]:focus {
-		outline: none;
-	}
-	input[type=range]:focus::-webkit-slider-runnable-track {
-		background: rgba(0, 0, 0, 0.2);
-	}
-
-	input[type=range]::-moz-range-track {
-		width: 300px;
-		height: 5px;
-		border: none;
-		border-radius: 3px;
-		background: #ccc;
-	}
-	input[type=range]::-moz-range-thumb {
-		border: none;
-		height: 24px;
-		width: 24px;
-		border-radius: 50%;
-		background: #1f8dd6;
-	}
-
-	/*hide the outline behind the border*/
-	input[type=range]:-moz-focusring{
-		outline: 1px solid white;
-		outline-offset: -1px;
-	}
-
-	input[type=range]::-ms-track {
-		width: 300px;
-		height: 5px;
-		
-		/*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
-		background: transparent;
-		
-		/*leave room for the larger thumb to overflow with a transparent border */
-		border-color: transparent;
-		border-width: 6px 0;
-
-		/*remove default tick marks*/
-		color: transparent;
-	}
-	input[type=range]::-ms-fill-lower {
-		background: #777;
-		border-radius: 10px;
-	}
-	input[type=range]::-ms-fill-upper {
-		border-radius: 10px;
-		background: #ccc;
-	}
-	input[type=range]::-ms-thumb {
-		border: none;
-		height: 24px;
-		width: 24px;
-		border-radius: 50%;
-		background: #1f8dd6;
-	}
-	input[type=range]:focus::-ms-fill-lower {
-		background: #888;
-	}
-	input[type=range]:focus::-ms-fill-upper {
-		background: #ccc;
-	}
-	.range {
-		input {
-			display: block;
-		}
-		output {
-			display: block;
-		}
-	}
-
-	button {
-		background: none;
-		border: none;
-		outline: none;
-	}
-
-	.pure-button {
-		border-radius: 0;
-		height: 36px;
-		color: rgba(0, 0, 0, 0.8);
-		background-color: #E6E6E6;
-		background-color: rgba(0, 0, 0, 0.08);
-		font-size: 14px;
-		@media @sm {
-			font-size: 16px;
-		}
-	}
-	.pure-button:hover {
-		background-image: none;
-		background-color: rgba(0, 0, 0, 0.12);
-	}
-	.pure-button:active {
-		box-shadow: none;
-		background-color: rgba(0, 0, 0, 0.15);
-	}
-
-	.delete-button {
-		color: white;
-		background: rgb(202, 60, 60);
-	}
-	
-	.pure-button-primary {
-		color: white;
-		background-color: #1f8dd6 !important;
-	}
-
-	.pure-button-active {
-		box-shadow: none;
-	}
-
 	.main-wrap {
 		position: absolute;
 		left: 0px;
@@ -402,11 +247,11 @@ p {
 			overflow: hidden;
 
 			.inset-top {
-				padding: 40px 20px;
+				padding: 20px;
 			}
 
 			.inset-bottom {
-				padding: 40px 20px;
+				padding: 20px;
 			}
 
 			.main-node {

@@ -1,6 +1,6 @@
 <template>
 <div>
-	<div v-if="nodes.length > 0 && referenceNodes.length > 0">
+	<div v-if="nodes.length > 0 && referenceNodes.length > 0 && reference != null">
 		<div class="main">
 			<div class="inset-top">
 				<el-row>
@@ -8,7 +8,7 @@
 						<liquio-node v-for="node in nodes" v-bind:node="node" votable="false" link="true"></liquio-node>
 					</el-col>
 					<el-col :span="2">
-						<i class="el-icon-arrow-right" style="font-size: 48px;"></i>
+						<i class="el-icon-arrow-right" style="color: rgba(255, 255, 255, 0.6); font-size: 48px; margin-top: 50px;"></i>
 					</el-col>
 					<el-col :span="11">
 						<liquio-node v-for="node in referenceNodes" v-bind:node="node" votable="false" link="true"></liquio-node>
@@ -17,9 +17,9 @@
 			</div>
 
 			<div class="main-node">
-				<liquio-node v-if="forChoiceNode" v-bind:node="forChoiceNode" results-key="for_choice" style="margin: 40px 0px;"></liquio-node>
+				<liquio-node v-if="nodes[0].choice_type" v-bind:node="reference" v-bind:reference-key="referenceNodes[0].url_key" results-key="for_choice" title="Choice For Which Reference Poll Provides Evidence" style="margin: 40px 0px;"></liquio-node>
 				
-				<liquio-node v-bind:node="relevanceNode" results-key="relevance" style="margin: 40px 0px;"></liquio-node>
+				<liquio-node v-bind:node="reference" results-key="relevance" v-bind:reference-key="referenceNodes[0].url_key" title="Relevance Score For This Reference" style="margin: 40px 0px;"></liquio-node>
 			</div>
 		</div>
 
@@ -40,11 +40,11 @@ export default {
 		let self = this
 		Api.getNode(this.$route.params.key, (node) => self.nodes = [node])
 		Api.getNode(this.$route.params.referenceKey, (node) => self.referenceNodes = [node])
+		Api.getNode(this.$route.params.key + '/references/' + this.$route.params.referenceKey, (node) => self.reference = node)
 		return {
 			nodes: [],
 			referenceNodes: [],
-			relevanceNode: null,
-			forChoiceNode: null
+			reference: null,
 		}
 	}
 }

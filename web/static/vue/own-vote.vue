@@ -10,7 +10,7 @@
 
 	<div class="links vote-links">
 		<a class="vote-action" v-on:click="set"><i class="el-icon-circle-check" style="margin-right: 6px;"></i> Vote</a>
-		<a class="vote-action" v-on:click="unset" style="border-left: 1px solid rgba(0,0,0,0.1);">Remove <i class="el-icon-circle-close" style="margin-left: 5px;"></i></a>
+		<a class="vote-action" v-if="node.own_vote" v-on:click="unset" style="border-left: 1px solid rgba(0,0,0,0.1);">Remove <i class="el-icon-circle-close" style="margin-left: 5px;"></i></a>
 	</div>
 </div>
 
@@ -73,7 +73,7 @@ const choiceForNode = function(node, results_key) {
 	}
 }
 
-const getCurrentChoice = function(node, values) {
+const getCurrentChoice = function(node, values, resultsKey) {
 	let choice = {}
 
 	if(node.choice_type == 'time_quantity') {
@@ -83,14 +83,14 @@ const getCurrentChoice = function(node, values) {
 				choice[point.year] = point.value
 		}
 	} else {
-		choice['main'] = parseFloat(values[0].value) / 100
+		choice[resultsKey] = parseFloat(values[0].value) / 100
 	}
 
 	return choice
 }
 
 export default {
-	props: ['node', 'resultsKey'],
+	props: ['node', 'resultsKey', 'referenceKey'],
 	data: function() {
 		let self = this
 
@@ -119,8 +119,8 @@ export default {
 		return {
 			values: choiceValues,
 			set: function(event) {
-				let choice = getCurrentChoice(self.node, self.values)
-				Api.setVote(self.node.url_key, choice, function(node) {
+				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main')
+				Api.setVote(self.node.url_key, self.referenceKey, choice, function(node) {
 					self.node.results = node.results
 					self.node.own_contribution = node.own_contribution
 					self.node.embed_html = node.embed_html
@@ -128,7 +128,7 @@ export default {
 				})
 			},
 			unset: function(event) {
-				Api.unsetVote(self.node.url_key, function(node) {
+				Api.unsetVote(self.node.url_key, self.referenceKey, function(node) {
 					self.node.results = node.results
 					self.node.own_contribution = null
 					self.node.embed_html = node.embed_html
@@ -147,7 +147,7 @@ export default {
 			return this.node.own_contribution ? this.node.own_contribution.results.turnout_ratio : 0
 		},
 		color: function() {
-			return Api.getColor(parseFloat(this.values[0].value))
+			return Api.getColor(parseFloat(this.values[0].value / 100))
 		}
 	}
 }
@@ -177,6 +177,7 @@ export default {
 	.vote-links {
 		margin-top: 10px;
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
+		padding-top: 2px;
 	}
 
 	.vote-action {

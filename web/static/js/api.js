@@ -18,17 +18,19 @@ export function login(email, cb) {
 	})
 }
 
-export function setVote(url_key, choice, cb) {
+export function setVote(url_key, reference_url_key, choice, cb) {
 	for(var key in choice)
 		choice[key + ''] = parseFloat(choice[key])
 	
-	axios.post('/api/nodes/' + url_key + '/votes', {choice: choice}).then(function (response) {
+	let url = '/api/nodes/' + url_key + (reference_url_key ? '/references/' + reference_url_key : '') + '/votes'
+	
+	axios.post(url, {choice: choice}).then(function (response) {
 		cb(transformVote(response.data.data))
 	}).catch(function (error) {
 	})
 }
 
-export function unsetVote(url_key, cb) {
+export function unsetVote(url_key, reference_url_key, cb) {
 	axios.delete('/api/nodes/' + url_key + '/votes').then(function (response) {
 		cb(transformVote(response.data.data))
 	}).catch(function (error) {
@@ -38,8 +40,6 @@ export function unsetVote(url_key, cb) {
 export function getKey(title, choice_type) {
 	return encodeURIComponent((title + ' ' + choice_type).trim().replace(/ /g, '-'))
 }
-
-
 
 export function formatNumber(number) {
 	return Math.round(number * 10) / 10

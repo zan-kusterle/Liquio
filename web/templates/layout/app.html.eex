@@ -49,14 +49,14 @@
 				<div class="header-contents">
 					<div class="pure-g">
 						<div style="float: left;">
-							<a href="/" class="logo"><img src="/images/logo.svg"></a>
+							<router-link to="/" class="logo"><img src="/images/logo.svg"></router-link>
 							<h3 class="tagline">A liquid democracy where anyone can vote on anything.</h3>
 						</div>
 
 						<div style="float: right;">
 							<div class="actions">
 								<%= if user = Guardian.Plug.current_resource(@conn) do %>
-									<a href="/identities/<%= user.username %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></a>
+									<router-link to="/identities/<%= user.username %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></router-link>
 									<a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
 								<% else %>
 									<a href="/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</a>

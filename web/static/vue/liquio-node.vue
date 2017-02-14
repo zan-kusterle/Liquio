@@ -1,8 +1,8 @@
 <template>
 <div>
 	<div v-if="node">
-		<router-link :to="'/' + node.url_key" v-if="link == 'true'" class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</router-link>
-		<h1 v-else class="title" style="display: inline; vertical-align: middle;">{{ node.title }}</h1>
+		<router-link :to="'/' + node.url_key" v-if="link == 'true'" class="title" style="vertical-align: middle;">{{ title || node.title }}</router-link>
+		<h1 v-else class="title" style="vertical-align: middle;">{{ title || node.title }}</h1>
 
 		<div class="score-container">
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
@@ -13,7 +13,7 @@
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
 					<p class="ui-title">Your choice</p>
 					
-					<own-vote v-on:change="refreshNode()" v-bind:node="node" v-bind:results-key="resultsKey"></own-vote>
+					<own-vote v-on:change="refreshNode()" v-bind:node="node" v-bind:results-key="resultsKey" v-bind:reference-key="referenceKey"></own-vote>
 					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0">
 						<p class="ui-title">Votes</p>
 						<div class="contribution" v-for="contribution in node.contributions">
@@ -43,7 +43,7 @@ import locale from 'element-ui/lib/locale/lang/en'
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['node', 'resultsKey', 'votable', 'link'],
+	props: ['node', 'resultsKey', 'referenceKey', 'votable', 'link', 'title'],
 	components: {Results, OwnVote},
 	data: function() {
 		return {
@@ -65,6 +65,7 @@ export default {
 	.title {
 		display: block;
 		margin: 0px;
+		margin-bottom: 10px;
 		font-size: 26px;
 		font-weight: normal;
 		color: #333;

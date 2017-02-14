@@ -3,36 +3,34 @@
 	<el-button type="text" @click="dialogVisible = !dialogVisible">Options</el-button>
 
 	<el-dialog title="Options" v-model="dialogVisible">
-		<h2>Fine tune how results are calculated</h2>
-
-		<el-input type="url" placeholder="Trust metric URL"></el-input>
-
-		<el-date-picker type="date" placeholder="Pick a day" v-model="opts.datetime"></el-date-picker>
+		<div class="block">
+			<p class="demonstration">View for specific date</p>
+			<el-date-picker type="date" placeholder="Pick a day" v-model="opts.datetime"></el-date-picker>
+		</div>
 
 		<div class="block">
-			<span class="demonstration">Customized initial value</span>
-			<el-slider v-model="value"></el-slider>
+			<p class="demonstration">Trust metric URL</p>
+			<el-input type="url"></el-input>
 		</div>
 
-		<div class="range" style="margin-bottom: 20px;">
-			<input type="range" name="minimum_voting_power" id="minimum_voting_power_range" min="0" max="1" step="any" oninput="minimum_voting_power_value.value = 'Expecting at least ' + Math.round(100 * minimum_voting_power_range.value) + '% turnout.'" style="margin: 0 auto;" />
-			<output id="minimum_voting_power_value"></output>
+		<div class="block">
+			<p class="demonstration">Expecting at least {{ minimum_turnout }}% turnout.</p>
+			<el-slider v-model="minimum_turnout"></el-slider>
 		</div>
 
-		<div class="range" style="margin-bottom: 20px;">
-			<input type="range" name="vote_weight_halving_days" id="vote_weight_halving_days_range" min="1" max="1000" step="1" oninput="vote_weight_halving_days_value.value = Math.round(vote_weight_halving_days_range.value) == 1000 ? 'Votes don\'t lose power with time.' : 'Votes will lose half remaining power every ' + Math.round(vote_weight_halving_days_range.value) + ' days.'" style="margin: 0 auto;" />
-			<output id="vote_weight_halving_days_value">
-			</output>
+		<div class="block">
+			<p class="demonstration">Votes will lose half remaining power every {{ vote_weight_halving_days }} days.</p>
+			<el-slider v-model="vote_weight_halving_days" max="1000"></el-slider>
 		</div>
 
-		<div class="range" style="margin: 20px 0px;">
-			<input type="range" name="reference_minimum_turnout" id="reference_minimum_turnout_range" min="0" max="1" step="any" oninput="reference_minimum_turnout_value.value = 'Expecting at least ' + Math.round(100 * reference_minimum_turnout_range.value) + '% turnout.'" style="margin: 0 auto;">
-			<output id="reference_minimum_turnout_value"></output>
+		<div class="block">
+			<p class="demonstration">Include {{ soft_quorum_t }} fake votes with score 0 when calculating reference relevance.</p>
+			<el-slider v-model="soft_quorum_t"></el-slider>
 		</div>
 
-		<div class="range" style="margin: 20px 0px;">
-			<input type="range" name="reference_minimum_agree" id="minimum_score_range" min="0" max="1" step="any" oninput="minimum_score_value.value = 'At least ' + Math.round(100 * minimum_score_range.value) + '% votes must be positive.'" style="margin: 0 auto;">
-			<output id="minimum_score_value"></output>
+		<div class="block">
+			<p class="demonstration">At least {{ minimum_relevance_score }}% relevance score to include reference.</p>
+			<el-slider v-model="minimum_relevance_score"></el-slider>
 		</div>
 
 		<span slot="footer" class="dialog-footer">
@@ -49,8 +47,17 @@ export default {
 	data: function() {
 		return {
 			dialogVisible: false,
-			value: 0.5
+			minimum_turnout: 50,
+			vote_weight_halving_days: 1000,
+			soft_quorum_t: 0,
+			minimum_relevance_score: 50
 		}
 	}
 }
 </script>
+
+<style scoped>
+	.block {
+		margin-bottom: 30px;
+	}
+</style>
