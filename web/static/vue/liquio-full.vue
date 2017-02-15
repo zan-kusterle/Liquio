@@ -25,6 +25,9 @@
 
 		<calculation-options v-bind:opts="node.calculation_opts"></calculation-options>
 	</div>
+	<div v-else>
+		<i class="el-icon-loading" style="font-size: 100px; margin-top: 100px;"></i>
+	</div>
 </div>
 </template>
 
@@ -52,6 +55,7 @@ export default {
 	watch: {
 		'$route': function(to, from) {
 			let self = this
+			self.node = null
 			Api.getNode(to.params.key || '', function(node) {
 				self.node = node
 				self.inverseReferencesOpen = false
