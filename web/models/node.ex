@@ -54,11 +54,11 @@ defmodule Liquio.Node do
 		choice_types = %{
 			"_probability" => "probability", 
 			"_quantity" => "quantity",
-			"_time_series" => "time_quantity",
+			"_time_quantity" => "time_quantity",
 			"_" => nil
 		}
 
-		ends_with = Enum.find(Map.keys(choice_types), & String.ends_with?(key, &1))
+		ends_with = Map.keys(choice_types) |> Enum.sort_by(& -String.length(&1)) |> Enum.find(& String.ends_with?(key, &1))
 		if ends_with == nil do
 			title = key |> String.replace("_", " ") |> String.trim
 			%Node{
@@ -345,6 +345,12 @@ defmodule Liquio.Node do
 			{results_key, results_for_key |> Map.put(:embed, embed_html)}
 		end)
 		|> Enum.into(%{})
-		results |> Map.put(:by_keys, with_embed)
+
+		embed_whole = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: results)
+		|> :erlang.iolist_to_binary
+		|> Liquio.HtmlHelper.minify
+		|> String.replace("\"", "'")
+
+		results |> Map.put(:by_keys, with_embed) |> Map.put(:embed, embed_whole)
 	end
 end

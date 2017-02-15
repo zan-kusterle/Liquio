@@ -25,9 +25,11 @@
 	}
 </style>
 
-<div class="area"<%= if @results.choice_type != "time_quantity" do %> style="background: <%= results_color(@results, @results_key) %>;"<% end %>>
+<% results_key = if assigns[:results_key] do @results_key else "main" end %>
+
+<div class="area"<%= if @results.choice_type != "time_quantity" do %> style="background: <%= results_color(@results, results_key) %>;"<% end %>>
 	<div class="bubble">
-		<%= if @results.choice_type == "time_quantity" do %>
+		<%= if assigns[:results_key] == nil and @results.choice_type == "time_quantity" do %>
 			<%= if Enum.empty?(@results.by_datetime) do %>
 				<p>?</p>
 			<% else %>
@@ -35,7 +37,7 @@
 			<% end %>
 		<% else %>
 			<p>
-				<% mean = if @results != nil and Map.has_key?(@results.by_keys, @results_key) do @results.by_keys[@results_key].mean else nil end %>
+				<% mean = if @results != nil and Map.has_key?(@results.by_keys, results_key) do @results.by_keys[results_key].mean else nil end %>
 				<%= if mean != nil do %>
 					<%= if @results.choice_type == "probability" do %>
 						<%= round(mean * 100) %>%

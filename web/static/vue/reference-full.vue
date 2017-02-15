@@ -8,7 +8,7 @@
 						<liquio-node v-for="node in nodes" v-bind:node="node" results-key="main" votable="false" link="true"></liquio-node>
 					</el-col>
 					<el-col :span="2">
-						<i class="el-icon-arrow-right" style="color: rgba(255, 255, 255, 0.6); font-size: 48px; margin-top: 50px;"></i>
+						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.6); font-size: 48px; margin-top: 50px;"></i>
 					</el-col>
 					<el-col :span="11">
 						<liquio-node v-for="node in referenceNodes" v-bind:node="node" results-key="main" votable="false" link="true"></liquio-node>

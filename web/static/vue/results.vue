@@ -21,7 +21,7 @@
 	</div>
 
 	<div v-else-if="this.node.choice_type == 'time_quantity'">
-		<div v-html="this.node.results.by_keys[resultsKey].embed" style="width: 100%; height: 250px;"></div>
+		<div v-html="this.node.results.embed" style="width: 100%; height: 250px;"></div>
 		<div class="data">
 			<div class="subtext">{{ Math.round(turnout_ratio * 100) }}% turnout</div>
 		</div>
