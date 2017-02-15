@@ -1,5 +1,5 @@
 <%= unless Enum.empty?(@points) do %>
-	<svg viewBox="0 0 1060 200" class="chart" width="100%" height="100%" preserveAspectRatio="none">
+	<svg viewBox="0 0 800 200" class="chart" width="100%" height="100%" preserveAspectRatio="none">
 		<%
 			{min_x, max_x} = Enum.min_max(Enum.map(@points, & Timex.to_unix(elem(&1, 0))))
 			{min_y, max_y} = Enum.min_max(Enum.map(@points, & elem(&1, 1)))
@@ -24,7 +24,7 @@
 			end)
 		%>
 
-		<line vector-effect="non-scaling-stroke" x1="0" y1="<%= svg_y zero_y %>" x2="1060" y2="<%= svg_y zero_y %>" style="stroke: #aaa; stroke-width: 2;"></line>
+		<line vector-effect="non-scaling-stroke" x1="<%= svg_x 0 %>" y1="<%= svg_y zero_y %>" x2="<%= svg_x 1 %>" y2="<%= svg_y zero_y %>" style="stroke: #aaa; stroke-width: 2;"></line>
 
 		<path vector-effect="non-scaling-stroke" fill="none" stroke="#4aa5f3" stroke-width="2" d="<%= svg_path normalized_points %>"></path>
 

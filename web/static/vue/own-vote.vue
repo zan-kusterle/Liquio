@@ -1,5 +1,5 @@
 <template>
-<div class="score-box" v-bind:style="{'background-color': color}" v-if="choice_type == 'probability'">
+<div class="score-box" v-bind:style="{'background-color': color}" v-if="choice_type == 'probability' || resultsKey == 'relevance'">
 	<div class="range">
 		<el-slider v-model="values[0].value" style="width: 90%; margin: 0 auto;" />
 	</div>
@@ -128,7 +128,7 @@ export default {
 			},
 			unset: function(event) {
 				Api.unsetVote(self.node.url_key, self.referenceKey, function(node) {
-					self.values = [{'value': '', 'year': ''}]
+					self.values = [{'value': 50, 'year': ''}]
 					self.$root.bus.$emit('change')
 				})
 			},

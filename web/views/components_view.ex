@@ -13,14 +13,14 @@ defmodule Liquio.ComponentsView do
 	end
 
 	def svg_x(x) do
-		width = 1060
-		margin = 15
+		width = 800
+		margin = 30
 		round(x * (width - 2 * margin) + margin)
 	end
 
 	def svg_y(y) do
 		height = 200
-		margin = 15
+		margin = 30
 		round((1 - y) * (height - 2 * margin) + margin)
 	end
 end

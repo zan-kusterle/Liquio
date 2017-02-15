@@ -5,9 +5,12 @@
 		<h1 v-else class="title" style="vertical-align: middle;">{{ title || node.title }}</h1>
 
 		<div class="score-container">
-			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
+			<div>
+				<div v-if="resultsKey == 'relevance'" v-html="this.node.results.by_keys[resultsKey].embed" style="width: 300px; height: 100px; margin: 10px auto;"></div>
+				<div v-else v-html="this.node.results.embed" style="width: 300px; height: 100px; margin: 10px auto;"></div>
+			</div>
 
-			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="node.choice_type != null && votable != 'false' && !isOpen"></i>
+			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="(node.choice_type != null || resultsKey == 'relevance') && votable != 'false' && !isOpen"></i>
 
 			<transition name="fade">
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
@@ -15,12 +18,12 @@
 					
 					<own-vote v-bind:node="node" v-bind:results-key="resultsKey" v-bind:reference-key="referenceKey" v-bind:choice-type="choiceType"></own-vote>
 					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0">
-						<p class="ui-title">Votes</p>
-						<div class="contribution" v-for="contribution in node.contributions" v-if="contribution.results.by_keys[resultsKey]">
+						<p class="ui-title">{{ Math.round(node.results.turnout_ratio * 100) }}% turnout</p>
+						<div class="contribution" v-for="contribution in node.contributions">
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="18" :percentage="contribution.weight * 100"></el-progress>
 							</div>
-							<div class="choice" v-html="contribution.results.by_keys[resultsKey].embed" style="height: 40px;"></div>
+							<div class="choice" v-html="resultsKey == 'main' ? contribution.results.embed : contribution.results.by_keys[resultsKey].embed" style="height: 40px;"></div>
 							<div class="username"><router-link :to="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</router-link></div>
 							<div class="date">{{ moment(contribution.datetime).fromNow() }}</div>
 						</div>
@@ -33,7 +36,6 @@
 </template>
 
 <script>
-import Results from '../vue/results.vue'
 import OwnVote from '../vue/own-vote.vue'
 
 import Vue from 'vue'
@@ -44,7 +46,7 @@ Vue.use(ElementUI, {locale})
 
 export default {
 	props: ['node', 'resultsKey', 'referenceKey', 'votable', 'link', 'title', 'choiceType'],
-	components: {Results, OwnVote},
+	components: {OwnVote},
 	data: function() {
 		return {
 			isOpen: false,

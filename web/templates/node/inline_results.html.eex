@@ -27,7 +27,7 @@
 
 <% results_key = if assigns[:results_key] do @results_key else "main" end %>
 
-<div class="area"<%= if @results.choice_type != "time_quantity" do %> style="background: <%= results_color(@results, results_key) %>;"<% end %>>
+<div class="area" style="background: <%= if @results.choice_type == "time_quantity" do "rgba(230, 230, 230, 0.6)" else results_color(@results, results_key) end %>;">
 	<div class="bubble">
 		<%= if assigns[:results_key] == nil and @results.choice_type == "time_quantity" do %>
 			<%= if Enum.empty?(@results.by_datetime) do %>
