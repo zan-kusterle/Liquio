@@ -3,6 +3,17 @@
 	<el-button type="text" @click="dialogVisible = !dialogVisible">Options</el-button>
 
 	<el-dialog title="Options" v-model="dialogVisible">
+
+		
+		<div class="block">
+			<p class="demonstration">Order by</p>
+			<el-select slot="prepend" placeholder="Select" v-model="sort" style="width: 200px;">
+				<el-option value="top" label="Top"></el-option>
+				<el-option value="new" label="New"></el-option>
+				<el-option value="certainty" label="Certainty"></el-option>
+			</el-select>
+		</div>
+
 		<div class="block">
 			<p class="demonstration">View for specific date</p>
 			<el-date-picker type="date" placeholder="Pick a day" v-model="opts.datetime"></el-date-picker>
@@ -50,7 +61,8 @@ export default {
 			minimum_turnout: 50,
 			vote_weight_halving_days: 1000,
 			soft_quorum_t: 0,
-			minimum_relevance_score: 50
+			minimum_relevance_score: 50,
+			sort: 'top'
 		}
 	}
 }

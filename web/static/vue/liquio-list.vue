@@ -1,16 +1,6 @@
 <template>
 	
 <div>
-	<!--
-	<p class="heading">
-		<a href="relevant" class="sort active">relevant</a>
-		<a href="top" class="sort">top</a>
-		<a href="new" class="sort">new</a>
-		<a href="most-certain" class="sort">most certain</a>
-		<a href="least-certain" class="sort">least certain</a>
-	</p>
-	-->
-
 	<div v-if="nodes.length == 0">There is nothing here</div>
 	<el-row class="references" v-else-if="referencingNode != null && referencingNode.choice_type == 'probability'">
 		<el-col :span="12">

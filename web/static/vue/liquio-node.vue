@@ -6,7 +6,7 @@
 
 		<div class="score-container">
 			<div>
-				<div v-if="resultsKey == 'relevance'" v-html="this.node.results.by_keys[resultsKey].embed" style="width: 300px; height: 100px; margin: 10px auto;"></div>
+				<div v-if="resultsKey == 'relevance' && this.node.results.by_keys['relevance']" v-html="this.node.results.by_keys[resultsKey].embed" style="width: 300px; height: 100px; margin: 10px auto;"></div>
 				<div v-else v-html="this.node.results.embed" style="width: 300px; height: 100px; margin: 10px auto;"></div>
 			</div>
 
@@ -21,7 +21,7 @@
 						<p class="ui-title">{{ Math.round(node.results.turnout_ratio * 100) }}% turnout</p>
 						<div class="contribution" v-for="contribution in node.contributions">
 							<div class="weight">
-								<el-progress :text-inside="true" :stroke-width="18" :percentage="contribution.weight * 100"></el-progress>
+								<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 							</div>
 							<div class="choice" v-html="resultsKey == 'main' ? contribution.results.embed : contribution.results.by_keys[resultsKey].embed" style="height: 40px;"></div>
 							<div class="username"><router-link :to="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</router-link></div>
