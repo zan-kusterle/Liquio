@@ -15,10 +15,11 @@ import nodeComponent from '../vue/liquio-full.vue'
 import referenceComponent from '../vue/reference-full.vue'
 
 const routes = [
+	{ path: '/', component: nodeComponent },
 	{ path: '/login', component: loginComponent },
 	{ path: '/identities/:username', component: identityComponent },
-	{ path: '', component: nodeComponent }, { path: '/:key', component: nodeComponent },
 	{ path: '/:key/references/:referenceKey', component: referenceComponent },
+	{ path: '/:key', component: nodeComponent }
 ]
 
 const router = new VueRouter({

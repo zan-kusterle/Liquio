@@ -7,7 +7,7 @@
 		<div class="score-container">
 			<div>
 				<div v-if="resultsKey == 'relevance' && this.node.results.by_keys['relevance']" v-html="this.node.results.by_keys[resultsKey].embed" style="width: 300px; height: 100px; margin: 10px auto;"></div>
-				<div v-else v-html="this.node.results.embed" style="width: 300px; height: 100px; margin: 10px auto;"></div>
+				<div v-else-if="this.node.choice_type != null" v-html="this.node.results.embed" style="width: 300px; height: 100px; margin: 10px auto;"></div>
 			</div>
 
 			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="(node.choice_type != null || resultsKey == 'relevance') && votable != 'false' && !isOpen"></i>
