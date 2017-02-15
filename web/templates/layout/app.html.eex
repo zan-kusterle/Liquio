@@ -78,7 +78,7 @@
 					<% end %>
 					
 					<div class="main-container">
-						  <router-view></router-view>
+						  <router-view style="padding-top: 50px; padding-bottom: 100px;"></router-view>
 					</div>
 				</div>
 			</div>

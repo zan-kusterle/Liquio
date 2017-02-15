@@ -64,7 +64,7 @@ export default {
 
 <style scoped>
 	.ui-title {
-		margin-top: 30px;
+		margin-top: 50px;
 		margin-bottom: 10px;
 		font-weight: bold;
 	}
