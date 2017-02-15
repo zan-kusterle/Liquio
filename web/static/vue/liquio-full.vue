@@ -2,21 +2,13 @@
 <div>
 	<div v-if="node">
 		<div class="main">
-			<transition name="fade">
-				<div class="inset-top" v-if="inverseReferencesOpen">
-					<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
-					<i class="el-icon-arrow-down" style="color: rgba(0, 0, 0, 0.6); font-size: 48px; font-weight: bold; margin-top: 10px;"></i>
-				</div>
-			</transition>
-			
-			<div class="inset-top" v-if="node.choice_type != null && !inverseReferencesOpen && node.inverse_references.length > 0" @click="inverseReferencesOpen = true">
-				<i class="el-icon-arrow-up" style="margin-right: 5px;"></i> {{ node.inverse_references.length }} incoming {{ node.inverse_references.length == 1 ? 'reference' : 'references' }}
+			<div class="inset-top" style="text-align: left;">
+				<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 			</div>
-
+			
 			<liquio-node v-if="node.title.length > 0" v-bind:node="node" results-key="main" class="main-node"></liquio-node>
 
 			<div class="inset-bottom">
-				<i class="el-icon-arrow-down" v-if="node.title.length > 0" style="color: rgba(0, 0, 0, 0.6); font-size: 48px; font-weight: bold; margin-bottom: 15px;"></i>
 				<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title.length > 0 && node" style="text-align: left;"></liquio-list>
 				
 				<get-reference v-bind:node="node" style="margin-top: 20px;"></get-reference>
@@ -49,7 +41,7 @@ export default {
 
 		return {
 			node: null,
-			inverseReferencesOpen: false
+			inverseReferencesOpen: true
 		}
 	},
 	watch: {

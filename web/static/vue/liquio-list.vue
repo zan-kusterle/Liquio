@@ -1,8 +1,7 @@
 <template>
 	
 <div>
-	<div v-if="nodes.length == 0">There is nothing here</div>
-	<el-row class="references" v-else-if="referencingNode != null && referencingNode.choice_type == 'probability'">
+	<el-row class="references" v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
 		<el-col :span="12">
 			<h3 class="pole-heading">Negative</h3>
 		

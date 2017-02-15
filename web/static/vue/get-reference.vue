@@ -1,10 +1,10 @@
 <template>
 <div>
-	<el-input placeholder="Title" v-model="title">
+	<el-input placeholder="Title" v-model="title" style="max-width: 800px;">
 		<el-select slot="prepend" placeholder="Select" v-model="choice_type" style="width: 120px;">
 			<el-option v-for="item in options" v-bind:value="item.value" v-bind:label="item.text"></el-option>
 		</el-select>
-		<el-button slot="append" icon="d-arrow-right" @click="view"></el-button>
+		<el-button slot="append" icon="plus" @click="view"></el-button>
 	</el-input>
 </div>
 </template>
