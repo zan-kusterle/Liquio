@@ -10,6 +10,7 @@ defmodule Liquio.Results.AggregateContributions do
 				%{
 					:key => key,
 					:choice => choice,
+					:default_value => if is_number(choice) do choice else choice[key] end,
 					:voting_power => contribution.voting_power,
 					:datetime => contribution.datetime
 				}
@@ -85,8 +86,7 @@ defmodule Liquio.Results.AggregateContributions do
 	defp mean(contributions) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		total_score = Enum.sum(Enum.map(contributions, fn(contribution) ->
-			value = if is_number(contribution.choice) do contribution.choice else if Map.has_key?(contribution.choice, "main") do contribution.choice["main"] else contribution.choice end end
-			value * contribution.voting_power
+			contribution.default_value * contribution.voting_power
 		end))
 		if total_power > 0 do
 			1.0 * total_score / total_power

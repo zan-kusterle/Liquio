@@ -123,19 +123,13 @@ export default {
 			set: function(event) {
 				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main', choiceType)
 				Api.setVote(self.node.url_key, self.referenceKey, choice, function(node) {
-					self.node.results = node.results
-					self.node.own_contribution = node.own_contribution
-					self.node.embed_html = node.embed_html
-					self.$emit('change')
+					self.$root.bus.$emit('change')
 				})
 			},
 			unset: function(event) {
 				Api.unsetVote(self.node.url_key, self.referenceKey, function(node) {
-					self.node.results = node.results
-					self.node.own_contribution = null
-					self.node.embed_html = node.embed_html
 					self.values = [{'value': '', 'year': ''}]
-					self.$emit('change')
+					self.$root.bus.$emit('change')
 				})
 			},
 			keyup: function(event) {

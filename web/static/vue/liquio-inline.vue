@@ -1,6 +1,6 @@
 <template>
 <div class="reference">
-	<div v-html="this.node.embed_html" v-if="this.node.choice_type != null" style="display: inline-block; vertical-align: middle; width: 120px; height: 45px;"></div>
+	<div v-html="this.node.results.by_keys['main'].embed" v-if="this.node.choice_type != null" style="display: inline-block; vertical-align: middle; width: 120px; height: 45px;"></div>
 	
 	<div class="content">
 		<router-link :to="'/' + node.url_key" class="reference-text"><span v-if="this.node.choice_type == null">#</span>{{ node.title }}</router-link>

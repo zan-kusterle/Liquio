@@ -26,8 +26,10 @@ const router = new VueRouter({
 	routes: routes
 })
 
+var bus = new Vue()
+
 const app = new Vue({
 	router: router,
 	components: {},
-	data: defaultVueData
+	data: {bus: bus}
 }).$mount('#app')

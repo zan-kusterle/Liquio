@@ -7,20 +7,20 @@
 		<div class="score-container">
 			<results v-bind:node="node" v-bind:results-key="resultsKey"></results>
 
-			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="votable != 'false' && !isOpen"></i>
+			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="node.choice_type != null && votable != 'false' && !isOpen"></i>
 
 			<transition name="fade">
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
 					<p class="ui-title">Your choice</p>
 					
-					<own-vote v-on:change="refreshNode()" v-bind:node="node" v-bind:results-key="resultsKey" v-bind:reference-key="referenceKey" v-bind:choice-type="choiceType"></own-vote>
+					<own-vote v-bind:node="node" v-bind:results-key="resultsKey" v-bind:reference-key="referenceKey" v-bind:choice-type="choiceType"></own-vote>
 					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0">
 						<p class="ui-title">Votes</p>
-						<div class="contribution" v-for="contribution in node.contributions">
+						<div class="contribution" v-for="contribution in node.contributions" v-if="contribution.results.by_keys[resultsKey]">
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="18" :percentage="contribution.weight * 100"></el-progress>
 							</div>
-							<div class="choice" v-html="contribution.embed_html" style="height: 40px;"></div>
+							<div class="choice" v-html="contribution.results.by_keys[resultsKey].embed" style="height: 40px;"></div>
 							<div class="username"><router-link :to="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</router-link></div>
 							<div class="date">{{ moment(contribution.datetime).fromNow() }}</div>
 						</div>
@@ -51,6 +51,11 @@ export default {
 			mean: 0.5,
 			moment: require('moment')
 		}
+	},
+	watch: {
+		'$route': function(to, from) {
+			this.isOpen = false
+		}
 	}
 }
 </script>
@@ -64,8 +69,7 @@ export default {
 
 	.title {
 		display: block;
-		margin: 0px;
-		margin-bottom: 10px;
+		margin: 10px 0px;
 		font-size: 26px;
 		font-weight: normal;
 		color: #333;

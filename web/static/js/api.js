@@ -23,16 +23,16 @@ export function setVote(url_key, reference_url_key, choice, cb) {
 		choice[key + ''] = parseFloat(choice[key])
 	
 	let url = '/api/nodes/' + url_key + (reference_url_key ? '/references/' + reference_url_key : '') + '/votes'
-	
 	axios.post(url, {choice: choice}).then(function (response) {
-		cb(transformVote(response.data.data))
+		cb(response.data.data)
 	}).catch(function (error) {
 	})
 }
 
 export function unsetVote(url_key, reference_url_key, cb) {
-	axios.delete('/api/nodes/' + url_key + '/votes').then(function (response) {
-		cb(transformVote(response.data.data))
+	let url = '/api/nodes/' + url_key + (reference_url_key ? '/references/' + reference_url_key : '') + '/votes'
+	axios.delete(url).then(function (response) {
+		cb(response.data.data)
 	}).catch(function (error) {
 	})
 }

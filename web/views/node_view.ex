@@ -32,7 +32,6 @@ defmodule Liquio.NodeView do
 			:results => if node.choice_type != nil do node.results else nil end,
 			:contributions => if node.choice_type != nil do Enum.map(node.contributions, & map_contribution(&1)) else nil end,
 			:own_contribution => if Map.get(node, :own_contribution) do map_contribution(node.own_contribution) else nil end,
-			:embed_html => if node.choice_type != nil do node.embed else "" end,
 			:references => render_many(Map.get(node, :references, []), Liquio.NodeView, "node.json"),
 			:inverse_references => render_many(Map.get(node, :inverse_references, []), Liquio.NodeView, "node.json"),
 			:reference_result => Map.get(node, :reference_result),
@@ -44,7 +43,6 @@ defmodule Liquio.NodeView do
 		contribution
 		|> Map.put(:datetime, Timex.format!(contribution.datetime, "{ISO:Extended}"))
 		|> Map.put(:identity, render_one(contribution.identity, Liquio.IdentityView, "identity.json"))
-		|> Map.put(:embed_html, contribution.embed)
-		|> Map.take([:choice, :choice_tyoe, :datetime, :embed_html, :identity, :title, :turnout_ratio, :voting_power, :weight, :results])
+		|> Map.take([:choice, :choice_type, :datetime, :identity, :title, :turnout_ratio, :voting_power, :weight, :results])
 	end
 end

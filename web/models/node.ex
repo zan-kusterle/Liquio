@@ -1,6 +1,6 @@
 defmodule Liquio.Node do
 	@enforce_keys [:choice_type, :key, :reference_key]
-	defstruct [:default_results_key, :title, :choice_type, :key, :url_key, :reference_key]
+	defstruct [:title, :choice_type, :key, :url_key, :reference_key]
 
 	import Ecto
 	import Ecto.Query, only: [from: 1, from: 2]
@@ -10,7 +10,6 @@ defmodule Liquio.Node do
 	def new(title, choice_type) do new(title, choice_type, nil) end
 	def new(title, choice_type, reference_key) do
 		%Node{
-			default_results_key: "main",
 			title: title,
 			choice_type: choice_type,
 			key: get_key(title, choice_type),
@@ -63,7 +62,6 @@ defmodule Liquio.Node do
 		if ends_with == nil do
 			title = key |> String.replace("_", " ") |> String.trim
 			%Node{
-				:default_results_key => "main",
 				:title => title,
 				:choice_type => nil,
 				:key => key,
@@ -73,7 +71,6 @@ defmodule Liquio.Node do
 		else
 			title = key |> String.replace_trailing(ends_with, "") |> String.replace("_", " ") |> String.trim
 			%Node{
-				:default_results_key => "main",
 				:title => title,
 				:choice_type => choice_types[ends_with],
 				:key => key,
@@ -118,12 +115,7 @@ defmodule Liquio.Node do
 		end
 
 		results = AggregateContributions.aggregate(node.contributions, calculation_opts)
-		node = Map.put(node, :results, results)
-		
-		embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: node.results, results_key: node.default_results_key)
-		|> :erlang.iolist_to_binary
-		|> Liquio.HtmlHelper.minify
-		node = Map.put(node, :embed, embed_html |> String.replace("\"", "'"))
+		node = Map.put(node, :results, results |> preload_results_embed)
 
 		node
 	end
@@ -154,16 +146,10 @@ defmodule Liquio.Node do
 
 		contributions = contributions |> Enum.map(fn(contribution) ->
 			contribution = Map.put(contribution, :identity, Repo.get(Identity, contribution.identity.id))
-			
 			results = AggregateContributions.aggregate([contribution], calculation_opts)
-
-			embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: results, results_key: node.default_results_key)
-			|> :erlang.iolist_to_binary
-			|> Liquio.HtmlHelper.minify
-
-			contribution = contribution
-			|> Map.put(:embed, embed_html |> String.replace("\"", "'"))
-			|> Map.put(:results, results)
+			
+			contribution
+			|> Map.put(:results, results |> preload_results_embed)
 		end)
 
 		node = if not Enum.empty?(contributions) do
@@ -346,5 +332,19 @@ defmodule Liquio.Node do
 			|> Map.put(:references, [])
 		end)
 		|> Enum.sort(&(&1.results.total > &2.results.total))
+	end
+
+	defp preload_results_embed(results) do
+		with_embed = results.by_keys
+		|> Enum.map(fn({results_key, results_for_key}) ->
+			embed_html = Phoenix.View.render_to_iodata(Liquio.NodeView, "inline_results.html", results: results, results_key: results_key)
+			|> :erlang.iolist_to_binary
+			|> Liquio.HtmlHelper.minify
+			|> String.replace("\"", "'")
+
+			{results_key, results_for_key |> Map.put(:embed, embed_html)}
+		end)
+		|> Enum.into(%{})
+		results |> Map.put(:by_keys, with_embed)
 	end
 end

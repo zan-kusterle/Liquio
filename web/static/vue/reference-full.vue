@@ -5,13 +5,13 @@
 			<div class="inset-top">
 				<el-row>
 					<el-col :span="11">
-						<liquio-node v-for="node in nodes" v-bind:node="node" votable="false" link="true"></liquio-node>
+						<liquio-node v-for="node in nodes" v-bind:node="node" results-key="main" votable="false" link="true"></liquio-node>
 					</el-col>
 					<el-col :span="2">
 						<i class="el-icon-arrow-right" style="color: rgba(255, 255, 255, 0.6); font-size: 48px; margin-top: 50px;"></i>
 					</el-col>
 					<el-col :span="11">
-						<liquio-node v-for="node in referenceNodes" v-bind:node="node" votable="false" link="true"></liquio-node>
+						<liquio-node v-for="node in referenceNodes" v-bind:node="node" results-key="main" votable="false" link="true"></liquio-node>
 					</el-col>
 				</el-row>
 			</div>
@@ -41,6 +41,9 @@ export default {
 		Api.getNode(this.$route.params.key, (node) => self.nodes = [node])
 		Api.getNode(this.$route.params.referenceKey, (node) => self.referenceNodes = [node])
 		Api.getNode(this.$route.params.key + '/references/' + this.$route.params.referenceKey, (node) => self.reference = node)
+		this.$root.bus.$on('change', () => {
+			Api.getNode(self.$route.params.key + '/references/' + self.$route.params.referenceKey, (node) => self.reference = node)
+		})
 		return {
 			nodes: [],
 			referenceNodes: [],

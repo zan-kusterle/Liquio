@@ -13,13 +13,13 @@
 				<i class="el-icon-arrow-up" style="margin-right: 5px;"></i> {{ node.inverse_references.length }} incoming {{ node.inverse_references.length == 1 ? 'reference' : 'references' }}
 			</div>
 
-			<liquio-node v-on:node-change="refreshNode()" v-if="node.title.length > 0" v-bind:node="node" class="main-node"></liquio-node>
+			<liquio-node v-if="node.title.length > 0" v-bind:node="node" results-key="main" class="main-node"></liquio-node>
 
 			<div class="inset-bottom">
 				<i class="el-icon-arrow-down" v-if="node.title.length > 0" style="color: rgba(255, 255, 255, 0.6); font-size: 48px; font-weight: bold; margin-bottom: 15px;"></i>
 				<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title.length > 0 && node" style="text-align: left;"></liquio-list>
 				
-				<get-reference v-bind:node="node"></get-reference>
+				<get-reference v-bind:node="node" style="margin-top: 20px;"></get-reference>
 			</div>
 		</div>
 
@@ -40,16 +40,13 @@ export default {
 	data: function() {
 		let self = this
 		Api.getNode(this.$route.params.key || '', (node) => self.node = node)
+		this.$root.bus.$on('change', () => {
+			Api.getNode(self.$route.params.key || '', (node) => self.node = node)
+		})
 
 		return {
 			node: null,
 			inverseReferencesOpen: false
-		}
-	},
-	methods: {
-		refreshNode: function() {
-			let self = this
-			Api.getNode(this.$route.params.key || '', (node) => self.node = node)
 		}
 	},
 	watch: {
