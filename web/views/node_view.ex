@@ -2,7 +2,7 @@ defmodule Liquio.NodeView do
 	use Liquio.Web, :view
 
 	def results_color(results, results_key) do
-		if results.choice_type == "probability" do
+		if results.choice_type == "probability" or results_key == "relevance" do
 			score = if Map.has_key?(results.by_keys, results_key) do results.by_keys[results_key].mean else nil end
 			cond do
 				score == nil -> "#ddd"
@@ -29,8 +29,8 @@ defmodule Liquio.NodeView do
 			:choice_type => node.choice_type,
 			:key => node.key,
 			:url_key => node.url_key,
-			:results => if node.choice_type != nil do node.results else nil end,
-			:contributions => if node.choice_type != nil do Enum.map(node.contributions, & map_contribution(&1)) else nil end,
+			:results => if node.choice_type != nil or node.reference_key != nil do node.results else nil end,
+			:contributions => if node.choice_type != nil or node.reference_key != nil do Enum.map(node.contributions, & map_contribution(&1)) else nil end,
 			:own_contribution => if Map.get(node, :own_contribution) do map_contribution(node.own_contribution) else nil end,
 			:references => render_many(Map.get(node, :references, []), Liquio.NodeView, "node.json"),
 			:inverse_references => render_many(Map.get(node, :inverse_references, []), Liquio.NodeView, "node.json"),
