@@ -5,13 +5,13 @@
 			<div class="inset-top">
 				<el-row>
 					<el-col :span="11">
-						<liquio-inline v-for="node in nodes" v-bind:node="node" results-key="main" link="true" style="width: 100%;"></liquio-inline>
+						<liquio-inline v-for="node in nodes" v-bind:node="node" results-key="main" link="true" style="width: 95%;"></liquio-inline>
 					</el-col>
 					<el-col :span="2">
 						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 50px;"></i>
 					</el-col>
 					<el-col :span="11">
-						<liquio-inline v-for="node in referenceNodes" v-bind:node="node" results-key="main" link="true" style="width: 100%;"></liquio-inline>
+						<liquio-inline v-for="node in referenceNodes" v-bind:node="node" results-key="main" link="true" style="width: 95%;"></liquio-inline>
 					</el-col>
 				</el-row>
 			</div>

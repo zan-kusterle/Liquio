@@ -1,7 +1,7 @@
 <template>
 <div class="reference">
 	<router-link :to="'/' + node.url_key" class="main-link">
-		<div v-html="this.node.results.embed" v-if="this.node.choice_type != null" style="width: 160px; height: 50px;"></div>
+		<div v-html="this.node.results.embed" v-if="this.node.choice_type != null" style="width: 100%; height: 50px;"></div>
 		<div class="content">{{ node.title }}</div>
 	</router-link>
 

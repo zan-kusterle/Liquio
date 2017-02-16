@@ -52,6 +52,10 @@ export default {
 		margin-bottom: 15px;
 	}
 
+	.pole-list {
+		text-align: left;
+	}
+
 	.references-list {
 		padding: 0px 20px;
 	}
