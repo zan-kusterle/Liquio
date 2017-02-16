@@ -41,7 +41,9 @@ defmodule Liquio.Vote do
 
 	def set(node, identity, choice) do
 		Map.keys(choice) |> Enum.filter(& String.ends_with?(&1, "?")) |> Enum.map(& String.replace(&1, "?", ""))
+		current = current_by(node, identity)
 		remove_current_last(node.key, identity.id, node.reference_key)
+		new_choice = if current != nil and current.data != nil do Map.merge(current.data.choice, choice) else choice end
 		result = Repo.insert(%Vote{
 			:title => node.title,
 			:choice_type => node.choice_type,
@@ -50,7 +52,7 @@ defmodule Liquio.Vote do
 			:identity_id => identity.id,
 			:is_last => true,
 			:data => %VoteData{
-				:choice => choice
+				:choice => new_choice
 			}
 		})
 		invalidate_results_cache(node)

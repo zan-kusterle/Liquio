@@ -6,11 +6,13 @@
 
 		<div class="score-container">
 			<div>
-				<div v-if="resultsKey == 'relevance' && this.node.results.by_keys['relevance']" v-html="this.node.results.by_keys[resultsKey].embed" style="width: 300px; height: 120px; margin: 10px auto;"></div>
-				<div v-else-if="this.node.choice_type != null" v-html="this.node.results.embed" style="width: 300px; height: 120px; margin: 10px auto; font-size: 36px;"></div>
+				<div v-if="this.node.choice_type != null || resultsKey == 'relevance'" v-html="this.node.results.by_keys[resultsKey] ? this.node.results.by_keys[resultsKey].embed : this.node.results.embed" style="width: 300px; height: 120px; margin: 10px auto; font-size: 36px;"></div>
 			</div>
 
-			<i class="el-icon-caret-bottom" @click="isOpen = true" v-if="(node.choice_type != null || resultsKey == 'relevance') && votable != 'false' && !isOpen"></i>
+			<div v-if="(node.choice_type != null || resultsKey == 'relevance') && votable != 'false'">
+				<i v-if="!isOpen" class="el-icon-caret-bottom" @click="isOpen = true"></i>
+				<i v-else class="el-icon-caret-top" @click="isOpen = false"></i>
+			</div>
 
 			<transition name="fade">
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
@@ -23,7 +25,7 @@
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 							</div>
-							<div class="choice" v-html="resultsKey == 'main' ? contribution.results.embed : contribution.results.by_keys[resultsKey].embed" style="height: 40px;"></div>
+							<div class="choice" v-html="contribution.results.by_keys[resultsKey] ? contribution.results.by_keys[resultsKey].embed : contribution.results.embed" style="height: 40px;"></div>
 							<div class="username"><router-link :to="'/identities/' + contribution.identity.username">{{ contribution.identity.username }}</router-link></div>
 							<div class="date">{{ moment(contribution.datetime).fromNow() }}</div>
 						</div>
