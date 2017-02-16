@@ -45,7 +45,7 @@ export default {
 	}
 
 	.references, .pole, .pole-heading {
-		text-align: left;
+		text-align: center;
 		font-size: 18px;
 		font-weight: normal;
 		margin: 0px;

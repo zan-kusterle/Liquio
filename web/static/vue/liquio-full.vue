@@ -11,7 +11,7 @@
 			<div class="inset-bottom">
 				<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title.length > 0 && node" style="text-align: left;"></liquio-list>
 				
-				<get-reference v-bind:node="node" style="margin-top: 20px;"></get-reference>
+				<get-reference v-bind:node="node" style="margin-top: 20px; opacity: 0.9;"></get-reference>
 			</div>
 		</div>
 
