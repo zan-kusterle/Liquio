@@ -298,8 +298,8 @@ defmodule Liquio.Node do
 		get_url_key(node.title, node.choice_type)
 	end
 	defp get_url_key(title, choice_type) do
-		if choice_type == nil do
-			title |> String.replace(" ", "-")
+		base = if choice_type == nil do
+			title
 		else
 			choice_types = %{
 				"probability" => "Probability",
@@ -307,9 +307,10 @@ defmodule Liquio.Node do
 				"time_quantity" => "Time Series",
 				nil => ""
 			}
-
-			"#{title} #{choice_types[choice_type]}" |> String.trim |> String.replace(" ", "-")
+			"#{title} #{choice_types[choice_type]}"
 		end
+
+		base |> String.trim |> String.replace(" ", "-") |> URI.encode
 	end
 	
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do

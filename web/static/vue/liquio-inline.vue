@@ -37,7 +37,7 @@ export default {
 
 	.content {
 		padding: 10px;
-		background: white;
+		background: rgba(255, 255, 255, 0.7);
 	}
 
 	.reference-link {
