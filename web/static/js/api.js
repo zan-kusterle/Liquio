@@ -3,8 +3,9 @@ var axios = require('axios')
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-export function getNode(key, cb) {
-	axios.get('/api/nodes/' + key).then(function (response) {
+export function getNode(key, referenceKey, cb) {
+	let url = '/api/nodes/' + encodeURIComponent(key) + (referenceKey ? '/references/' + encodeURIComponent(referenceKey) : '')
+	axios.get(url).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {
 	})
@@ -22,7 +23,7 @@ export function setVote(url_key, reference_url_key, choice, cb) {
 	for(var key in choice)
 		choice[key + ''] = parseFloat(choice[key])
 	
-	let url = '/api/nodes/' + url_key + (reference_url_key ? '/references/' + reference_url_key : '') + '/votes'
+	let url = '/api/nodes/' + encodeURIComponent(url_key) + (reference_url_key ? '/references/' + encodeURIComponent(reference_url_key) : '') + '/votes'
 	axios.post(url, {choice: choice}).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {
@@ -30,7 +31,7 @@ export function setVote(url_key, reference_url_key, choice, cb) {
 }
 
 export function unsetVote(url_key, reference_url_key, cb) {
-	let url = '/api/nodes/' + url_key + (reference_url_key ? '/references/' + reference_url_key : '') + '/votes'
+	let url = '/api/nodes/' + encodeURIComponent(url_key) + (reference_url_key ? '/references/' + encodeURIComponent(reference_url_key) : '') + '/votes'
 	axios.delete(url).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {

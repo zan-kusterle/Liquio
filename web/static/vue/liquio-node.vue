@@ -9,7 +9,7 @@
 				<div v-if="this.node.choice_type != null || resultsKey == 'relevance'" v-html="this.node.results.by_keys[resultsKey] ? this.node.results.by_keys[resultsKey].embed : this.node.results.embed" style="width: 300px; height: 120px; margin: 10px auto; font-size: 36px;"></div>
 			</div>
 
-			<div v-if="(node.choice_type != null || resultsKey == 'relevance') && votable != 'false'">
+			<div v-if="(node.choice_type != null || resultsKey == 'relevance')">
 				<i v-if="!isOpen" class="el-icon-caret-bottom" @click="isOpen = true"></i>
 				<i v-else class="el-icon-caret-top" @click="isOpen = false"></i>
 			</div>
@@ -47,7 +47,7 @@ import locale from 'element-ui/lib/locale/lang/en'
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['node', 'resultsKey', 'referenceKey', 'votable', 'link', 'title', 'choiceType'],
+	props: ['node', 'resultsKey', 'referenceKey', 'link', 'title', 'choiceType'],
 	components: {OwnVote},
 	data: function() {
 		return {

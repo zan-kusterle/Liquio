@@ -2,7 +2,7 @@
 <div class="reference">
 	<router-link :to="'/' + node.url_key" class="main-link">
 		<div v-html="this.node.results.embed" v-if="this.node.choice_type != null" style="width: 160px; height: 50px;"></div>
-		<div class="content"><span v-if="this.node.choice_type == null">#</span>{{ node.title }}</div>
+		<div class="content">{{ node.title }}</div>
 	</router-link>
 
 	<router-link v-if="referencingNode" :to="'/' + referencingNode.url_key + '/references/' + node.url_key" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
@@ -38,6 +38,7 @@ export default {
 	.content {
 		padding: 10px;
 		background: rgba(255, 255, 255, 0.7);
+		word-wrap: break-word;
 	}
 
 	.reference-link {

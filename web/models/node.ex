@@ -25,7 +25,7 @@ defmodule Liquio.Node do
 			"Time Series" => :time_quantity
 		}
 
-		value_spaces = value |> String.replace("-", " ") |> String.replace("_", " ")
+		value_spaces = value |> URI.decode |> String.replace("-", " ") |> String.replace("_", " ")
 		ends_with = Enum.find(Map.keys(choice_types), & String.ends_with?(value_spaces, &1))
 
 		{title, choice_type} = if ends_with == nil do
@@ -310,7 +310,7 @@ defmodule Liquio.Node do
 			"#{title} #{choice_types[choice_type]}"
 		end
 
-		base |> String.trim |> String.replace(" ", "-") |> URI.encode
+		base |> String.trim |> String.trim("/") |> String.replace(" ", "-") |> URI.encode |> String.replace("/", "%2F")
 	end
 	
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do

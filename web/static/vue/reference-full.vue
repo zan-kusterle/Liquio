@@ -5,13 +5,13 @@
 			<div class="inset-top">
 				<el-row>
 					<el-col :span="11">
-						<liquio-node v-for="node in nodes" v-bind:node="node" results-key="main" votable="false" link="true"></liquio-node>
+						<liquio-inline v-for="node in nodes" v-bind:node="node" results-key="main" link="true" style="width: 100%;"></liquio-inline>
 					</el-col>
 					<el-col :span="2">
-						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.6); font-size: 48px; margin-top: 50px;"></i>
+						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 50px;"></i>
 					</el-col>
 					<el-col :span="11">
-						<liquio-node v-for="node in referenceNodes" v-bind:node="node" results-key="main" votable="false" link="true"></liquio-node>
+						<liquio-inline v-for="node in referenceNodes" v-bind:node="node" results-key="main" link="true" style="width: 100%;"></liquio-inline>
 					</el-col>
 				</el-row>
 			</div>
@@ -35,17 +35,18 @@
 let Api = require('api.js')
 import CalculationOptions from '../vue/calculation-options.vue'
 import LiquioNode from '../vue/liquio-node.vue'
+import LiquioInline from '../vue/liquio-inline.vue'
 
 export default {
-	components: {LiquioNode, CalculationOptions},
+	components: {LiquioNode, LiquioInline, CalculationOptions},
 	
 	data: function() {
 		let self = this
-		Api.getNode(this.$route.params.key, (node) => self.nodes = [node])
-		Api.getNode(this.$route.params.referenceKey, (node) => self.referenceNodes = [node])
-		Api.getNode(this.$route.params.key + '/references/' + this.$route.params.referenceKey, (node) => self.reference = node)
+		Api.getNode(this.$route.params.key, null, (node) => self.nodes = [node])
+		Api.getNode(this.$route.params.referenceKey, null, (node) => self.referenceNodes = [node])
+		Api.getNode(this.$route.params.key, this.$route.params.referenceKey, (node) => self.reference = node)
 		this.$root.bus.$on('change', () => {
-			Api.getNode(self.$route.params.key + '/references/' + self.$route.params.referenceKey, (node) => self.reference = node)
+			Api.getNode(self.$route.params.key, self.$route.params.referenceKey, (node) => self.reference = node)
 		})
 		return {
 			nodes: [],

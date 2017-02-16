@@ -34,9 +34,9 @@ export default {
 	components: {CalculationOptions, GetReference, LiquioNode, LiquioList},
 	data: function() {
 		let self = this
-		Api.getNode(this.$route.params.key || '', (node) => self.node = node)
+		Api.getNode(this.$route.params.key || '', null, (node) => self.node = node)
 		this.$root.bus.$on('change', () => {
-			Api.getNode(self.$route.params.key || '', (node) => self.node = node)
+			Api.getNode(self.$route.params.key || '', null, (node) => self.node = node)
 		})
 
 		return {
@@ -48,7 +48,7 @@ export default {
 		'$route': function(to, from) {
 			let self = this
 			self.node = null
-			Api.getNode(to.params.key || '', function(node) {
+			Api.getNode(to.params.key || '', null, function(node) {
 				self.node = node
 				self.inverseReferencesOpen = false
 			})
