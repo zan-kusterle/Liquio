@@ -2,7 +2,7 @@ use Mix.Config
 
 config :liquio, Liquio.Endpoint,
 	http: [port: 4000],
-	debug_errors: true,
+	debug_errors: false,
 	code_reloader: true,
 	check_origin: false,
 	watchers: [node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin"]]

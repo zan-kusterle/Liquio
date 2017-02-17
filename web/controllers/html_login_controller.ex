@@ -1,36 +1,6 @@
 defmodule Liquio.HtmlLoginController do
 	use Liquio.Web, :controller
 
-	def index(conn, _params) do
-		conn
-		|> render(Liquio.LoginView, "index.html")
-	end
-
-	def create(conn, %{"email" => email}) do
-		if Mix.env == :dev do
-			identity = Repo.get_by(Identity, email: email)
-			identity = if identity do
-				identity
-			else
-				name = case String.split(email, "@", parts: 2) do
-					[left, _] ->  left
-					_ -> "dev"
-				end
-				identity = Identity.create(Identity.changeset(%Identity{email: email}, %{"username" => name, "name" => name}))
-			end
-			conn
-			|> Guardian.Plug.sign_in(identity)
-			|> put_flash(:info, "Hello, #{identity.name}")
-			|> redirect(to: html_identity_path(conn, :show, identity.id))
-		else
-			token = Token.new(email)
-			Token.send_token(token)
-			conn
-			|> put_flash(:info, "Check your inbox at #{email}")
-			|> redirect(to: html_login_path(conn, :index))
-		end
-	end
-
 	def show(conn, %{"id" => token}) do
 		email = Token.get_email(token)
 		if email == nil do
@@ -47,15 +17,8 @@ defmodule Liquio.HtmlLoginController do
 				conn
 				|> Guardian.Plug.sign_in(identity)
 				|> put_flash(:info, "Hello, #{identity.name}")
-				|> redirect(to: html_identity_path(conn, :show, identity.id))
+				|> redirect(to: "/")
 			end
 		end
-	end
-
-	def delete(conn, _params) do
-		conn
-		|> Guardian.Plug.sign_out
-		|> put_flash(:info, "Goodbye")
-		|> redirect(to: html_login_path(conn, :index))
 	end
 end

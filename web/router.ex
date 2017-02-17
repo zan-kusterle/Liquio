@@ -35,22 +35,7 @@ defmodule Liquio.Router do
 	scope "/", Liquio do
 		pipe_through :browser
 
-		get "/link", LandingController, :learn
-
-		resources "/login", HtmlLoginController, only: [:index, :show, :create]
-		get "/logout", HtmlLoginController, :delete
-
-		post "/identities/me/preferences", HtmlIdentityController, :update
-		resources "/identities", HtmlIdentityController, only: [:create, :show] do
-			resources "/delegations", HtmlDelegationController, only: [:create]
-		end
-
-		resources "/", HtmlNodeController, only: [:show, :create] do
-			resources "/references", HtmlReferenceController, only: [:show, :create]
-		end
-
-		get "/", HtmlExploreController, :index
-		get "/search", HtmlExploreController, :search
+		get "/login", HtmlLoginController, :show
 	end
 
 	scope "/", Liquio do
@@ -75,6 +60,6 @@ defmodule Liquio.Router do
 			end
 		end
 
-		get "/search", SearchController, :index
+		get "/search", NodeController, :search
 	end
 end

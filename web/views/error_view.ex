@@ -1,8 +1,8 @@
 defmodule Liquio.ErrorView do
 	use Liquio.Web, :view
 
-	def render("404.html", _assigns) do
-		"There is nothing here"
+	def render("404.html", assigns) do
+		render Liquio.LayoutView, "app.html", assigns
 	end
 
 	def render("500.html", _assigns) do
@@ -12,9 +12,7 @@ defmodule Liquio.ErrorView do
 	def render("error.json", %{message: message}) do
 		%{errors: [message]}
 	end
-
-	# In case no render clause matches or no
-	# template is found, let's render it as 500
+	
 	def template_not_found(_template, assigns) do
 		render "500.html", assigns
 	end

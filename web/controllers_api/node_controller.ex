@@ -1,10 +1,7 @@
 defmodule Liquio.NodeController do
 	use Liquio.Web, :controller
 	
-	with_params(%{
-		:user => {Plugs.CurrentUser, [require: false]}
-	},
-	def index(conn, params = %{:user => user}) do
+	def index(conn, _params) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
 		nodes = Vote
 		|> Repo.all
@@ -14,7 +11,15 @@ defmodule Liquio.NodeController do
 		|> Enum.filter(& &1.choice_type != nil)
 		conn
 		|> render("show.json", node: Node.new("", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts))
-	end)
+	end
+
+	def search(conn, %{"id" => query}) do
+		calculation_opts = get_calculation_opts_from_conn(conn)
+		nodes = Vote |> Vote.search(query) |> Repo.all
+
+		conn
+		|> render("show.json", node: Node.new("Results for: #{query}", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts))
+	end
 
 	with_params(%{
 		:node => {Plugs.NodeParam, [name: "id"]},
