@@ -90,7 +90,7 @@ const getCurrentChoice = function(node, values, resultsKey, choiceType) {
 }
 
 export default {
-	props: ['node', 'resultsKey', 'referenceKey', 'choiceType'],
+	props: ['node', 'votableNodes', 'resultsKey', 'choiceType'],
 	data: function() {
 		let self = this
 		let choiceType = self.choiceType || self.node.choice_type
@@ -122,12 +122,15 @@ export default {
 			values: choiceValues,
 			set: function(event) {
 				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main', choiceType)
-				Api.setVote(self.node.url_key, self.referenceKey, choice, function(node) {
-					self.$root.bus.$emit('change')
+				let nodes = self.votableNodes || [self.node]
+				_.each(nodes, (node) => {
+					Api.setVote(node.url_key, node.reference_key.replace(/\_/g, '-'), choice, function(node) {
+						self.$root.bus.$emit('change')
+					})
 				})
 			},
 			unset: function(event) {
-				Api.unsetVote(self.node.url_key, self.referenceKey, function(node) {
+				Api.unsetVote(node.url_key, node.referenceKey, function(node) {
 					self.values = [{'value': 50, 'year': ''}]
 					self.$root.bus.$emit('change')
 				})

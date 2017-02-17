@@ -18,7 +18,7 @@
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
 					<p class="ui-title">Your choice</p>
 					
-					<own-vote v-bind:node="node" v-bind:results-key="resultsKey" v-bind:reference-key="referenceKey" v-bind:choice-type="choiceType"></own-vote>
+					<own-vote v-bind:node="node" v-bind:votable-nodes="votableNodes" v-bind:results-key="resultsKey" v-bind:reference-key="referenceKey" v-bind:choice-type="choiceType"></own-vote>
 					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0">
 						<p class="ui-title">{{ Math.round(node.results.turnout_ratio * 100) }}% turnout</p>
 						<div class="contribution" v-for="contribution in node.contributions">
@@ -47,7 +47,7 @@ import locale from 'element-ui/lib/locale/lang/en'
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['node', 'resultsKey', 'referenceKey', 'link', 'title', 'choiceType'],
+	props: ['node', 'votableNodes', 'resultsKey', 'referenceKey', 'link', 'title', 'choiceType'],
 	components: {OwnVote},
 	data: function() {
 		return {

@@ -26,12 +26,12 @@ defmodule Liquio.Node do
 		}
 
 		value_spaces = value |> URI.decode |> String.replace("-", " ") |> String.replace("_", " ")
-		ends_with = Enum.find(Map.keys(choice_types), & String.ends_with?(value_spaces, &1))
+		ends_with = Enum.find(Map.keys(choice_types), & value_spaces |> String.downcase |> String.ends_with?(&1 |> String.downcase))
 
 		{title, choice_type} = if ends_with == nil do
 			{value_spaces, nil}
 		else
-			{String.replace_suffix(value_spaces, ends_with, ""), to_string(choice_types[ends_with])}
+			{String.slice(value_spaces, 0, String.length(value_spaces) - String.length(ends_with)), to_string(choice_types[ends_with])}
 		end
 		node = Node.new(title |> String.trim(), choice_type, nil)
 

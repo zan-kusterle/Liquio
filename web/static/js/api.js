@@ -1,4 +1,5 @@
 var axios = require('axios')
+var _ = require('lodash')
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -7,6 +8,22 @@ export function getNode(key, referenceKey, cb) {
 	let url = '/api/nodes/' + encodeURIComponent(key) + (referenceKey ? '/references/' + encodeURIComponent(referenceKey) : '')
 	axios.get(url).then(function (response) {
 		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+
+export function getNodes(keys, referenceKeys, cb) {
+	var reqs = _.flatMap(keys, (key) => {
+		if(referenceKeys == null) {
+			return [axios.get('/api/nodes/' + encodeURIComponent(key))]
+		} else {
+			return _.map(referenceKeys, (referenceKey) => {
+				return axios.get('/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(referenceKey))
+			})
+		}
+	})
+	axios.all(reqs).then(function(responses) {
+		cb(_.map(responses, (r) => r.data.data))
 	}).catch(function (error) {
 	})
 }

@@ -1,6 +1,6 @@
 <template>
 <div>
-	<div v-if="nodes.length > 0 && referenceNodes.length > 0 && reference != null">
+	<div v-if="nodes.length > 0 && referenceNodes.length > 0 && references.length > 0">
 		<div class="main">
 			<div class="inset-top">
 				<el-row>
@@ -17,9 +17,9 @@
 			</div>
 
 			<div class="main-node">
-				<liquio-node v-if="nodes[0].choice_type" v-bind:node="reference" v-bind:reference-key="referenceNodes[0].url_key" results-key="for_choice" title="Choice Which Reference Supports" style="margin: 40px 0px;"></liquio-node>
+				<liquio-node v-if="nodes[0].choice_type" v-bind:node="references[0]" v-bind:votable-nodes="references" results-key="for_choice" v-bind:reference-key="referenceNodes[0].url_key" title="Choice Which Reference Supports" style="margin: 40px 0px;"></liquio-node>
 				
-				<liquio-node v-bind:node="reference" results-key="relevance" choice-type="probability" v-bind:reference-key="referenceNodes[0].url_key" title="Relevance Score" style="margin: 40px 0px;"></liquio-node>
+				<liquio-node v-bind:node="references[0]" v-bind:votable-nodes="references" results-key="relevance" choice-type="probability" v-bind:reference-key="referenceNodes[0].url_key" title="Relevance Score" style="margin: 40px 0px;"></liquio-node>
 			</div>
 		</div>
 
@@ -42,16 +42,19 @@ export default {
 	
 	data: function() {
 		let self = this
-		Api.getNode(this.$route.params.key, null, (node) => self.nodes = [node])
-		Api.getNode(this.$route.params.referenceKey, null, (node) => self.referenceNodes = [node])
-		Api.getNode(this.$route.params.key, this.$route.params.referenceKey, (node) => self.reference = node)
-		this.$root.bus.$on('change', () => {
-			Api.getNode(self.$route.params.key, self.$route.params.referenceKey, (node) => self.reference = node)
-		})
+		let keys = this.$route.params.key.split('_')
+		let referenceKeys = this.$route.params.referenceKey.split('_')
+		Api.getNodes(keys, null, (nodes) => self.nodes = nodes)
+		Api.getNodes(referenceKeys, null, (nodes) => self.referenceNodes = nodes)
+		Api.getNodes(keys, referenceKeys, (nodes) => self.references = nodes)
+		this.$root.bus.$on('change', () => Api.getNodes(keys, referenceKeys, (nodes) => {
+			self.references = nodes
+		}))
+		
 		return {
 			nodes: [],
 			referenceNodes: [],
-			reference: null,
+			references: []
 		}
 	}
 }
