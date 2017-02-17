@@ -30,6 +30,12 @@ defmodule Liquio.Vote do
 		embeds_one :data, VoteData
 	end
 
+	def search(query, search_term) do
+		from(v in query,
+		where: fragment("? % ?", v.title, ^search_term),
+		order_by: fragment("similarity(?, ?) DESC", v.title, ^search_term))
+	end
+
 	def current_by(node, identity) do
 		votes = get_last(node, identity)
 		if Enum.empty?(votes) or Enum.at(votes, 0).data == nil do

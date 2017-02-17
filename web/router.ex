@@ -60,6 +60,6 @@ defmodule Liquio.Router do
 			end
 		end
 
-		get "/search", NodeController, :search
+		get "/search/:id", NodeController, :search
 	end
 end

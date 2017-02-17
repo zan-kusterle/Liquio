@@ -15,10 +15,15 @@ defmodule Liquio.NodeController do
 
 	def search(conn, %{"id" => query}) do
 		calculation_opts = get_calculation_opts_from_conn(conn)
-		nodes = Vote |> Vote.search(query) |> Repo.all
+		nodes = Vote
+		|> Vote.search(query)
+		|> Repo.all
+		|> Enum.map(& &1.key)
+		|> Enum.uniq
+		|> Enum.map(& Node.from_key(&1) |> Node.preload_results(calculation_opts))
 
 		conn
-		|> render("show.json", node: Node.new("Results for: #{query}", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts))
+		|> render("show.json", node: Node.new("Results for '#{query}'", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts))
 	end
 
 	with_params(%{

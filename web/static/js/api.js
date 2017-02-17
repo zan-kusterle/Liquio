@@ -28,6 +28,14 @@ export function getNodes(keys, referenceKeys, cb) {
 	})
 }
 
+export function search(query, cb) {
+	let url = '/api/search/' + encodeURIComponent(query)
+	axios.get(url).then(function (response) {
+		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+
 export function login(email, cb) {
 	axios.post('/api/login', {email: email}).then(function (response) {
 		axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.data.access_token;

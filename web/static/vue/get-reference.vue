@@ -1,6 +1,6 @@
 <template>
 <div>
-	<el-input placeholder="Title" v-model="title" style="max-width: 800px;">
+	<el-input placeholder="Title" v-model="title" @keyup.native.enter="view" style="max-width: 800px;">
 		<el-select slot="prepend" placeholder="Select" v-model="choice_type" style="width: 120px;">
 			<el-option v-for="item in options" v-bind:value="item.value" v-bind:label="item.text"></el-option>
 		</el-select>
@@ -16,8 +16,9 @@ export default {
 	props: ['node'],
 	data: function() {
 		let self = this
+		let title = this.$route.params.query || ''
 		return {
-			title: '',
+			title: title,
 			choice_type: '',
 			view: function(event) {
 				if(self.title.length >= 3) {
@@ -25,7 +26,7 @@ export default {
 						let path = '/search/' + encodeURIComponent(self.title)
 						self.$router.push(path)
 					} else {
-						if(self.node.title == '') {
+						if(self.node.title == '' || self.$route.name == 'search') {
 							let path = '/' + Api.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						} else {
@@ -40,7 +41,7 @@ export default {
 	computed: {
 		options: function() {
 			let opts = []
-			if(this.node.title == '') {
+			if(this.node.title == '' || this.$route.name == 'search') {
 				opts.push({text: 'Search', value: 'search'})
 				opts.push({text: 'Group', value: ''})
 			}

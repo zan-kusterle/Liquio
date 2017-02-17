@@ -18,6 +18,7 @@ const routes = [
 	{ path: '/', component: nodeComponent },
 	{ path: '/login', component: loginComponent },
 	{ path: '/identities/:username', component: identityComponent },
+	{ name: 'search', path: '/search/:query', component: nodeComponent },
 	{ path: '/:key/references/:referenceKey', component: referenceComponent },
 	{ path: '/:key', component: nodeComponent }
 ]

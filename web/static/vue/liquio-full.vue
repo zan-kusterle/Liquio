@@ -34,24 +34,29 @@ export default {
 	components: {CalculationOptions, GetReference, LiquioNode, LiquioList},
 	data: function() {
 		let self = this
-		Api.getNode(this.$route.params.key || '', null, (node) => self.node = node)
-		this.$root.bus.$on('change', () => {
-			Api.getNode(self.$route.params.key || '', null, (node) => self.node = node)
-		})
+		if(this.$route.params.query) {
+			Api.search(this.$route.params.query, (node) => self.node = node)
+		} else {
+			Api.getNode(this.$route.params.key || '', null, (node) => self.node = node)
+			this.$root.bus.$on('change', () => {
+				Api.getNode(self.$route.params.key || '', null, (node) => self.node = node)
+			})
+		}
+		
 
 		return {
-			node: null,
-			inverseReferencesOpen: true
+			node: null
 		}
 	},
 	watch: {
 		'$route': function(to, from) {
 			let self = this
 			self.node = null
-			Api.getNode(to.params.key || '', null, function(node) {
-				self.node = node
-				self.inverseReferencesOpen = false
-			})
+			if(self.$route.params.query) {
+				Api.search(self.$route.params.query, (node) => self.node = node)
+			} else {
+				Api.getNode(to.params.key || '', null, (node) => self.node = node)
+			}
 		}
 	}
 }
