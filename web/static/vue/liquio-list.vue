@@ -1,6 +1,6 @@
 <template>
 <div>
-	<el-row :gutter="20" class="liquio-list" v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
+	<el-row :gutter="50" class="liquio-list" v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
 		<el-col :span="12">
 			<h3 class="pole-heading">Negative</h3>
 		
@@ -40,7 +40,6 @@ export default {
 	}
 
 	.pole-heading {
-		text-align: center;
 		font-weight: normal;
 	}
 
