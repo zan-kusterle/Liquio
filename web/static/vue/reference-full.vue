@@ -17,7 +17,7 @@
 			</div>
 
 			<div class="main-node">
-				<liquio-node v-if="nodes[0].choice_type" v-bind:node="references[0]" v-bind:votable-nodes="references" v-bind:reference-key="referenceNodes[0].url_key" title="Choice Which Reference Supports" style="margin: 40px 0px;"></liquio-node>
+				<liquio-node v-if="nodes[0].choice_type" v-bind:node="references[0]" v-bind:votable-nodes="references" results-key="for_choice" v-bind:reference-key="referenceNodes[0].url_key" title="Choice Which Reference Supports" style="margin: 40px 0px;"></liquio-node>
 				
 				<liquio-node v-bind:node="references[0]" v-bind:votable-nodes="references" results-key="relevance" choice-type="probability" v-bind:reference-key="referenceNodes[0].url_key" title="Relevance Score" style="margin: 40px 0px;"></liquio-node>
 			</div>

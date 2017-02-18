@@ -1,6 +1,6 @@
 <template>
 <div>
-	<el-row class="liquio-list" v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
+	<el-row :gutter="20" class="liquio-list" v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
 		<el-col :span="12">
 			<h3 class="pole-heading">Negative</h3>
 		
@@ -11,7 +11,7 @@
 		<el-col :span="12">
 			<h3 class="pole-heading">Positive</h3>
 		
-			<div class="pole">
+			<div class="pole-list">
 				<liquio-inline v-for="node in nodes" v-if="node.reference_result.by_keys['for_choice'] && node.reference_result.by_keys['for_choice'].mean > 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquo-inline>
 			</div>
 		</el-col>
@@ -45,6 +45,12 @@ export default {
 	}
 
 	.pole-list {
-		padding: 0px 12px;
+		column-count: 3;
+		column-gap: 20px;
+	}
+
+	.references {
+		column-count: 5;
+		column-gap: 20px;
 	}
 </style>

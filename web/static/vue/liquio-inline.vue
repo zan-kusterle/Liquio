@@ -22,8 +22,8 @@ export default {
 <style scoped>
 	.reference {
 		display: inline-block;
-		width: 45%;
-		margin: 10px;
+		width: 100%;
+		margin: 0 0 1em;
 		font-size: 15px;
 		text-align: left;
 		vertical-align: top;
