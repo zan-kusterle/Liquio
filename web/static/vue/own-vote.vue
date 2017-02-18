@@ -124,7 +124,7 @@ export default {
 				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main', choiceType)
 				let nodes = self.votableNodes || [self.node]
 				_.each(nodes, (node) => {
-					Api.setVote(node.url_key, node.reference_key.replace(/\_/g, '-'), choice, function(node) {
+					Api.setVote(node.url_key, node.reference_key && node.reference_key.replace(/\_/g, '-'), choice, function(node) {
 						self.$root.bus.$emit('change')
 					})
 				})

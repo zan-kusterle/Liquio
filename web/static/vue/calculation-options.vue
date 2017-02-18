@@ -3,14 +3,16 @@
 	<el-button type="text" @click="dialogVisible = !dialogVisible">Options</el-button>
 
 	<el-dialog title="Options" v-model="dialogVisible">
-
-		
 		<div class="block">
-			<p class="demonstration">Order by</p>
-			<el-select slot="prepend" placeholder="Select" v-model="sort" style="width: 200px;">
-				<el-option value="top" label="Top"></el-option>
-				<el-option value="new" label="New"></el-option>
-				<el-option value="certainty" label="Certainty"></el-option>
+			<p class="demonstration">Sort</p>
+			<el-select slot="prepend" placeholder="Select" v-model="sortDirection" style="width: 100px;">
+				<el-option value="most" label="Most"></el-option>
+				<el-option value="least" label="Least"></el-option>
+			</el-select>
+			<el-select slot="prepend" placeholder="Select" v-model="sort" style="width: 150px;">
+				<el-option value="top" label="relevant"></el-option>
+				<el-option value="new" label="new"></el-option>
+				<el-option value="variance" label="controversial"></el-option>
 			</el-select>
 		</div>
 
@@ -62,7 +64,8 @@ export default {
 			vote_weight_halving_days: 1000,
 			soft_quorum_t: 0,
 			minimum_relevance_score: 50,
-			sort: 'top'
+			sort: 'top',
+			sortDirection: 'most'
 		}
 	}
 }
@@ -71,5 +74,9 @@ export default {
 <style scoped>
 	.block {
 		margin-bottom: 30px;
+	}
+
+	.demonstration {
+		display: inline;
 	}
 </style>
