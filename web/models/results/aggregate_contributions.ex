@@ -33,9 +33,12 @@ defmodule Liquio.Results.AggregateContributions do
 		results = if choice_type == "time_quantity" do
 			results_with_datetime = results.by_keys
 			|> Enum.map(fn({time_key, time_results}) ->
-				{year, ""} = Integer.parse(time_key)
-				Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
+				case Integer.parse(time_key) do
+					{year, ""} -> Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
+					:error -> nil
+				end
 			end)
+			|> Enum.filter(& &1 != nil)
 			results |> Map.put(:by_datetime, results_with_datetime)
 		else
 			results

@@ -22,7 +22,7 @@ export default {
 <style scoped>
 	.reference {
 		display: inline-block;
-		width: 160px;
+		width: 45%;
 		margin: 10px;
 		font-size: 15px;
 		text-align: left;
