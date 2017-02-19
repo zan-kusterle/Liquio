@@ -130,9 +130,11 @@ export default {
 				})
 			},
 			unset: function(event) {
-				Api.unsetVote(node.url_key, node.referenceKey, function(node) {
-					self.values = [{'value': 50, 'year': ''}]
-					self.$root.bus.$emit('change')
+				let nodes = self.votableNodes || [self.node]
+				_.each(nodes, (node) => {
+					Api.unsetVote(node.url_key, node.reference_key && node.reference_key.replace(/\_/g, '-'), function(node) {
+						self.$root.bus.$emit('change')
+					})
 				})
 			},
 			keyup: function(event) {
