@@ -3,15 +3,15 @@
 	<div v-if="nodes.length > 0 && referenceNodes.length > 0 && references.length > 0">
 		<div class="main">
 			<div class="inset-top">
-				<el-row>
+				<el-row :gutter="30">
 					<el-col :span="11">
-						<liquio-inline v-for="node in nodes" v-bind:node="node" results-key="main" link="true" style="width: 95%;"></liquio-inline>
+						<liquio-inline v-for="node in nodes" v-bind:node="node" results-key="main"></liquio-inline>
 					</el-col>
 					<el-col :span="2">
 						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 50px;"></i>
 					</el-col>
 					<el-col :span="11">
-						<liquio-inline v-for="node in referenceNodes" v-bind:node="node" results-key="main" link="true" style="width: 95%;"></liquio-inline>
+						<liquio-inline v-for="node in referenceNodes" v-bind:node="node" results-key="main"></liquio-inline>
 					</el-col>
 				</el-row>
 			</div>
@@ -26,7 +26,7 @@
 		<calculation-options v-bind:opts="nodes[0].calculation_opts"></calculation-options>
 	</div>
 	<div v-else>
-		<i class="el-icon-loading" style="font-size: 100px; margin-top: 100px;"></i>
+		<i class="el-icon-loading loading"></i>
 	</div>
 </div>
 </template>

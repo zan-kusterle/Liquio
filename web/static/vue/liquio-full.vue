@@ -18,7 +18,7 @@
 		<calculation-options v-bind:opts="node.calculation_opts"></calculation-options>
 	</div>
 	<div v-else>
-		<i class="el-icon-loading" style="font-size: 100px; margin-top: 100px;"></i>
+		<i class="el-icon-loading loading"></i>
 	</div>
 </div>
 </template>

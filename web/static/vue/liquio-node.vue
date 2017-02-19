@@ -1,7 +1,7 @@
 <template>
 <div>
 	<div v-if="node">
-		<router-link :to="'/' + node.url_key" v-if="link == 'true'" class="title" style="vertical-align: middle;">{{ title || node.title }}</router-link>
+		<a :href="node.title.replace(' ', '-')" target="_blank" v-if="node.title && node.title.startsWith('https://')" class="title" style="vertical-align: middle;">{{ node.title }}</a>
 		<h1 v-else class="title" style="vertical-align: middle;">{{ title || node.title }}</h1>
 
 		<div class="score-container">
@@ -47,7 +47,7 @@ import locale from 'element-ui/lib/locale/lang/en'
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['node', 'votableNodes', 'resultsKey', 'referenceKey', 'link', 'title', 'choiceType'],
+	props: ['node', 'votableNodes', 'resultsKey', 'referenceKey', 'title', 'choiceType'],
 	components: {OwnVote},
 	data: function() {
 		return {
