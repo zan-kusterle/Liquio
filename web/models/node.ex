@@ -310,7 +310,8 @@ defmodule Liquio.Node do
 			"#{title} #{choice_types[choice_type]}"
 		end
 
-		base |> String.trim |> String.replace(" ", "-") |> URI.encode |> String.replace("/", "%2F") |> String.replace(":", "%3A")
+		base |> String.trim |> String.replace(" ", "-")
+		|> URI.encode |> String.replace("/", "%2F") |> String.replace(":", "%3A") |> String.replace("?", "%3F") |> String.replace("=", "%3D") |> String.replace("&", "%26")
 	end
 	
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do
