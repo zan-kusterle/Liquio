@@ -160,7 +160,7 @@ defmodule Liquio.Node do
 			node
 		end
 
-		direct_votes = if node.reference_key == nil do votes |> Enum.filter(fn({k, v}) -> v.reference_key == nil end) else votes end
+		direct_votes = if node.reference_key == nil do votes |> Enum.filter(fn({k, v}) -> v.reference_key == nil end) |> Enum.into(%{}) else votes end
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 		contributions = CalculateContributions.calculate(direct_votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
 
