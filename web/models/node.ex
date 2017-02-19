@@ -93,6 +93,25 @@ defmodule Liquio.Node do
 		Map.put(node, :key, get_key(node))
 	end
 
+	def preload_using_cache(node, calculation_opts) do
+		key = {
+			{"nodes", {node.key, node.reference_key}, calculation_opts.datetime},
+			{
+				calculation_opts.trust_metric_url,
+				calculation_opts.minimum_voting_power,
+				calculation_opts.reference_minimum_turnout
+			}
+		}
+		cache_results = ResultsCache.get(key)
+		if cache_results do
+			cache_results
+		else
+			node = node |> preload(calculation_opts)
+			ResultsCache.set(key, node)
+			node
+		end
+	end
+
 	def preload(node, calculation_opts) do
 		preload(node, calculation_opts, nil)
 	end
@@ -128,31 +147,10 @@ defmodule Liquio.Node do
 
 		node = Map.put(node, :calculation_opts, calculation_opts)
 
-		key = {
-			{"contributions", {node.key, node.reference_key}, calculation_opts.datetime},
-			{calculation_opts.trust_metric_url}
-		}
-		cache_results = ResultsCache.get(key)
-		contributions = if cache_results do
-			cache_results
-		else
-			votes = GetData.get_votes(node.key, calculation_opts.datetime, node.reference_key)
-			inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
-			contributions = CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
-			ResultsCache.set(key, contributions)
-			contributions
-		end
-
-		contributions = contributions |> Enum.map(fn(contribution) ->
-			contribution = Map.put(contribution, :identity, Repo.get(Identity, contribution.identity.id))
-			results = AggregateContributions.aggregate([contribution], calculation_opts)
-			
-			contribution
-			|> Map.put(:results, results |> preload_results_embed)
-		end)
-
-		node = if not Enum.empty?(contributions) do
-			{best_title, _count} = contributions
+		votes = GetData.get_votes(node.key, calculation_opts.datetime, node.reference_key)
+		node = if not Enum.empty?(votes) do
+			{best_title, _count} = votes
+			|> Map.values
 			|> Enum.group_by(& &1.title)
 			|> Enum.map(fn({k, v}) -> {k, Enum.count(v)} end)
 			|> Enum.max_by(fn({title, count}) -> count end)
@@ -162,14 +160,29 @@ defmodule Liquio.Node do
 			node
 		end
 
+		direct_votes = if node.reference_key == nil do votes |> Enum.filter(fn({k, v}) -> v.reference_key == nil end) else votes end
+		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
+		contributions = CalculateContributions.calculate(direct_votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
+
+		contributions = contributions |> Enum.map(fn(contribution) ->
+			contribution = Map.put(contribution, :identity, Repo.get(Identity, contribution.identity.id))
+			results = AggregateContributions.aggregate([contribution], calculation_opts)
+			
+			contribution
+			|> Map.put(:results, results |> preload_results_embed)
+		end)
+
 		contributions = contributions
-		
 		|> Enum.map(fn(contribution) ->
 			if contribution.choice_type == "time_quantity" do
-				points = contribution.choice |> Enum.map(fn({time_key, value}) ->
-					{year, ""} = Integer.parse(time_key)
-					{Timex.to_date({year, 1, 1}), value}
+				points = contribution.choice
+				|> Enum.map(fn({time_key, value}) ->
+					case Integer.parse(time_key) do
+						{year, ""} -> {Timex.to_date({year, 1, 1}), value}
+						:error -> nil
+					end
 				end)
+				|> Enum.filter(& &1 != nil)
 				Map.put(contribution, :points, points)
 			else
 				contribution
