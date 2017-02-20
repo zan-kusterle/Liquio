@@ -33,14 +33,14 @@
 		<script>
 			<%
 				token = if user = Guardian.Plug.current_resource(@conn) do
-					Guardian.Plug.current_token(Guardian.Plug.sign_in(@conn, user))
+					Guardian.Plug.current_token(user)
 				else
 					nil
 				end
 			%>
 			var token = <%= if token do %>'<%= token %>'<% else %><%= "null" %><% end %>;
 		</script>
-		<div id="app" class="container">
+		<div id="app" class="container" style="display: none;">
 			<div class="header">
 				<div class="header-contents">
 					<div class="pure-g">
@@ -73,5 +73,6 @@
 		</div>
 
 		<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+		<script>document.getElementById('app').style = 'display: block;'</script>
 	</body>
 </html>

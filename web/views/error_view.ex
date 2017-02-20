@@ -2,7 +2,7 @@ defmodule Liquio.ErrorView do
 	use Liquio.Web, :view
 
 	def render("404.html", assigns) do
-		render Liquio.LayoutView, "app.html", assigns
+		render(Liquio.LayoutView, "app.html", assigns)
 	end
 
 	def render("500.html", _assigns) do

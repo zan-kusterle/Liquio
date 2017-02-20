@@ -40,7 +40,7 @@ defmodule Liquio.Token do
 			to: token.email,
 			from: "Liquio <login@liqu.io>",
 			subject: "Instantly login to Liquio",
-			html: "<a href=\"#{url}\" style=\"background-color: #1f8dd6; color: white; display: block; padding: 20px 30px; text-align: center; max-width: 200px; margin: 0 auto; font-size: 22px; text-decoration: none; border-radius: 5px;\">Login to Liquio</a>"
+			html: "<a href=\"#{url}\" style=\"background-color: #2a9fec; color: white; display: block; padding: 20px 30px; text-align: center; max-width: 200px; margin: 0 auto; font-size: 22px; text-decoration: none; border-radius: 5px;\">Login to Liquio</a>"
 		)
 	end
 

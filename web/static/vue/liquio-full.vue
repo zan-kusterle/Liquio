@@ -1,5 +1,5 @@
 <template>
-<div>
+<div v-loading.fullscreen.lock="node == null">
 	<div v-if="node">
 		<div class="main">
 			<div class="inset-top" style="text-align: left;">
@@ -17,8 +17,10 @@
 
 		<calculation-options v-bind:opts="node.calculation_opts"></calculation-options>
 	</div>
-	<div v-else>
-		<i class="el-icon-loading loading"></i>
+	<div class="main" v-else>
+		<div class="main-node" v-if="title">
+			<h1 class="fake-title">{{ title }}</h1>
+		</div>
 	</div>
 </div>
 </template>
@@ -30,34 +32,47 @@ import LiquioNode from '../vue/liquio-node.vue'
 import LiquioList from '../vue/liquio-list.vue'
 let Api = require('api.js')
 
+function updateNode(self) {
+	self.node = null
+	if(self.$route.params.query) {
+		Api.search(self.$route.params.query, (node) => self.node = node)
+		self.title = self.$route.params.query
+	} else {
+		let key = self.$route.params.key || ''
+		Api.getNode(key, null, (node) => self.node = node)
+		self.title = key.replace('-Probability', '').replace('-Quantity', '').replace('-Time-Series', '').replace(/-/g, ' ')
+	}
+}
+
 export default {
 	components: {CalculationOptions, GetReference, LiquioNode, LiquioList},
-	data: function() {
-		let self = this
-		if(this.$route.params.query) {
-			Api.search(this.$route.params.query, (node) => self.node = node)
-		} else {
-			Api.getNode(this.$route.params.key || '', null, (node) => self.node = node)
-			this.$root.bus.$on('change', () => {
-				Api.getNode(self.$route.params.key || '', null, (node) => self.node = node)
-			})
-		}
-		
+	data: function() {		
+		this.$root.bus.$on('change', () => {
+			updateNode(this)
+		})
+		updateNode(this)
 
 		return {
-			node: null
+			node: this.node,
+			title: this.title
 		}
 	},
 	watch: {
-		'$route': function(to, from) {
-			let self = this
-			self.node = null
-			if(self.$route.params.query) {
-				Api.search(self.$route.params.query, (node) => self.node = node)
-			} else {
-				Api.getNode(to.params.key || '', null, (node) => self.node = node)
-			}
+		'$route': function(to, from) {			
+			updateNode(this)
 		}
 	}
 }
 </script>
+
+<style scoped>
+	.fake-title {
+		display: block;
+		font-size: 26px;
+		font-weight: normal;
+		color: #333;
+		opacity: 1;
+		word-wrap: break-word;
+		margin: 40px 0px;
+	}
+</style>

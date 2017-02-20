@@ -10,6 +10,7 @@ Vue.use(VueRouter)
 Vue.use(ElementUI, {locale})
 
 import loginComponent from '../vue/login.vue'
+import finishLoginComponent from '../vue/finish-login.vue'
 import identityComponent from '../vue/identity-full.vue'
 import nodeComponent from '../vue/liquio-full.vue'
 import referenceComponent from '../vue/reference-full.vue'
@@ -17,6 +18,7 @@ import referenceComponent from '../vue/reference-full.vue'
 const routes = [
 	{ path: '/', component: nodeComponent },
 	{ path: '/login', component: loginComponent },
+	{ path: '/login/:token/new', component: finishLoginComponent },
 	{ path: '/identities/:username', component: identityComponent },
 	{ name: 'search', path: '/search/:query', component: nodeComponent },
 	{ path: '/:key/references/:referenceKey', component: referenceComponent },

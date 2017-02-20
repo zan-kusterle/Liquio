@@ -35,7 +35,7 @@ defmodule Liquio.Router do
 	scope "/", Liquio do
 		pipe_through :browser
 
-		get "/login", HtmlLoginController, :show
+		get "/login/:id", HtmlLoginController, :show
 	end
 
 	scope "/", Liquio do

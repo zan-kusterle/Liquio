@@ -17,7 +17,7 @@ export default {
 			email: '',
 			login: function(event) {
 				Api.login(self.email, function(token) {
-					self.localStorage.setItem('auth-token', res.body.token);
+					self.localStorage.setItem('auth-token', token);
 				})
 			}
 		}
