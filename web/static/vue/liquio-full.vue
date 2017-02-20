@@ -18,8 +18,8 @@
 		<calculation-options v-bind:opts="node.calculation_opts"></calculation-options>
 	</div>
 	<div class="main" v-else>
-		<div class="main-node" v-if="title">
-			<h1 class="fake-title">{{ title }}</h1>
+		<div class="main-node">
+			<h1 class="fake-title" v-if="title">{{ title }}</h1>
 			<i class="el-icon-loading loading"></i>
 		</div>
 	</div>
