@@ -1,51 +1,51 @@
-<style>
-	.area {
-		width: inherit;
-		height: inherit;
-		position: relative;
-	}
-
-	.bubble {
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		width: inherit;
-		height: inherit;
-		display: table;
-	}
-
-	.bubble p {
-		display: table-cell;
-		vertical-align: middle;
-		text-align: center;
-		color: #333;
-		line-height: 100%;
-	}
-</style>
-
 <% results_key = if assigns[:results_key] do @results_key else "main" end %>
+<%= if @results.choice_type != nil or results_key == "relevance" do %>
+	<style>
+		.area {
+			width: inherit;
+			height: inherit;
+			position: relative;
+		}
 
-<div class="area" style="background: <%= if @results.choice_type == "time_quantity" do "#ddd" else results_color(@results, results_key) end %>;">
-	<div class="bubble">
-		<%= if assigns[:results_key] == nil and @results.choice_type == "time_quantity" do %>
-			<%= if Enum.empty?(@results.by_datetime) do %>
-				<p>?</p>
+		.bubble {
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			width: inherit;
+			height: inherit;
+			display: table;
+		}
+
+		.bubble p {
+			display: table-cell;
+			vertical-align: middle;
+			text-align: center;
+			color: #333;
+			line-height: 100%;
+		}
+	</style>
+
+	<% mean = if @results != nil and Map.has_key?(@results.by_keys, results_key) do @results.by_keys[results_key].mean else nil end %>
+
+	<div class="area" style="background: <%= results_color(@results, results_key) %>;">
+		<div class="bubble">
+			<%= if @results.choice_type == "probability" or results_key == "relevance" do %>
+				<p>
+					<%= if mean != nil do "#{round(mean * 100)}%" else "?" end %>
+				</p>
 			<% else %>
-				<%= render Liquio.ComponentsView, "chart.html", points: @results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
-			<% end %>
-		<% else %>
-			<p>
-				<% mean = if @results != nil and Map.has_key?(@results.by_keys, results_key) do @results.by_keys[results_key].mean else nil end %>
-				<%= if mean != nil do %>
-					<%= if @results.choice_type == "probability" or results_key == "relevance" do %>
-						<%= round(mean * 100) %>%
-					<% else %>
-						<%= number_format(mean) %>
-					<% end %>
+				<%= if @results.choice_type == "quantity" do %>
+					<p>
+						<%= if mean != nil do "#{round(mean)}" else "?" end %>
+					</p>
 				<% else %>
-					?
+					<%= if Enum.count(@results.by_datetime) < 2 do %>
+						<p>?</p>
+					<% else %>
+						<%= render Liquio.ComponentsView, "chart.html", points: @results.by_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio}), tooltips: false %>
+					<% end %>
 				<% end %>
-			</p>
-		<% end %>
+			<% end %>
+		</div>
 	</div>
-</div>
+<% end %>

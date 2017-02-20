@@ -1,5 +1,5 @@
 <template>
-<div v-loading.fullscreen.lock="node == null">
+<div>
 	<div v-if="node">
 		<div class="main">
 			<div class="inset-top" style="text-align: left;">
@@ -20,6 +20,7 @@
 	<div class="main" v-else>
 		<div class="main-node" v-if="title">
 			<h1 class="fake-title">{{ title }}</h1>
+			<i class="el-icon-loading loading"></i>
 		</div>
 	</div>
 </div>

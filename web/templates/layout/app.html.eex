@@ -52,10 +52,10 @@
 						<div style="float: right;">
 							<div class="actions">
 								<%= if user = Guardian.Plug.current_resource(@conn) do %>
-									<router-link to="/identities/<%= user.username %>"><i class="fa fa-user" aria-hidden="true"></i> <%= user.name %></router-link>
-									<a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+									<router-link to="/identities/<%= user.username %>"><i class="el-icon-arrow-right" aria-hidden="true"></i> <%= user.name %></router-link>
+									<a href="/logout"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
 								<% else %>
-									<a href="/login"><i class="fa fa-sign-in" aria-hidden="true"></i> Login</a>
+									<a href="/login"><i class="el-icon-arrow-right" aria-hidden="true"></i> Login</a>
 								<% end %>
 							</div>
 						</div>

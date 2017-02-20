@@ -337,7 +337,7 @@ defmodule Liquio.Node do
 			{key, results}
 		end)
 		|> Enum.filter(fn({_key, result}) ->
-			result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
+			Map.has_key?(result.by_keys, "relevance") and result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
 		end)
 		|> Enum.map(fn({key, result}) ->
 			Node.from_key(key)
@@ -345,7 +345,7 @@ defmodule Liquio.Node do
 			|> Map.put(:reference_result, result)
 			|> Map.put(:references, [])
 		end)
-		|> Enum.sort(&(&1.results.total > &2.results.total))
+		|> Enum.sort_by(& -&1.reference_result.by_keys["relevance"].mean)
 	end
 
 	defp preload_results_embed(results) do

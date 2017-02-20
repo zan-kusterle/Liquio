@@ -25,8 +25,10 @@
 
 		<calculation-options v-bind:opts="nodes[0].calculation_opts"></calculation-options>
 	</div>
-	<div v-else>
-		<i class="el-icon-loading loading"></i>
+	<div class="main" v-else>
+		<div class="main-node">
+			<i class="el-icon-loading loading"></i>
+		</div>
 	</div>
 </div>
 </template>
