@@ -1,7 +1,6 @@
 var axios = require('axios')
 var _ = require('lodash')
 
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 export function getNode(key, referenceKey, cb) {
@@ -31,6 +30,13 @@ export function getNodes(keys, referenceKeys, cb) {
 export function search(query, cb) {
 	let url = '/api/search/' + encodeURIComponent(query)
 	axios.get(url).then(function (response) {
+		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+
+export function getCurrentUser(cb) {
+	axios.get('/api/identities/me').then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {
 	})

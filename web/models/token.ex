@@ -35,7 +35,7 @@ defmodule Liquio.Token do
 	end
 
 	def send_token(token) do
-		url = "#{Liquio.Endpoint.url()}/login/#{token.token}/new"
+		url = "#{Liquio.Endpoint.url()}/api/login/#{token.token}"
 		send_email(
 			to: token.email,
 			from: "Liquio <login@liqu.io>",

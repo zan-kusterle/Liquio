@@ -1,5 +1,5 @@
 <template>
-<div>
+<app>
 	<div v-if="nodes.length > 0 && referenceNodes.length > 0 && references.length > 0">
 		<div class="main">
 			<div class="inset-top">
@@ -30,17 +30,18 @@
 			<i class="el-icon-loading loading"></i>
 		</div>
 	</div>
-</div>
+</app>
 </template>
 
 <script>
+import App from '../vue/app.vue'
 let Api = require('api.js')
 import CalculationOptions from '../vue/calculation-options.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 import LiquioInline from '../vue/liquio-inline.vue'
 
 export default {
-	components: {LiquioNode, LiquioInline, CalculationOptions},
+	components: {App, LiquioNode, LiquioInline, CalculationOptions},
 	
 	data: function() {
 		let self = this

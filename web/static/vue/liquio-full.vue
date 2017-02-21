@@ -1,5 +1,5 @@
 <template>
-<div>
+<app>
 	<div v-if="node">
 		<div class="main">
 			<div class="inset-top" style="text-align: left;">
@@ -23,10 +23,11 @@
 			<i class="el-icon-loading loading"></i>
 		</div>
 	</div>
-</div>
+</app>
 </template>
 
 <script>
+import App from '../vue/app.vue'
 import CalculationOptions from '../vue/calculation-options.vue'
 import GetReference from '../vue/get-reference.vue'
 import LiquioNode from '../vue/liquio-node.vue'
@@ -46,7 +47,7 @@ function updateNode(self) {
 }
 
 export default {
-	components: {CalculationOptions, GetReference, LiquioNode, LiquioList},
+	components: {App, CalculationOptions, GetReference, LiquioNode, LiquioList},
 	data: function() {		
 		this.$root.bus.$on('change', () => {
 			updateNode(this)

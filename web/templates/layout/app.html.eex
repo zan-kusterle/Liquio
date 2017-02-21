@@ -21,58 +21,14 @@
 		<meta name="theme-color" content="#1f8dd6">
 
 		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
-		
-		<script>
-			var defaultVueData = {}
-		</script>
 
 		<%= render "google_analytics.html", conn: @conn %>
 	</head>
 
 	<body>
-		<script>
-			<%
-				token = if user = Guardian.Plug.current_resource(@conn) do
-					Guardian.Plug.current_token(user)
-				else
-					nil
-				end
-			%>
-			var token = <%= if token do %>'<%= token %>'<% else %><%= "null" %><% end %>;
-		</script>
-		<div id="app" class="container" style="display: none;">
-			<div class="header">
-				<div class="header-contents">
-					<div class="pure-g">
-						<div style="float: left;">
-							<router-link to="/" class="logo"><img src="/images/logo.svg"></router-link>
-							<h3 class="tagline">A liquid democracy where anyone can vote on anything.</h3>
-						</div>
-
-						<div style="float: right;">
-							<div class="actions">
-								<%= if user = Guardian.Plug.current_resource(@conn) do %>
-									<router-link to="/identities/<%= user.username %>"><i class="el-icon-arrow-right" aria-hidden="true"></i> <%= user.name %></router-link>
-									<a href="/logout"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
-								<% else %>
-									<a href="/login"><i class="el-icon-arrow-right" aria-hidden="true"></i> Login</a>
-								<% end %>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			
-			<div class="main-wrap" id="main-wrap">
-				<div class="scrollable">
-					<div class="main-container">
-						  <router-view style="padding-top: 50px; padding-bottom: 100px;"></router-view>
-					</div>
-				</div>
-			</div>
+		<div id="app" class="container">
+			<router-view></router-view>
 		</div>
-
 		<script src="<%= static_path(@conn, "/js/app.js") %>"></script>
-		<script>document.getElementById('app').style = 'display: block;'</script>
 	</body>
 </html>
