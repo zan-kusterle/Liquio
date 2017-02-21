@@ -35,7 +35,7 @@ defmodule Liquio.Token do
 	end
 
 	def send_token(token) do
-		url = Router.Helpers.html_login_url(Endpoint, :show, token.token)
+		url = "#{Liquio.Endpoint.url()}/login/#{token.token}/new"
 		send_email(
 			to: token.email,
 			from: "Liquio <login@liqu.io>",

@@ -37,6 +37,7 @@ defmodule Liquio.Identity do
 		|> cast(params, ["username", "name"])
 		|> validate_required(:username)
 		|> validate_required(:name)
+		|> unique_constraint(:email)
 		|> unique_constraint(:username)
 		|> validate_length(:username, min: 3, max: 20)
 		|> validate_length(:name, min: 3, max: 255)

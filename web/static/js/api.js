@@ -44,6 +44,14 @@ export function login(email, cb) {
 	})
 }
 
+export function register(token, username, name, cb) {
+	axios.post('/api/identities', {token: token, identity: {username: username, name: name}}).then(function (response) {
+		axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.data.access_token;
+		cb()
+	}).catch(function (error) {
+	})
+}
+
 export function setVote(url_key, reference_url_key, choice, cb) {
 	for(var key in choice)
 		choice[key + ''] = parseFloat(choice[key])

@@ -1,7 +1,7 @@
 <template>
 	<div>
-		<el-input v-model="email"></el-input>
-		<el-button @click="login">Get magic link</el-button>
+		<el-input class="email" v-model="email" placeholder="Your email"></el-input>
+		<el-button @click="login">Login</el-button>
 	</div>
 </template>
 
@@ -16,11 +16,16 @@ export default {
 		return {
 			email: '',
 			login: function(event) {
-				Api.login(self.email, function(token) {
-					self.localStorage.setItem('auth-token', token);
+				Api.login(self.email, function() {
 				})
 			}
 		}
 	}
 }
 </script>
+
+<style scoped>
+	.email {
+		width: 400px;
+	}
+</style>

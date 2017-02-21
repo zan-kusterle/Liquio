@@ -1,4 +1,4 @@
-defmodule Liquio.Controllers.Helpers do
+defmodule Liquio.ControllerHelper do
 	def default_redirect(conn) do
 		if Map.get(conn.params, "redirect") do
 			conn.params["redirect"]
@@ -13,17 +13,7 @@ defmodule Liquio.Controllers.Helpers do
 			end
 		end
 	end
-
-	def handle_errors({:error, _changeset}, conn, _func) do
-		conn
-		|> Phoenix.Controller.put_flash(:error, "Something went wrong")
-		|> Phoenix.Controller.redirect(to: default_redirect(conn))
-	end
-
-	def handle_errors({:ok, item}, _conn, func) do
-		func.(item)
-	end
-
+	
 	def get_calculation_opts_from_conn(conn) do
 		# ADD SORT PARAM?
 		identity = Guardian.Plug.current_resource(conn)

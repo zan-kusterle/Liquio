@@ -46,8 +46,8 @@ defmodule Liquio.Web do
 			alias Liquio.Reference
 			alias Liquio.Token
 			alias Liquio.Node
+			import Liquio.ControllerHelper
 
-			import Liquio.Controllers.Helpers
 		end
 	end
 
