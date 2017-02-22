@@ -13,7 +13,7 @@
 			v-if="reference.reference_result && reference.reference_result.by_keys['relevance'] && reference.reference_result.by_keys['relevance'].embed"
 		>
 			<div class="content">{{ reference.title }}</div>
-			<div style="font-size: 0px; opacity: 0.9;">
+			<div style="font-size: 0px;">
 				<div class="reference-result">
 					<div v-html="reference.reference_result.by_keys['for_choice'].embed" v-if="reference.reference_result.by_keys['for_choice'] && reference.reference_result.by_keys['for_choice'].embed" style="width: 100%; height: 30px;"></div>
 				</div>
@@ -42,20 +42,19 @@ export default {
 	.node {
 		display: inline-block;
 		width: 100%;
-		margin: 0 0 1em;
+		margin: 0 0 25px;
 		font-size: 15px;
 		text-align: left;
 		vertical-align: top;
 	}
-	.node:hover {
-		box-shadow: 0 2px 5px rgba(0, 0, 0, .25);
-	}
-	.link:hover {
-		color: #337ab7;
+
+	.link {
+		display: block;
 	}
 
-	.references {
-		opacity: 0.95;
+	.link:hover {
+		color: #337ab7;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
 	}
 
 	.content {
@@ -67,7 +66,7 @@ export default {
 	.references > .link > .content {
 		font-size: 12px;
 		background: rgba(255, 255, 255, 0.3);
-		border-top: 3px solid rgba(0, 0, 0, 0.5);
+		border-top: 4px solid rgba(0, 0, 0, 0.5);
 	}
 
 	.reference-link {
@@ -84,6 +83,7 @@ export default {
 		width: 100%;
 		font-size: 13px;
 		font-weight: bold;
-		margin-top: 3px;
+		border-top: 2px solid rgba(255, 255, 255, 0.75);
+		opacity: 0.9;
 	}
 </style>
