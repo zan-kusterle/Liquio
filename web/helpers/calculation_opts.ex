@@ -1,20 +1,5 @@
-defmodule Liquio.ControllerHelper do
-	def default_redirect(conn) do
-		if Map.get(conn.params, "redirect") do
-			conn.params["redirect"]
-		else
-			case List.keyfind(conn.req_headers, "referer", 0) do
-				{"referer", referer} ->
-					url = URI.parse(referer)
-					query = if url.query == nil do "" else "?#{url.query}" end
-					url.path <> query
-				nil ->
-					"/"
-			end
-		end
-	end
-	
-	def get_calculation_opts_from_conn(conn) do
+defmodule Liquio.CalculationOpts do
+	def get_from_conn(conn) do
 		# ADD SORT PARAM?
 		identity = Guardian.Plug.current_resource(conn)
 		now = Timex.now

@@ -7,7 +7,7 @@ defmodule Liquio.ReferenceController do
 		:reference_node => {Plugs.NodeParam, [name: "id"]}
 	},
 	def show(conn, %{:user => user, :node => node, :reference_node => reference_node}) do
-		calculation_opts =  get_calculation_opts_from_conn(conn)
+		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Node.for_reference_key(node, reference_node.key) |> Node.preload(calculation_opts, user)
 		conn
 		|> render(Liquio.NodeView, "show.json", node: reference)

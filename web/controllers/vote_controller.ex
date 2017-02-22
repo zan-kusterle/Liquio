@@ -7,7 +7,7 @@ defmodule Liquio.VoteController do
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
 	def create(conn, %{:node => node, :user => user, "choice" => choice}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
+		calculation_opts = CalculationOpts.get_from_conn(conn)
 
 		Vote.set(node, user, choice)
 		if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
@@ -30,7 +30,7 @@ defmodule Liquio.VoteController do
 	def delete(conn, %{:node => node, :user => user}) do
 		vote = Vote.delete(node, user)
 
-		calculation_opts = get_calculation_opts_from_conn(conn)
+		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, node.url_key))

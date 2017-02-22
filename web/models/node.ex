@@ -200,32 +200,17 @@ defmodule Liquio.Node do
 	defp preload_references(node, calculation_opts, options \\ []) do
 		%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)
 
-		key = {
-			{"references", node.key, calculation_opts.datetime},
-			{
-				calculation_opts.trust_metric_url,
-				calculation_opts.minimum_voting_power,
-				calculation_opts.reference_minimum_turnout
-			}
-		}
-		cache_results = ResultsCache.get(key)
-		reference_nodes = if cache_results do
-			cache_results
-		else
-			reference_nodes = from(v in Vote, where: v.key == ^node.key and not is_nil(v.reference_key) and v.is_last == true and not is_nil(v.data))
-			|> Repo.all
-			|> Enum.group_by(& &1.reference_key)
-			|> prepare_reference_nodes(calculation_opts)
+		reference_nodes = from(v in Vote, where: v.key == ^node.key and not is_nil(v.reference_key) and v.is_last == true and not is_nil(v.data))
+		|> Repo.all
+		|> Enum.group_by(& &1.reference_key)
+		|> prepare_reference_nodes(calculation_opts)
 
-			if depth >= 1 do
-				reference_nodes |> Enum.map(fn(reference_node) ->
-					reference_node |> preload_references(calculation_opts, depth: depth - 1)
-				end)
-				ResultsCache.set(key, reference_nodes)
-				reference_nodes
-			else
-				reference_nodes
-			end
+		reference_nodes = if depth >= 1 do
+			reference_nodes |> Enum.map(fn(reference_node) ->
+				reference_node |> preload_references(calculation_opts, depth: depth - 1)
+			end)
+		else
+			reference_nodes
 		end
 
 		Map.put(node, :references, reference_nodes)
@@ -239,32 +224,17 @@ defmodule Liquio.Node do
 		else
 			%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)			
 
-			key = {
-				{"inverse_references", node.key, calculation_opts.datetime},
-				{
-					calculation_opts.trust_metric_url,
-					calculation_opts.minimum_voting_power,
-					calculation_opts.reference_minimum_turnout
-				}
-			}
-			cache_results = ResultsCache.get(key)
-			inverse_reference_nodes = if cache_results do
-				cache_results
-			else
-				inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key and v.is_last == true and not is_nil(v.data))
-				|> Repo.all
-				|> Enum.group_by(& &1.key)
-				|> prepare_reference_nodes(calculation_opts)
+			inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key and v.is_last == true and not is_nil(v.data))
+			|> Repo.all
+			|> Enum.group_by(& &1.key)
+			|> prepare_reference_nodes(calculation_opts)
 
-				if depth >= 1 do
-					inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
-						inverse_reference_node |> preload_references(calculation_opts, depth: depth - 1)
-					end)
-					ResultsCache.set(key, inverse_reference_nodes)
-					inverse_reference_nodes
-				else
-					inverse_reference_nodes
-				end
+			inverse_reference_nodes = if depth >= 1 do
+				inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
+					inverse_reference_node |> preload_references(calculation_opts, depth: depth - 1)
+				end)
+			else
+				inverse_reference_nodes
 			end
 
 			topics = inverse_reference_nodes

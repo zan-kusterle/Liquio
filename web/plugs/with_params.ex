@@ -14,30 +14,10 @@ defmodule Liquio.Plugs.WithParams do
 				{:ok, params} ->
 					%{conn | params: conn.params |> Map.merge(params)}
 				{:error, name, status, message} ->
-					if :browser in conn.private.phoenix_pipelines do
-						case status do
-							:not_found ->
-								conn
-								|> put_status(status)
-								|> Phoenix.Controller.render(Liquio.ErrorView, "404.html")
-								|> halt
-							:unauthorized ->
-								conn
-								|> Phoenix.Controller.put_flash(:error, message)
-								|> Phoenix.Controller.redirect(to: "/login")
-								|> halt
-							_ ->
-								conn
-								|> Phoenix.Controller.put_flash(:error, message)
-								|> Phoenix.Controller.redirect(to: Liquio.Controllers.Helpers.default_redirect(conn))
-								|> halt
-						end
-					else
-						conn
-						|> put_status(status)
-						|> Phoenix.Controller.render(Liquio.ErrorView, "error.json", message: "Unable to fetch param #{name}: #{message}")
-						|> halt
-					end
+					conn
+					|> put_status(status)
+					|> Phoenix.Controller.render(Liquio.ErrorView, "error.json", message: "Unable to fetch param #{name}: #{message}")
+					|> halt
 			end
 		else
 			conn

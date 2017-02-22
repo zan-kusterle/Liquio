@@ -2,7 +2,7 @@ defmodule Liquio.NodeController do
 	use Liquio.Web, :controller
 	
 	def index(conn, _params) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
+		calculation_opts = CalculationOpts.get_from_conn(conn)
 		nodes = Vote
 		|> Repo.all
 		|> Enum.map(& &1.key)
@@ -15,7 +15,7 @@ defmodule Liquio.NodeController do
 	end
 
 	def search(conn, %{"id" => query}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
+		calculation_opts = CalculationOpts.get_from_conn(conn)
 		nodes = Vote
 		|> Vote.search(query)
 		|> Repo.all
@@ -32,7 +32,7 @@ defmodule Liquio.NodeController do
 		:user => {Plugs.CurrentUser, [require: false]}
 	},
 	def show(conn, %{:node => node, :user => user}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
+		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
 		|> render("show.json", node: Node.preload(node, calculation_opts, user))
 	end)

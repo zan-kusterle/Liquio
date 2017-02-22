@@ -8,7 +8,7 @@ defmodule Liquio.ReferenceVoteController do
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
 	def create(conn, %{:node => node, :reference_node => reference_node, :user => user, "choice" => choice}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
+		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Node.for_reference_key(node, reference_node.key)
 
 		Vote.set(reference, user, choice)
@@ -30,7 +30,7 @@ defmodule Liquio.ReferenceVoteController do
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
 	def delete(conn, %{:node => node, :reference_node => reference_node, :user => user}) do
-		calculation_opts = get_calculation_opts_from_conn(conn)
+		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Node.for_reference_key(node, reference_node.key)
 		Vote.delete(reference, user)
 
