@@ -46,7 +46,22 @@ defmodule Liquio.Vote do
 	end
 
 	def set(node, identity, choice) do
-		Map.keys(choice) |> Enum.filter(& String.ends_with?(&1, "?")) |> Enum.map(& String.replace(&1, "?", ""))
+		#Map.keys(choice) |> Enum.filter(& String.ends_with?(&1, "?")) |> Enum.map(& String.replace(&1, "?", ""))
+		
+		#new_choice = if choice_name == "for_choice" do
+		#	current_choice = current_choice
+		#	|> Map.put("for_choice", choice["main"])
+		#	if not Map.has_key?(current_choice, "relevance") do
+		#		current_choice = current_choice
+		#		|> Map.put("relevance", 1.0)
+		#	else
+		#		current_choice
+		#	end
+		#else
+		#	current_choice = current_choice
+		#	|> Map.put("relevance", choice["main"])
+		#end
+
 		current = current_by(node, identity)
 		remove_current_last(node.key, identity.id, node.reference_key)
 		new_choice = if current != nil and current.data != nil do Map.merge(current.data.choice, choice) else choice end

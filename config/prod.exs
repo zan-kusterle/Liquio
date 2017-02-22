@@ -16,9 +16,8 @@ config :liquio, Liquio.Endpoint,
 
 config :liquio, default_trust_metric_url: "https://trust-metric.liqu.io"
 config :liquio, trust_metric_cache_time_seconds: 30
-config :liquio, admin_identity_ids: [1, 2, 3]
-config :liquio, token_lifespan_minutes: 5
-config :liquio, results_cache_seconds: 60
+config :liquio, token_lifespan_minutes: 15
+config :liquio, results_cache_seconds: 300
 
 config :logger, level: :info
 

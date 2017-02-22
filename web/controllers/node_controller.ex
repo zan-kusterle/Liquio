@@ -7,7 +7,7 @@ defmodule Liquio.NodeController do
 		|> Repo.all
 		|> Enum.map(& &1.key)
 		|> Enum.uniq
-		|> Enum.map(& Node.from_key(&1) |> Node.preload_results(calculation_opts) |> Node.preload_references(calculation_opts))
+		|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts))
 		|> Enum.filter(& &1.choice_type != nil)
 		|> Enum.sort_by(& -(&1.results.turnout_ratio + 0.05 * Enum.count(&1.references)))
 		conn
@@ -21,7 +21,7 @@ defmodule Liquio.NodeController do
 		|> Repo.all
 		|> Enum.map(& &1.key)
 		|> Enum.uniq
-		|> Enum.map(& Node.from_key(&1) |> Node.preload_results(calculation_opts))
+		|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts))
 
 		conn
 		|> render("show.json", node: Node.new("Results for '#{query}'", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts))

@@ -93,7 +93,11 @@ defmodule Liquio.Node do
 		Map.put(node, :key, get_key(node))
 	end
 
-	def preload_using_cache(node, calculation_opts) do
+	def preload(node, calculation_opts) do
+		preload(node, calculation_opts, nil)
+	end
+
+	def preload(node, calculation_opts, user) do
 		key = {
 			{"nodes", {node.key, node.reference_key}, calculation_opts.datetime},
 			{
@@ -106,17 +110,13 @@ defmodule Liquio.Node do
 		if cache_results do
 			cache_results
 		else
-			node = node |> preload(calculation_opts)
+			node = node |> preload_without_cache(calculation_opts, user)
 			ResultsCache.set(key, node)
 			node
 		end
 	end
 
-	def preload(node, calculation_opts) do
-		preload(node, calculation_opts, nil)
-	end
-
-	def preload(node, calculation_opts, user) do
+	def preload_without_cache(node, calculation_opts, user) do
 		node
 		|> preload_references(calculation_opts)
 		|> preload_inverse_references(calculation_opts)
@@ -125,7 +125,7 @@ defmodule Liquio.Node do
 		|> preload_own_contribution(user)
 	end
 
-	def preload_results(node, calculation_opts) do
+	defp preload_results(node, calculation_opts) do
 		node = if not Map.has_key?(node, :contributions) do
 			node |> preload_contributions(calculation_opts)
 		else
@@ -138,7 +138,7 @@ defmodule Liquio.Node do
 		node
 	end
 
-	def preload_contributions(node, calculation_opts) do
+	defp preload_contributions(node, calculation_opts) do
 		node = if not Map.has_key?(node, :topics) do
 			node |> preload_inverse_references(calculation_opts, depth: 0)
 		else
@@ -197,7 +197,7 @@ defmodule Liquio.Node do
 		Map.put(node, :contributions, contributions)
 	end
 
-	def preload_references(node, calculation_opts, options \\ []) do
+	defp preload_references(node, calculation_opts, options \\ []) do
 		%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)
 
 		key = {
@@ -231,7 +231,7 @@ defmodule Liquio.Node do
 		Map.put(node, :references, reference_nodes)
 	end
 
-	def preload_inverse_references(node, calculation_opts, options \\ []) do
+	defp preload_inverse_references(node, calculation_opts, options \\ []) do
 		if node.choice_type == nil do
 			node = Map.put(node, :inverse_references, [])
 			node = Map.put(node, :topics, [])
