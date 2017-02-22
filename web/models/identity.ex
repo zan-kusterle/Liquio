@@ -131,9 +131,10 @@ defmodule Liquio.Identity do
 			references = Enum.map(reference_votes, fn(reference_vote) ->
 				node = Node.from_key(reference_vote.reference_key)
 				|> Map.put(:own_vote, reference_vote)
+				node = node
 				|> Node.preload_own_contribution(identity)
 				node
-				|> Map.put(:results, if node.own_contribution do node.own_contribution.results else nil end)
+				|> Map.put(:reference_result, if node.own_contribution do node.own_contribution.results else nil end)
 			end)
 
 			node = Node.from_key(key)

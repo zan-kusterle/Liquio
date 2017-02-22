@@ -1,8 +1,14 @@
 <template>
 <app>
 	<div v-if="identity">
-		{{ username }}
-		<liquio-list v-bind:nodes="identity.vote_nodes"></liquio-list>
+		<div class="main">
+			<div class="main-node">
+				{{ username }}
+			</div>
+			<div class="inset-bottom">
+				<liquio-list v-bind:nodes="identity.vote_nodes"></liquio-list>
+			</div>
+		</div>
 	</div>
 	<div class="main" v-else>
 		<div class="main-node">

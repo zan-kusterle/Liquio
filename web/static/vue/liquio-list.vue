@@ -16,7 +16,7 @@
 			</div>
 		</el-col>
 	</el-row>
-	<div class="references" v-else>
+	<div class="list-simple" v-else>
 		<liquio-inline v-for="node in nodes" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquo-inline>
 	</div>
 </div>
@@ -48,7 +48,7 @@ export default {
 		column-gap: 20px;
 	}
 
-	.references {
+	.list-simple {
 		column-count: 5;
 		column-gap: 20px;
 	}
