@@ -14,7 +14,7 @@
 		>
 			<div class="content">{{ reference.title }}</div>
 			<div style="font-size: 0px;">
-				<div class="reference-result">
+				<div class="reference-result" style="border-bottom: 1px solid rgba(255, 255, 255, 0.9);">
 					<div v-html="reference.reference_result.by_keys['for_choice'].embed" v-if="reference.reference_result.by_keys['for_choice'] && reference.reference_result.by_keys['for_choice'].embed" style="width: 100%; height: 30px;"></div>
 				</div>
 				<div class="reference-result">
@@ -79,11 +79,10 @@ export default {
 	}
 
 	.reference-result {
-		display: inline-block;
+		display: block;
 		width: 100%;
 		font-size: 13px;
 		font-weight: bold;
-		border-top: 2px solid rgba(255, 255, 255, 0.75);
 		opacity: 0.9;
 	}
 </style>
