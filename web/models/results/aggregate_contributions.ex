@@ -29,22 +29,8 @@ defmodule Liquio.Results.AggregateContributions do
 			:by_keys => by_keys,
 			:choice_type => choice_type
 		}
-		
-		results = if results.choice_type == "time_quantity" do
-			results_with_datetime = results.by_keys
-			|> Enum.map(fn({time_key, time_results}) ->
-				case Integer.parse(time_key) do
-					{year, ""} -> Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
-					:error -> nil
-				end
-			end)
-			|> Enum.filter(& &1 != nil)
-			results |> Map.put(:by_datetime, results_with_datetime)
-		else
-			results
-		end
 
-		results
+		results |> prepare_results()
 	end
 
 	def aggregate_single(contribution) do
@@ -62,6 +48,23 @@ defmodule Liquio.Results.AggregateContributions do
 			end) |> Enum.into(%{}),
 			:choice_type => contribution.choice_type
 		}
+		|> prepare_results()
+	end
+
+	defp prepare_results(results) do
+		if results.choice_type == "time_quantity" do
+			results_with_datetime = results.by_keys
+			|> Enum.map(fn({time_key, time_results}) ->
+				case Integer.parse(time_key) do
+					{year, ""} -> Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
+					:error -> nil
+				end
+			end)
+			|> Enum.filter(& &1 != nil)
+			results |> Map.put(:by_datetime, results_with_datetime)
+		else
+			results
+		end
 	end
 
 	def by_key(aggregations_by_key, key) do
