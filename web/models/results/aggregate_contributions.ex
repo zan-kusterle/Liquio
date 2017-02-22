@@ -30,7 +30,7 @@ defmodule Liquio.Results.AggregateContributions do
 			:choice_type => choice_type
 		}
 		
-		results = if choice_type == "time_quantity" do
+		results = if results.choice_type == "time_quantity" do
 			results_with_datetime = results.by_keys
 			|> Enum.map(fn({time_key, time_results}) ->
 				case Integer.parse(time_key) do
@@ -45,6 +45,23 @@ defmodule Liquio.Results.AggregateContributions do
 		end
 
 		results
+	end
+
+	def aggregate_single(contribution) do
+		%{
+			:total => 0.0,
+			:turnout_ratio => 0.0,
+			:count => 1,
+			:by_keys => Enum.map(contribution.choice, fn({k, v}) ->
+				{k, %{
+					:mean => v,
+					:total => 0.0,
+					:turnout_ratio => 0.0,
+					:count => 1
+				}}
+			end) |> Enum.into(%{}),
+			:choice_type => contribution.choice_type
+		}
 	end
 
 	def by_key(aggregations_by_key, key) do

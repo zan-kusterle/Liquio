@@ -13,6 +13,7 @@ defmodule Liquio.Router do
 		pipe_through :api
 
 		resources "/login", LoginController, only: [:create, :show, :delete]
+		get "/logout", LoginController, :delete
 		resources "/identities", IdentityController, only: [:index, :create, :show] do
 			resources "/delegations", DelegationController, only: [:create, :delete], singleton: true
 		end

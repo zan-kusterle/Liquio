@@ -35,8 +35,8 @@ export function search(query, cb) {
 	})
 }
 
-export function getCurrentUser(cb) {
-	axios.get('/api/identities/me').then(function (response) {
+export function getIdentity(id, cb) {
+	axios.get('/api/identities/' + id).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {
 	})
@@ -44,7 +44,13 @@ export function getCurrentUser(cb) {
 
 export function login(email, cb) {
 	axios.post('/api/login', {email: email}).then(function (response) {
-		axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.data.access_token;
+		cb()
+	}).catch(function (error) {
+	})
+}
+
+export function logout(email, cb) {
+	axios.delete('/api/login').then(function (response) {
 		cb()
 	}).catch(function (error) {
 	})
@@ -52,7 +58,6 @@ export function login(email, cb) {
 
 export function register(token, username, name, cb) {
 	axios.post('/api/identities', {token: token, identity: {username: username, name: name}}).then(function (response) {
-		axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.data.access_token;
 		cb()
 	}).catch(function (error) {
 	})

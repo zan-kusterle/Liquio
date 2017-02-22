@@ -11,7 +11,7 @@
 					<div style="float: right;">
 						<div class="actions" v-if="user">
 							<router-link :to="'/identities/' + user.username"><i class="el-icon-arrow-right" aria-hidden="true"></i>{{ user.name }}</router-link>
-							<a href="/logout"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
+							<a href="/api/logout" @click="logout"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
 						</div>
 						<div class="actions" v-else>
 							<a href="/login"><i class="el-icon-arrow-right" aria-hidden="true"></i> Login</a>
@@ -37,8 +37,13 @@ let Api = require('api.js')
 export default {
 	props: [],
 	data: function() {
+		let self = this
+		Api.getIdentity('me', (user) => self.user = user)
 		return {
-			user: null
+			user: null,
+			logout: function(event) {
+				Api.logout(() => self.user = null)
+			}
 		}
 	}
 }

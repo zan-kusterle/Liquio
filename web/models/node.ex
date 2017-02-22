@@ -121,8 +121,8 @@ defmodule Liquio.Node do
 		|> preload_references(calculation_opts)
 		|> preload_inverse_references(calculation_opts)
 		|> preload_results(calculation_opts)
-		|> preload_user_vote(user)
-		|> preload_user_contribution(calculation_opts, user)
+		|> preload_own_vote(user)
+		|> preload_own_contribution(user)
 	end
 
 	def preload_results(node, calculation_opts) do
@@ -164,8 +164,13 @@ defmodule Liquio.Node do
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 		contributions = CalculateContributions.calculate(direct_votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
 
+		identity_ids = Enum.map(contributions, & &1.identity.id)
+		identities = from(i in Identity, where: i.id in ^identity_ids)
+		|> Repo.all
+		|> Enum.into(%{}, & {&1.id, &1})
+
 		contributions = contributions |> Enum.map(fn(contribution) ->
-			contribution = Map.put(contribution, :identity, Repo.get(Identity, contribution.identity.id))
+			contribution = Map.put(contribution, :identity, identities[contribution.identity.id])
 			results = AggregateContributions.aggregate([contribution], calculation_opts)
 			
 			contribution
@@ -272,26 +277,33 @@ defmodule Liquio.Node do
 		end
 	end
 
-	def preload_user_vote(node, user) do
+	def preload_own_vote(node, user) do
 		vote = if user do Vote.current_by(node, user) else nil end
-		Map.put(node, :own_vote, vote)
+
+		node
+		|> Map.put(:own_vote, vote)
 	end
 
-	def preload_user_contribution(node, calculation_opts, user) do
-		node = if not Map.has_key?(node, :own_vote) do
-			node |> preload_user_vote(user)
+	def preload_own_contribution(node, user) do
+		contribution = if user != nil and Map.get(node, :own_vote) != nil do
+			c = if Map.has_key?(node, :contributions) do Enum.find(node.contributions, & &1.identity.id == user.id) else nil end
+			c = if c == nil do
+				node.own_vote
+				|> GetData.prepare_vote
+				|> Map.put(:voting_power, 0.0)
+				|> Map.put(:identity, user)
+			else
+				c
+			end
+			results = AggregateContributions.aggregate_single(c)
+			c
+			|> Map.put(:results, results |> preload_results_embed)
 		else
-			node
-		end
-		node = if not Map.has_key?(node, :contributions) do
-			node |> preload_contributions(calculation_opts)
-		else
-			node
+			nil
 		end
 
-		user_contribution = if user do Enum.find(node.contributions, & &1.identity.id == user.id) else nil end
 		node
-		|> Map.put(:own_contribution, user_contribution)
+		|> Map.put(:own_contribution, contribution)
 	end
 
 	defp update_keys(node) do
@@ -340,7 +352,7 @@ defmodule Liquio.Node do
 			Map.has_key?(result.by_keys, "relevance") and result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
 		end)
 		|> Enum.map(fn({key, result}) ->
-			Node.from_key(key)
+			from_key(key)
 			|> preload_results(calculation_opts)
 			|> Map.put(:reference_result, result)
 			|> Map.put(:references, [])

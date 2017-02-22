@@ -3,6 +3,8 @@ defmodule Liquio.Identity do
 
 	alias Liquio.Repo
 	alias Liquio.Vote
+	alias Liquio.Delegation
+	alias Liquio.Node
 
 	schema "identities" do
 		field :email, :string
@@ -83,9 +85,8 @@ defmodule Liquio.Identity do
 		name |> String.downcase |> String.split(" ") |> Enum.map(&String.capitalize/1) |> Enum.join(" ")
 	end
 
-	def preload_wip(identity, user) do
-		is_me = user != nil and identity.id == user.id
-		delegation = if user != nil and not is_me do
+	def preload(identity, user) do
+		own_delegation = if user != nil and identity.id != user.id do
 			delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: identity.id, is_last: true})
 			if delegation != nil and delegation.data != nil do
 				delegation
@@ -96,6 +97,13 @@ defmodule Liquio.Identity do
 			nil
 		end
 
+		identity
+		|> Map.put(:own_delegation, own_delegation)
+		|> preload_delegations()
+		|> preload_votes()
+	end
+
+	def preload_delegations(identity) do
 		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
@@ -106,117 +114,37 @@ defmodule Liquio.Identity do
 		|> Repo.preload([:from_identity, :to_identity])
 		|> Enum.sort_by(& &1.data.weight)
 
-		trusted_by_votes =  []
-		|> Repo.preload([:identity])
-		|> Enum.filter(& &1.is_last and &1.data != nil)
-		|> Enum.map(& Map.put(&1, :trust_identity, &1.identity))
-		|> Enum.sort_by(& &1.trust_identity.username)
+		identity
+		|> Map.put(:delegations_from, delegations_from)
+		|> Map.put(:delegations_to, delegations_to)
+	end
 
-		is_human_votes = []
-		votes = []
-		vote_groups = []
-
-
-
-
+	def preload_votes(identity) do
 		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
 		|> Repo.all
-		|> Repo.preload([:poll, :identity])
+		|> Repo.preload([:identity])
 
-		voted_polls = votes |> Enum.map(fn(vote) ->
-			vote.poll
-			|> Map.put(:choice, vote.data.choice)
+		nodes = votes
+		|> Enum.group_by(& &1.key)
+		|> Enum.map(fn({key, votes_for_key}) ->
+			{direct_votes, reference_votes} = Enum.split_with(votes_for_key, & &1.reference_key == nil)
+			references = Enum.map(reference_votes, fn(reference_vote) ->
+				node = Node.from_key(reference_vote.reference_key)
+				|> Map.put(:own_vote, reference_vote)
+				|> Node.preload_own_contribution(identity)
+				node
+				|> Map.put(:results, if node.own_contribution do node.own_contribution.results else nil end)
+			end)
+
+			node = Node.from_key(key)
+			|> Map.put(:own_vote, Enum.at(direct_votes, 0))
+			|> Node.preload_own_contribution(identity)
+			|> Map.put(:references, references)
+			node
+			|> Map.put(:results, if node.own_contribution do node.own_contribution.results else nil end)
 		end)
 
-		polls = voted_polls
-		|> Enum.flat_map(&expand_poll/1)
-		|> Enum.reduce(%{}, fn(poll, acc) ->
-			existing_poll = Map.get(acc, poll.id, %{})
-			merged_poll = Map.merge(existing_poll, poll, fn k, v1, v2 ->
-				cond do
-					v1 == nil and v2 == nil ->
-						nil
-					v1 == nil ->
-						v2
-					v2 == nil ->
-						v1
-					true ->
-						case k do
-							:references -> v1 ++ v2
-							_ -> v1
-						end
-				end
-			end)
-			acc |> Map.put(poll.id, merged_poll)
-		end)
-		|> Map.values()
-
-		vote_groups = if Enum.empty?(polls) do
-			[]
-		else
-			root_polls = polls |> Enum.filter(fn(poll) ->
-				Enum.all?(polls, fn current_poll ->
-					Enum.find(current_poll.references, & &1.reference_poll.id == poll.id) == nil
-				end)
-			end)
-			root_polls = if Enum.empty?(root_polls) do
-				[Enum.at(polls, 0)]
-			else
-				root_polls
-			end
-
-			polls_by_ids = for poll <- polls, into: %{} do
-				{poll.id, poll}
-			end
-			root_polls |> Enum.map(fn poll ->
-				traverse_polls(polls_by_ids, poll.id, MapSet.new, 0, nil)
-			end)
-		end
-	end
-
-
-	def traverse_polls(polls_by_ids, id, visited, level, reference) do
-		visited = MapSet.put(visited, id)
-
-		current = polls_by_ids[id] |> Map.put(:level, level) |> Map.put(:reference, reference)
-		sub = Enum.flat_map(polls_by_ids[id].references, fn(reference = %{:reference_poll => %{:id => reference_node_id}}) ->
-			if Map.has_key?(polls_by_ids, reference_node_id) do
-				traverse_polls(polls_by_ids, reference_node_id, visited, level + 1, reference)
-			else
-				[]
-			end
-		end)
-
-		[current] ++ sub
-	end
-
-	defp prepare_poll(poll, data) do
-		Map.merge(Map.merge(%{
-			:references => [],
-			:choice => nil,
-			:for_choice => nil
-		}, poll), data)
-	end
-
-	defp expand_poll(poll) do
-		case poll.kind do
-			"custom" ->
-				[prepare_poll(poll, %{:choice => poll.choice})]
-			"is_reference" ->
-				reference = Reference
-				|> Repo.get_by!(for_choice_node_id: poll.id)
-				|> Repo.preload([:poll, :reference_poll])
-
-				[
-					prepare_poll(reference.poll, %{:references => [%{
-						:reference_poll => reference.reference_poll,
-						:for_choice => poll.choice,
-						:poll => reference.poll
-					}]}),
-					prepare_poll(reference.reference_poll, %{})
-				]
-			_ ->
-				[]
-		end
+		identity
+		|> Map.put(:vote_nodes, nodes)
 	end
 end

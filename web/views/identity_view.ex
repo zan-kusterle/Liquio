@@ -14,9 +14,12 @@ defmodule Liquio.IdentityView do
 			id: identity.id,
 			username: identity.username,
 			name: identity.name,
-			trusted_by_ids: [],
 			trusted_by: [],
-			untrusted_by: []
+			untrusted_by: [],
+			delegations_to: [],
+			delegations_from: [],
+			votes: [],
+			vote_nodes: render_many(Map.get(identity, :vote_nodes, []), Liquio.NodeView, "node.json")
 		}
 
 		v = if Map.has_key?(identity, :access_token) do

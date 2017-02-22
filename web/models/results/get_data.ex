@@ -44,8 +44,12 @@ defmodule Liquio.Results.GetData do
 
 	def prepare_votes(votes) do
 		for vote <- votes, into: %{} do
-			{vote.identity_id, %{:datetime => vote.datetime, :choice => vote.data.choice, :choice_type => vote.choice_type, :title => vote.title}}
+			{vote.identity_id, prepare_vote(vote)}
 		end
+	end
+	
+	def prepare_vote(vote) do
+		%{:datetime => vote.datetime, :choice => vote.data.choice, :choice_type => vote.choice_type, :title => vote.title}
 	end
 
 	def create_random(filename, num_identities, num_votes, num_delegations_per_identity) do

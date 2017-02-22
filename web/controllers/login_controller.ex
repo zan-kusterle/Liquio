@@ -55,7 +55,7 @@ defmodule Liquio.LoginController do
 
 	def delete(conn, _params) do
 		conn
-		|> Guardian.Plug.sign_out(conn)
+		|> Guardian.Plug.sign_out
 		|> send_resp(:no_content, "")
 	end
 end
