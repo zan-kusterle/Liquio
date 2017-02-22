@@ -15,7 +15,7 @@
 			<div class="content">{{ reference.title }}</div>
 			<div style="font-size: 0px;">
 				<div style="display: inline-block; width: 50%; font-size: 14px;">
-					<div v-html="reference.reference_result.by_keys['for_choice'].embed" v-if="reference.reference_result.by_keys['for_choice']" style="width: 100%; height: 35px;"></div>
+					<div v-html="reference.reference_result.by_keys['for_choice'].embed" v-if="reference.reference_result.by_keys['for_choice'] && reference.reference_result.by_keys['for_choice'].embed" style="width: 100%; height: 35px;"></div>
 				</div>
 				<div style="display: inline-block; width: 50%; font-size: 14px;">
 					<div v-html="reference.reference_result.by_keys['relevance'].embed" style="width: 100%; height: 35px;"></div>
