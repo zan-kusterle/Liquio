@@ -2,7 +2,7 @@
 <div class="node">
 	<router-link :to="'/' + node.url_key" class="link">
 		<div class="content">{{ node.title }}</div>
-		<div v-html="this.node.results.embed" v-if="this.node.choice_type != null" style="width: 100%; height: 50px;"></div>
+		<div v-html="this.node.results.embed" v-if="this.node.results != null && this.node.choice_type != null" style="width: 100%; height: 50px;"></div>
 	</router-link>
 
 	<div class="references">
