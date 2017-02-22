@@ -2,7 +2,7 @@
 <div class="node">
 	<router-link :to="'/' + node.url_key" class="link">
 		<div class="content">{{ node.title }}</div>
-		<div v-html="this.node.results.embed" v-if="this.node.results != null && this.node.choice_type != null" style="width: 100%; height: 50px;"></div>
+		<div v-html="this.node.results.embed" v-if="this.node.results != null && this.node.choice_type != null" style="width: 100%; height: 50px; font-weight: bold;"></div>
 	</router-link>
 
 	<div class="references">
@@ -13,12 +13,12 @@
 			v-if="reference.reference_result && reference.reference_result.by_keys['relevance'] && reference.reference_result.by_keys['relevance'].embed"
 		>
 			<div class="content">{{ reference.title }}</div>
-			<div style="font-size: 0px;">
-				<div style="display: inline-block; width: 50%; font-size: 14px;">
-					<div v-html="reference.reference_result.by_keys['for_choice'].embed" v-if="reference.reference_result.by_keys['for_choice'] && reference.reference_result.by_keys['for_choice'].embed" style="width: 100%; height: 35px;"></div>
+			<div style="font-size: 0px; opacity: 0.9;">
+				<div class="reference-result">
+					<div v-html="reference.reference_result.by_keys['for_choice'].embed" v-if="reference.reference_result.by_keys['for_choice'] && reference.reference_result.by_keys['for_choice'].embed" style="width: 100%; height: 30px;"></div>
 				</div>
-				<div style="display: inline-block; width: 50%; font-size: 14px;">
-					<div v-html="reference.reference_result.by_keys['relevance'].embed" style="width: 100%; height: 35px;"></div>
+				<div class="reference-result">
+					<div v-html="reference.reference_result.by_keys['relevance'].embed" style="width: 100%; height: 30px;"></div>
 				</div>
 			</div>
 		</router-link>
@@ -55,19 +55,19 @@ export default {
 	}
 
 	.references {
-		padding-right: 30px;
+		opacity: 0.95;
 	}
 
 	.content {
-		padding: 10px;
+		padding: 8px 10px;
 		background: rgba(255, 255, 255, 0.6);
 		word-wrap: break-word;
 	}
 
 	.references > .link > .content {
 		font-size: 12px;
-		padding: 5px;
-		margin-top: 10px;
+		background: rgba(255, 255, 255, 0.3);
+		border-top: 3px solid rgba(0, 0, 0, 0.5);
 	}
 
 	.reference-link {
@@ -77,5 +77,13 @@ export default {
 		font-size: 10px;
 		padding-top: 8px;
 		padding-bottom: 6px;
+	}
+
+	.reference-result {
+		display: inline-block;
+		width: 100%;
+		font-size: 13px;
+		font-weight: bold;
+		margin-top: 3px;
 	}
 </style>
