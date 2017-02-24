@@ -21,11 +21,11 @@ defmodule Liquio.CalculationOpts do
 			datetime: datetime,
 			trust_metric_url: trust_metric_url,
 			trust_metric_ids: trust_identity_ids,
-			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days) || (identity && identity.vote_weight_halving_days) || nil,
-			reference_minimum_agree: (identity && identity.reference_minimum_agree) ||  0.5,
-			minimum_voting_power: ((identity && identity.minimum_turnout && Float.round(identity.minimum_turnout, 2)) || 0.05) * trust_metric_count,
-			minimum_turnout: (identity && identity.minimum_turnout && Float.round(identity.minimum_turnout, 2)) || 0.05,
-			reference_minimum_turnout: (identity && identity.reference_minimum_turnout) || 0,
+			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days),
+			reference_minimum_agree: 0.5,
+			minimum_voting_power: 0.05 * trust_metric_count,
+			minimum_turnout: 0.05,
+			reference_minimum_turnout: 0,
 		}
 	end
 
@@ -34,12 +34,8 @@ defmodule Liquio.CalculationOpts do
 
 		url = Map.get(conn.params, :trust_metric_url)
 		url =
-			if url == nil or String.length(url) == 0 do
-				if identity != nil and identity.trust_metric_url != nil do
-					identity.trust_metric_url
-				else
-					Liquio.TrustMetric.default_trust_metric_url()
-				end
+			if url == nil or not String.starts_with?(url, "http") do
+				Liquio.TrustMetric.default_trust_metric_url()
 			else
 				url
 			end

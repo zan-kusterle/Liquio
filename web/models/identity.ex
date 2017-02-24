@@ -11,14 +11,10 @@ defmodule Liquio.Identity do
 		field :username, :string
 		field :name, :string
 
+		field :trusts, {:map, :boolean}
+
 		has_many :delegations_from, Liquio.Delegation, foreign_key: :from_identity_id
 		has_many :delegations_to, Liquio.Delegation, foreign_key: :to_identity_id
-
-		field :trust_metric_url, :string
-		field :minimum_turnout, :float
-		field :vote_weight_halving_days, :float
-		field :reference_minimum_turnout, :float
-		field :reference_minimum_agree, :float
 
 		timestamps
 	end
@@ -50,19 +46,6 @@ defmodule Liquio.Identity do
 		Repo.insert!(changeset)
 	end
 
-	def update_changeset(data, params) do
-		data
-		|> cast(params, ["trust_metric_url", "minimum_turnout", "vote_weight_halving_days", "reference_minimum_turnout", "reference_minimum_agree"])
-		|> validate_number(:minimum_turnout, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
-		|> validate_number(:vote_weight_halving_days, greater_than_or_equal_to: 0)
-		|> validate_number(:reference_minimum_turnout, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
-		|> validate_number(:reference_minimum_agree, greater_than_or_equal_to: 0, less_than_or_equal_to: 1)
-	end
-
-	def update_preferences(changeset) do
-		Repo.update(changeset)
-	end
-
 	def search(query, search_term) do
 		pattern = "%#{search_term}%"
 		from(i in query,
@@ -70,19 +53,16 @@ defmodule Liquio.Identity do
 		order_by: fragment("similarity(?, ?) DESC", i.username, ^search_term))
 	end
 
-	def generate_password() do
-		random_string(16)
-	end
-
-	defp random_string(length) do
-		chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" |> String.split("")
-		Enum.join(Enum.reduce((1..length), [], fn (_, acc) ->
-			[Enum.random(chars) | acc]
-		end), "")
-	end
-
 	defp capitalize_name(name) do
 		name |> String.downcase |> String.split(" ") |> Enum.map(&String.capitalize/1) |> Enum.join(" ")
+	end
+
+	def set_trust(from_identity, to_identity, is_trusting) do
+		Map.put(from_identity.trusts, to_identity.id, is_trusting)
+	end
+
+	def unset_trust(from_identity, to_identity) do
+		Map.delete(from_identity.trusts, to_identity.id)
 	end
 
 	def preload(identity, user) do

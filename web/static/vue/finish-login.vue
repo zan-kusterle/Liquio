@@ -1,9 +1,9 @@
 <template>
-	<div>
+	<app>
 		<el-input v-model="username" class="username"></el-input>
 		<el-input v-model="name" class="name"></el-input>
 		<el-button @click="create">Create new identity</el-button>
-	</div>
+	</app>
 </template>
 
 <script>

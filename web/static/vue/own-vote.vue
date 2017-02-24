@@ -111,11 +111,11 @@ export default {
 				}
 			}
 		}
-
-		setTimeout(() => updateInputs(), 0)
-
+		
 		let choiceValues = choiceForNode(this.node, this.resultsKey || 'main', choiceType)
 		choiceValues.push({'value': 50, 'year': ''})
+
+		setTimeout(updateInputs, 0)
 
 		return {
 			choice_type: choiceType,

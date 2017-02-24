@@ -93,6 +93,45 @@ defmodule Liquio.Node do
 		Map.put(node, :key, get_key(node))
 	end
 
+	def all(calculation_opts) do
+		key = {
+			{"nodes", {"all", nil}, calculation_opts.datetime},
+			{
+				calculation_opts.trust_metric_url,
+				calculation_opts.minimum_voting_power,
+				calculation_opts.reference_minimum_turnout
+			}
+		}
+		cache_results = ResultsCache.get(key)
+		if cache_results do
+			cache_results
+		else
+			nodes = Vote
+			|> Repo.all
+			|> Enum.map(& &1.key)
+			|> Enum.uniq
+			|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts))
+			|> Enum.filter(& &1.choice_type != nil)
+			|> Enum.sort_by(& -(&1.results.turnout_ratio + 0.05 * Enum.count(&1.references)))
+
+			node = Node.new("", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
+
+			ResultsCache.set(key, node)
+			node
+		end
+	end
+
+	def search(query, calculation_opts) do
+		nodes = Vote
+		|> Vote.search(query)
+		|> Repo.all
+		|> Enum.map(& &1.key)
+		|> Enum.uniq
+		|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts))
+
+		Node.new("Results for '#{query}'", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
+	end
+
 	def preload(node, calculation_opts) do
 		preload(node, calculation_opts, nil)
 	end

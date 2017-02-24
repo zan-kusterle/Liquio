@@ -1,5 +1,8 @@
 <template>
 <div>
+	<get-reference v-if="!referencingNode" v-bind:node="referencesNode" style="margin-bottom: 40px; text-align: center;"></get-reference>
+	<el-pagination v-else-if="nodes.length > 0" layout="prev, pager, next" :total="1000" style="text-align: center;"></el-pagination>
+
 	<el-row :gutter="50" class="liquio-list" v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
 		<el-col :span="12">
 			<h3 class="pole-heading">Negative</h3>
@@ -19,17 +22,23 @@
 	<div class="list-simple" v-else>
 		<liquio-inline v-for="node in nodes" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquo-inline>
 	</div>
+	
+	<get-reference v-if="referencingNode" v-bind:node="referencingNode" style="margin-top: 30px; text-align: center;"></get-reference>
+	<el-pagination v-else-if="nodes.length > 0" layout="prev, pager, next" :total="1000" style="text-align: center;"></el-pagination>
 </div>
 </template>
 
 <script>
 import LiquioInline from '../vue/liquio-inline.vue'
+import GetReference from '../vue/get-reference.vue'
 
 export default {
 	props: ['nodes', 'referencingNode', 'referencesNode'],
-	components: { LiquioInline },
+	components: { LiquioInline, GetReference },
 	data: function() {
-		return {}
+		return {
+			getReferenceShown: !this.referencingNode && !this.referencesNode
+		}
 	}
 }
 </script>
@@ -44,12 +53,12 @@ export default {
 	}
 
 	.pole-list {
-		column-count: 3;
-		column-gap: 20px;
+		column-count: 2;
+		column-gap: 30px;
 	}
 
 	.list-simple {
-		column-count: 5;
-		column-gap: 20px;
+		column-count: 4;
+		column-gap: 30px;
 	}
 </style>

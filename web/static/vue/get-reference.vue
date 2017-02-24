@@ -26,7 +26,7 @@ export default {
 						let path = '/search/' + encodeURIComponent(self.title)
 						self.$router.push(path)
 					} else {
-						if(self.node.title == '' || self.$route.name == 'search') {
+						if(!self.node || self.$route.name == 'search') {
 							let path = '/' + Api.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						} else {
@@ -41,7 +41,7 @@ export default {
 	computed: {
 		options: function() {
 			let opts = []
-			if(this.node.title == '' || this.$route.name == 'search') {
+			if(!this.node || this.$route.name == 'search') {
 				opts.push({text: 'Search', value: 'search'})
 				opts.push({text: 'Group', value: ''})
 			}

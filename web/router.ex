@@ -16,6 +16,7 @@ defmodule Liquio.Router do
 		get "/logout", LoginController, :delete
 		resources "/identities", IdentityController, only: [:index, :create, :show] do
 			resources "/delegations", DelegationController, only: [:create, :delete], singleton: true
+			resources "/trusts", TrustController, only: [:create, :delete], singleton: true
 		end
 		
 		resources "/nodes", NodeController, only: [:index, :show] do

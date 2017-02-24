@@ -7,11 +7,7 @@ defmodule Liquio.Repo.Migrations.CreateIdentity do
 			add :username, :string, null: false, size: 20
 			add :name, :string, null: false
 
-			add :trust_metric_url, :string
-			add :minimum_turnout, :float
-			add :vote_weight_halving_days, :float
-			add :reference_minimum_turnout, :float
-			add :reference_minimum_agree, :float
+			add :trusts, {:map, :boolean}
 
 			timestamps
 		end

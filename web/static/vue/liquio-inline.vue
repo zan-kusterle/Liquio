@@ -14,8 +14,8 @@
 		>
 			<div class="content">{{ reference.title }}</div>
 			<div style="font-size: 0px;">
-				<div class="reference-result" style="border-bottom: 1px solid rgba(255, 255, 255, 0.9);">
-					<div v-html="reference.reference_result.by_keys['for_choice'].embed" v-if="reference.reference_result.by_keys['for_choice'] && reference.reference_result.by_keys['for_choice'].embed" style="width: 100%; height: 30px;"></div>
+				<div v-if="reference.reference_result.by_keys['for_choice'] && reference.reference_result.by_keys['for_choice'].embed" class="reference-result" style="border-bottom: 1px solid rgba(255, 255, 255, 0.9);">
+					<div v-html="reference.reference_result.by_keys['for_choice'].embed" style="width: 100%; height: 30px;"></div>
 				</div>
 				<div class="reference-result">
 					<div v-html="reference.reference_result.by_keys['relevance'].embed" style="width: 100%; height: 30px;"></div>
@@ -59,13 +59,13 @@ export default {
 
 	.content {
 		padding: 8px 10px;
-		background: rgba(255, 255, 255, 0.6);
+		background: rgba(205, 235, 255, 0.6);
 		word-wrap: break-word;
 	}
 
 	.references > .link > .content {
 		font-size: 12px;
-		background: rgba(255, 255, 255, 0.3);
+		background: rgba(205, 235, 255, 0.3);
 		border-top: 4px solid rgba(0, 0, 0, 0.5);
 	}
 

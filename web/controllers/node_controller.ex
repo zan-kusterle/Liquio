@@ -3,28 +3,14 @@ defmodule Liquio.NodeController do
 	
 	def index(conn, _params) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		nodes = Vote
-		|> Repo.all
-		|> Enum.map(& &1.key)
-		|> Enum.uniq
-		|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts))
-		|> Enum.filter(& &1.choice_type != nil)
-		|> Enum.sort_by(& -(&1.results.turnout_ratio + 0.05 * Enum.count(&1.references)))
 		conn
-		|> render("show.json", node: Node.new("", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts))
+		|> render("show.json", node: Node.all(calculation_opts))
 	end
 
 	def search(conn, %{"id" => query}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		nodes = Vote
-		|> Vote.search(query)
-		|> Repo.all
-		|> Enum.map(& &1.key)
-		|> Enum.uniq
-		|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts))
-
 		conn
-		|> render("show.json", node: Node.new("Results for '#{query}'", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts))
+		|> render("show.json", node: Node.search(query, calculation_opts))
 	end
 
 	with_params(%{
