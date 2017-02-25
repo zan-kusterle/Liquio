@@ -53,7 +53,7 @@ function updateNode(self) {
 		self.title = self.$route.params.query
 	} else {
 		let key = self.$route.params.key || ''
-		Api.getNode(key, null, (node) => {
+		self.$store.dispatch('fetchNode', key).then((node) => {
 			self.node = node
 			setTimeout(scrollToNode, 0)
 		})

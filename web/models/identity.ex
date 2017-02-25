@@ -13,9 +13,6 @@ defmodule Liquio.Identity do
 
 		field :trusts, {:map, :boolean}
 
-		has_many :delegations_from, Liquio.Delegation, foreign_key: :from_identity_id
-		has_many :delegations_to, Liquio.Delegation, foreign_key: :to_identity_id
-
 		timestamps
 	end
 	
@@ -74,24 +71,17 @@ defmodule Liquio.Identity do
 	end
 
 	def preload(identity, user) do
-		own_delegation = if user != nil and identity.id != user.id do
-			delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: identity.id, is_last: true})
-			if delegation != nil and delegation.data != nil do
-				delegation |> Map.put(:from_identity, user) |> Map.put(:to_identity, identity)
-			else
-				nil
-			end
-		else
-			nil
-		end
-
-		is_trusted = if user do Map.get(user.trusts || Map.new, identity.username) else nil end
-
 		identity
-		|> Map.put(:own_delegation, own_delegation)
-		|> Map.put(:is_trusted, is_trusted)
+		|> preload_trusts()
 		|> preload_delegations()
 		|> preload_votes()
+	end
+
+	def preload_trusts(identity) do
+		inverse_trusts = []
+
+		identity
+		|> Map.put(:trusts_to, inverse_trusts)
 	end
 
 	def preload_delegations(identity) do

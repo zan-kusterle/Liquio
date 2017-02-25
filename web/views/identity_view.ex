@@ -14,9 +14,8 @@ defmodule Liquio.IdentityView do
 			username: identity.username,
 			name: identity.name,
 			trusts: identity.trusts || Map.new,
-			is_trusted: Map.get(identity, :is_trusted),
-			own_delegation: if Map.get(identity, :own_delegation) do render_one(identity.own_delegation, Liquio.DelegationView, "delegation.json") else nil end,
-			delegations: %{},
+			delegations_to: render_many(Map.get(identity, :delegations_to, []), Liquio.DelegationView, "delegation.json") |> Enum.map(& {&1.from_identity.username, &1}) |> Enum.into(%{}),
+			delegations: render_many(Map.get(identity, :delegations_from, []), Liquio.DelegationView, "delegation.json") |> Enum.map(& {&1.to_identity.username, &1}) |> Enum.into(%{}),
 			votes: render_many(Map.get(identity, :vote_nodes, []), Liquio.NodeView, "node.json")
 		}
 

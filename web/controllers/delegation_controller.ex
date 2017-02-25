@@ -14,7 +14,8 @@ defmodule Liquio.DelegationController do
 				delegation = Repo.preload delegation, [:from_identity, :to_identity]
 				conn
 				|> put_resp_header("location", identity_path(conn, :show, user.id))
-				|> send_resp(:created, "")
+				|> put_status(:created)
+				|> render(Liquio.IdentityView, "show.json", identity: Repo.get!(Identity, user.id) |> Identity.preload(nil))
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
@@ -31,7 +32,8 @@ defmodule Liquio.DelegationController do
 		if delegation do
 			Delegation.unset(user, to_identity)
 			conn
-			|> send_resp(:no_content, "")
+			|> put_status(:ok)
+			|> render(Liquio.IdentityView, "show.json", identity: Repo.get!(Identity, user.id) |> Identity.preload(nil))
 		else
 			conn
 			|> put_status(:not_found)

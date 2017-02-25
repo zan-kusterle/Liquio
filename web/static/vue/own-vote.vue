@@ -123,19 +123,11 @@ export default {
 			set: function(event) {
 				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main', choiceType)
 				let nodes = self.votableNodes || [self.node]
-				_.each(nodes, (node) => {
-					Api.setVote(node.url_key, node.reference_key && node.reference_key.replace(/\_/g, '-'), choice, function(node) {
-						self.$root.bus.$emit('change')
-					})
-				})
+				_.each(nodes, (node) => this.$store.dispatch('setVote', node, choice))
 			},
 			unset: function(event) {
 				let nodes = self.votableNodes || [self.node]
-				_.each(nodes, (node) => {
-					Api.unsetVote(node.url_key, node.reference_key && node.reference_key.replace(/\_/g, '-'), function(node) {
-						self.$root.bus.$emit('change')
-					})
-				})
+				_.each(nodes, (node) => this.$store.dispatch('unsetVote', node))
 			},
 			keyup: function(event) {
 				updateInputs()

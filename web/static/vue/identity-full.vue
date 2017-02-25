@@ -13,10 +13,10 @@
 
 						<div style="margin-top: 60px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
 							I trust this identity<br>
-							<el-button @click="set_trust(false)" :type="trust == false ? 'danger' : null">False</el-button>
-							<el-button @click="set_trust(true)" :type="trust == true ? 'success' : null">True</el-button>
+							<el-button @click="set_trust(false)" :type="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] == false ? 'danger' : null">False</el-button>
+							<el-button @click="set_trust(true)" :type="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] == true ? 'success' : null">True</el-button>
 							<br>
-							<el-button type="text" @click="unset_trust()" v-if="trust != null">Remove</el-button>
+							<el-button type="text" @click="unset_trust()" v-if="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] != null">Remove</el-button>
 						</div>
 
 						<div style="margin-top: 40px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
@@ -44,8 +44,8 @@
 							</el-input>
 							<el-button v-else class="button-new-tag" size="small" @click="showInput">Add topic</el-button>
 
-							<el-button @click="set_delegation()">Set</el-button>
-							<el-button @click="unset_delegation()" type="danger">Remove</el-button>
+							<el-button @click="setDelegation()">Update</el-button>
+							<el-button @click="unsetDelegation()" type="danger" v-if="$store.state.user && $store.state.user.delegations[$route.params.username]">Remove</el-button>
 						</div>
 					</el-col>
 					<el-col :span="8">
@@ -70,20 +70,23 @@
 import App from '../vue/app.vue'
 import LiquioList from '../vue/liquio-list.vue'
 
-let Api = require('api.js')
-
 export default {
 	components: {App, LiquioList},
 	data: function() {
 		let self = this
 		let username = this.$route.params.username
-		Api.getIdentity(username, (identity) => {
-			self.identity = identity
-			self.trust = identity.is_trusted
-			if(identity.own_delegation) {
-				self.weight = identity.own_delegation.weight * 100
-				self.topics = identity.own_delegation.topics
+
+		this.$root.bus.$on('currentUser', function(user) {
+			let delegation = self.$store.state.user.delegations[self.$route.params.username]
+			if(delegation && self.setInitial) {
+				self.weight = delegation.weight * 100
+				self.topics = delegation.topics
+				self.setInitial = false
 			}
+		})
+
+		this.$store.dispatch('fetchIdentity', username).then((identity) => {
+			self.identity = identity
 		})
 
 		return {
@@ -92,23 +95,27 @@ export default {
 			topics: [],
 			trust: null,
 			weight: 100,
-			hasDelegation: false,
+
+			own_delegation: null,
+			is_trusted: null,
 
         	inputVisible: false,
         	inputValue: '',
 
+			setInitial: true,
+
 			set_trust: function(v) {
-				Api.setTrust(username, v, () => self.trust = v)
+				this.$store.dispatch('setTrust', {username: username, is_trusted: v})
 			},
 			unset_trust: function() {
-				Api.unsetTrust(username, () => self.trust = null)
+				this.$store.dispatch('unsetTrust', username)
 			},
 
-			set_delegation: function() {
-				Api.setDelegation(username, self.weight / 100, self.topics, () => self.hasDelegation = true)
+			setDelegation: function() {
+				this.$store.dispatch('setDelegation', {username: username, weight: self.weight / 100, topics: self.topics})
 			},
-			unset_delegation: function() {
-				Api.unsetDelegation(username, () => self.hasDelegation = false)
+			unsetDelegation: function() {
+				this.$store.dispatch('unsetDelegation', username)
 			},
 
 			handleClose: function(tag) {
@@ -131,9 +138,6 @@ export default {
 				self.inputValue = '';
 			}
 		}
-	},
-	computed: {
-		
 	}
 }
 </script>

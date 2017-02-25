@@ -34,7 +34,10 @@
 <script>
 export default {
 	data: function() {
-		this.$store.dispatch('fetchCurrentUser')
+		let self = this
+		this.$store.dispatch('fetchIdentity', 'me').then((u) => {
+			self.$root.bus.$emit('currentUser', u)
+		})
 		return {}
 	}
 }

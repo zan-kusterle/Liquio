@@ -210,7 +210,7 @@ defmodule Liquio.Node do
 
 		contributions = contributions |> Enum.map(fn(contribution) ->
 			contribution = Map.put(contribution, :identity, identities[contribution.identity.id])
-			results = AggregateContributions.aggregate([contribution], calculation_opts)
+			results = AggregateContributions.aggregate_single(contribution)
 			
 			contribution
 			|> Map.put(:results, results |> preload_results_embed)

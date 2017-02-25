@@ -10,7 +10,8 @@ defmodule Liquio.TrustController do
 		
 		conn
 		|> put_resp_header("location", identity_path(conn, :show, user.id))
-		|> send_resp(:created, "")
+		|> put_status(:created)
+		|> render(Liquio.IdentityView, "show.json", identity: Repo.get!(Identity, user.id) |> Identity.preload(nil))
 	end)
 
 	with_params(%{
@@ -22,6 +23,7 @@ defmodule Liquio.TrustController do
 		
 		conn
 		|> put_resp_header("location", identity_path(conn, :show, user.id))
-		|> send_resp(:no_content, "")
+		|> put_status(:ok)
+		|> render(Liquio.IdentityView, "show.json", identity: Repo.get!(Identity, user.id) |> Identity.preload(nil))
 	end)
 end
