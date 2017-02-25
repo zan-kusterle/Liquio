@@ -63,6 +63,38 @@ export function register(token, username, name, cb) {
 	})
 }
 
+export function setTrust(to_identity_username, is_trusted, cb) {
+	let url = '/api/identities/' + encodeURIComponent(to_identity_username) + '/trusts'
+	axios.post(url, {is_trusted: is_trusted}).then(function (response) {
+		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+
+export function unsetTrust(to_identity_username, cb) {
+	let url = '/api/identities/' + encodeURIComponent(to_identity_username) + '/trusts'
+	axios.delete(url).then(function (response) {
+		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+
+export function setDelegation(to_identity_username, weight, topics, cb) {
+	let url = '/api/identities/' + encodeURIComponent(to_identity_username) + '/delegations'
+	axios.post(url, {delegation: {weight: weight, topics: topics}}).then(function (response) {
+		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+
+export function unsetDelegation(to_identity_username, reference_url_key, cb) {
+	let url = '/api/identities/' + encodeURIComponent(to_identity_username) + '/delegations'
+	axios.delete(url).then(function (response) {
+		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+
 export function setVote(url_key, reference_url_key, choice, cb) {
 	for(var key in choice)
 		choice[key + ''] = parseFloat(choice[key])

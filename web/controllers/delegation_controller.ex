@@ -4,17 +4,17 @@ defmodule Liquio.DelegationController do
 	plug :scrub_params, "delegation" when action in [:create]
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
+		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id", column: "username"]}
 	},
-	def create(conn, %{:user => user, "delegation" => params}) do
-		params = params |> Map.put("from_identity_id", user.id)
+	def create(conn, %{:user => user, :to_identity => to_identity, "delegation" => params}) do
+		params = params |> Map.put("from_identity_id", user.id) |> Map.put("to_identity_id", to_identity.id)
 		changeset = Delegation.changeset(%Delegation{}, params)
 		case Delegation.set(changeset) do
 			{:ok, delegation} ->
 				delegation = Repo.preload delegation, [:from_identity, :to_identity]
 				conn
-				|> put_status(:created)
-				|> put_resp_header("location", identity_delegation_path(conn, :show, user.id, delegation))
-				|> render("show.json", delegation: delegation)
+				|> put_resp_header("location", identity_path(conn, :show, user.id))
+				|> send_resp(:created, "")
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
@@ -24,7 +24,7 @@ defmodule Liquio.DelegationController do
 
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
-		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "id"]}
+		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id", column: "username"]}
 	},
 	def delete(conn, %{:user => user, :to_identity => to_identity}) do
 		delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: to_identity.id, is_last: true})

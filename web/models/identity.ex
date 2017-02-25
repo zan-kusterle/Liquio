@@ -58,18 +58,26 @@ defmodule Liquio.Identity do
 	end
 
 	def set_trust(from_identity, to_identity, is_trusting) do
-		Map.put(from_identity.trusts, to_identity.id, is_trusting)
+		if from_identity.id != to_identity.id do
+			new_trusts = Map.put(from_identity.trusts || Map.new, to_identity.username, is_trusting)
+			from_identity
+			|> Ecto.Changeset.change(trusts: new_trusts)
+			|> Repo.update!
+		end
 	end
 
 	def unset_trust(from_identity, to_identity) do
-		Map.delete(from_identity.trusts, to_identity.id)
+		new_trusts = Map.delete(from_identity.trusts || Map.new, to_identity.username)
+		from_identity
+		|> Ecto.Changeset.change(trusts: new_trusts)
+		|> Repo.update!
 	end
 
 	def preload(identity, user) do
 		own_delegation = if user != nil and identity.id != user.id do
 			delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: identity.id, is_last: true})
 			if delegation != nil and delegation.data != nil do
-				delegation
+				delegation |> Map.put(:from_identity, user) |> Map.put(:to_identity, identity)
 			else
 				nil
 			end
@@ -77,8 +85,11 @@ defmodule Liquio.Identity do
 			nil
 		end
 
+		is_trusted = if user do Map.get(user.trusts || Map.new, identity.username) else nil end
+
 		identity
 		|> Map.put(:own_delegation, own_delegation)
+		|> Map.put(:is_trusted, is_trusted)
 		|> preload_delegations()
 		|> preload_votes()
 	end

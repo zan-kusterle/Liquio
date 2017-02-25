@@ -9,9 +9,9 @@
 					</div>
 
 					<div style="float: right;">
-						<div class="actions" v-if="user">
-							<router-link :to="'/identities/' + user.username"><i class="el-icon-arrow-right" aria-hidden="true"></i>{{ user.name }}</router-link>
-							<a href="/api/logout" @click="logout"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
+						<div class="actions" v-if="$store.state.user">
+							<router-link :to="'/identities/' + $store.state.user.username"><i class="el-icon-arrow-right" aria-hidden="true"></i>{{ $store.state.user.name }}</router-link>
+							<a href="/api/logout" @click="$store.commit('logout')"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
 						</div>
 						<div class="actions" v-else>
 							<a href="/login"><i class="el-icon-arrow-right" aria-hidden="true"></i> Login</a>
@@ -32,19 +32,10 @@
 </template>
 
 <script>
-let Api = require('api.js')
-
 export default {
-	props: [],
 	data: function() {
-		let self = this
-		Api.getIdentity('me', (user) => self.user = user)
-		return {
-			user: null,
-			logout: function(event) {
-				Api.logout(() => self.user = null)
-			}
-		}
+		this.$store.dispatch('fetchCurrentUser')
+		return {}
 	}
 }
 </script>

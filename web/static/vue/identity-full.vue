@@ -11,15 +11,15 @@
 						{{ identity.username }}<br>
 						{{ identity.name }}
 
-						<div style="margin-top: 60px;">
+						<div style="margin-top: 60px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
 							I trust this identity<br>
-							<el-button @click="set_trust(false)" :type="trust == false ? 'danger' : null">No</el-button>
-							<el-button @click="set_trust(true)" :type="trust == true ? 'success' : null">Yes</el-button>
+							<el-button @click="set_trust(false)" :type="trust == false ? 'danger' : null">False</el-button>
+							<el-button @click="set_trust(true)" :type="trust == true ? 'success' : null">True</el-button>
 							<br>
-							<el-button type="text" @click="unset_trust()" v-if="trust != null">Clear</el-button>
+							<el-button type="text" @click="unset_trust()" v-if="trust != null">Remove</el-button>
 						</div>
 
-						<div style="margin-top: 40px;">
+						<div style="margin-top: 40px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
 							Delegation
 							<el-slider v-model="weight"></el-slider>
 
@@ -43,6 +43,9 @@
 								>
 							</el-input>
 							<el-button v-else class="button-new-tag" size="small" @click="showInput">Add topic</el-button>
+
+							<el-button @click="set_delegation()">Set</el-button>
+							<el-button @click="unset_delegation()" type="danger">Remove</el-button>
 						</div>
 					</el-col>
 					<el-col :span="8">
@@ -74,7 +77,14 @@ export default {
 	data: function() {
 		let self = this
 		let username = this.$route.params.username
-		Api.getIdentity(username, (identity) => self.identity = identity)
+		Api.getIdentity(username, (identity) => {
+			self.identity = identity
+			self.trust = identity.is_trusted
+			if(identity.own_delegation) {
+				self.weight = identity.own_delegation.weight * 100
+				self.topics = identity.own_delegation.topics
+			}
+		})
 
 		return {
 			identity: null,
@@ -82,15 +92,23 @@ export default {
 			topics: [],
 			trust: null,
 			weight: 100,
+			hasDelegation: false,
 
         	inputVisible: false,
         	inputValue: '',
 
 			set_trust: function(v) {
-				this.trust = v
+				Api.setTrust(username, v, () => self.trust = v)
 			},
 			unset_trust: function() {
-				this.trust = null
+				Api.unsetTrust(username, () => self.trust = null)
+			},
+
+			set_delegation: function() {
+				Api.setDelegation(username, self.weight / 100, self.topics, () => self.hasDelegation = true)
+			},
+			unset_delegation: function() {
+				Api.unsetDelegation(username, () => self.hasDelegation = false)
 			},
 
 			handleClose: function(tag) {
@@ -113,6 +131,9 @@ export default {
 				self.inputValue = '';
 			}
 		}
+	},
+	computed: {
+		
 	}
 }
 </script>
