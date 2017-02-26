@@ -36,7 +36,6 @@
 
 <script>
 import App from '../vue/app.vue'
-let Api = require('api.js')
 import CalculationOptions from '../vue/calculation-options.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 import LiquioInline from '../vue/liquio-inline.vue'
@@ -49,7 +48,7 @@ let init = (self) => {
 
 	let keys = self.$route.params.key.split('_')
 	let referenceKeys = self.$route.params.referenceKey ? self.$route.params.referenceKey.split('_') : []
-	Api.getNodes(keys, null, (nodes) => self.nodes = nodes)
+	self.$store.dispatch('fetchNodes', {keys: keys, referenceKeys: null}).then((nodes) => self.nodes = nodes)
 	Api.getNodes(referenceKeys, null, (nodes) => self.referenceNodes = nodes)
 	Api.getNodes(keys, referenceKeys, (nodes) => self.references = nodes)
 }
