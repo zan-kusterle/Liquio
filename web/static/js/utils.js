@@ -2,6 +2,11 @@ export function getKey(title, choice_type) {
 	return encodeURIComponent((title + ' ' + choice_type).trim().replace(/ /g, '-'))
 }
 
+export function getMultiKey(nodes) {
+	var keys = _.map(nodes, (node) => getKey(node.title, node.choice_type))
+	return keys.join('_')
+}
+
 export function formatNumber(number) {
 	return Math.round(number * 10) / 10
 }

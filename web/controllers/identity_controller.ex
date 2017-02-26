@@ -26,6 +26,6 @@ defmodule Liquio.IdentityController do
 		:user => {Plugs.CurrentUser, [require: false]}
 	},
 	def show(conn, %{:identity => identity, :user => user}) do
-		render(conn, "show.json", identity: identity |> Identity.preload(user))
+		render(conn, "show.json", identity: identity |> Identity.preload())
 	end)
 end

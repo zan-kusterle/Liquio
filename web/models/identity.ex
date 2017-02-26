@@ -70,7 +70,7 @@ defmodule Liquio.Identity do
 		|> Repo.update!
 	end
 
-	def preload(identity, user) do
+	def preload(identity) do
 		identity
 		|> preload_trusts()
 		|> preload_delegations()

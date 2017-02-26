@@ -53,7 +53,7 @@
 </template>
 
 <script>
-let Api = require('api.js')
+let utils = require('utils.js')
 
 const choiceForNode = function(node, results_key, choiceType) {
 	if(node.own_contribution) {
@@ -123,16 +123,16 @@ export default {
 			set: function(event) {
 				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main', choiceType)
 				let nodes = self.votableNodes || [self.node]
-				_.each(nodes, (node) => this.$store.dispatch('setVote', node, choice))
+				_.each(nodes, (node) => self.$store.dispatch('setVote', {node: node, choice: choice}))
 			},
 			unset: function(event) {
 				let nodes = self.votableNodes || [self.node]
-				_.each(nodes, (node) => this.$store.dispatch('unsetVote', node))
+				_.each(nodes, (node) => self.$store.dispatch('unsetVote', node))
 			},
 			keyup: function(event) {
 				updateInputs()
 			},
-			number_format: Api.formatNumber
+			number_format: utils.formatNumber
 		}
 	},
 	computed: {
@@ -140,7 +140,7 @@ export default {
 			return this.node.own_contribution ? this.node.own_contribution.results.turnout_ratio : 0
 		},
 		color: function() {
-			return Api.getColor(parseFloat(this.values[0].value / 100))
+			return utils.getColor(parseFloat(this.values[0].value / 100))
 		}
 	}
 }

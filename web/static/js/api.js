@@ -12,19 +12,21 @@ export function getNode(key, referenceKey, cb) {
 }
 
 export function getNodes(keys, referenceKeys, cb) {
-	var reqs = _.flatMap(keys, (key) => {
-		if(referenceKeys == null) {
-			return [axios.get('/api/nodes/' + encodeURIComponent(key))]
-		} else {
-			return _.map(referenceKeys, (referenceKey) => {
-				return axios.get('/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(referenceKey))
-			})
-		}
-	})
-	axios.all(reqs).then(function(responses) {
-		cb(_.map(responses, (r) => r.data.data))
-	}).catch(function (error) {
-	})
+	if(keys.length > 0 && (referenceKeys == null || referenceKeys.length > 0)) {
+		var reqs = _.flatMap(keys, (key) => {
+			if(referenceKeys == null) {
+				return [axios.get('/api/nodes/' + encodeURIComponent(key))]
+			} else {
+				return _.map(referenceKeys, (referenceKey) => {
+					return axios.get('/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(referenceKey))
+				})
+			}
+		})
+		axios.all(reqs).then(function(responses) {
+			cb(_.map(responses, (r) => r.data.data))
+		}).catch(function (error) {
+		})
+	}
 }
 
 export function search(query, cb) {

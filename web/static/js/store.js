@@ -35,7 +35,7 @@ export default new Vuex.Store({
 				})
 			})
 		},
-		fetchNode({commit}, key) {
+		fetchNode({commit, state}, key) {
 			return new Promise((resolve, reject) => {
 				Api.getNode(key, null, (node) => {
 					commit('setNode', node)
@@ -43,7 +43,7 @@ export default new Vuex.Store({
 				})
 			})
 		},
-		setVote({commit}, node, choice) {
+		setVote({commit}, {node, choice}) {
 			return new Promise((resolve, reject) => {
 				Api.setVote(node.url_key, node.reference_key && node.reference_key.replace(/\_/g, '-'), choice, function(node) {
 					commit('setNode', node)

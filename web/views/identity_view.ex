@@ -24,6 +24,7 @@ defmodule Liquio.IdentityView do
 		else
 			v
 		end
+		
 		v
 	end
 end

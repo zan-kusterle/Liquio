@@ -35,7 +35,6 @@ import App from '../vue/app.vue'
 import CalculationOptions from '../vue/calculation-options.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 import LiquioList from '../vue/liquio-list.vue'
-let Api = require('api.js')
 
 function updateNode(self) {
 	function scrollToNode() {
@@ -46,7 +45,7 @@ function updateNode(self) {
 
 	self.node = null
 	if(self.$route.params.query) {
-		Api.search(self.$route.params.query, (node) => {
+		self.$store.dispatch('search', self.$route.params.query).then((node) => {
 			self.node = node
 			setTimeout(scrollToNode, 0)
 		})
@@ -63,15 +62,12 @@ function updateNode(self) {
 
 export default {
 	components: {App, CalculationOptions, LiquioNode, LiquioList},
-	data: function() {		
-		this.$root.bus.$on('change', () => {
-			updateNode(this)
-		})
+	data: function() {
 		updateNode(this)
 
 		return {
-			node: this.node,
-			title: this.title
+			node: null,
+			title: null
 		}
 	},
 	watch: {

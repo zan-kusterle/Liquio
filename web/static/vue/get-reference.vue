@@ -10,27 +10,29 @@
 </template>
 
 <script>
-let Api = require('api.js')
+let utils = require('utils.js')
 
 export default {
-	props: ['node'],
+	props: ['node', 'nodes'],
 	data: function() {
+		let ns = this.nodes ? this.nodes : (this.node ? [this.node]: [])
 		let self = this
 		let title = this.$route.params.query || ''
 		return {
 			title: title,
 			choice_type: '',
+			key: ns.length == 0 ? null : utils.getMultiKey(ns),
 			view: function(event) {
 				if(self.title.length >= 3) {
 					if(self.choice_type == 'search') {
 						let path = '/search/' + encodeURIComponent(self.title)
 						self.$router.push(path)
 					} else {
-						if(!self.node || self.$route.name == 'search') {
-							let path = '/' + Api.getKey(self.title, self.choice_type)
+						if(self.key == null || self.$route.name == 'search') {
+							let path = '/' + utils.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						} else {
-							let path = '/' + self.node.url_key + '/references/' + Api.getKey(self.title, self.choice_type)
+							let path = '/' + self.key + '/references/' + utils.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						}
 					}
@@ -41,7 +43,7 @@ export default {
 	computed: {
 		options: function() {
 			let opts = []
-			if(!this.node || this.$route.name == 'search') {
+			if(this.key == null || this.$route.name == 'search') {
 				opts.push({text: 'Search', value: 'search'})
 				opts.push({text: 'Group', value: ''})
 			}

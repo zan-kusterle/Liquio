@@ -11,7 +11,7 @@
 						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 50px;"></i>
 					</el-col>
 					<el-col :span="11">
-						<get-reference v-if="referenceNodes.length == 0" v-bind:node="referencingNode" style="margin-top: 30px; text-align: center;"></get-reference>
+						<get-reference v-if="referenceNodes.length == 0" v-bind:nodes="nodes" style="margin-top: 30px; text-align: center;"></get-reference>
 						<liquio-inline v-else v-for="node in referenceNodes" v-bind:node="node" results-key="main"></liquio-inline>
 					</el-col>
 				</el-row>
@@ -42,24 +42,32 @@ import LiquioNode from '../vue/liquio-node.vue'
 import LiquioInline from '../vue/liquio-inline.vue'
 import GetReference from '../vue/get-reference.vue'
 
+let init = (self) => {
+	self.nodes = []
+	self.referenceNodes = []
+	self.references = []
+
+	let keys = self.$route.params.key.split('_')
+	let referenceKeys = self.$route.params.referenceKey ? self.$route.params.referenceKey.split('_') : []
+	Api.getNodes(keys, null, (nodes) => self.nodes = nodes)
+	Api.getNodes(referenceKeys, null, (nodes) => self.referenceNodes = nodes)
+	Api.getNodes(keys, referenceKeys, (nodes) => self.references = nodes)
+}
+
 export default {
 	components: {App, LiquioNode, LiquioInline, GetReference, CalculationOptions},
-	
 	data: function() {
-		let self = this
-		let keys = this.$route.params.key.split('_')
-		let referenceKeys = (this.$route.params.referenceKey || '').split('_')
-		Api.getNodes(keys, null, (nodes) => self.nodes = nodes)
-		Api.getNodes(referenceKeys, null, (nodes) => self.referenceNodes = nodes)
-		Api.getNodes(keys, referenceKeys, (nodes) => self.references = nodes)
-		this.$root.bus.$on('change', () => Api.getNodes(keys, referenceKeys, (nodes) => {
-			self.references = nodes
-		}))
+		init(this)
 		
 		return {
 			nodes: [],
 			referenceNodes: [],
 			references: []
+		}
+	},
+	watch: {
+		'$route': function(to, from) {
+			init(this)	
 		}
 	}
 }

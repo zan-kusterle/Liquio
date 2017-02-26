@@ -13,10 +13,10 @@
 
 						<div style="margin-top: 60px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
 							I trust this identity<br>
-							<el-button @click="set_trust(false)" :type="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] == false ? 'danger' : null">False</el-button>
-							<el-button @click="set_trust(true)" :type="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] == true ? 'success' : null">True</el-button>
+							<el-button @click="$store.dispatch('setTrust', {username: username, is_trusted: false})" :type="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] == false ? 'danger' : null">False</el-button>
+							<el-button @click="$store.dispatch('setTrust', {username: username, is_trusted: true})" :type="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] == true ? 'success' : null">True</el-button>
 							<br>
-							<el-button type="text" @click="unset_trust()" v-if="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] != null">Remove</el-button>
+							<el-button type="text" @click="$store.dispatch('unsetTrust', username)" v-if="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] != null">Remove</el-button>
 						</div>
 
 						<div style="margin-top: 40px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
@@ -44,8 +44,8 @@
 							</el-input>
 							<el-button v-else class="button-new-tag" size="small" @click="showInput">Add topic</el-button>
 
-							<el-button @click="setDelegation()">Update</el-button>
-							<el-button @click="unsetDelegation()" type="danger" v-if="$store.state.user && $store.state.user.delegations[$route.params.username]">Remove</el-button>
+							<el-button @click="$store.dispatch('setDelegation', {username: username, weight: weight / 100, topics: topics})">Update</el-button>
+							<el-button @click="$store.dispatch('unsetDelegation', username)" type="danger" v-if="$store.state.user && $store.state.user.delegations[$route.params.username]">Remove</el-button>
 						</div>
 					</el-col>
 					<el-col :span="8">
@@ -78,10 +78,9 @@ export default {
 
 		this.$root.bus.$on('currentUser', function(user) {
 			let delegation = self.$store.state.user.delegations[self.$route.params.username]
-			if(delegation && self.setInitial) {
+			if(delegation) {
 				self.weight = delegation.weight * 100
 				self.topics = delegation.topics
-				self.setInitial = false
 			}
 		})
 
@@ -92,50 +91,27 @@ export default {
 		return {
 			identity: null,
 			username: username,
+
 			topics: [],
-			trust: null,
 			weight: 100,
-
-			own_delegation: null,
-			is_trusted: null,
-
-        	inputVisible: false,
-        	inputValue: '',
-
-			setInitial: true,
-
-			set_trust: function(v) {
-				this.$store.dispatch('setTrust', {username: username, is_trusted: v})
-			},
-			unset_trust: function() {
-				this.$store.dispatch('unsetTrust', username)
-			},
-
-			setDelegation: function() {
-				this.$store.dispatch('setDelegation', {username: username, weight: self.weight / 100, topics: self.topics})
-			},
-			unsetDelegation: function() {
-				this.$store.dispatch('unsetDelegation', username)
-			},
+        	addingTopic: false,
+        	topic: '',
 
 			handleClose: function(tag) {
 				self.topics.splice(self.topics.indexOf(tag), 1);
 			},
-
 			showInput: function() {
-				self.inputVisible = true;
+				self.addingTopic = true;
 				self.$nextTick(_ => {
-					self.$refs.saveTagInput.$refs.input.focus();
+					self.$refs.saveTagInput.$refs.input.focus()
 				});
 			},
-
 			handleInputConfirm: function() {
-				let inputValue = self.inputValue;
-				if (inputValue) {
-					self.topics.push(inputValue);
-				}
-				self.inputVisible = false;
-				self.inputValue = '';
+				let topic = self.topic
+				if (topic)
+					self.topics.push(topic)
+				self.addingTopic = false
+				self.topic = ''
 			}
 		}
 	}
