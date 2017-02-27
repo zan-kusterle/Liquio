@@ -40,33 +40,28 @@ import CalculationOptions from '../vue/calculation-options.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 import LiquioInline from '../vue/liquio-inline.vue'
 import GetReference from '../vue/get-reference.vue'
-
-let init = (self) => {
-	self.nodes = []
-	self.referenceNodes = []
-	self.references = []
-
-	let keys = self.$route.params.key.split('_')
-	let referenceKeys = self.$route.params.referenceKey ? self.$route.params.referenceKey.split('_') : []
-	self.$store.dispatch('fetchNodes', {keys: keys, referenceKeys: null}).then((nodes) => self.nodes = nodes)
-	Api.getNodes(referenceKeys, null, (nodes) => self.referenceNodes = nodes)
-	Api.getNodes(keys, referenceKeys, (nodes) => self.references = nodes)
-}
+let utils = require('utils.js')
 
 export default {
 	components: {App, LiquioNode, LiquioInline, GetReference, CalculationOptions},
 	data: function() {
-		init(this)
+		this.$nextTick(() => {
+			_.each(this.$store.getters.keys, (key) => this.$store.dispatch('fetchNode', key))
+			_.each(this.$store.getters.referencingKeys, (key) => this.$store.dispatch('fetchNode', key))
+			_.each(this.$store.getters.referenceKeys, (key) => this.$store.dispatch('fetchNode', key))
+		})
 		
-		return {
-			nodes: [],
-			referenceNodes: [],
-			references: []
-		}
+		return {}
 	},
-	watch: {
-		'$route': function(to, from) {
-			init(this)	
+	computed: {
+		nodes: function() {			
+			return this.$store.getters.getNodesByKeys(this.$store.getters.keys)
+		},
+		referenceNodes: function() {			
+			return this.$store.getters.getNodesByKeys(this.$store.getters.referencingKeys)
+		},
+		references: function() {
+			return this.$store.getters.getNodesByKeys(this.$store.getters.referenceKeys)
 		}
 	}
 }

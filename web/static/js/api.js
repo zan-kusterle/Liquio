@@ -3,8 +3,8 @@ var _ = require('lodash')
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-export function getNode(key, referenceKey, cb) {
-	let url = '/api/nodes/' + encodeURIComponent(key) + (referenceKey ? '/references/' + encodeURIComponent(referenceKey) : '')
+export function getNode(key, cb) {
+	let url = '/api/nodes/' + key
 	axios.get(url).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {

@@ -1,12 +1,21 @@
 import Vuex from 'vuex'
 
 let Api = require('api.js')
+let utils = require('utils.js')
 
 export default new Vuex.Store({
 	state: {
 		user: null,
-		nodes: {},
+		nodes: [],
 		identities: {}
+	},
+	getters: {
+		keys: (state) => state.route.params.key.split('_'),
+		referencingKeys: (state) => state.route.params.referenceKey ? state.route.params.referenceKey.split('_') : [],
+		referenceKeys: (state, getters) => _.flatMap(getters.keys, (key) =>
+			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => utils.getCompositeKey(key, referenceKey))),
+		getNodesByKeys: (state, getters) => (keys) => _.filter(state.nodes, (node) => _.some(keys, (key) =>
+			utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key)) == utils.normalizeKey(key)))
 	},
 	mutations: {
 		login (state, user) {
@@ -21,7 +30,8 @@ export default new Vuex.Store({
 				state.user = identity
 		},
 		setNode (state, node) {
-			state.nodes[node.key] = node
+			state.nodes = _.reject(state.nodes, (n) => n.key == node.key && n.reference_key == node.reference_key)
+			state.nodes.push(node)
 		}
 	},
 	actions: {
@@ -37,7 +47,7 @@ export default new Vuex.Store({
 		},
 		fetchNode({commit, state}, key) {
 			return new Promise((resolve, reject) => {
-				Api.getNode(key, null, (node) => {
+				Api.getNode(key, (node) => {
 					commit('setNode', node)
 					resolve(node)
 				})

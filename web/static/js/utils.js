@@ -2,6 +2,14 @@ export function getKey(title, choice_type) {
 	return encodeURIComponent((title + ' ' + choice_type).trim().replace(/ /g, '-'))
 }
 
+export function getCompositeKey(key, referenceKey) {
+	return encodeURIComponent(key) + (referenceKey ? '/references/' + encodeURIComponent(referenceKey) : '')
+}
+
+export function normalizeKey(key) {
+	return key.replace(/ /g, '-').replace(/_/g, '-').toLowerCase()
+}
+
 export function getMultiKey(nodes) {
 	var keys = _.map(nodes, (node) => getKey(node.title, node.choice_type))
 	return keys.join('_')

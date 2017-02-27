@@ -10,7 +10,7 @@ require('vue2-animate/dist/vue2-animate.min.css')
 Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(ElementUI, {locale})
-
+import { sync } from 'vuex-router-sync'
 import loginComponent from '../vue/login.vue'
 import finishLoginComponent from '../vue/finish-login.vue'
 import identityComponent from '../vue/identity-full.vue'
@@ -34,6 +34,8 @@ const router = new VueRouter({
 	mode: 'history',
 	routes: routes
 })
+
+sync(store, router)
 
 var bus = new Vue()
 
