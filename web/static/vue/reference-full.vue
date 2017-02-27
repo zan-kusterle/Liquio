@@ -11,7 +11,7 @@
 						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 50px;"></i>
 					</el-col>
 					<el-col :span="11">
-						<get-reference v-if="referenceNodes.length == 0" v-bind:nodes="nodes" style="margin-top: 30px; text-align: center;"></get-reference>
+						<get-reference v-if="referenceNodes.length == 0" v-bind:ids="$store.getters.keys" style="margin-top: 30px; text-align: center;"></get-reference>
 						<liquio-inline v-else v-for="node in referenceNodes" v-bind:node="node" results-key="main"></liquio-inline>
 					</el-col>
 				</el-row>
@@ -54,7 +54,7 @@ export default {
 		return {}
 	},
 	computed: {
-		nodes: function() {			
+		nodes: function() {
 			return this.$store.getters.getNodesByKeys(this.$store.getters.keys)
 		},
 		referenceNodes: function() {			

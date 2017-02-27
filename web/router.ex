@@ -8,6 +8,10 @@ defmodule Liquio.Router do
 		plug Guardian.Plug.VerifySession
 		plug Guardian.Plug.LoadResource
 	end
+
+	pipeline :browser do
+		plug :accepts, ["html"]
+	end
 	
 	scope "/api", Liquio do
 		pipe_through :api
@@ -26,5 +30,11 @@ defmodule Liquio.Router do
 			end
 		end
 		get "/search/:id", NodeController, :search
+	end
+
+	scope "/", Liquio do
+		pipe_through :browser
+
+		get "/*path", IndexController, :app
 	end
 end

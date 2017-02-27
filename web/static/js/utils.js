@@ -10,8 +10,7 @@ export function normalizeKey(key) {
 	return key.replace(/ /g, '-').replace(/_/g, '-').toLowerCase()
 }
 
-export function getMultiKey(nodes) {
-	var keys = _.map(nodes, (node) => getKey(node.title, node.choice_type))
+export function getMultiKey(keys) {
 	return keys.join('_')
 }
 

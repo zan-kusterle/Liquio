@@ -13,15 +13,15 @@
 let utils = require('utils.js')
 
 export default {
-	props: ['node', 'nodes'],
+	props: ['id', 'ids'],
 	data: function() {
-		let ns = this.nodes ? this.nodes : (this.node ? [this.node]: [])
 		let self = this
 		let title = this.$route.params.query || ''
+
 		return {
 			title: title,
 			choice_type: '',
-			key: ns.length == 0 ? null : utils.getMultiKey(ns),
+			key: this.ids ? utils.getMultiKey(this.ids) : this.id,
 			view: function(event) {
 				if(self.title.length >= 3) {
 					if(self.choice_type == 'search') {

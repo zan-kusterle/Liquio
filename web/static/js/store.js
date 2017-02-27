@@ -1,9 +1,15 @@
 import Vuex from 'vuex'
+import createPersist, { createStorage } from 'vuex-localstorage'
 
 let Api = require('api.js')
 let utils = require('utils.js')
 
 export default new Vuex.Store({
+	plugins: [createPersist({
+		namespace: 'liquio',
+		initialState: {},
+		expires: 7 * 24 * 60 * 60 * 1e3
+	})],
 	state: {
 		user: null,
 		nodes: [],
@@ -14,8 +20,9 @@ export default new Vuex.Store({
 		referencingKeys: (state) => state.route.params.referenceKey ? state.route.params.referenceKey.split('_') : [],
 		referenceKeys: (state, getters) => _.flatMap(getters.keys, (key) =>
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => utils.getCompositeKey(key, referenceKey))),
-		getNodesByKeys: (state, getters) => (keys) => _.filter(state.nodes, (node) => _.some(keys, (key) =>
-			utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key)) == utils.normalizeKey(key)))
+		getNodeByKey: (state, getters) => (key) => _.find(state.nodes, (node) =>
+			utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key)) == utils.normalizeKey(key)),
+		getNodesByKeys: (state, getters) => (keys) => _.filter(_.map(keys, (key) => getters.getNodeByKey(key)), (n) => n)
 	},
 	mutations: {
 		login (state, user) {
