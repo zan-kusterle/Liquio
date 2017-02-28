@@ -13,7 +13,7 @@
 let utils = require('utils.js')
 
 export default {
-	props: ['id', 'ids'],
+	props: ['id', 'ids', 'enableSearch'],
 	data: function() {
 		let self = this
 		let title = this.$route.params.query || ''
@@ -21,7 +21,6 @@ export default {
 		return {
 			title: title,
 			choice_type: '',
-			key: this.ids ? utils.getMultiKey(this.ids) : this.id,
 			view: function(event) {
 				if(self.title.length >= 3) {
 					if(self.choice_type == 'search') {
@@ -32,6 +31,7 @@ export default {
 							let path = '/' + utils.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						} else {
+							let key = self.ids ? utils.getMultiKey(self.ids) : self.id
 							let path = '/' + self.key + '/references/' + utils.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						}

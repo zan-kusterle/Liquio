@@ -20,8 +20,11 @@ export default new Vuex.Store({
 		referencingKeys: (state) => state.route.params.referenceKey ? state.route.params.referenceKey.split('_') : [],
 		referenceKeys: (state, getters) => _.flatMap(getters.keys, (key) =>
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => utils.getCompositeKey(key, referenceKey))),
-		getNodeByKey: (state, getters) => (key) => _.find(state.nodes, (node) =>
-			utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key)) == utils.normalizeKey(key)),
+		getNodeByKey: (state, getters) => (key) => {
+			return _.find(state.nodes, (node) => {
+				return utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key)) == utils.normalizeKey(key)
+			})
+		},
 		getNodesByKeys: (state, getters) => (keys) => _.filter(_.map(keys, (key) => getters.getNodeByKey(key)), (n) => n)
 	},
 	mutations: {

@@ -45,13 +45,10 @@ let utils = require('utils.js')
 export default {
 	components: {App, LiquioNode, LiquioInline, GetReference, CalculationOptions},
 	data: function() {
-		this.$nextTick(() => {
-			_.each(this.$store.getters.keys, (key) => this.$store.dispatch('fetchNode', key))
-			_.each(this.$store.getters.referencingKeys, (key) => this.$store.dispatch('fetchNode', key))
-			_.each(this.$store.getters.referenceKeys, (key) => this.$store.dispatch('fetchNode', key))
-		})
-		
 		return {}
+	},
+	created: function() {
+		this.fetchData()
 	},
 	computed: {
 		nodes: function() {
@@ -62,6 +59,16 @@ export default {
 		},
 		references: function() {
 			return this.$store.getters.getNodesByKeys(this.$store.getters.referenceKeys)
+		}
+	},
+	watch: {
+		'$route': 'fetchData'
+	},
+	methods: {
+		fetchData: function() {
+			_.each(this.$store.getters.keys, (key) => this.$store.dispatch('fetchNode', key))
+			_.each(this.$store.getters.referencingKeys, (key) => this.$store.dispatch('fetchNode', key))
+			_.each(this.$store.getters.referenceKeys, (key) => this.$store.dispatch('fetchNode', key))
 		}
 	}
 }

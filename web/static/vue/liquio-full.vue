@@ -36,43 +36,42 @@ import CalculationOptions from '../vue/calculation-options.vue'
 import LiquioNode from '../vue/liquio-node.vue'
 import LiquioList from '../vue/liquio-list.vue'
 
-function updateNode(self) {
-	function scrollToNode() {
-		let element = document.getElementById('main-node')
-		if(element)
-			element.scrollIntoView({block: "start", behavior: "smooth"})
-	}
-
-	self.node = null
-	if(self.$route.params.query) {
-		self.$store.dispatch('search', self.$route.params.query).then((node) => {
-			self.node = node
-			setTimeout(scrollToNode, 0)
-		})
-		self.title = self.$route.params.query
-	} else {
-		let key = self.$route.params.key || ''
-		self.$store.dispatch('fetchNode', key).then((node) => {
-			self.node = node
-			setTimeout(scrollToNode, 0)
-		})
-		self.title = key.replace('-Probability', '').replace('-Quantity', '').replace('-Time-Series', '').replace(/-/g, ' ')
-	}
-}
-
 export default {
 	components: {App, CalculationOptions, LiquioNode, LiquioList},
 	data: function() {
-		updateNode(this)
+		return {}
+	},
+	created: function() {
+		this.fetchData()
+	},
+	computed: {
+		node: function() {
+			this.$nextTick(() => {
+				let element = document.getElementById('main-node')
+				if(element)
+					element.scrollIntoView({block: "start", behavior: "smooth"})
+			})
 
-		return {
-			node: null,
-			title: null
+			if(this.$store.state.route.params.query) {
+				return this.$store.getters.search(this.$store.state.route.params.query)
+			} else {
+				return this.$store.getters.getNodeByKey(this.$store.state.route.params.key || '')
+			}
+		},
+		title: function() {
+			if(this.$store.state.route.params.query) {
+				return 'Results for ' + this.$store.route.params.query
+			} else {
+				return (this.$store.state.route.params.key || '').replace('-Probability', '').replace('-Quantity', '').replace('-Time-Series', '').replace(/-/g, ' ')
+			}
 		}
 	},
 	watch: {
-		'$route': function(to, from) {			
-			updateNode(this)
+		'$route': 'fetchData'
+	},
+	methods: {
+		fetchData: function() {
+			this.$store.dispatch('fetchNode', this.$store.state.route.params.key || '')
 		}
 	}
 }
