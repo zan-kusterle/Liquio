@@ -110,9 +110,10 @@ defmodule Liquio.Node do
 			|> Repo.all
 			|> Enum.map(& &1.key)
 			|> Enum.uniq
-			|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts))
+			|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts, nil))
 			|> Enum.filter(& &1.choice_type != nil)
 			|> Enum.sort_by(& -(&1.results.turnout_ratio + 0.05 * Enum.count(&1.references)))
+			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 
 			node = Node.new("", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
 
@@ -127,7 +128,7 @@ defmodule Liquio.Node do
 		|> Repo.all
 		|> Enum.map(& &1.key)
 		|> Enum.uniq
-		|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts))
+		|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts, nil, 0))
 
 		Node.new("Results for '#{query}'", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
 	end
@@ -135,8 +136,10 @@ defmodule Liquio.Node do
 	def preload(node, calculation_opts) do
 		preload(node, calculation_opts, nil)
 	end
-
 	def preload(node, calculation_opts, user) do
+		preload(node, calculation_opts, user, 1)
+	end
+	def preload(node, calculation_opts, user, depth) do
 		key = {
 			{"nodes", {node.key, node.reference_key}, calculation_opts.datetime},
 			{
@@ -149,19 +152,25 @@ defmodule Liquio.Node do
 		if cache_results do
 			cache_results
 		else
-			node = node |> preload_without_cache(calculation_opts, user)
+			node = node |> preload_without_cache(calculation_opts, user, depth)
 			ResultsCache.set(key, node)
 			node
 		end
 	end
 
-	def preload_without_cache(node, calculation_opts, user) do
-		node
-		|> preload_references(calculation_opts)
-		|> preload_inverse_references(calculation_opts)
+	def preload_without_cache(node, calculation_opts, user, depth) do
+		node = node
+		|> preload_references(calculation_opts, depth: depth)
+		|> preload_inverse_references(calculation_opts, depth: depth)
 		|> preload_results(calculation_opts)
 		|> preload_own_vote(user)
 		|> preload_own_contribution(user)
+
+		if depth == 0 do
+			node |> Map.drop([:inverse_references, :topics])
+		else
+			node
+		end
 	end
 
 	defp preload_results(node, calculation_opts) do
@@ -179,7 +188,7 @@ defmodule Liquio.Node do
 
 	defp preload_contributions(node, calculation_opts) do
 		node = if not Map.has_key?(node, :topics) do
-			node |> preload_inverse_references(calculation_opts, depth: 0)
+			node |> preload_inverse_references(calculation_opts, depth: 1)
 		else
 			node
 		end
@@ -239,41 +248,45 @@ defmodule Liquio.Node do
 	defp preload_references(node, calculation_opts, options \\ []) do
 		%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)
 
-		reference_nodes = from(v in Vote, where: v.key == ^node.key and not is_nil(v.reference_key) and v.is_last == true and not is_nil(v.data))
-		|> Repo.all
-		|> Enum.group_by(& &1.reference_key)
-		|> prepare_reference_nodes(calculation_opts)
+		if depth > 0 do
+			reference_nodes = from(v in Vote, where: v.key == ^node.key and not is_nil(v.reference_key) and v.is_last == true and not is_nil(v.data))
+			|> Repo.all
+			|> Enum.group_by(& &1.reference_key)
+			|> prepare_reference_nodes(calculation_opts)
 
-		reference_nodes = if depth >= 1 do
-			reference_nodes |> Enum.map(fn(reference_node) ->
-				reference_node |> preload_references(calculation_opts, depth: depth - 1)
-			end)
+			reference_nodes = if depth > 1 do
+				reference_nodes |> Enum.map(fn(reference_node) ->
+					reference_node |> preload_references(calculation_opts, depth: depth - 1)
+				end)
+			else
+				reference_nodes
+			end
+
+			Map.put(node, :references, reference_nodes)
 		else
-			reference_nodes
+			node
 		end
-
-		Map.put(node, :references, reference_nodes)
 	end
 
 	defp preload_inverse_references(node, calculation_opts, options \\ []) do
-		if node.choice_type == nil do
-			node = Map.put(node, :inverse_references, [])
-			node = Map.put(node, :topics, [])
-			node
-		else
-			%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)			
+		%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)
 
-			inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key and v.is_last == true and not is_nil(v.data))
-			|> Repo.all
-			|> Enum.group_by(& &1.key)
-			|> prepare_reference_nodes(calculation_opts)
+		if depth > 0 do
+			inverse_reference_nodes = if node.choice_type != nil do
+				inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key and v.is_last == true and not is_nil(v.data))
+				|> Repo.all
+				|> Enum.group_by(& &1.key)
+				|> prepare_reference_nodes(calculation_opts)
 
-			inverse_reference_nodes = if depth >= 1 do
-				inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
-					inverse_reference_node |> preload_references(calculation_opts, depth: depth - 1)
-				end)
+				if depth >= 1 do
+					inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
+						inverse_reference_node |> preload_references(calculation_opts, depth: depth - 1)
+					end)
+				else
+					inverse_reference_nodes
+				end
 			else
-				inverse_reference_nodes
+				[]
 			end
 
 			topics = inverse_reference_nodes
@@ -282,6 +295,9 @@ defmodule Liquio.Node do
 
 			node = Map.put(node, :inverse_references, inverse_reference_nodes)
 			node = Map.put(node, :topics, topics)
+
+			node
+		else
 			node
 		end
 	end

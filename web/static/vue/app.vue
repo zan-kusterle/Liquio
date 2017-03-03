@@ -35,6 +35,7 @@
 export default {
 	data: function() {
 		let self = this
+		this.$store.commit('logout')
 		this.$store.dispatch('fetchIdentity', 'me').then((u) => {
 			self.$root.bus.$emit('currentUser', u)
 		})

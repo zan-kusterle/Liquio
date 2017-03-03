@@ -1,7 +1,6 @@
 <template>
 <div>
 	<get-reference v-if="!referencingNode" v-bind:node="referencesNode" style="margin-bottom: 40px; text-align: center;"></get-reference>
-	<el-pagination v-if="!referencingNode && nodes.length > 0" layout="prev, pager, next" :total="1000" style="text-align: center;"></el-pagination>
 
 	<el-row :gutter="50" class="liquio-list" v-if="referencingNode != null && referencingNode.choice_type == 'probability'">
 		<el-col :span="12">
@@ -23,7 +22,6 @@
 		<liquio-inline v-for="node in nodes" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquio-inline>
 	</div>
 	
-	<el-pagination v-if="referencingNode && nodes.length > 0" layout="prev, pager, next" :total="1000" style="text-align: center;"></el-pagination>
 	<get-reference v-if="referencingNode" v-bind:node="referencingNode" style="margin-top: 30px; text-align: center;"></get-reference>
 </div>
 </template>

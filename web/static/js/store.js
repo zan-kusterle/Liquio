@@ -4,12 +4,17 @@ import createPersist, { createStorage } from 'vuex-localstorage'
 let Api = require('api.js')
 let utils = require('utils.js')
 
-export default new Vuex.Store({
-	plugins: [createPersist({
+var plugins = []
+if(ENVIRONMENT == 'production') {
+	plugins.push(createPersist({
 		namespace: 'liquio',
 		initialState: {},
 		expires: 7 * 24 * 60 * 60 * 1e3
-	})],
+	}))
+}
+
+export default new Vuex.Store({
+	plugins: plugins,
 	state: {
 		user: null,
 		nodes: [],
@@ -20,12 +25,33 @@ export default new Vuex.Store({
 		referencingKeys: (state) => state.route.params.referenceKey ? state.route.params.referenceKey.split('_') : [],
 		referenceKeys: (state, getters) => _.flatMap(getters.keys, (key) =>
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => utils.getCompositeKey(key, referenceKey))),
-		getNodeByKey: (state, getters) => (key) => {
+		getPureNodeByKey: (state, getters) => (key) => {
 			if(key == '')
 				key = '_'
 			return _.find(state.nodes, (node) => {
 				return utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key)) == utils.normalizeKey(key)
 			})
+		},
+		getNodeByKey: (state, getters) => (key) => {
+			let node = getters.getPureNodeByKey(key)
+			if(node) {
+				node.references = _.filter(_.map(node.references, (n) => {
+					let referenceNode = getters.getPureNodeByKey(n.key)
+					if(referenceNode) {
+						referenceNode.reference_result = n.reference_result
+					}
+					return referenceNode
+				}), (x) => x)
+
+				node.inverse_references = _.filter(_.map(node.inverse_references, (n) => {
+					let referenceNode = getters.getPureNodeByKey(n.key)
+					if(referenceNode) {
+						referenceNode.reference_result = n.reference_result
+					}
+					return referenceNode
+				}), (x) => x)
+			}
+			return node
 		},
 		getNodesByKeys: (state, getters) => (keys) => _.filter(_.map(keys, (key) => getters.getNodeByKey(key)), (n) => n)
 	},
@@ -42,6 +68,25 @@ export default new Vuex.Store({
 				state.user = identity
 		},
 		setNode (state, node) {
+			let existing = _.find(state.nodes, (n) => n.key == node.key && n.reference_key == node.reference_key)
+
+			if(node.references == null) {
+				node.references = existing ? existing.references : []
+			} else {
+				node.references = _.map(node.references, (n) => { return {
+					key: n.key,
+					reference_result: n.reference_result
+				}})
+			}
+
+			if(node.inverse_references == null) {
+				node.inverse_references = existing ? existing.inverse_references : []
+			} else {
+				node.inverse_references = _.map(node.inverse_references, (n) => { return {
+					key: n.key,
+					reference_result: n.reference_result
+				}})
+			}
 			state.nodes = _.reject(state.nodes, (n) => n.key == node.key && n.reference_key == node.reference_key)
 			state.nodes.push(node)
 		}
@@ -60,6 +105,8 @@ export default new Vuex.Store({
 		fetchNode({commit, state}, key) {
 			return new Promise((resolve, reject) => {
 				Api.getNode(key, (node) => {
+					_.each(node.references, (reference) => commit('setNode', reference))
+					_.each(node.inverse_references, (reference) => commit('setNode', reference))
 					commit('setNode', node)
 					resolve(node)
 				})

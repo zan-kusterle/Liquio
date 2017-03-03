@@ -33,8 +33,8 @@ defmodule Liquio.NodeView do
 			:results => if node.choice_type != nil or node.reference_key != nil do Map.get(node, :results) else nil end,
 			:contributions => if node.choice_type != nil or node.reference_key != nil do Enum.map(Map.get(node, :contributions, []), & map_contribution(&1)) else [] end,
 			:own_contribution => if Map.get(node, :own_contribution) do map_contribution(node.own_contribution) else nil end,
-			:references => render_many(Map.get(node, :references, []), Liquio.NodeView, "node.json"),
-			:inverse_references => render_many(Map.get(node, :inverse_references, []), Liquio.NodeView, "node.json"),
+			:references => if Map.has_key?(node, :references) do render_many(node.references, Liquio.NodeView, "node.json") else nil end,
+			:inverse_references => if Map.has_key?(node, :inverse_references) do render_many(node.inverse_references, Liquio.NodeView, "node.json") else nil end,
 			:reference_result => Map.get(node, :reference_result),
 			:calculation_opts => Map.get(node, :calculation_opts)
 		}

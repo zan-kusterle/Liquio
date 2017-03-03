@@ -57,6 +57,9 @@ module.exports = {
 		}
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+			ENVIRONMENT: JSON.stringify(process.env.NODE_ENV || 'development')
+		}),
 		new ExtractTextPlugin("css/app.css"),
 		new CopyWebpackPlugin([{from: "./web/static/assets"}]),
 		new webpack.optimize.UglifyJsPlugin({ output: {comments: false} })

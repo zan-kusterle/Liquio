@@ -22,10 +22,9 @@ defmodule Liquio.IdentityController do
 	end
 
 	with_params(%{
-		:identity => {Plugs.IdentityParam, [name: "id", column: :username]},
-		:user => {Plugs.CurrentUser, [require: false]}
+		:identity => {Plugs.IdentityParam, [name: "id", column: :username]}
 	},
-	def show(conn, %{:identity => identity, :user => user}) do
+	def show(conn, %{:identity => identity}) do
 		render(conn, "show.json", identity: identity |> Identity.preload())
 	end)
 end
