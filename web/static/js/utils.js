@@ -7,7 +7,12 @@ export function getCompositeKey(key, referenceKey) {
 }
 
 export function normalizeKey(key) {
-	return encodeURIComponent(decodeURIComponent(key).replace(/ /g, '-').replace(/_/g, '-')).toLowerCase().replace('time-series', 'time-quantity')
+	try {
+		key = decodeURIComponent(key)
+	} catch (e) {
+
+	}
+	return encodeURIComponent(key.replace(/ /g, '-').replace(/_/g, '-')).toLowerCase().replace('time-series', 'time-quantity')
 }
 
 export function getMultiKey(keys) {
