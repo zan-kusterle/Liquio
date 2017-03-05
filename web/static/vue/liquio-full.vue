@@ -46,12 +46,6 @@ export default {
 	},
 	computed: {
 		node: function() {
-			this.$nextTick(() => {
-				let element = document.getElementById('main-node')
-				if(element)
-					element.scrollIntoView({block: "start", behavior: "smooth"})
-			})
-
 			if(this.$store.state.route.params.query) {
 				return this.$store.getters.search(this.$store.state.route.params.query)
 			} else {
