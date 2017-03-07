@@ -18,7 +18,7 @@ defmodule Liquio.Mixfile do
 	def application() do
 		[
 			mod: {Liquio, []},
-			extra_applications: [:logger, :ssl]
+			extra_applications: [:logger, :ssl, :edeliver]
 		]
 	end
 
@@ -27,7 +27,7 @@ defmodule Liquio.Mixfile do
 
 	defp deps() do
 		[
-			{:distillery, "~> 1.0", runtime: false},
+			{:distillery, "~> 0.8.0", runtime: false},
 			{:phoenix_live_reload, "~> 1.0", only: :dev, runtime: false},
 			{:credo, "~> 0.5", only: [:dev, :test], runtime: false},
 			{:phoenix, "~> 1.3.0-rc", override: true},
