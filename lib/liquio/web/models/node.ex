@@ -278,7 +278,7 @@ defmodule Liquio.Node do
 				|> Enum.group_by(& &1.key)
 				|> prepare_reference_nodes(calculation_opts)
 
-				if depth >= 1 do
+				if depth > 1 do
 					inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
 						inverse_reference_node |> preload_references(calculation_opts, depth: depth - 1)
 					end)
@@ -380,7 +380,6 @@ defmodule Liquio.Node do
 			from_key(key)
 			|> preload_results(calculation_opts)
 			|> Map.put(:reference_result, result)
-			|> Map.put(:references, [])
 		end)
 		|> Enum.sort_by(& -&1.reference_result.by_keys["relevance"].mean)
 	end
