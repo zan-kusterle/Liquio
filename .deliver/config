@@ -20,8 +20,10 @@ pre_erlang_clean_compile() {
     set -e
     cd '$BUILD_AT'
     mkdir -p priv/static
+    cd assets
     npm install
     webpack -p
+    cd ..
     MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest
   "
 }
