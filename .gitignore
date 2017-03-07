@@ -11,9 +11,7 @@
 erl_crash.dump
 
 # Static artifacts
-/node_modules
-/web/static/assets/bower_components
-/web/static/assets/polymer
+/assets/node_modules
 
 # Since we are building assets from web/static,
 # we ignore priv/static. You may want to comment

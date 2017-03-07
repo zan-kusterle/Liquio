@@ -8,7 +8,7 @@ defmodule Liquio do
 
 		children = [
 			# Start the endpoint when the application starts
-			supervisor(Liquio.Endpoint, []),
+			supervisor(Liquio.Web.Endpoint, []),
 			# Start the Ecto repository
 			supervisor(Liquio.Repo, []),
 			# Here you could define other workers and supervisors as children
@@ -20,12 +20,5 @@ defmodule Liquio do
 		# for other strategies and supported options
 		opts = [strategy: :one_for_one, name: Liquio.Supervisor]
 		Supervisor.start_link(children, opts)
-	end
-
-	# Tell Phoenix to update the endpoint configuration
-	# whenever the application is updated.
-	def config_change(changed, _new, removed) do
-		Liquio.Endpoint.config_change(changed, removed)
-		:ok
 	end
 end

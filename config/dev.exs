@@ -1,20 +1,20 @@
 use Mix.Config
 
-config :liquio, Liquio.Endpoint,
+config :liquio, Liquio.Web.Endpoint,
 	http: [port: 4000],
 	debug_errors: false,
 	code_reloader: true,
 	check_origin: false,
-	watchers: [node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin"]]
+	watchers: [node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin", cd: Path.expand("../assets", __DIR__)]]
 
 # Watch static and templates for browser reloading.
-config :liquio, Liquio.Endpoint,
+config :liquio, Liquio.Web.Endpoint,
 	live_reload: [
 		patterns: [
 			~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
 			~r{priv/gettext/.*(po)$},
-			~r{web/views/.*(ex)$},
-			~r{web/templates/.*(eex)$}
+			~r{lib/liquio/web/views/.*(ex)$},
+			~r{lib/liquio/web/templates/.*(eex)$}
 		]
 	]
 

@@ -1,7 +1,7 @@
 defmodule Liquio.Mixfile do
 	use Mix.Project
 
-	def project do
+	def project() do
 		[
 			app: :liquio,
 			version: "0.0.1",
@@ -15,22 +15,22 @@ defmodule Liquio.Mixfile do
 		]
 	end
 
-	def application do
+	def application() do
 		[
 			mod: {Liquio, []},
 			extra_applications: [:logger, :ssl]
 		]
 	end
 
-	defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
-	defp elixirc_paths(_),     do: ["lib", "web"]
+	defp elixirc_paths(:test), do: ["lib", "test/support"]
+	defp elixirc_paths(_),     do: ["lib"]
 
-	defp deps do
+	defp deps() do
 		[
 			{:distillery, "~> 0.10.0", runtime: false},
 			{:phoenix_live_reload, "~> 1.0", only: :dev, runtime: false},
 			{:credo, "~> 0.5", only: [:dev, :test], runtime: false},
-			{:phoenix, "~> 1.2.0"},
+			{:phoenix, "~> 1.3.0-rc", override: true},
 			{:edeliver, "~> 1.4.0"},
 			{:phoenix_pubsub, "~> 1.0"},
 			{:cors_plug, "~> 1.1"},
@@ -39,12 +39,12 @@ defmodule Liquio.Mixfile do
 			{:phoenix_html, "~> 2.4"},
 			{:gettext, "~> 0.9"},
 			{:cowboy, "~> 1.0"},
-			{:guardian, "~> 0.13.0"},
+			{:guardian, "~> 0.14.0"},
 			{:uuid, "~> 1.1"},
 			{:httpotion, "~> 3.0.0"},
+			{:poison, "~> 3.0", override: true},
 			{:timex, "~> 3.0"},
 			{:timex_ecto, "~> 3.0"},
-			{:comeonin, "~> 2.5"},
 			{:basic_auth, "~> 1.0.0"},
 			{:floki, "~> 0.10.0"},
 			{:secure_random, "~> 0.5"},
@@ -55,7 +55,7 @@ defmodule Liquio.Mixfile do
 		]
 	end
 
-	defp aliases do
+	defp aliases() do
 		[
 			"ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
 			"ecto.reset": ["ecto.drop", "ecto.setup"],

@@ -6,7 +6,7 @@
 use Mix.Config
 
 # Configures the endpoint
-config :liquio, Liquio.Endpoint,
+config :liquio, Liquio.Web.Endpoint,
 	url: [host: "localhost"],
 	root: Path.dirname(__DIR__),
 	secret_key_base: "OXjxWdx9pts7IKCZsEjYzi17TxtdnspYpOWNT9xEkjq1owWJCGF/Rn6C1LzKNkSZ",

@@ -1,6 +1,6 @@
 use Mix.Config
 
-config :liquio, Liquio.Endpoint,
+config :liquio, Liquio.Web.Endpoint,
 	http: [port: 4001],
 	https: [
 		port: 4000,
