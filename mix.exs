@@ -31,7 +31,7 @@ defmodule Liquio.Mixfile do
 			{:phoenix_live_reload, "~> 1.0", only: :dev, runtime: false},
 			{:credo, "~> 0.5", only: [:dev, :test], runtime: false},
 			{:phoenix, "~> 1.3.0-rc", override: true},
-			{:edeliver, "~> 1.4.0"},
+			{:edeliver, "~> 1.4.2"},
 			{:phoenix_pubsub, "~> 1.0"},
 			{:cors_plug, "~> 1.1"},
 			{:postgrex, ">= 0.0.0"},

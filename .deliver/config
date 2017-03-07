@@ -11,7 +11,7 @@ TEST_AT="/home/zank/staging"
 
 PRODUCTION_HOSTS="104.197.215.238"
 PRODUCTION_USER="zan"
-DELIVER_TO="/home/zank/liquio/releases"
+DELIVER_TO="/home/zank"
 
 AUTO_VERSION=commit-count+git-revision+branch
 
