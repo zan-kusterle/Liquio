@@ -18,7 +18,7 @@ defmodule Liquio.Mixfile do
 	def application() do
 		[
 			mod: {Liquio, []},
-			extra_applications: [:logger, :ssl, :edeliver]
+			extra_applications: [:logger, :ssl, :crontab, :edeliver]
 		]
 	end
 
