@@ -18,7 +18,7 @@ export default new Vuex.Store({
 	state: {
 		user: null,
 		nodes: [],
-		identities: {}
+		identities: []
 	},
 	getters: {
 		keys: (state) => state.route.params.key ? state.route.params.key.split('_') : [],
@@ -29,7 +29,7 @@ export default new Vuex.Store({
 			if(key == '')
 				key = '_'
 			let node = _.find(state.nodes, (node) => {
-				return utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key)) == utils.normalizeKey(key)
+				return node.full_key == utils.normalizeKey(key)
 			})
 			return node ? JSON.parse(JSON.stringify(node)) : null
 		},
@@ -64,13 +64,21 @@ export default new Vuex.Store({
 			state.user = null
 		},
 		setIdentity (state, identity) {
-			state.identities[identity.username] = identity
+			let existingIndex = _.findIndex(state.identities, (i) => i.username == identity.username)
+
+			if(existingIndex >= 0)
+				state.identities.splice(existingIndex, 1)
+			state.identities.push(identity)
+			
 			if(state.user && state.user.username == identity.username)
 				state.user = identity
 		},
 		setNode (state, node) {
-			let existing = _.find(state.nodes, (n) => n.key == node.key && n.reference_key == node.reference_key)
-
+			let key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
+			let existingIndex = _.findIndex(state.nodes, (n) => n.full_key == key)
+			let existing = existingIndex >= 0 ? state.nodes[existingIndex] : null
+			
+			node.full_key = key
 			if(node.references == null) {
 				node.references = existing ? existing.references : []
 			} else {
@@ -88,7 +96,9 @@ export default new Vuex.Store({
 					reference_result: n.reference_result
 				}})
 			}
-			state.nodes = _.reject(state.nodes, (n) => n.key == node.key && n.reference_key == node.reference_key)
+
+			if(existingIndex >= 0)
+				state.nodes.splice(existingIndex, 1)
 			state.nodes.push(node)
 		}
 	},
