@@ -31,7 +31,7 @@ export default new Vuex.Store({
 			let node = _.find(state.nodes, (node) => {
 				return utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key)) == utils.normalizeKey(key)
 			})
-			return JSON.parse(JSON.stringify(node))
+			return node ? JSON.parse(JSON.stringify(node)) : null
 		},
 		getNodeByKey: (state, getters) => (key) => {
 			let node = getters.getPureNodeByKey(key)
