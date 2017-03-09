@@ -5,7 +5,7 @@
 		<div v-html="this.node.results.embed" v-if="this.node.results != null && this.node.choice_type != null" style="width: 100%; height: 50px; font-weight: bold;"></div>
 	</router-link>
 
-	<div class="references">
+	<div class="references" v-if="node.references">
 		<router-link
 			:to="'/' + node.url_key + '/references/' + reference.url_key"
 			class="link"
