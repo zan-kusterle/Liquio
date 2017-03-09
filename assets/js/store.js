@@ -5,7 +5,8 @@ let Api = require('api.js')
 let utils = require('utils.js')
 
 var plugins = []
-if(ENVIRONMENT == 'production') {
+console.log(process.env.NODE_ENV)
+if(process.env.NODE_ENV == 'production') {
 	plugins.push(createPersist({
 		namespace: 'liquio',
 		initialState: {},
