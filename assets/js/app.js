@@ -46,12 +46,14 @@ const app = new Vue({
 	data: {bus: bus}
 }).$mount('#app')
 
-if ('serviceWorker' in navigator) {
-	window.addEventListener('load', function() {
-		navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
-			// console.log('ServiceWorker registration successful with scope: ', registration.scope);
-		}).catch(function(err) {
-			console.log('ServiceWorker registration failed: ', err);
+if(process.env.NODE_ENV == 'production') {
+	if ('serviceWorker' in navigator) {
+		window.addEventListener('load', function() {
+			navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
+				// console.log('ServiceWorker registration successful with scope: ', registration.scope);
+			}).catch(function(err) {
+				console.log('ServiceWorker registration failed: ', err);
+			});
 		});
-	});
+	}
 }

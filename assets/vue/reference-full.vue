@@ -8,10 +8,10 @@
 						<liquio-inline v-for="node in nodes" v-bind:node="node" results-key="main"></liquio-inline>
 					</el-col>
 					<el-col :span="2">
-						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 50px;"></i>
+						<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 5px;"></i>
 					</el-col>
 					<el-col :span="11">
-						<get-reference v-if="referenceNodes.length == 0" v-bind:ids="$store.getters.keys" style="margin-top: 30px; text-align: center;"></get-reference>
+						<get-reference v-if="referenceNodes.length == 0" v-bind:ids="$store.getters.keys" enable-search="false" style="margin-top: 2px; text-align: center;"></get-reference>
 						<liquio-inline v-else v-for="node in referenceNodes" v-bind:node="node" results-key="main"></liquio-inline>
 					</el-col>
 				</el-row>

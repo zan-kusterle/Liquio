@@ -13,7 +13,7 @@
 let utils = require('utils.js')
 
 export default {
-	props: ['id', 'ids', 'enableSearch'],
+	props: ['id', 'ids', 'enableSearch', 'isInverse'],
 	data: function() {
 		let self = this
 		let title = this.$route.params.query || ''
@@ -23,18 +23,19 @@ export default {
 			choice_type: '',
 			view: function(event) {
 				if(self.title.length >= 3) {
-					if(self.choice_type == 'search') {
-						let path = '/search/' + encodeURIComponent(self.title)
-						self.$router.push(path)
-					} else {
-						if(self.key == null || self.$route.name == 'search') {
-							let path = '/' + utils.getKey(self.title, self.choice_type)
+					if(self.enableSearch == "true") {
+						if(self.choice_type == 'search') {
+							let path = '/search/' + encodeURIComponent(self.title)
 							self.$router.push(path)
 						} else {
-							let key = self.ids ? utils.getMultiKey(self.ids) : self.id
-							let path = '/' + self.key + '/references/' + utils.getKey(self.title, self.choice_type)
+							let path = '/' + utils.getKey(self.title, self.choice_type)
 							self.$router.push(path)
 						}
+					} else {
+						let key = self.ids ? utils.getMultiKey(self.ids) : self.id
+						let input_key = utils.getKey(self.title, self.choice_type)
+						let path = self.isInverse == "true" ? '/' + input_key + '/references/' + key : '/' + key + '/references/' + input_key
+						self.$router.push(path)
 					}
 				}
 			}
@@ -43,7 +44,7 @@ export default {
 	computed: {
 		options: function() {
 			let opts = []
-			if(this.key == null || this.$route.name == 'search') {
+			if(this.enableSearch == "true") {
 				opts.push({text: 'Search', value: 'search'})
 				opts.push({text: 'Group', value: ''})
 			}

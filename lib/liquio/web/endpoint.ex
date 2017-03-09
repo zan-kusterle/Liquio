@@ -37,7 +37,8 @@ defmodule Liquio.Web.Endpoint do
 	plug Plug.Session,
 		store: :cookie,
 		key: "_liquio_key",
-		signing_salt: "widKJvj0"
+		signing_salt: "widKJvj0",
+		max_age: 60 * 60 * 24 * 30
 
 	plug CORSPlug, [origin: "*"]
 
