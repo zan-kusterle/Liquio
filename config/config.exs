@@ -10,7 +10,7 @@ config :liquio, Liquio.Web.Endpoint,
 	url: [host: "localhost"],
 	root: Path.dirname(__DIR__),
 	secret_key_base: "OXjxWdx9pts7IKCZsEjYzi17TxtdnspYpOWNT9xEkjq1owWJCGF/Rn6C1LzKNkSZ",
-	render_errors: [accepts: ~w(html json)],
+	render_errors: [view: Liquio.Web.ErrorView, accepts: ~w(html json)],
 	pubsub: [
 		name: Liquio.PubSub,
 		adapter: Phoenix.PubSub.PG2

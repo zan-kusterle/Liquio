@@ -25,13 +25,19 @@ defmodule Liquio.Node do
 			"Time Series" => :time_quantity
 		}
 
-		value_spaces = value |> URI.decode |> String.replace("-", " ") |> String.replace("_", " ")
-		ends_with = Enum.find(Map.keys(choice_types), & value_spaces |> String.downcase |> String.ends_with?(&1 |> String.downcase))
+		clean_value = value |> URI.decode
+		clean_value = if String.starts_with?(clean_value, "http://") or String.starts_with?(clean_value, "https://") do
+			clean_value |> String.replace("_", "-")
+		else
+			clean_value |> String.replace("-", " ") |> String.replace("_", " ")
+		end
+		 
+		ends_with = Enum.find(Map.keys(choice_types), & clean_value |> String.downcase |> String.ends_with?(&1 |> String.downcase))
 
 		{title, choice_type} = if ends_with == nil do
-			{value_spaces, nil}
+			{clean_value, nil}
 		else
-			{String.slice(value_spaces, 0, String.length(value_spaces) - String.length(ends_with)), to_string(choice_types[ends_with])}
+			{String.slice(clean_value, 0, String.length(clean_value) - String.length(ends_with)), to_string(choice_types[ends_with])}
 		end
 		node = Node.new(title |> String.trim(), choice_type, nil)
 

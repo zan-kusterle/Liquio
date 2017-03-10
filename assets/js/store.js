@@ -26,8 +26,6 @@ export default new Vuex.Store({
 		referenceKeys: (state, getters) => _.flatMap(getters.keys, (key) =>
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => utils.getCompositeKey(key, referenceKey))),
 		getPureNodeByKey: (state, getters) => (key) => {
-			if(key == '')
-				key = '_'
 			let node = _.find(state.nodes, (node) => {
 				return node.full_key == utils.normalizeKey(key)
 			})

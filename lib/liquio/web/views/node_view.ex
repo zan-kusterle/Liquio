@@ -46,6 +46,7 @@ defmodule Liquio.Web.NodeView do
 		else
 			r
 		end
+		r |> Map.drop([:calculation_opts])
 	end
 
 	def map_contribution(contribution) do

@@ -1,28 +1,3 @@
-<style>
-	.area {
-		width: inherit;
-		height: inherit;
-		position: relative;
-	}
-
-	.bubble {
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		width: inherit;
-		height: inherit;
-		display: table;
-	}
-
-	.bubble p {
-		display: table-cell;
-		vertical-align: middle;
-		text-align: center;
-		color: #333;
-		line-height: 100%;
-	}
-</style>
-
 <% results_key = if assigns[:results_key] do @results_key else "main" end %>
 <% mean = if @results != nil and Map.has_key?(@results.by_keys, results_key) do @results.by_keys[results_key].mean else nil end %>
 

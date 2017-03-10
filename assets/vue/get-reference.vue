@@ -23,6 +23,7 @@ export default {
 			choice_type: '',
 			view: function(event) {
 				if(self.title.length >= 3) {
+					let key = self.ids ? utils.getMultiKey(self.ids) : self.id
 					if(self.enableSearch == "true") {
 						if(self.choice_type == 'search') {
 							let path = '/search/' + encodeURIComponent(self.title)
@@ -32,7 +33,7 @@ export default {
 							self.$router.push(path)
 						}
 					} else {
-						let key = self.ids ? utils.getMultiKey(self.ids) : self.id
+						
 						let input_key = utils.getKey(self.title, self.choice_type)
 						let path = self.isInverse == "true" ? '/' + input_key + '/references/' + key : '/' + key + '/references/' + input_key
 						self.$router.push(path)
@@ -44,10 +45,10 @@ export default {
 	computed: {
 		options: function() {
 			let opts = []
-			if(this.enableSearch == "true") {
+			if(this.enableSearch == "true")
 				opts.push({text: 'Search', value: 'search'})
+			if(this.enableSearch == "true" || this.isInverse == "true")
 				opts.push({text: 'Group', value: ''})
-			}
 			opts.push({text: 'Probability', value: 'Probability'})
 			opts.push({text: 'Quantity', value: 'Quantity'})
 			opts.push({text: 'Time series', value: 'Time-Series'})
