@@ -4,7 +4,7 @@
 			<div class="header-contents">
 				<div class="pure-g">
 					<div style="float: left;">
-						<router-link to="/" class="logo"><img src="/images/logo.svg"></router-link>
+						<router-link to="/" class="logo"><img src="/images/logo.svg"></img></router-link>
 						<h3 class="tagline">A liquid democracy where anyone can vote on anything.</h3>
 					</div>
 
