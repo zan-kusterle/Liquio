@@ -41,7 +41,7 @@ defmodule Liquio.Web.NodeView do
 
 	def render("reference.json", %{node: reference_node}) do
 		r = render("node.json", %{node: reference_node})
-		if Map.has_key?(reference_node, :reference_result) do
+		r = if Map.has_key?(reference_node, :reference_result) do
 			Map.put(r, :reference_result, reference_node.reference_result)
 		else
 			r

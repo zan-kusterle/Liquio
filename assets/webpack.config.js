@@ -64,7 +64,10 @@ module.exports = {
 			},
 			BUILD_TIMESTAMP: Math.floor(Date.now() / 1000)
 		}),
-		new ServiceWorkerWebpackPlugin({entry: __dirname + '/js/serviceworker.js', filename: 'serviceworker.js'}),
+		new ServiceWorkerWebpackPlugin({
+			entry: __dirname + '/js/serviceworker.js',
+			filename: 'serviceworker.js'
+		}),
 		new ExtractTextPlugin("css/app.css"),
 		new CopyWebpackPlugin([{from: "./static"}]),
 		new webpack.optimize.UglifyJsPlugin({output: {comments: false}})

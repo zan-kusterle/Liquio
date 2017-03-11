@@ -18,7 +18,7 @@
 
 		<div class="block">
 			<p class="demonstration">View for specific date</p>
-			<el-date-picker type="date" placeholder="Pick a day" v-model="opts.datetime"></el-date-picker>
+			<el-date-picker type="date" placeholder="Pick a day" v-model="datetime"></el-date-picker>
 		</div>
 
 		<div class="block">
@@ -60,6 +60,7 @@ export default {
 	data: function() {
 		return {
 			dialogVisible: false,
+			datetime: new Date(),
 			minimum_turnout: 50,
 			vote_weight_halving_days: 1000,
 			soft_quorum_t: 0,

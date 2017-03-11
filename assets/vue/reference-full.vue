@@ -24,7 +24,7 @@
 			</div>
 		</div>
 
-		<calculation-options v-bind:opts="nodes[0].calculation_opts"></calculation-options>
+		<calculation-options v-bind:opts="$store.state.calculation_opts"></calculation-options>
 	</div>
 	<div class="main" v-else>
 		<div class="main-node">

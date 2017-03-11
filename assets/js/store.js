@@ -9,7 +9,8 @@ export default new Vuex.Store({
 	state: {
 		user: null,
 		nodes: [],
-		identities: []
+		identities: [],
+		calculation_opts: {}
 	},
 	getters: {
 		keys: (state) => state.route.params.key ? state.route.params.key.split('_') : [],
@@ -91,6 +92,9 @@ export default new Vuex.Store({
 			if(existingIndex >= 0)
 				state.nodes.splice(existingIndex, 1)
 			state.nodes.push(node)
+
+			if(node.calculation_opts)
+				state.calculation_opts = node.calculation_opts
 		}
 	},
 	actions: {
