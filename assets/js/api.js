@@ -11,6 +11,14 @@ export function getNode(key, cb) {
 	})
 }
 
+export function getReference(key, reference_key, cb) {
+	let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key)
+	axios.get(url).then(function (response) {
+		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+
 export function getNodes(keys, referenceKeys, cb) {
 	if(keys.length > 0 && (referenceKeys == null || referenceKeys.length > 0)) {
 		var reqs = _.flatMap(keys, (key) => {

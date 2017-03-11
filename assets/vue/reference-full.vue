@@ -58,7 +58,8 @@ export default {
 			return this.$store.getters.getNodesByKeys(this.$store.getters.referencingKeys)
 		},
 		references: function() {
-			return this.$store.getters.getNodesByKeys(this.$store.getters.referenceKeys)
+			let keys = _.map(this.$store.getters.referenceKeyPairs, ({key, referenceKey}) => utils.getCompositeKey(key, referenceKey))
+			return this.$store.getters.getNodesByKeys(keys)
 		}
 	},
 	watch: {
@@ -68,7 +69,7 @@ export default {
 		fetchData: function() {
 			_.each(this.$store.getters.keys, (key) => this.$store.dispatch('fetchNode', key))
 			_.each(this.$store.getters.referencingKeys, (key) => this.$store.dispatch('fetchNode', key))
-			_.each(this.$store.getters.referenceKeys, (key) => this.$store.dispatch('fetchNode', key))
+			_.each(this.$store.getters.referenceKeyPairs, ({key, referenceKey}) => this.$store.dispatch('fetchReference', {key: key, referenceKey: referenceKey}))
 		}
 	}
 }

@@ -23,8 +23,10 @@ export default new Vuex.Store({
 	getters: {
 		keys: (state) => state.route.params.key ? state.route.params.key.split('_') : [],
 		referencingKeys: (state) => state.route.params.referenceKey ? state.route.params.referenceKey.split('_') : [],
-		referenceKeys: (state, getters) => _.flatMap(getters.keys, (key) =>
-			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => utils.getCompositeKey(key, referenceKey))),
+		referenceKeyPairs: (state, getters) => _.flatMap(getters.keys, (key) =>
+			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => {
+				return {key, referenceKey}
+		})),
 		getPureNodeByKey: (state, getters) => (key) => {
 			let node = _.find(state.nodes, (node) => {
 				return node.full_key == utils.normalizeKey(key)
@@ -116,6 +118,14 @@ export default new Vuex.Store({
 				Api.getNode(key, (node) => {
 					_.each(node.references, (reference) => commit('setNode', reference))
 					_.each(node.inverse_references, (reference) => commit('setNode', reference))
+					commit('setNode', node)
+					resolve(node)
+				})
+			})
+		},
+		fetchReference({commit, state}, {key, referenceKey}) {
+			return new Promise((resolve, reject) => {
+				Api.getReference(key, referenceKey, (node) => {
 					commit('setNode', node)
 					resolve(node)
 				})
