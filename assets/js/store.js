@@ -4,17 +4,8 @@ import createPersist, { createStorage } from 'vuex-localstorage'
 let Api = require('api.js')
 let utils = require('utils.js')
 
-var plugins = []
-if(false && process.env.NODE_ENV == 'production') {
-	plugins.push(createPersist({
-		namespace: 'liquio',
-		initialState: {},
-		expires: 7 * 24 * 60 * 60 * 1e3
-	}))
-}
-
 export default new Vuex.Store({
-	plugins: plugins,
+	plugins: [],
 	state: {
 		user: null,
 		nodes: [],

@@ -1,5 +1,6 @@
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
+var ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 var webpack = require("webpack");
 
 module.exports = {
@@ -14,7 +15,7 @@ module.exports = {
 			loader: "vue-loader"
 		}, {
 			test: /\.js$/,
-			exclude: /node_modules/,
+			exclude: /node_modules|serviceworker\.js/,
 			loader: "babel-loader",
 			query: {
 				presets: ["es2015"]
@@ -60,10 +61,12 @@ module.exports = {
 		new webpack.DefinePlugin({
 			'process.env': {
 				NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
-			}
+			},
+			BUILD_TIMESTAMP: Math.floor(Date.now() / 1000)
 		}),
+		new ServiceWorkerWebpackPlugin({entry: __dirname + '/js/serviceworker.js', filename: 'serviceworker.js'}),
 		new ExtractTextPlugin("css/app.css"),
 		new CopyWebpackPlugin([{from: "./static"}]),
-		new webpack.optimize.UglifyJsPlugin({ output: {comments: false} })
+		new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
 	]
 };

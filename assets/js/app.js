@@ -46,7 +46,7 @@ const app = new Vue({
 	data: {bus: bus}
 }).$mount('#app')
 
-if(false && process.env.NODE_ENV == 'production') {
+if(true || process.env.NODE_ENV == 'production') {
 	if ('serviceWorker' in navigator) {
 		window.addEventListener('load', function() {
 			navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {

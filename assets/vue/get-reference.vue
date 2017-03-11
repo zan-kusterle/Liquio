@@ -34,7 +34,7 @@ export default {
 						}
 					} else {
 						
-						let input_key = utils.getKey(self.title, self.choice_type)
+						let input_key = encodeURIComponent(utils.getKey(self.title, self.choice_type))
 						let path = self.isInverse == "true" ? '/' + input_key + '/references/' + key : '/' + key + '/references/' + input_key
 						self.$router.push(path)
 					}
