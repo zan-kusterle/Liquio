@@ -278,21 +278,17 @@ defmodule Liquio.Node do
 		%{depth: depth} = [depth: 1] |> Keyword.merge(options) |> Enum.into(Map.new)
 
 		if depth > 0 do
-			inverse_reference_nodes = if node.choice_type != nil do
-				inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key and v.is_last == true and not is_nil(v.data))
-				|> Repo.all
-				|> Enum.group_by(& &1.key)
-				|> prepare_reference_nodes(calculation_opts)
+			inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key and v.is_last == true and not is_nil(v.data))
+			|> Repo.all
+			|> Enum.group_by(& &1.key)
+			|> prepare_reference_nodes(calculation_opts)
 
-				if depth > 1 do
-					inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
-						inverse_reference_node |> preload_references(calculation_opts, depth: depth - 1)
-					end)
-				else
-					inverse_reference_nodes
-				end
+			if depth > 1 do
+				inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
+					inverse_reference_node |> preload_references(calculation_opts, depth: depth - 1)
+				end)
 			else
-				[]
+				inverse_reference_nodes
 			end
 
 			topics = inverse_reference_nodes
