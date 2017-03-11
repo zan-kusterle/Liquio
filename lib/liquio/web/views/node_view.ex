@@ -51,8 +51,8 @@ defmodule Liquio.Web.NodeView do
 
 	def map_contribution(contribution) do
 		contribution
+		|> Map.put(:identity_username, contribution.identity.username)
 		|> Map.put(:datetime, Timex.format!(contribution.datetime, "{ISO:Extended}"))
-		|> Map.put(:identity, render_one(contribution.identity, Liquio.Web.IdentityView, "identity.json"))
-		|> Map.take([:choice, :choice_type, :datetime, :identity, :title, :turnout_ratio, :voting_power, :weight, :results])
+		|> Map.take([:identity_username, :choice, :choice_type, :datetime, :title, :turnout_ratio, :voting_power, :weight, :results])
 	end
 end
