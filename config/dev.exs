@@ -5,7 +5,9 @@ config :liquio, Liquio.Web.Endpoint,
 	debug_errors: false,
 	code_reloader: true,
 	check_origin: false,
-	watchers: [node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin", cd: Path.expand("../assets", __DIR__)]]
+	watchers: [
+		node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin", cd: Path.expand("../assets", __DIR__)],
+	]
 
 # Watch static and templates for browser reloading.
 config :liquio, Liquio.Web.Endpoint,

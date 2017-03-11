@@ -1,0 +1,37 @@
+{
+	"manifest_version": 2,
+
+	"name": "Liquio Link",
+	"description": "Verify the information you consume.",
+	"version": "0.1",
+
+	"icons": {"16": "$assets/icon16.png"},
+
+	"background": {
+		"persistent": true,
+		"scripts": ["background/index.js"]
+	},
+
+	"browser_action": {
+		"default_icon": "$assets/icon.png",
+		"default_popup": "popup/index.html"
+	},
+
+	"content_scripts": [
+		{
+			"matches": ["http://*/*", "https://*/*"],
+			"js": ["content/index.js"]
+		}
+	],
+
+	"web_accessible_resources": [
+		"$assets/icon.png"
+	],
+
+	"permissions": [
+		"activeTab",
+		"storage",
+		"contextMenus",
+		"https://ajax.googleapis.com/"
+	]
+}

@@ -15,7 +15,7 @@ module.exports = {
 			loader: "vue-loader"
 		}, {
 			test: /\.js$/,
-			exclude: /node_modules|serviceworker\.js/,
+			exclude: /node_modules|serviceworker\.js|extension/,
 			loader: "babel-loader",
 			query: {
 				presets: ["es2015"]

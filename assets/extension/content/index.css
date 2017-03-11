@@ -1,0 +1,107 @@
+#liquio-link-overlay {
+	padding: 10px 15px 10px 40px;
+	display: none;
+	position: absolute;
+	left: 0px;
+	width: auto;
+	z-index: 10;
+	color: white;
+	font-size: 16px;
+	-webkit-transition-property: top, bottom, background-color, padding;
+    -webkit-transition-duration: 0.5s;
+	cursor: default;
+}
+
+#liquio-link-overlay .title {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+#liquio-link-overlay .area {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 15px;
+}
+
+#liquio-link-overlay a:hover {
+	color: #4aa5f3;
+}
+
+#liquio-link-overlay .details {
+	margin-top: 0px;
+	font-size: 14px;
+}
+
+#liquio-link-overlay .details a {
+	display: inline-block;
+	margin-top: 20px;
+}
+
+#liquio-link-overlay .details .references {
+	margin-top: 20px;
+}
+
+#liquio-link-overlay .details .references .polls {
+	padding: 5px 0px;
+	overflow-y: auto;
+}
+
+#liquio-link-overlay .details .references .heading {
+	font-size: 18px;
+}
+
+#liquio-link-overlay .polls .poll {
+	margin-top: 10px;
+	font-size: 13px;
+}
+
+#liquio-link-overlay .polls .poll .area {
+	width: 80px;
+	height: 25px;
+}
+
+#liquio-link-overlay .polls .poll .bubble {
+	width: 80px;
+	height: 25px;
+}
+#liquio-link-overlay .polls .poll .bubble p {
+	font-size: 13px;
+}
+
+.liquio-link-inline-button .title {
+	display: inline;
+    vertical-align: middle;
+	margin: 0px 10px;
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+.liquio-link-inline-button .area {
+	width: inherit;
+	height: inherit;
+	position: relative;
+
+	width: 100px;
+    height: 40px;
+	
+	display: inline-block;
+    vertical-align: middle;
+}
+
+.liquio-link-inline-button .bubble {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: inherit;
+	height: inherit;
+	display: table;	
+}
+
+.liquio-link-inline-button .bubble p {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+	color: #333;
+
+	line-height: 40px;
+}
