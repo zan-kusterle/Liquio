@@ -1,5 +1,4 @@
 import Vuex from 'vuex'
-import createPersist, { createStorage } from 'vuex-localstorage'
 
 let Api = require('api.js')
 let utils = require('utils.js')
