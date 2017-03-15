@@ -19,6 +19,12 @@ export default new Vuex.Store({
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => {
 				return {key, referenceKey}
 		})),
+		nodeKey: (state) => state.route.params.key ||  '',
+		searchQuery: (state) => state.route.params.query,
+		searchResults: (state, getters) => (query) => {
+			let node = getters.getNodeByKey('search_' + query)
+			return node
+		},
 		getPureNodeByKey: (state, getters) => (key) => {
 			let node = _.find(state.nodes, (node) => {
 				return node.full_key == utils.normalizeKey(key)
@@ -113,6 +119,16 @@ export default new Vuex.Store({
 				Api.getNode(key, (node) => {
 					_.each(node.references, (reference) => commit('setNode', reference))
 					_.each(node.inverse_references, (reference) => commit('setNode', reference))
+					commit('setNode', node)
+					resolve(node)
+				})
+			})
+		},
+		search({commit, state}, query) {
+			return new Promise((resolve, reject) => {
+				Api.search(query, (node) => {
+					node.key = 'search_' + query
+					_.each(node.references, (reference) => commit('setNode', reference))
 					commit('setNode', node)
 					resolve(node)
 				})

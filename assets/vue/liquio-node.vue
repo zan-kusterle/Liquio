@@ -2,7 +2,7 @@
 <div>
 	<div v-if="node">
 		<a :href="node.title.replace(' ', '-')" target="_blank" v-if="node.title && node.title.startsWith('https://')" class="title" style="vertical-align: middle;">{{ node.title }}</a>
-		<h1 v-else class="title" style="vertical-align: middle;">{{ title || node.title }}</h1>
+		<h1 v-else class="title" style="vertical-align: middle;">{{ title || node.title || 'Everything' }}</h1>
 
 		<div class="score-container">
 			<div>
@@ -16,10 +16,10 @@
 
 			<transition name="fade">
 				<div class="vote-container" v-if="isOpen" v-bind:class="{open: isOpen}">
-					<p class="ui-title">Your choice</p>
-					
+					<p class="ui-title" style="margin-top: 10px;">Your choice</p>
 					<own-vote v-bind:node="node" v-bind:votable-nodes="votableNodes" v-bind:results-key="resultsKey" v-bind:reference-key="referenceKey" v-bind:choice-type="choiceType"></own-vote>
-					<div class="votes" ng-if="node.results.contributions && node.results.contributions.length > 0">
+					
+					<div class="votes" v-if="node.contributions && node.contributions.length > 0">
 						<p class="ui-title">{{ Math.round(node.results.turnout_ratio * 100) }}% turnout</p>
 						<div class="contribution" v-for="contribution in node.contributions">
 							<div class="weight">

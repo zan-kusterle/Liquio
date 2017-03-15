@@ -40,6 +40,8 @@ defmodule Liquio.Mixfile do
 			{:gettext, "~> 0.9"},
 			{:cowboy, "~> 1.0"},
 			{:guardian, "~> 0.14.0"},
+			{:ueberauth, "~> 0.4"},
+			{:ueberauth_google, "~> 0.5"},
 			{:uuid, "~> 1.1"},
 			{:httpotion, "~> 3.0.0"},
 			{:poison, "~> 3.0", override: true},

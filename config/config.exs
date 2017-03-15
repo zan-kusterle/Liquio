@@ -18,6 +18,15 @@ config :liquio, Liquio.Web.Endpoint,
 
 config :liquio, ecto_repos: [Liquio.Repo]
 
+config :ueberauth, Ueberauth,
+	providers: [
+		google: {Ueberauth.Strategy.Google, []}
+	]
+
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+	client_id: "1073734990208-3rk296sdolui9cs65g9p6654rdtvgimc.apps.googleusercontent.com",
+	client_secret: "-YEJ3rg7h7z9ej_6NH5o16O2"
+
 # Configures Elixir's Logger
 config :logger, :console,
 	format: "$time $metadata[$level] $message\n",

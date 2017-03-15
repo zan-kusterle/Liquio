@@ -42,10 +42,11 @@ export default {
 	.node {
 		display: inline-block;
 		width: 100%;
-		margin: 0 0 25px;
+		margin: 10px 0px;
 		font-size: 15px;
 		text-align: left;
 		vertical-align: top;
+		border: 1px solid rgba(0, 0, 0, 0.12);
 	}
 
 	.link {
@@ -54,12 +55,11 @@ export default {
 
 	.link:hover {
 		color: #337ab7;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
 	}
 
 	.content {
 		padding: 8px 10px;
-		background: rgba(205, 235, 255, 0.6);
+		background: white;
 		word-wrap: break-word;
 	}
 
@@ -84,5 +84,5 @@ export default {
 		font-size: 13px;
 		font-weight: bold;
 		opacity: 0.9;
-	}
+	}	
 </style>

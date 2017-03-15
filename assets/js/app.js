@@ -11,11 +11,12 @@ Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(ElementUI, {locale})
 import { sync } from 'vuex-router-sync'
-import loginComponent from '../vue/login.vue'
-import finishLoginComponent from '../vue/finish-login.vue'
-import identityComponent from '../vue/identity-full.vue'
-import nodeComponent from '../vue/liquio-full.vue'
-import referenceComponent from '../vue/reference-full.vue'
+import loginComponent from '../vue/pages/login.vue'
+import finishLoginComponent from '../vue/pages/finish-login.vue'
+import identityComponent from '../vue/pages/identity.vue'
+import nodeComponent from '../vue/pages/node.vue'
+import referenceComponent from '../vue/pages/reference.vue'
+import App from '../vue/app.vue'
 
 let store = require('store.js').default
 
@@ -34,16 +35,17 @@ const router = new VueRouter({
 	mode: 'history',
 	routes: routes
 })
-
 sync(store, router)
-
-var bus = new Vue()
 
 const app = new Vue({
 	router: router,
 	store: store,
-	components: {},
-	data: {bus: bus}
+	components: {App},
+	data: function() {
+		this.$store.dispatch('fetchIdentity', 'me')
+
+		return {}
+	}
 }).$mount('#app')
 
 if(process.env.NODE_ENV == 'production') {

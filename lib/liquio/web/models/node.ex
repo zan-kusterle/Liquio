@@ -117,7 +117,6 @@ defmodule Liquio.Node do
 			|> Enum.map(& &1.key)
 			|> Enum.uniq
 			|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts, nil))
-			|> Enum.filter(& &1.choice_type != nil)
 			|> Enum.sort_by(& -(&1.results.turnout_ratio + 0.05 * Enum.count(&1.references)))
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 
