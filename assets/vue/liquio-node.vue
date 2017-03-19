@@ -1,7 +1,7 @@
 <template>
 <div>
 	<div v-if="node">
-		<a :href="node.title.replace(' ', '-')" target="_blank" v-if="node.title && node.title.startsWith('https://')" class="title" style="vertical-align: middle;">{{ node.title }}</a>
+		<a :href="node.title.replace(' ', '-')" target="_blank" v-if="!title && node.title && node.title.startsWith('https://')" class="title" style="vertical-align: middle;">{{ node.title }}</a>
 		<h1 v-else class="title" style="vertical-align: middle;">{{ title || node.title || 'Everything' }}</h1>
 
 		<div class="score-container">

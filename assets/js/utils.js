@@ -16,7 +16,7 @@ export function normalizeKey(key) {
 }
 
 export function getMultiKey(keys) {
-	return keys.join('_')
+	return _.map(keys, (k) => encodeURIComponent(k)).join('_')
 }
 
 export function formatNumber(number) {
