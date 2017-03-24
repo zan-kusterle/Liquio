@@ -139,5 +139,6 @@ defmodule Liquio.Vote do
 
 	defp invalidate_results_cache(node) do
 		ResultsCache.unset({"nodes", {node.key, node.reference_key}})
+		ResultsCache.unset({"nodes", {node.key, nil}})
 	end
 end

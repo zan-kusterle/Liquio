@@ -50,7 +50,7 @@ defmodule Liquio.Node do
 
 	def decode_many(value) do
 		nodes = value
-		|> String.split("_")
+		|> String.split("___")
 		|> Enum.filter(& String.length(&1) > 0)
 		|> Enum.map(& decode(&1))
 		|> Enum.filter(& &1 != nil)
