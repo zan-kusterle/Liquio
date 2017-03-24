@@ -6,7 +6,7 @@ var webpack = require("webpack");
 module.exports = {
 	entry: ["./css/app.less", "./js/app.js"],
 	output: {
-		path: "../priv/static",
+		path: __dirname + "/../priv/static",
 		filename: "js/app.js"
 	},
 	module: {
@@ -68,8 +68,8 @@ module.exports = {
 			entry: __dirname + '/js/serviceworker.js',
 			filename: 'serviceworker.js'
 		}),
-		new ExtractTextPlugin("css/app.css"),
-		new CopyWebpackPlugin([{from: "./static"}]),
+		new ExtractTextPlugin(__dirname + "/css/app.css"),
+		new CopyWebpackPlugin([{from: __dirname + "/static"}]),
 		new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
 	]
 };
