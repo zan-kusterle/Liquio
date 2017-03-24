@@ -13,7 +13,7 @@
 let utils = require('utils.js')
 
 export default {
-	props: ['id', 'ids', 'enableSearch', 'isInverse', 'restrictGroup'],
+	props: ['id', 'ids', 'isInverse', 'enableSearch', 'enableGroup', 'enableOthers'],
 	data: function() {
 		let self = this
 		let title = self.enableSearch === true || self.enableSearch == "true" ? this.$route.params.query || '' : '';
@@ -45,10 +45,11 @@ export default {
 	computed: {
 		options: function() {
 			let opts = []
-			if(this.enableSearch === true || this.enableSearch == "true")
+			if(this.enableSearch !== false && this.enableSearch !== "false")
 				opts.push({text: 'Search', value: 'search'})
-			opts.push({text: 'Group', value: ''})
-			if(!(this.restrictGroup === true || this.restrictGroup == "true")) {
+			if(this.enableGroup !== false && this.enableGroup !== "false")
+				opts.push({text: 'Group', value: ''})
+			if(this.enableOthers !== false && this.enableOthers !== "false") {
 				opts.push({text: 'Probability', value: 'Probability'})
 				opts.push({text: 'Quantity', value: 'Quantity'})
 				opts.push({text: 'Time series', value: 'Time-Series'})
