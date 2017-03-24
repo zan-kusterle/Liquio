@@ -47,8 +47,7 @@ export default {
 			let opts = []
 			if(this.enableSearch === true || this.enableSearch == "true")
 				opts.push({text: 'Search', value: 'search'})
-			if(this.enableSearch === true || this.enableSearch == "true" || this.isInverse === true || this.isInverse == "true")
-				opts.push({text: 'Group', value: ''})
+			opts.push({text: 'Group', value: ''})
 			if(!(this.restrictGroup === true || this.restrictGroup == "true")) {
 				opts.push({text: 'Probability', value: 'Probability'})
 				opts.push({text: 'Quantity', value: 'Quantity'})
