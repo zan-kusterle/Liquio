@@ -68,8 +68,8 @@ module.exports = {
 			entry: __dirname + '/js/serviceworker.js',
 			filename: 'serviceworker.js'
 		}),
-		new ExtractTextPlugin(__dirname + "/css/app.css"),
-		new CopyWebpackPlugin([{from: __dirname + "/static"}]),
+		new ExtractTextPlugin("css/app.css"),
+		new CopyWebpackPlugin([{from: "./static"}]),
 		new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
 	]
 };
