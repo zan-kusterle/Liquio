@@ -23,9 +23,10 @@ defmodule Liquio.Results.GetData do
 
 	def get_votes(key, reference_key, datetime) do
 		key = String.downcase(key)
+		reference_key = reference_key && String.downcase(reference_key)
 		query = "SELECT DISTINCT ON (v.identity_id) v.identity_id, v.datetime, v.data, v.title, v.choice_type, v.reference_key
 			FROM votes AS v
-			WHERE lower(v.key) = $1 AND v.reference_key #{if reference_key do "= $2" else "IS NULL" end} AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			WHERE lower(v.key) = $1 AND lower(v.reference_key) #{if reference_key do "= $2" else "IS NULL" end} AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
 		rows = Ecto.Adapters.SQL.query!(Repo, query , if reference_key do [key, reference_key] else [key] end).rows |> Enum.filter(& Enum.at(&1, 2))
 		votes = for row <- rows, into: %{} do

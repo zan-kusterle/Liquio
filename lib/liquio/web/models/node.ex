@@ -1,6 +1,6 @@
 defmodule Liquio.Node do
 	@enforce_keys [:choice_type, :key, :reference_key]
-	defstruct [:title, :choice_type, :key, :reference_key]
+	defstruct [:title, :choice_type, :key, :reference_title, :reference_choice_type, :reference_key]
 
 	import Ecto
 	import Ecto.Query, only: [from: 1, from: 2]
@@ -9,16 +9,12 @@ defmodule Liquio.Node do
 
 	def decode(key) do
 		{title, choice_type} = decode_key(key)
-		if String.length(title) > 0 do
-			%Node{
-				title: title,
-				choice_type: choice_type,
-				key: get_key(title, choice_type),
-				reference_key: nil
-			}
-		else
-			nil
-		end
+		%Node{
+			title: title,
+			choice_type: choice_type,
+			key: get_key(title, choice_type),
+			reference_key: nil
+		}
 	end
 
 	def decode_many(value) do
@@ -30,9 +26,12 @@ defmodule Liquio.Node do
 	end
 
 	def put_reference_key(node, reference_key) do
+		{title, choice_type} = decode_key(reference_key)
 		reference_key = if String.length(reference_key) > 0 do reference_key else nil end
 		node
 		|> Map.put(:reference_key, reference_key)
+		|> Map.put(:reference_title, title)
+		|> Map.put(:reference_choice_type, choice_type)
 	end
 
 	def put_title(node, title) do
