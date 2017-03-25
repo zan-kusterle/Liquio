@@ -272,7 +272,7 @@ defmodule Liquio.Node do
 	defp decode_key(key) do
 		choice_types = [:probability, :quantity, :time_series]
 
-		clean_key = key |> URI.decode
+		clean_key = key
 		clean_key = unless String.starts_with?(clean_key, "http://") or String.starts_with?(clean_key, "https://") do
 			clean_key |> String.replace("-", " ")
 		else
@@ -286,6 +286,10 @@ defmodule Liquio.Node do
 		else
 			{String.slice(clean_key, 0, String.length(clean_key) - String.length(to_string(choice_type))) |> String.trim(), choice_type}
 		end
+
+		title |> URI.encode
+		|> String.replace("/", "%2F") |> String.replace(":", "%3A") |> String.replace("?", "%3F")
+		|> String.replace("=", "%3D") |> String.replace("&", "%26")
 
 		{title, choice_type}
 	end

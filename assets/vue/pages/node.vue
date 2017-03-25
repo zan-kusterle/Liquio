@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="before" v-if="node">
-			<node-input is-inverse="true" v-bind:id="node.url_key" style="margin-bottom: 40px; text-align: center;"
+			<node-input is-inverse="true" v-bind:id="node.key" style="margin-bottom: 40px; text-align: center;"
 				:enable-search="node.title == '' || node.title.startsWith('Results for ')"
 				:enable-group="!node.title.startsWith('Results for ')"
 				:enable-others="(node.title === '' || node.choice_type !== null) && !node.title.startsWith('Results for ')"></node-input>
@@ -19,7 +19,7 @@
 		<div class="after" v-if="node">
 			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title == '' || node.title.startsWith('Results for') ? null : node" style="text-align: left;"></liquio-list>
 			<p class="subtitle" v-if="node.references.length == 0">There is nothing here yet.</p>
-			<node-input v-if="!(node.title == '' || node.title.startsWith('Results for '))" v-bind:id="node.url_key" enable-search="false" v-bind:enable-group="node.choice_type == null" style="margin-top: 30px; text-align: center;"></node-input>
+			<node-input v-if="!(node.title == '' || node.title.startsWith('Results for '))" v-bind:id="node.key" enable-search="false" v-bind:enable-group="node.choice_type == null" style="margin-top: 30px; text-align: center;"></node-input>
 		</div>
 
 		<div class="footer">

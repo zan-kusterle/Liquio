@@ -12,7 +12,7 @@ export function normalizeKey(key) {
 	} catch (e) {
 
 	}
-	return encodeURIComponent(key.replace(/ /g, '-').replace(/_/g, '-')).toLowerCase().replace('time-series', 'time-quantity')
+	return encodeURIComponent(key.toLowerCase())
 }
 
 export function getMultiKey(keys) {

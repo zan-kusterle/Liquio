@@ -116,8 +116,8 @@ export function setVote(key, reference_key, choice, cb) {
 	})
 }
 
-export function unsetVote(url_key, reference_url_key, cb) {
-	let url = '/api/nodes/' + encodeURIComponent(url_key) + (reference_url_key ? '/references/' + encodeURIComponent(reference_url_key) : '') + '/votes'
+export function unsetVote(key, reference_key, cb) {
+	let url = '/api/nodes/' + encodeURIComponent(key) + (reference_key ? '/references/' + encodeURIComponent(reference_key) : '') + '/votes'
 	axios.delete(url).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {
