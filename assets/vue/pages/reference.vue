@@ -3,14 +3,14 @@
 		<div v-if="nodes.length > 0" class="main">
 			<el-row :gutter="30">
 				<el-col :span="11">
-					<liquio-inline v-for="node in nodes" v-bind:node="node" results-key="main"></liquio-inline>
+					<liquio-inline v-for="node in nodes" :key="node.key" v-bind:node="node" results-key="main"></liquio-inline>
 				</el-col>
 				<el-col :span="2">
 					<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 15px;"></i>
 				</el-col>
 				<el-col :span="11">
 					<node-input v-if="referenceNodes.length == 0" v-bind:ids="$store.getters.keys" enable-search="false" style="margin-top: 12px; text-align: center;"></node-input>
-					<liquio-inline v-else v-for="node in referenceNodes" v-bind:node="node" results-key="main"></liquio-inline>
+					<liquio-inline v-else v-for="node in referenceNodes" :key="node.key" v-bind:node="node" results-key="main"></liquio-inline>
 				</el-col>
 			</el-row>
 			

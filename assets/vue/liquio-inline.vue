@@ -10,6 +10,7 @@
 			:to="'/' + node.url_key + '/references/' + reference.url_key"
 			class="link"
 			v-for="reference in node.references"
+			:key="reference.key"
 			v-if="reference.reference_result && reference.reference_result.by_keys['relevance'] && reference.reference_result.by_keys['relevance'].embed"
 		>
 			<div class="content">{{ reference.title }}</div>

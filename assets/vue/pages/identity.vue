@@ -4,7 +4,7 @@
 			<el-row :gutter="50">
 				<el-col :span="8">
 					<h2>Incoming</h2>
-					<p v-for="incoming_identity in incoming_identities">{{ incoming_identity.username }}</p>
+					<p v-for="incoming_identity in incoming_identities" :key="incoming_identity.username">{{ incoming_identity.username }}</p>
 				</el-col>
 				<el-col :span="8">
 					{{ identity.username }}<br>

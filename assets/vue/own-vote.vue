@@ -35,7 +35,7 @@
 					<span class="number-value"><b>Value</b></span>
 				</div>
 			</li>
-			<li v-for="point in values">
+			<li v-for="point in values" :key="point.year + '_' + point.value">
 				<div class="number">
 					<input class="number-value" v-model="point.year" v-on:keyup="keyup" />
 					<input class="number-value" v-model="point.value" v-on:keyup="keyup" />

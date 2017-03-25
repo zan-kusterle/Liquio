@@ -5,19 +5,19 @@
 			<h3 class="pole-heading">Negative</h3>
 		
 			<div class="pole-list">
-				<liquio-inline v-for="node in nodes" v-if="node.reference_result.by_keys['for_choice'] && node.reference_result.by_keys['for_choice'].mean <= 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquio-inline>
+				<liquio-inline v-for="node in nodes" :key="node.key" v-if="node.reference_result.by_keys['for_choice'] && node.reference_result.by_keys['for_choice'].mean <= 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquio-inline>
 			</div>
 		</el-col>
 		<el-col :span="12">
 			<h3 class="pole-heading">Positive</h3>
 		
 			<div class="pole-list">
-				<liquio-inline v-for="node in nodes" v-if="node.reference_result.by_keys['for_choice'] && node.reference_result.by_keys['for_choice'].mean > 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquio-inline>
+				<liquio-inline v-for="node in nodes" :key="node.key" v-if="node.reference_result.by_keys['for_choice'] && node.reference_result.by_keys['for_choice'].mean > 0.5" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquio-inline>
 			</div>
 		</el-col>
 	</el-row>
 	<div class="list-simple" v-else>
-		<liquio-inline v-for="node in nodes" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquio-inline>
+		<liquio-inline v-for="node in nodes" :key="node.key" v-bind:node="node" v-bind:referencing-node="referencingNode" v-bind:references-node="referencesNode"></liquio-inline>
 	</div>
 </div>
 </template>

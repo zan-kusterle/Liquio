@@ -21,7 +21,7 @@
 					
 					<div class="votes" v-if="node.contributions && node.contributions.length > 0">
 						<p class="ui-title">{{ Math.round(node.results.turnout_ratio * 100) }}% turnout</p>
-						<div class="contribution" v-for="contribution in node.contributions">
+						<div class="contribution" v-for="contribution in node.contributions" :key="contribution.username">
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 							</div>
