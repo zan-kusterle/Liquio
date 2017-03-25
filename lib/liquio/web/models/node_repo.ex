@@ -21,7 +21,7 @@ defmodule Liquio.NodeRepo do
 			|> Repo.all
 			|> Enum.map(& &1.key)
 			|> Enum.uniq
-			|> Enum.map(& Node.decode(&1) |> preload(calculation_opts, nil))
+			|> Enum.map(& Node.decode(&1) |> load(calculation_opts, nil))
 			|> Enum.sort_by(& -(&1.results.turnout_ratio + 0.05 * Enum.count(&1.references)))
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 
@@ -38,16 +38,16 @@ defmodule Liquio.NodeRepo do
 		|> Repo.all
 		|> Enum.map(& &1.key)
 		|> Enum.uniq
-		|> Enum.map(& Node.decode(&1) |> preload(calculation_opts |> Map.put(:depth, 0), nil))
+		|> Enum.map(& Node.decode(&1) |> load(calculation_opts |> Map.put(:depth, 0), nil))
 
 		Node.decode("Results for #{query}" |> String.replace(" ", "-"))
 		|> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
 	end
 
-	def preload(node, calculation_opts) do
-		preload(node, calculation_opts, nil)
+	def load(node, calculation_opts) do
+		load(node, calculation_opts, nil)
 	end
-	def preload(node, calculation_opts, user) do
+	def load(node, calculation_opts, user) do
 		key = {
 			{"nodes", {node.key, node.reference_key}, calculation_opts.datetime},
 			{
@@ -61,18 +61,53 @@ defmodule Liquio.NodeRepo do
 		if cache_results do
 			cache_results
 		else
-			node = node |> preload_without_cache(calculation_opts, user)
+			node = node |> load_without_cache(calculation_opts, user)
 			ResultsCache.set(key, node)
 			node
 		end
 	end
+	
+	def load_own_contribution(node, user) do
+		vote = if Map.has_key?(node, :own_vote) do
+			node.own_vote
+		else
+			if user do Vote.current_by(node, user) else nil end
+		end
 
-	defp preload_without_cache(node, calculation_opts, user) do
+		contribution = if vote do
+			contribution = if Map.has_key?(node, :contributions) and user != nil do
+				Enum.find(node.contributions, & &1.identity.id == user.id)
+			else
+				nil
+			end
+
+			contribution = if contribution do
+				contribution
+			else
+				vote
+				|> GetData.prepare_vote
+				|> Map.put(:voting_power, 0.0)
+				|> Map.put(:identity, user)
+			end
+			
+			results = AggregateContributions.aggregate_single(contribution)
+			contribution
+			|> Map.put(:results, results |> load_results_embed)
+		else
+			nil
+		end
+
+		node
+		|> Map.put(:own_vote, vote)
+		|> Map.put(:own_contribution, contribution)
+	end
+
+	defp load_without_cache(node, calculation_opts, user) do
 		node = node
-		|> preload_references(calculation_opts)
-		|> preload_inverse_references(calculation_opts)
-		|> preload_results(calculation_opts)
-		|> preload_own_contribution(user)
+		|> load_references(calculation_opts)
+		|> load_inverse_references(calculation_opts)
+		|> load_results(calculation_opts)
+		|> load_own_contribution(user)
 
 		if calculation_opts.depth == 0 do
 			node |> Map.drop([:inverse_references, :topics])
@@ -81,22 +116,22 @@ defmodule Liquio.NodeRepo do
 		end
 	end
 
-	defp preload_results(node, calculation_opts) do
+	defp load_results(node, calculation_opts) do
 		node = if not Map.has_key?(node, :contributions) do
-			node |> preload_contributions(calculation_opts)
+			node |> load_contributions(calculation_opts)
 		else
 			node
 		end
 
 		results = AggregateContributions.aggregate(node.contributions, calculation_opts)
-		node = Map.put(node, :results, results |> preload_results_embed)
+		node = Map.put(node, :results, results |> load_results_embed)
 
 		node
 	end
 
-	defp preload_contributions(node, calculation_opts) do
+	defp load_contributions(node, calculation_opts) do
 		node = if not Map.has_key?(node, :topics) do
-			node |> preload_inverse_references(calculation_opts, 1)
+			node |> load_inverse_references(calculation_opts, 1)
 		else
 			node
 		end
@@ -130,7 +165,7 @@ defmodule Liquio.NodeRepo do
 			results = AggregateContributions.aggregate_single(contribution)
 			
 			contribution
-			|> Map.put(:results, results |> preload_results_embed)
+			|> Map.put(:results, results |> load_results_embed)
 		end)
 
 		contributions = contributions
@@ -153,7 +188,7 @@ defmodule Liquio.NodeRepo do
 		Map.put(node, :contributions, contributions)
 	end
 
-	defp preload_references(node, calculation_opts, current_depth \\ nil) do
+	defp load_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
 			reference_nodes = from(v in Vote, where: v.key == ^node.key and not is_nil(v.reference_key) and v.is_last == true and not is_nil(v.data))
@@ -163,7 +198,7 @@ defmodule Liquio.NodeRepo do
 
 			reference_nodes = if depth > 1 do
 				reference_nodes |> Enum.map(fn(reference_node) ->
-					reference_node |> preload_references(calculation_opts, depth - 1)
+					reference_node |> load_references(calculation_opts, depth - 1)
 				end)
 			else
 				reference_nodes
@@ -175,7 +210,7 @@ defmodule Liquio.NodeRepo do
 		end
 	end
 
-	defp preload_inverse_references(node, calculation_opts, current_depth \\ nil) do
+	defp load_inverse_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
 			inverse_reference_nodes = from(v in Vote, where: v.reference_key == ^node.key and v.is_last == true and not is_nil(v.data))
@@ -185,7 +220,7 @@ defmodule Liquio.NodeRepo do
 
 			if depth > 1 do
 				inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
-					inverse_reference_node |> preload_inverse_references(calculation_opts, depth: depth - 1)
+					inverse_reference_node |> load_inverse_references(calculation_opts, depth: depth - 1)
 				end)
 			else
 				inverse_reference_nodes
@@ -204,35 +239,6 @@ defmodule Liquio.NodeRepo do
 		end
 	end
 
-	def preload_own_contribution(node, user) do
-		vote = if Map.has_key?(node, :own_vote) do
-			node.own_vote
-		else
-			if user do Vote.current_by(node, user) else nil end
-		end
-		
-		contribution = if user != nil and vote != nil do
-			c = if Map.has_key?(node, :contributions) do Enum.find(node.contributions, & &1.identity.id == user.id) else nil end
-			c = if c == nil do
-				node.own_vote
-				|> GetData.prepare_vote
-				|> Map.put(:voting_power, 0.0)
-				|> Map.put(:identity, user)
-			else
-				c
-			end
-			results = AggregateContributions.aggregate_single(c)
-			c
-			|> Map.put(:results, results |> preload_results_embed)
-		else
-			nil
-		end
-
-		node
-		|> Map.put(:own_vote, vote)
-		|> Map.put(:own_contribution, contribution)
-	end
-
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do
 		keys_with_votes
 		|> Enum.map(fn({key, votes}) ->
@@ -247,13 +253,13 @@ defmodule Liquio.NodeRepo do
 		end)
 		|> Enum.map(fn({key, result}) ->
 			Node.decode(key)
-			|> preload_results(calculation_opts)
+			|> load_results(calculation_opts)
 			|> Map.put(:reference_result, result)
 		end)
 		|> Enum.sort_by(& -&1.reference_result.by_keys["relevance"].mean)
 	end
 
-	defp preload_results_embed(results) do
+	defp load_results_embed(results) do
 		with_embed = results.by_keys
 		|> Enum.map(fn({results_key, results_for_key}) ->
 			embed_html = Phoenix.View.render_to_iodata(Liquio.Web.NodeView, "inline_results.html", results: results, results_key: results_key)

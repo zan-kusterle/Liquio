@@ -109,14 +109,14 @@ defmodule Liquio.Identity do
 				node = Node.decode(reference_vote.reference_key)
 				|> Map.put(:own_vote, reference_vote)
 				node = node
-				|> NodeRepo.preload_own_contribution(identity)
+				|> NodeRepo.load_own_contribution(identity)
 				node
 				|> Map.put(:reference_result, if node.own_contribution do node.own_contribution.results else nil end)
 			end)
 
 			node = Node.decode(key)
 			|> Map.put(:own_vote, Enum.at(direct_votes, 0))
-			|> NodeRepo.preload_own_contribution(identity)
+			|> NodeRepo.load_own_contribution(identity)
 			|> Map.put(:references, references)
 			node
 			|> Map.put(:results, if node.own_contribution do node.own_contribution.results else nil end)

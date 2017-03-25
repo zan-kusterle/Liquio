@@ -20,6 +20,6 @@ defmodule Liquio.Web.NodeController do
 	def show(conn, %{:node => node, :user => user}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
-		|> render("show.json", node: NodeRepo.preload(node, calculation_opts, user))
+		|> render("show.json", node: NodeRepo.load(node, calculation_opts, user))
 	end)
 end

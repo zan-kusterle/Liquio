@@ -26,7 +26,7 @@
 	</div>
 </div>
 
-<div class="score-box" v-else-if="choice_type == 'time_quantity'">
+<div class="score-box" v-else-if="choice_type == 'time_series'">
 	<form class="data" action="<%= @conn.request_path %>/vote" method="POST">
 		<ul class="time-series-list">
 			<li>
@@ -57,7 +57,7 @@ let utils = require('utils.js')
 
 const choiceForNode = function(node, results_key, choiceType) {
 	if(node.own_contribution) {
-		if(choiceType == 'time_quantity') {
+		if(choiceType == 'time_series') {
 			let by_keys = node.own_contribution.results.by_keys
 			let values = []
 			for(let year in by_keys) {
@@ -76,7 +76,7 @@ const choiceForNode = function(node, results_key, choiceType) {
 const getCurrentChoice = function(node, values, resultsKey, choiceType) {
 	let choice = {}
 
-	if(choiceType == 'time_quantity') {
+	if(choiceType == 'time_series') {
 		for(let i in values) {
 			let point = values[i]
 			if(point.value != '' && point.year != '')
@@ -97,7 +97,7 @@ export default {
 		let nodes = self.votableNodes || [self.node]
 
 		function updateInputs() {
-			if(choiceType == 'time_quantity') {
+			if(choiceType == 'time_series') {
 				let last_value = self.values[self.values.length - 1]
 				let empty_index = self.values.length
 				for(let i = self.values.length - 1; i >= 0; i--) {

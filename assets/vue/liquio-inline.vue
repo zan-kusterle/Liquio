@@ -1,13 +1,13 @@
 <template>
 <div class="node">
-	<router-link :to="'/' + node.key" class="link">
+	<router-link :to="'/' + encodeURIComponent(node.key)" class="link">
 		<div class="content">{{ node.title }}</div>
 		<div v-html="this.node.results.embed" v-if="this.node.results != null && this.node.choice_type != null" style="width: 100%; height: 50px; font-weight: bold;"></div>
 	</router-link>
 
 	<div class="references" v-if="node.references">
 		<router-link
-			:to="'/' + node.key + '/references/' + reference.key"
+			:to="'/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(reference.key)"
 			class="link"
 			v-for="reference in node.references"
 			:key="reference.key"
@@ -25,8 +25,8 @@
 		</router-link>
 	</div>
 
-	<router-link v-if="referencingNode" :to="'/' + referencingNode.key + '/references/' + node.key" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
-	<router-link v-else-if="referencesNode" :to="'/' + node.key + '/references/' + referencesNode.key" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
+	<router-link v-if="referencingNode" :to="'/' + encodeURIComponent(referencingNode.key) + '/references/' + encodeURIComponent(node.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
+	<router-link v-else-if="referencesNode" :to="'/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(referencesNode.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
 </div>
 </template>
 
