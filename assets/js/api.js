@@ -105,11 +105,11 @@ export function unsetDelegation(to_identity_username, cb) {
 	})
 }
 
-export function setVote(url_key, reference_url_key, choice, cb) {
-	for(var key in choice)
-		choice[key + ''] = parseFloat(choice[key])
+export function setVote(key, reference_key, choice, cb) {
+	for(var choice_key in choice)
+		choice[choice_key + ''] = parseFloat(choice[choice_key])
 	
-	let url = '/api/nodes/' + encodeURIComponent(url_key) + (reference_url_key ? '/references/' + encodeURIComponent(reference_url_key) : '') + '/votes'
+	let url = '/api/nodes/' + encodeURIComponent(key) + (reference_key ? '/references/' + encodeURIComponent(reference_key) : '') + '/votes'
 	axios.post(url, {choice: choice}).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {

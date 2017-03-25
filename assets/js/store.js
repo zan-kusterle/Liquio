@@ -143,7 +143,7 @@ export default new Vuex.Store({
 		},
 		setVote({commit}, {node, choice}) {
 			return new Promise((resolve, reject) => {
-				Api.setVote(node.url_key, node.reference_key && node.reference_key.replace(/\_/g, '-'), choice, function(node) {
+				Api.setVote(node.key, node.reference_key, choice, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})
@@ -151,7 +151,7 @@ export default new Vuex.Store({
 		},
 		unsetVote({commit}, node) {
 			return new Promise((resolve, reject) => {
-				Api.unsetVote(node.url_key, node.reference_key && node.reference_key.replace(/\_/g, '-'), function(node) {
+				Api.unsetVote(node.key, node.reference_key && node.reference_key.replace(/\_/g, '-'), function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})

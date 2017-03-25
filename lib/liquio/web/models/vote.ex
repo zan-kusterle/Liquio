@@ -67,7 +67,7 @@ defmodule Liquio.Vote do
 		new_choice = if current != nil and current.data != nil do Map.merge(current.data.choice, choice) else choice end
 		result = Repo.insert(%Vote{
 			:title => node.title,
-			:choice_type => node.choice_type,
+			:choice_type => to_string(node.choice_type),
 			:key => node.key,
 			:reference_key => node.reference_key,
 			:identity_id => identity.id,
@@ -84,7 +84,7 @@ defmodule Liquio.Vote do
 		remove_current_last(node.key, identity.id, node.reference_key)
 		result = Repo.insert!(%Vote{
 			:title => node.title,
-			:choice_type => node.choice_type,
+			:choice_type => to_string(node.choice_type),
 			:key => node.key,
 			:reference_key=> node.reference_key,
 			:identity_id => identity.id,

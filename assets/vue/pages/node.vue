@@ -1,7 +1,10 @@
 <template>
 	<div>
 		<div class="before" v-if="node">
-			<node-input v-bind:id="node.url_key" v-bind:enable-search="node.title == '' || node.title.startsWith('Results for ')" v-bind:enable-group="!node.title.startsWith('Results for ')" v-bind:enable-others="node.title !== '' && !node.title.startsWith('Results for ') && node.choice_type !== null" is-inverse="true" style="margin-bottom: 40px; text-align: center;"></node-input>
+			<node-input is-inverse="true" v-bind:id="node.url_key" style="margin-bottom: 40px; text-align: center;"
+				:enable-search="node.title == '' || node.title.startsWith('Results for ')"
+				:enable-group="!node.title.startsWith('Results for ')"
+				:enable-others="(node.title === '' || node.choice_type !== null) && !node.title.startsWith('Results for ')"></node-input>
 			<liquio-list v-if="node.title.length > 0" v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 		</div>
 

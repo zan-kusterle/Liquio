@@ -1,48 +1,21 @@
 defmodule Liquio.Node do
 	@enforce_keys [:choice_type, :key, :reference_key]
-	defstruct [:title, :choice_type, :key, :url_key, :reference_key]
+	defstruct [:title, :choice_type, :key, :reference_key]
 
 	import Ecto
 	import Ecto.Query, only: [from: 1, from: 2]
 	alias Liquio.{Node, Identity, Vote, ResultsCache, Repo}
 	alias Liquio.Results.{GetData, CalculateContributions, AggregateContributions}
 
-	def new(title, choice_type) do new(title, choice_type, nil) end
-	def new(title, choice_type, reference_key) do
-		%Node{
-			title: title,
-			choice_type: choice_type,
-			key: get_key(title, choice_type),
-			url_key: get_url_key(title, choice_type),
-			reference_key: reference_key
-		}
-	end
-
-	def decode(value) do
-		choice_types = %{
-			"Probability" => :probability, 
-			"Quantity" => :quantity,
-			"Time Series" => :time_quantity
-		}
-
-		clean_value = value |> URI.decode
-		clean_value = if String.starts_with?(clean_value, "http://") or String.starts_with?(clean_value, "https://") do
-			clean_value |> String.replace("_", "-")
-		else
-			clean_value |> String.replace("-", " ") |> String.replace("_", " ")
-		end
-		 
-		ends_with = Enum.find(Map.keys(choice_types), & clean_value |> String.downcase |> String.ends_with?(&1 |> String.downcase))
-
-		{title, choice_type} = if ends_with == nil do
-			{clean_value, nil}
-		else
-			{String.slice(clean_value, 0, String.length(clean_value) - String.length(ends_with)), to_string(choice_types[ends_with])}
-		end
-		node = Node.new(title |> String.trim(), choice_type, nil)
-
-		if String.length(node.title) > 0 do
-			node
+	def decode(key) do
+		{title, choice_type} = decode_key(key)
+		if String.length(title) > 0 do
+			%Node{
+				title: title,
+				choice_type: choice_type,
+				key: get_key(title, choice_type),
+				reference_key: nil
+			}
 		else
 			nil
 		end
@@ -56,47 +29,16 @@ defmodule Liquio.Node do
 		|> Enum.filter(& &1 != nil)
 	end
 
-	def from_key(key) do
-		choice_types = %{
-			"_probability" => "probability", 
-			"_quantity" => "quantity",
-			"_time_quantity" => "time_quantity",
-			"_" => nil
-		}
-
-		ends_with = Map.keys(choice_types) |> Enum.sort_by(& -String.length(&1)) |> Enum.find(& String.ends_with?(key, &1))
-		if ends_with == nil do
-			title = key |> String.replace("_", " ") |> String.trim
-			%Node{
-				:title => title,
-				:choice_type => nil,
-				:key => key,
-				:url_key => get_url_key(title, nil),
-				:reference_key => nil
-			}
-		else
-			title = key |> String.replace_trailing(ends_with, "") |> String.replace("_", " ") |> String.trim
-			%Node{
-				:title => title,
-				:choice_type => choice_types[ends_with],
-				:key => key,
-				:url_key => get_url_key(title, choice_types[ends_with]),
-				:reference_key => nil
-			}
-		end
-	end
-
-	def for_reference_key(node, reference_key) do
-		reference_key = if reference_key != "" do reference_key else nil end
-		node = node
-		|> Map.put(:reference_key, reference_key)
-		
-		node = Map.put(node, :key, get_key(node))
+	def put_reference_key(node, reference_key) do
+		reference_key = if String.length(reference_key) > 0 do reference_key else nil end
 		node
+		|> Map.put(:reference_key, reference_key)
 	end
 
-	def update_key(node) do
-		Map.put(node, :key, get_key(node))
+	def put_title(node, title) do
+		node
+		|> Map.put(:title, title)
+		|> Map.put(:key, get_key(title, node.choice_type))
 	end
 
 	def all(calculation_opts) do
@@ -116,11 +58,11 @@ defmodule Liquio.Node do
 			|> Repo.all
 			|> Enum.map(& &1.key)
 			|> Enum.uniq
-			|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts, nil))
+			|> Enum.map(& decode(&1) |> Node.preload(calculation_opts, nil))
 			|> Enum.sort_by(& -(&1.results.turnout_ratio + 0.05 * Enum.count(&1.references)))
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 
-			node = Node.new("", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
+			node = Node.decode("") |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
 
 			ResultsCache.set(key, node)
 			node
@@ -133,9 +75,9 @@ defmodule Liquio.Node do
 		|> Repo.all
 		|> Enum.map(& &1.key)
 		|> Enum.uniq
-		|> Enum.map(& Node.from_key(&1) |> Node.preload(calculation_opts |> Map.put(:depth, 0), nil))
+		|> Enum.map(& Node.decode(&1) |> Node.preload(calculation_opts |> Map.put(:depth, 0), nil))
 
-		Node.new("Results for '#{query}'", nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
+		Node.decode("Results for #{query}" |> String.replace(" ", "-"), nil) |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
 	end
 
 	def preload(node, calculation_opts) do
@@ -198,7 +140,7 @@ defmodule Liquio.Node do
 
 		node = Map.put(node, :calculation_opts, calculation_opts)
 
-		votes = GetData.get_votes(node.key, calculation_opts.datetime, node.reference_key)
+		votes = GetData.get_votes(node.key, node.reference_key, calculation_opts.datetime)
 		node = if not Enum.empty?(votes) do
 			{best_title, _count} = votes
 			|> Map.values
@@ -206,7 +148,7 @@ defmodule Liquio.Node do
 			|> Enum.map(fn({k, v}) -> {k, Enum.count(v)} end)
 			|> Enum.max_by(fn({title, count}) -> count end)
 
-			node |> Map.put(:title, best_title) |> update_keys
+			node |> Node.put_title(best_title)
 		else
 			node
 		end
@@ -230,7 +172,7 @@ defmodule Liquio.Node do
 
 		contributions = contributions
 		|> Enum.map(fn(contribution) ->
-			if contribution.choice_type == "time_quantity" do
+			if contribution.choice_type == "time_series" do
 				points = contribution.choice
 				|> Enum.map(fn({time_key, value}) ->
 					case Integer.parse(time_key) do
@@ -328,37 +270,29 @@ defmodule Liquio.Node do
 		|> Map.put(:own_contribution, contribution)
 	end
 
-	defp update_keys(node) do
-		node
-		|> Map.put(:key, get_key(node))
-		|> Map.put(:url_key, get_url_key(node))
-	end
+	defp decode_key(key) do
+		choice_types = [:probability, :quantity, :time_series]
 
-	defp get_key(node) do
-		get_key(node.title, node.choice_type)
-	end
-	defp get_key(title, choice_type) do
-		"#{title} #{choice_type}" |> String.downcase |> String.replace(" ", "_")
-	end
-
-	defp get_url_key(node) do
-		get_url_key(node.title, node.choice_type)
-	end
-	defp get_url_key(title, choice_type) do
-		base = if choice_type == nil do
-			title
+		clean_key = key |> URI.decode
+		clean_key = unless String.starts_with?(clean_key, "http://") or String.starts_with?(clean_key, "https://") do
+			clean_key |> String.replace("-", " ")
 		else
-			choice_types = %{
-				"probability" => "Probability",
-				"quantity" => "Quantity",
-				"time_quantity" => "Time Series",
-				nil => ""
-			}
-			"#{title} #{choice_types[choice_type]}"
+			clean_key
+		end
+		clean_key = clean_key |> String.replace("___", "") |> String.trim(" ")
+		choice_type = Enum.find(choice_types, & clean_key |> String.downcase |> String.ends_with?(&1 |> to_string |> String.replace("_", "-")))
+		
+		{title, choice_type} = if choice_type == nil do
+			{clean_key, nil}
+		else
+			{String.slice(clean_key, 0, String.length(clean_key) - String.length(to_string(choice_type))) |> String.trim(), choice_type}
 		end
 
-		base |> String.trim |> String.replace(" ", "-")
-		|> URI.encode |> String.replace("/", "%2F") |> String.replace(":", "%3A") |> String.replace("?", "%3F") |> String.replace("=", "%3D") |> String.replace("&", "%26")
+		{title, choice_type}
+	end
+	
+	defp get_key(title, choice_type) do
+		"#{title |> String.replace(" ", "-")}-#{choice_type |> to_string |> String.replace("_", "-")}" |> String.trim("-")
 	end
 	
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do
@@ -374,7 +308,7 @@ defmodule Liquio.Node do
 			Map.has_key?(result.by_keys, "relevance") and result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
 		end)
 		|> Enum.map(fn({key, result}) ->
-			from_key(key)
+			Node.decode(key)
 			|> preload_results(calculation_opts)
 			|> Map.put(:reference_result, result)
 		end)

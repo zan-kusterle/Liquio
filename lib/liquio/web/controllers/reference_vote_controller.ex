@@ -9,7 +9,7 @@ defmodule Liquio.Web.ReferenceVoteController do
 	},
 	def create(conn, %{:node => node, :reference_node => reference_node, :user => user, "choice" => choice}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		reference = Node.for_reference_key(node, reference_node.key)
+		reference = Node.put_reference_key(node, reference_node.key)
 
 		Vote.set(reference, user, choice)
 		if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
@@ -31,7 +31,7 @@ defmodule Liquio.Web.ReferenceVoteController do
 	},
 	def delete(conn, %{:node => node, :reference_node => reference_node, :user => user}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		reference = Node.for_reference_key(node, reference_node.key)
+		reference = Node.put_reference_key(node, reference_node.key)
 		Vote.delete(reference, user)
 
 		conn

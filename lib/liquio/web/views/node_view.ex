@@ -27,9 +27,8 @@ defmodule Liquio.Web.NodeView do
 		%{
 			:title => node.title,
 			:choice_type => node.choice_type,
-			:key => String.trim(node.key, "_"),
-			:reference_key => node.reference_key && String.trim(node.reference_key, "_"),
-			:url_key => node.url_key,
+			:key => node.key,
+			:reference_key => node.reference_key,
 			:results => if node.choice_type != nil or node.reference_key != nil do Map.get(node, :results) else nil end,
 			:contributions => if node.choice_type != nil or node.reference_key != nil do Enum.map(Map.get(node, :contributions, []), & map_contribution(&1)) else [] end,
 			:own_contribution => if Map.get(node, :own_contribution) do map_contribution(node.own_contribution) else nil end,

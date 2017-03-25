@@ -94,6 +94,7 @@ export default {
 	data: function() {
 		let self = this
 		let choiceType = self.choiceType || self.node.choice_type
+		let nodes = self.votableNodes || [self.node]
 
 		function updateInputs() {
 			if(choiceType == 'time_quantity') {
@@ -122,11 +123,9 @@ export default {
 			values: choiceValues,
 			set: function(event) {
 				let choice = getCurrentChoice(self.node, self.values, self.resultsKey || 'main', choiceType)
-				let nodes = self.votableNodes || [self.node]
 				_.each(nodes, (node) => self.$store.dispatch('setVote', {node: node, choice: choice}))
 			},
 			unset: function(event) {
-				let nodes = self.votableNodes || [self.node]
 				_.each(nodes, (node) => self.$store.dispatch('unsetVote', node))
 			},
 			keyup: function(event) {

@@ -13,7 +13,7 @@
 					<%= if mean != nil do "#{round(mean)}" else "?" end %>
 				</p>
 			<% else %>
-				<%= if @results.choice_type == "time_quantity" do %>
+				<%= if @results.choice_type == "time_series" do %>
 					<%= if Enum.count(@results.by_datetime) < 2 do %>
 						<p>?</p>
 					<% else %>

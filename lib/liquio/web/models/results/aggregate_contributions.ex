@@ -52,7 +52,7 @@ defmodule Liquio.Results.AggregateContributions do
 	end
 
 	defp prepare_results(results) do
-		if results.choice_type == "time_quantity" do
+		if results.choice_type == "time_series" do
 			results_with_datetime = results.by_keys
 			|> Enum.map(fn({time_key, time_results}) ->
 				case Integer.parse(time_key) do
