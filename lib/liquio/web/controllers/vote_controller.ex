@@ -20,7 +20,7 @@ defmodule Liquio.Web.VoteController do
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, node.key))
-		|> render(Liquio.Web.NodeView, "show.json", node: Node.preload(node, calculation_opts, user))
+		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.preload(node, calculation_opts, user))
 	end)
 
 	with_params(%{
@@ -34,6 +34,6 @@ defmodule Liquio.Web.VoteController do
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, node.key))
-		|> render(Liquio.Web.NodeView, "show.json", node: Node.preload(node, calculation_opts, user))
+		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.preload(node, calculation_opts, user))
 	end)
 end
