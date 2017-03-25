@@ -278,7 +278,7 @@ defmodule Liquio.Node do
 		{title, choice_type} = if choice_type == nil do
 			{clean_key, nil}
 		else
-			{String.slice(clean_key, 0, String.length(clean_key) - String.length(to_string(choice_type))) |> String.trim(), choice_type}
+			{String.slice(clean_key, 0, String.length(clean_key) - String.length(to_string(choice_type))) |> String.trim("-"), choice_type}
 		end
 
 		title = if String.starts_with?(clean_key, "http://") or String.starts_with?(clean_key, "https://") do
