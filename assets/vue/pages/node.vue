@@ -55,7 +55,7 @@ export default {
 			if(this.$store.getters.searchQuery) {
 				return 'Results for ' + this.$store.getters.searchQuery
 			} else {
-				return this.$store.getters.nodeKey.replace('-Probability', '').replace('-Quantity', '').replace('-Time-Series', '').replace(/-/g, ' ')
+				return this.$store.getters.nodeKey.replace('-probability', '').replace('-quantity', '').replace('-time-series', '').replace(/-/g, ' ')
 			}
 		}
 	},

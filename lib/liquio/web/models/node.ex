@@ -271,14 +271,8 @@ defmodule Liquio.Node do
 
 	defp decode_key(key) do
 		choice_types = [:probability, :quantity, :time_series]
-
-		clean_key = key
-		clean_key = unless String.starts_with?(clean_key, "http://") or String.starts_with?(clean_key, "https://") do
-			clean_key |> String.replace("-", " ")
-		else
-			clean_key
-		end
-		clean_key = clean_key |> String.replace("___", "") |> String.trim(" ")
+		
+		clean_key = key |> String.replace("___", "") |> String.trim(" ")
 		choice_type = Enum.find(choice_types, & clean_key |> String.downcase |> String.ends_with?(&1 |> to_string |> String.replace("_", "-")))
 		
 		{title, choice_type} = if choice_type == nil do
@@ -287,9 +281,11 @@ defmodule Liquio.Node do
 			{String.slice(clean_key, 0, String.length(clean_key) - String.length(to_string(choice_type))) |> String.trim(), choice_type}
 		end
 
-		title |> URI.encode
-		|> String.replace("/", "%2F") |> String.replace(":", "%3A") |> String.replace("?", "%3F")
-		|> String.replace("=", "%3D") |> String.replace("&", "%26")
+		title = if String.starts_with?(clean_key, "http://") or String.starts_with?(clean_key, "https://") do
+			title
+		else
+			title |> String.replace("-", " ")
+		end
 
 		{title, choice_type}
 	end
