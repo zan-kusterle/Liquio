@@ -5,7 +5,7 @@ import locale from 'element-ui/lib/locale/lang/en'
 import VueRouter from 'vue-router'
 
 import 'element-ui/lib/theme-default/index.css'
-require('vue2-animate/dist/vue2-animate.min.css')
+import velocity from 'velocity-animate'
 
 Vue.use(Vuex)
 Vue.use(VueRouter)
