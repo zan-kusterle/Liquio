@@ -199,9 +199,6 @@ defmodule Liquio.Node do
 		node = Map.put(node, :calculation_opts, calculation_opts)
 
 		votes = GetData.get_votes(node.key, calculation_opts.datetime, node.reference_key)
-		if node.key == "human_activity_is_causing_global_warming_probability" and node.reference_key == nil do
-			IO.inspect votes
-		end
 		node = if not Enum.empty?(votes) do
 			{best_title, _count} = votes
 			|> Map.values

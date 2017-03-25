@@ -12,8 +12,8 @@ export default new Vuex.Store({
 		calculation_opts: {}
 	},
 	getters: {
-		keys: (state) => state.route.params.key ? state.route.params.key.split('_') : [],
-		referencingKeys: (state) => state.route.params.referenceKey ? state.route.params.referenceKey.split('_') : [],
+		keys: (state) => state.route.params.key ? state.route.params.key.split('___') : [],
+		referencingKeys: (state) => state.route.params.referenceKey ? state.route.params.referenceKey.split('___') : [],
 		referenceKeyPairs: (state, getters) => _.flatMap(getters.keys, (key) =>
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => {
 				return {key, referenceKey}
