@@ -18,7 +18,7 @@
 
 		<div class="after" v-if="node">
 			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title == '' || node.title.startsWith('Results for') ? null : node" style="text-align: left;"></liquio-list>
-			<p class="subtitle" v-if="node.references.length == 0">There is nothing here yet.</p>
+			<p class="subtitle" v-if="node.references.length == 0">There is nothing here.</p>
 			<node-input v-if="!(node.title == '' || node.title.startsWith('Results for '))" v-bind:id="node.key" enable-search="false" v-bind:enable-group="node.choice_type == null" style="margin-top: 30px; text-align: center;"></node-input>
 		</div>
 

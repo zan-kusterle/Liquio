@@ -198,7 +198,7 @@ defmodule Liquio.NodeRepo do
 
 			reference_nodes = if depth > 1 do
 				reference_nodes |> Enum.map(fn(reference_node) ->
-					reference_node |> load_references(calculation_opts, depth - 1)
+					reference_node |> load_references(calculation_opts, depth - 1) |> load_inverse_references(calculation_opts, 1)
 				end)
 			else
 				reference_nodes
