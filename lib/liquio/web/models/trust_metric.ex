@@ -49,7 +49,7 @@ defmodule Liquio.TrustMetric do
 				end)
 				{:ok, usernames |> MapSet.new}
 			else
-				{:error, "Cannot fetch usernames from the given URL"}
+				{:error, "Can't fetch usernames from the given URL"}
 			end
 		end
 	end

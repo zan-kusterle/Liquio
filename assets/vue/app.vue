@@ -5,6 +5,7 @@
 				<el-col :span="12">
 					<router-link to="/" class="logo"><img src="/images/logo.svg"></img></router-link>
 					<h3 class="tagline">A liquid democracy where anyone can vote on anything.</h3>
+					<a onclick="chrome.webstore.install()" class="tagline">Get extension</a>
 				</el-col>
 				<el-col :span="12">
 					<div class="actions" v-if="$store.state.user">

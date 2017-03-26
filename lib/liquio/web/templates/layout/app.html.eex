@@ -20,6 +20,8 @@
 		<link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5">
 		<meta name="theme-color" content="#1f8dd6">
 
+		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/blpabffilmeojmnklhnglhnflfedfkkd">
+
 		<meta name="google-signin-client_id" content="1073734990208-3rk296sdolui9cs65g9p6654rdtvgimc.apps.googleusercontent.com">
 
 		<link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
