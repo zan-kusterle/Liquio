@@ -4,7 +4,7 @@ defmodule Liquio.Repo.Migrations.CreateTrustMetric do
 	def change do
 		create table(:trust_metrics) do
 			add :url, :string, null: false
-			add :last_update, :datetime, null: false
+			add :last_update, :utc_datetime, null: false
 			add :usernames, {:array, :string}, null: false
 		end
 

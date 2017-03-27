@@ -9,7 +9,7 @@ defmodule Liquio.Repo.Migrations.CreateIdentity do
 
 			add :trusts, {:map, :boolean}
 
-			timestamps
+			timestamps()
 		end
 
 		create unique_index(:identities, [:email])

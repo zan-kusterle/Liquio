@@ -37,16 +37,16 @@ defmodule Liquio.Node do
 		|> Map.put(:reference_choice_type, choice_type)
 	end
 
-	defp decode_key(key) do
-		choice_types = [:probability, :quantity, :time_series]
-		
+	defp decode_key(key) do		
 		clean_key = key |> String.replace("___", "") |> String.trim(" ")
-		choice_type = Enum.find(choice_types, & clean_key |> String.downcase |> String.ends_with?(&1 |> to_string |> String.replace("_", "-")))
-		
+		path = String.split(clean_key, "-")
+		choice_type = if Enum.count(path) >= 2 do List.last(path) else nil end
+
 		{title, choice_type} = if choice_type == nil do
 			{clean_key, nil}
 		else
-			{String.slice(clean_key, 0, String.length(clean_key) - String.length(to_string(choice_type))) |> String.trim("-"), choice_type}
+			clean_title = String.slice(clean_key, 0, String.length(clean_key) - String.length(to_string(choice_type))) |> String.trim("-")
+			{clean_title, choice_type |> String.downcase}
 		end
 
 		title = if String.starts_with?(clean_key, "http://") or String.starts_with?(clean_key, "https://") do

@@ -12,7 +12,9 @@ defmodule Liquio.Results do
 					:count => 1
 				}}
 			end) |> Enum.into(%{}),
-			:choice_type => contribution.choice_type
+			:choice_type => contribution.choice_type,
+			:contributions => [contribution],
+			:unit_type => nil
 		} |> load()
 	end
 
@@ -44,11 +46,13 @@ defmodule Liquio.Results do
 			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(contributions),
 			:by_keys => by_keys,
-			:choice_type => choice_type
+			:choice_type => choice_type,
+			:contributions => contributions,
+			:unit_type => nil
 		} |> load()
 	end
 
-	def load(results) do
+	defp load(results) do
 		text = inline_results_value(results) |> minify_html
 		color = results_color(results)
 		
@@ -187,16 +191,12 @@ defmodule Liquio.Results do
 	end
 
 	def by_key(aggregations_by_key, key) do
-		Map.get(aggregations_by_key, key, empty())
-	end
-
-	def empty() do
-		%{
+		Map.get(aggregations_by_key, key, %{
 			:mean => nil,
 			:total => 0,
 			:turnout_ratio => 0,
 			:count => 0
-		}
+		})
 	end
 
 	defp aggregate_for_key(contributions_for_key, datetime, vote_weight_halving_days, choice_type, trust_metric_size) do

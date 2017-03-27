@@ -1,4 +1,6 @@
 defmodule Liquio.CalculationOpts do
+	alias Liquio.TrustMetric
+	
 	def get_from_conn(conn) do
 		# add sort and pagination
 
@@ -28,8 +30,7 @@ defmodule Liquio.CalculationOpts do
 			reference_minimum_agree: 0.5,
 			minimum_voting_power: 0.05 * trust_metric_count,
 			minimum_turnout: 0.05,
-			reference_minimum_turnout: 0,
-			
+			reference_minimum_turnout: 0
 		}
 	end
 
@@ -57,17 +58,17 @@ defmodule Liquio.CalculationOpts do
 		url = Map.get(conn.params, :trust_metric_url)
 		url =
 			if url == nil or not String.starts_with?(url, "http") do
-				Liquio.TrustMetric.default_trust_metric_url()
+				TrustMetric.default_trust_metric_url()
 			else
 				url
 			end
 
-		case Liquio.TrustMetric.get(url) do
+		case TrustMetric.get(url) do
 			{:ok, trust_identity_ids} ->
 				{url, trust_identity_ids}
 			{:error, _reason} ->
-				url = Liquio.TrustMetric.default_trust_metric_url()
-				{url, Liquio.TrustMetric.get!(url)}
+				url = TrustMetric.default_trust_metric_url()
+				{url, TrustMetric.get!(url)}
 		end
 	end
 end

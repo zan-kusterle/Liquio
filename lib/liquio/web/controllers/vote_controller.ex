@@ -9,7 +9,7 @@ defmodule Liquio.Web.VoteController do
 	def create(conn, %{:node => node, :user => user, "choice" => choice}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 
-		Vote.set(node, user, choice)
+		Vote.set(node, user, choice["main"])
 		if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 			{:info, "Your vote is now live."}
 		else
@@ -28,7 +28,7 @@ defmodule Liquio.Web.VoteController do
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
 	def delete(conn, %{:node => node, :user => user}) do
-		vote = Vote.delete(node, user)
+		Vote.delete(node, user)
 
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn

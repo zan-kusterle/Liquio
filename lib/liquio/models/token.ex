@@ -3,7 +3,7 @@ defmodule Liquio.Token do
 	use Mailgun.Client,
 		domain: Application.get_env(:liquio, :mailgun_domain),
 		key: Application.get_env(:liquio, :mailgun_key)
-	alias Liquio.{Token, Repo, Router, Endpoint}
+	alias Liquio.{Token, Repo}
 
 	schema "tokens" do
 		field :email, :string

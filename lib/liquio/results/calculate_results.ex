@@ -1,17 +1,15 @@
-defmodule Liquio.Results.CalculateContributions do
-	alias Liquio.Results.CalculateResultServer
-
-	alias Liquio.Results.{GetData}
+defmodule Liquio.CalculateResults do
+	import Ecto.Query, only: [from: 2]
+	alias Liquio.{Identity, Repo, GetData, Results, CalculateMemoServer}
 
 	def calculate(node, calculation_opts) do
 		votes = GetData.get_votes(node.key, node.reference_key, calculation_opts.datetime)
-		votes = if node.reference_key == nil do votes |> Enum.filter(fn({k, v}) -> v.reference_key == nil end) |> Enum.into(%{}) else votes end
+		votes = if node.reference_key == nil do votes |> Enum.filter(fn({_k, v}) -> v.reference_key == nil end) |> Enum.into(%{}) else votes end
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
-		contributions = Contribution.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
+		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
 		|> load_identities()
 		
 		Results.from_contributions(contributions, calculation_opts)
-		|> Map.put(:contributions, contributions)
 	end
 
 	def calculate_for_votes(votes, calculation_opts) do
@@ -19,17 +17,16 @@ defmodule Liquio.Results.CalculateContributions do
 			{vote.identity_id, vote}
 		end
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
-		contributions = CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new)
+		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new)
 		|> load_identities()
 
 		Results.from_contributions(contributions, calculation_opts)
-		|> Map.put(:contributions, contributions)
 	end
 
-	def calculate(votes, inverse_delegations, trust_identity_ids, topics) do
+	defp calculate(votes, inverse_delegations, trust_identity_ids, topics) do
 		uuid = String.to_atom(UUID.uuid4(:hex))
 
-		CalculateResultServer.start_link uuid
+		CalculateMemoServer.start_link uuid
 
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
 
@@ -41,15 +38,15 @@ defmodule Liquio.Results.CalculateContributions do
 			calculate_total_weights(identity_id, state, uuid, MapSet.new)
 		end)
 		
-		CalculateResultServer.reset_visited(uuid)
+		CalculateMemoServer.reset_visited(uuid)
 
 		contributions = trust_votes |> Enum.map(fn({identity_id, vote}) ->
 			vote
 			|> Map.put(:voting_power, get_power(identity_id, state, uuid, MapSet.new) / 1)
-			|> Map.put(:identity, %Liquio.Identity{:id => identity_id})
+			|> Map.put(:identity, %Identity{:id => identity_id})
 		end)
 
-		CalculateResultServer.stop uuid
+		CalculateMemoServer.stop uuid
 
 		total_voting_power = contributions |> Enum.map(& &1.voting_power) |> Enum.sum
 		contributions = contributions |> Enum.map(fn(contribution) ->
@@ -72,30 +69,30 @@ defmodule Liquio.Results.CalculateContributions do
 	end 
 
 	defp calculate_total_weights(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
-		unless CalculateResultServer.visited?(uuid, identity_id) do
+		unless CalculateMemoServer.visited?(uuid, identity_id) do
 			inverse_delegations |> Map.get(identity_id, [])
 			|> Enum.filter(& use_delegation?(&1, state, path))
 			|> Enum.each(fn({from_identity_id, from_weight, _from_topics}) ->
-				CalculateResultServer.add_weight(uuid, from_identity_id, from_weight)
+				CalculateMemoServer.add_weight(uuid, from_identity_id, from_weight)
 				calculate_total_weights(from_identity_id, state, uuid, MapSet.put(path, identity_id))
 			end)
-			CalculateResultServer.add_visited(uuid, identity_id)
+			CalculateMemoServer.add_visited(uuid, identity_id)
 		end
 	end
 
 	defp get_power(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
-		if power = CalculateResultServer.get_power(uuid, identity_id) do
+		if power = CalculateMemoServer.get_power(uuid, identity_id) do
 			power
 		else
 			receiving = inverse_delegations |> Map.get(identity_id, [])
 			|> Enum.filter(& use_delegation?(&1, state, path))
 			|> Enum.reduce(0, fn({from_identity_id, from_weight, _from_topics}, acc) ->
 				from_power = get_power(from_identity_id, state, uuid, MapSet.put(path, identity_id))
-				from_ratio = from_weight / CalculateResultServer.get_total_weight(uuid, from_identity_id)
+				from_ratio = from_weight / CalculateMemoServer.get_total_weight(uuid, from_identity_id)
 				acc + from_power * from_ratio
 			end)
 			power = 1 + receiving
-			CalculateResultServer.put_power(uuid, identity_id, power)
+			CalculateMemoServer.put_power(uuid, identity_id, power)
 			power
 		end
 	end
@@ -108,7 +105,7 @@ defmodule Liquio.Results.CalculateContributions do
 	end
 end
 
-defmodule Liquio.Results.CalculateResultServer do
+defmodule Liquio.CalculateMemoServer do
 	def start_link(uuid) do
 		Agent.start_link(fn -> {Map.new, Map.new, MapSet.new} end, name: uuid)
 	end

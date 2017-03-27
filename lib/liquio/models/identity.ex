@@ -9,7 +9,7 @@ defmodule Liquio.Identity do
 
 		field :trusts, {:map, :boolean}
 
-		timestamps
+		timestamps()
 	end
 	
 	def changeset(data, params) do
@@ -97,7 +97,7 @@ defmodule Liquio.Identity do
 	end
 
 	def preload_votes(identity) do
-		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.data))
+		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.choice))
 		|> Repo.all
 		|> Repo.preload([:identity])
 

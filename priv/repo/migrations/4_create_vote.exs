@@ -17,10 +17,10 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :group_key, :string, null: true
 
 			add :at_date, :date, null: false
-			add :datetime, :datetime, null: false
+			add :datetime, :utc_datetime, null: false
 			add :is_last, :boolean, null: false
 
-			add :data, :map, null: true
+			add :choice, :float, null: true
 		end
 
 		create index(:votes, [:identity_id])

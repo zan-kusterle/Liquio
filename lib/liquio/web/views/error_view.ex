@@ -1,7 +1,7 @@
 defmodule Liquio.Web.ErrorView do
 	use Liquio.Web, :view
 
-	def render("404.html", assigns) do
+	def render("404.html", _assigns) do
 		"Nothing is here"
 	end
 

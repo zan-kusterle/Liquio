@@ -6,7 +6,7 @@ defmodule Liquio.Repo.Migrations.AddTokens do
 			add :email, :string, null: false, size: 1000
 			add :token, :string, null: false
 			add :is_valid, :boolean
-			add :datetime, :datetime, null: false
+			add :datetime, :utc_datetime, null: false
 		end
 	end
 end
