@@ -53,7 +53,7 @@
 				<circle id="<%= uuid %>" cx="<%= svg_x nx %>" cy="<%= svg_y ny %>" r="<%= rw %>" fill="#1f8dd6"></circle>
 
 				<text text-anchor="<%= tooltip_text_anchor %>" x="<%= svg_x nx %>" y="<%= svg_y(ny) + (rw + 4) * tooltip_offset_mult %>" fill="#333" visibility="hidden">
-					<tspan x="<%= svg_x nx %>" alignment-baseline="<%= tooltip_alignment_baseline %>" font-size="18"><%= "#{Timex.format!(x, "{D}/{M}/{YYYY}")}" %></tspan><tspan x="<%= svg_x nx %>" alignment-baseline="<%= tooltip_alignment_baseline %>" dy="<%= 20 * tooltip_offset_mult %>" font-size="22"><%= "#{number_format_simple y}" %></tspan>
+					<tspan x="<%= svg_x nx %>" alignment-baseline="<%= tooltip_alignment_baseline %>" font-size="18"><%= "#{Timex.format!(x, "{D}/{M}/{YYYY}")}" %></tspan><tspan x="<%= svg_x nx %>" alignment-baseline="<%= tooltip_alignment_baseline %>" dy="<%= 20 * tooltip_offset_mult %>" font-size="22"><%= "#{round y}" %></tspan>
 					<set attributeName="visibility" from="hidden" to="visible" begin="<%= uuid %>.mouseover" end="<%= uuid %>.mouseout"/>
 				</text>
 			<% end %>

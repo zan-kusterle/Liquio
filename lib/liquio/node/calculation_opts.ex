@@ -2,7 +2,7 @@ defmodule Liquio.CalculationOpts do
 	def get_from_conn(conn) do
 		# add sort and pagination
 
-		depth = min((if Map.has_key?(conn.params, "depth") do clean_number(Map.get(conn.params, "depth"), whole: true) else nil end) || 1, 5)
+		depth = min((if Map.has_key?(conn.params, "depth") do clean_number(Map.get(conn.params, "depth"), whole: true) else nil end) || 1, 3)
 		identity = Guardian.Plug.current_resource(conn)
 		now = Timex.now
 		datetime =
@@ -33,7 +33,7 @@ defmodule Liquio.CalculationOpts do
 		}
 	end
 
-	def clean_number(value, opts) do
+	defp clean_number(value, opts) do
 		if value == nil or String.length(value) == 0 do
 			nil
 		else
@@ -51,7 +51,7 @@ defmodule Liquio.CalculationOpts do
 		end
 	end
 
-	def get_trust_identity_ids(conn) do
+	defp get_trust_identity_ids(conn) do
 		identity = Guardian.Plug.current_resource(conn)
 
 		url = Map.get(conn.params, :trust_metric_url)

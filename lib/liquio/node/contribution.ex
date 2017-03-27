@@ -1,6 +1,31 @@
 defmodule Liquio.Results.CalculateContributions do
 	alias Liquio.Results.CalculateResultServer
 
+	alias Liquio.Results.{GetData}
+
+	def calculate(node, calculation_opts) do
+		votes = GetData.get_votes(node.key, node.reference_key, calculation_opts.datetime)
+		votes = if node.reference_key == nil do votes |> Enum.filter(fn({k, v}) -> v.reference_key == nil end) |> Enum.into(%{}) else votes end
+		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
+		contributions = Contribution.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
+		|> load_identities()
+		
+		Results.from_contributions(contributions, calculation_opts)
+		|> Map.put(:contributions, contributions)
+	end
+
+	def calculate_for_votes(votes, calculation_opts) do
+		votes = for vote <- votes, into: %{} do
+			{vote.identity_id, vote}
+		end
+		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
+		contributions = CalculateContributions.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new)
+		|> load_identities()
+
+		Results.from_contributions(contributions, calculation_opts)
+		|> Map.put(:contributions, contributions)
+	end
+
 	def calculate(votes, inverse_delegations, trust_identity_ids, topics) do
 		uuid = String.to_atom(UUID.uuid4(:hex))
 
@@ -35,6 +60,16 @@ defmodule Liquio.Results.CalculateContributions do
 		
 		contributions
 	end
+
+	defp load_identities(contributions) do
+		identity_ids = Enum.map(contributions, & &1.identity.id)
+		identities = from(i in Identity, where: i.id in ^identity_ids)
+		|> Repo.all
+		|> Enum.into(%{}, & {&1.id, &1})
+		contributions |> Enum.map(fn(contribution) ->
+			Map.put(contribution, :identity, identities[contribution.identity.id])
+		end)
+	end 
 
 	defp calculate_total_weights(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
 		unless CalculateResultServer.visited?(uuid, identity_id) do

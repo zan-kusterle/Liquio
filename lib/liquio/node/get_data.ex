@@ -43,41 +43,4 @@ defmodule Liquio.Results.GetData do
 		end
 		votes
 	end
-
-	def prepare_votes(votes) do
-		for vote <- votes, into: %{} do
-			{vote.identity_id, prepare_vote(vote)}
-		end
-	end
-	
-	def prepare_vote(vote) do
-		%{:datetime => vote.datetime, :choice => vote.data.choice, :choice_type => vote.choice_type, :title => vote.title}
-	end
-
-	def create_random(filename, num_identities, num_votes, num_delegations_per_identity) do
-		trust_identity_ids = Enum.to_list 1..num_identities
-		votes = get_random_votes trust_identity_ids, num_votes
-		inverse_delegations = get_random_inverse_delegations trust_identity_ids, num_delegations_per_identity
-
-		{:ok, file} = File.open filename, [:write]
-		IO.binwrite file, :erlang.term_to_binary({trust_identity_ids |> MapSet.new, votes, inverse_delegations})
-	end
-
-	def get_random_inverse_delegations(identity_ids, num_delegations) do
-		for to_identity_id <- identity_ids, into: %{}, do: {to_identity_id,
-			identity_ids
-			|> Enum.slice(max(0, to_identity_id - num_delegations - 1), min(to_identity_id - 1, num_delegations))
-			|> Enum.map(& {&1, 1, nil})
-		}
-	end
-
-	def get_random_votes(identity_ids, num_votes) do
-		for identity_id <- identity_ids |> Enum.take_random(num_votes), into: %{}, do: {
-			identity_id,
-			{
-				Timex.now,
-				:rand.uniform
-			}
-		}
-	end
 end

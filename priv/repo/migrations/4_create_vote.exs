@@ -8,8 +8,15 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :title, :string, null: false
 			add :choice_type, :string, null: true
 			add :key, :string, null: false
-			add :reference_key, :string, null: true
 
+			add :reference_title, :string, null: true
+			add :reference_choice_type, :string, null: true
+			add :reference_key, :string, null: true
+			add :reference_choice_unit, :string, null: true
+
+			add :group_key, :string, null: true
+
+			add :at_date, :date, null: false
 			add :datetime, :datetime, null: false
 			add :is_last, :boolean, null: false
 

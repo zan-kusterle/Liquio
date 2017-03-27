@@ -62,8 +62,6 @@ defmodule Liquio.Web do
 			import Liquio.Web.Router.Helpers
 			import Liquio.Web.ErrorHelpers
 			import Liquio.Web.Gettext
-			import Liquio.NumberFormat
-			import Liquio.TextFormat
 		end
 	end
 
