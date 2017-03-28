@@ -2,70 +2,62 @@
 <div>
 	<div v-if="node">
 		<h1 class="title" style="vertical-align: middle;">{{ title || node.title || 'Everything' }}</h1>
-		<a v-if="!title && node.title && node.title.startsWith('https://')" :href="node.key" target="_blank" class="title" style="vertical-align: middle;">View content</a>
+		<a v-if="!title && node.title && node.path[0].startsWith('https://')" :href="node.key" target="_blank" class="title" style="vertical-align: middle;">View content</a>
 
 		<div class="score-container">
 			<div>
 				<div v-if="this.node.choice_type != null || resultsKey == 'relevance'">
 					<div v-html="this.node.results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 					<div style="width: 100%; display: block;" class="choose-units">
-						<el-select v-model="unit_value" size="mini">
-							<el-option-group v-for="unit_group in units" :key="unit_group.value_type" :label="unit_group.label">
-								<el-option v-for="unit in unit_group.children" :key="unit.value" :label="unit.label" :value="unit.value"></el-option>
-							</el-option-group>
-						</el-select>
+						<node-input :title="node.title" enable-search="false" enable-group="true" enable-others="true"></node-input>
 					</div>
 				</div>
 			</div>
 
 			<div v-if="(node.choice_type != null || node.filter_key == 'relevance')">
-				<div class="score-box" v-bind:style=" {'background-color': get_color(vote.choice / 100)}" v-for="(vote, index) in votes">
-					<div v-if="first_node.unit_type == 'probability'">
-						<div class="range">
-							<el-slider v-model="vote.choice" style="width: 90%; margin: 0 auto;" />
-						</div>
+				<div class="vote-choices">
+					<div class="vote-choice" v-for="(vote, index) in votes">
+						<el-tooltip class="action" effect="dark" content="Remove this choice" placement="top">
+							<i @click="votes.splice(index, 1)" class="el-icon-circle-close"></i>
+						</el-tooltip>
+
 						<div class="number">
 							<span class="number-value">{{ Math.round(vote.choice) }}</span><span class="percent">%</span>
 						</div>
-					</div>
-					<div v-else>
-						<div class="number">
+
+						<div class="range" v-if="first_node.unit_type == 'probability'">
+							<el-slider v-model="vote.choice" />
+						</div>
+						<div class="number" v-else>
 							<input class="number-value" v-model="vote.choice" style="width: 140px; text-align: center;"></input>
 						</div>
-					</div>
 
-					<div style="text-align: left; margin-top: -23px; margin-left: 10px;">
-						<el-tooltip class="item" effect="dark" content="Remove this choice" placement="top">
-							<i @click="votes.splice(index, 1)" class="el-icon-circle-close"></i>
+						<el-date-picker v-if="vote.at_date" v-model="vote.at_date" type="date" class="datepicker"></el-date-picker>
+						<el-tooltip v-else class="action" effect="dark" content="Set specific date" placement="top">
+							<i @click="vote.at_date = Date.now()" class="el-icon-date" style="margin-left: 5px;"></i>
 						</el-tooltip>
 					</div>
-					<div style="text-align: right; margin-top: -24px; margin-right: 10px;">
-						<el-tooltip class="item" effect="dark" content="Set specific date" placement="top">
-							<i @click="vote.at_date_open = !vote.at_date_open" class="el-icon-date" style="margin-left: 5px;"></i>
+					<div class="vote-choice">
+						<el-tooltip class="action" effect="dark" content="Add your choice" placement="top">
+							<i @click="votes.push({choice: 0, at_date: null})" class="el-icon-plus"></i>
 						</el-tooltip>
+
+						<a class="action" v-on:click="set" style="width: 90px;">Save <i class="el-icon-circle-check"></i></a>
+
+						<p class="own-contribution-ratio">Your contribution to the final result is {{ Math.round(this.first_node.own_contribution ? this.first_node.own_contribution.turnout_ratio * 100 : 0) }}%.</p>
 					</div>
-
-					<el-date-picker v-if="vote.at_date_open" v-model="vote.at_date" type="date" placeholder="Pick a day" class="datepicker" style="margin-top: 15px;"></el-date-picker>
 				</div>
-				<div v-if="votes.length == 0">
-					<p>You have no vote</p>
-				</div>
-
-				<a @click="add_vote" style="display: block;"><i class="el-icon-document"></i> New vote</a>
-
-				<a class="vote-action" v-on:click="set"><i class="el-icon-circle-check" style="margin-right: 6px;"></i> Save</a>
-				<div class="subtext">{{ Math.round(this.first_node.own_contribution ? this.first_node.own_contribution.turnout_ratio * 100 : 0) }}% turnout</div>
 			</div>
 
 			<transition name="fade">
 				<div class="vote-container" v-bind:class="{open: true}">
-					<div class="votes" v-if="node.contributions && node.contributions.length > 0">
+					<div class="votes" v-if="node.results && node.results.contributions.length > 0">
 						<p class="ui-title">{{ Math.round(node.results.turnout_ratio * 100) }}% turnout</p>
-						<div class="contribution" v-for="contribution in node.contributions" :key="contribution.username">
+						<div class="contribution" v-for="contribution in node.results.contributions" :key="contribution.username">
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 							</div>
-							<div class="choice" v-html="contribution.results.embed" style="height: 40px;"></div>
+							<div class="choice" v-html="contribution.embed" style="height: 40px;"></div>
 							<div class="username"><router-link :to="'/identities/' + contribution.identity_username">{{ contribution.identity_username }}</router-link></div>
 							<div class="date">{{ moment(contribution.datetime).fromNow() }}</div>
 						</div>
@@ -81,13 +73,14 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
+import NodeInput from './node-input.vue'
 let utils = require('utils.js')
 
 Vue.use(ElementUI, {locale})
 
 export default {
 	props: ['node', 'votableNodes', 'resultsKey', 'referenceKey', 'title', 'choiceType'],
-	components: {},
+	components: {NodeInput},
 	data: function() {
 		let self = this
 		let nodes = self.votableNodes || [self.node]
@@ -98,8 +91,7 @@ export default {
 			first_node: first_node,
 			votes: [{
 				choice: (first_node.own_contribution ? first_node.own_contribution.choice : 0.0) * 100,
-				at_date: Date.now(),
-				at_date_open: false
+				at_date: null
 			}],
 			mean: 0.5,
 			moment: require('moment'),
@@ -118,37 +110,7 @@ export default {
 			},
 			number_format: utils.formatNumber,
 			get_color: utils.getColor,
-			add_vote: function(event) {
-				self.votes.push({choice: 0, at_date: Date.now(), at_date_open: false})
-			},
-			units: [{
-				value_type: 'probability',
-				label: 'Spectrum',
-				children: [{
-					value: 'true',
-					label: 'False - True'
-				}, {
-					value: 'fact',
-					label: 'Lie - Fact'
-				}, {
-					value: 'good',
-					label: 'Bad - Good'
-				}]
-			}, {
-				value_type: 'quantity',
-				label: 'Quantity',
-				children: [{
-					value: 'length',
-					label: 'Length (m)'
-				}, {
-					value: 'temperature',
-					label: 'Temperature (°C)'
-				}, {
-					value: 'usd',
-					label: 'US Dollars (USD)'
-				}]
-			}],
-			unit_value: 'true'
+			
 		}
 	}
 }
@@ -219,6 +181,48 @@ export default {
 			color: black;
 		}
 	}
+
+	.vote-choices {
+		width: 700px;
+    	margin: 0 auto;
+		text-align: left;
+
+		.own-contribution-ratio {
+			margin-top: 20px;
+			font-size: 18px;
+			display: inline;
+		}
+
+		.vote-choice {
+			margin-top: 30px;
+
+			.range {
+				width: 250px;
+				display: inline-block;
+				vertical-align: middle;
+				margin-right: 30px;
+			}
+
+			.number {
+				display: inline-block;
+				vertical-align: middle;
+				width: 130px;
+			}
+
+			.action {
+				display: inline-block;
+				font-size: 20px;
+				vertical-align: baseline;
+				margin-right: 40px;
+
+				i {
+					margin-left: 10px;
+					vertical-align: baseline;
+				}
+			}
+		}
+	}
+	
 
 	.choose-units {
 		margin-top: -2px;

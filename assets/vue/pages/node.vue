@@ -2,10 +2,10 @@
 	<div>
 		<div class="before" v-if="node">
 			<node-input is-inverse="true" v-bind:id="node.key" style="margin-bottom: 40px; text-align: center;"
-				:enable-search="node.title == '' || node.title.startsWith('Results for ')"
-				:enable-group="!node.title.startsWith('Results for ')"
-				:enable-others="(node.title === '' || node.choice_type !== null) && !node.title.startsWith('Results for ')"></node-input>
-			<liquio-list v-if="node.title.length > 0" v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
+				:enable-search="node.path[0] === '' || node.path[0].toLowerCase() === 'search'"
+				:enable-group="node.path[0].toLowerCase() !== 'search'"
+				:enable-others="(node.path[0] === '' || node.choice_type !== null) && node.path[0].toLowerCase() !== 'search'"></node-input>
+			<liquio-list v-if="node.path[0] !== ''" v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 		</div>
 
 		<div v-if="node" class="main">
@@ -17,9 +17,9 @@
 		</div>
 
 		<div class="after" v-if="node">
-			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title == '' || node.title.startsWith('Results for') ? null : node" style="text-align: left;"></liquio-list>
+			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.path[0] === '' || node.path[0].toLowerCase() === 'search' ? null : node" style="text-align: left;"></liquio-list>
 			<p class="subtitle" v-if="node.references.length == 0">There is nothing here.</p>
-			<node-input v-if="!(node.title == '' || node.title.startsWith('Results for '))" v-bind:id="node.key" enable-search="false" v-bind:enable-group="node.choice_type == null" style="margin-top: 30px; text-align: center;"></node-input>
+			<node-input v-if="node.path[0] !== '' && node.path[0].toLowerCase() !== 'search'" v-bind:id="node.key" enable-search="false" v-bind:enable-group="node.choice_type == null" style="margin-top: 30px; text-align: center;"></node-input>
 		</div>
 
 		<div class="footer">
@@ -55,7 +55,7 @@ export default {
 			if(this.$store.getters.searchQuery) {
 				return 'Results for ' + this.$store.getters.searchQuery
 			} else {
-				return this.$store.getters.nodeKey.replace(/\_(.*)/g, '').replace(/-/g, ' ')
+				return this.$store.getters.nodeKey.join('/').replace(/\_(.*)/g, '').replace(/-/g, ' ')
 			}
 		}
 	},

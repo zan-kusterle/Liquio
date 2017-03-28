@@ -25,14 +25,12 @@ defmodule Liquio.GetData do
 		inverse_delegations
 	end
 
-	def get_votes(key, reference_key, datetime) do
-		key = String.downcase(key)
-		reference_key = reference_key && String.downcase(reference_key)
+	def get_votes(group_key, datetime) do
 		query = "SELECT DISTINCT ON (v.identity_id) *
 			FROM votes AS v
-			WHERE lower(v.key) = $1 AND lower(v.reference_key) #{if reference_key do "= $2" else "IS NULL" end} AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			WHERE lower(v.group_key) = $1 AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
-		res = Ecto.Adapters.SQL.query!(Repo, query , if reference_key do [key, reference_key] else [key] end)
+		res = Ecto.Adapters.SQL.query!(Repo, query , [String.downcase(group_key)])
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		votes = res.rows
 		|> Enum.map(fn(row) ->

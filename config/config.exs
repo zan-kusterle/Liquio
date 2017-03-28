@@ -49,18 +49,3 @@ config :guardian, Guardian,
 	verify_issuer: true, # optional
 	secret_key: "nCtmk9gVyGfAgab9KMCkQdjXdgGUwTB2SO5piuvoqDoK4t0MEmbpHHzHsiw5GIYR",
 	serializer: Liquio.GuardianSerializer
-
-config :liquio, :units, %{
-	"probability" => {:probability, "true", "false"},
-	"true" => {:probability, "true", "false"},
-	"fact" => {:probability, "fact", "lie"},
-	"good" => {:probability, "good", "bad"},
-	"approve" => {:probability, "approve", "disapprove"},
-	"reliable" => {:probability, "reliable", "unreliable"},
-	"length" => {:quantity, "meters", "m"},
-	"area" => {:quantity, "square meters", "m³"},
-	"volume" => {:quantity, "cube meters", "m³"},
-	"temperature" => {:quantity, "celsius", "°C"},
-	"usd" => {:quantity, "USD", "US dollars"},
-	"eur" => {:quantity, "EUR", "euros"}
-}

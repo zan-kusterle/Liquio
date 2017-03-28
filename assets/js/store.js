@@ -18,23 +18,23 @@ export default new Vuex.Store({
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => {
 				return {key, referenceKey}
 		})),
-		nodeKey: (state) => state.route.params.key ||  '',
+		nodeKey: (state) => state.route.params.key.split('_') ||  [''],
 		searchQuery: (state) => state.route.params.query,
 		searchResults: (state, getters) => (query) => {
-			let node = getters.getNodeByKey('search_' + query)
+			let node = getters.getNodeByKey(['Search', query])
 			return node
 		},
-		getPureNodeByKey: (state, getters) => (key) => {
+		getPureNodeByKey: (state, getters) => (path) => {
 			let node = _.find(state.nodes, (node) => {
-				return node.full_key == utils.normalizeKey(key)
+				return node.group_key == utils.normalizeKey(path || path.join('_'))
 			})
 			return node ? JSON.parse(JSON.stringify(node)) : null
 		},
-		getNodeByKey: (state, getters) => (key) => {
-			let node = getters.getPureNodeByKey(key)
+		getNodeByKey: (state, getters) => (path) => {
+			let node = getters.getPureNodeByKey(path)
 			if(node) {
 				node.references = _.filter(_.map(node.references, (n) => {
-					let referenceNode = getters.getPureNodeByKey(n.key)
+					let referenceNode = getters.getPureNodeByKey(n.path)
 					if(referenceNode) {
 						referenceNode.reference_result = n.reference_result
 					}
@@ -42,7 +42,7 @@ export default new Vuex.Store({
 				}), (x) => x)
 
 				node.inverse_references = _.filter(_.map(node.inverse_references, (n) => {
-					let referenceNode = getters.getPureNodeByKey(n.key)
+					let referenceNode = getters.getPureNodeByKey(n.path)
 					if(referenceNode) {
 						referenceNode.reference_result = n.reference_result
 					}
@@ -51,7 +51,7 @@ export default new Vuex.Store({
 			}
 			return node
 		},
-		getNodesByKeys: (state, getters) => (keys) => _.filter(_.map(keys, (key) => getters.getNodeByKey(key)), (n) => n)
+		getNodesByKeys: (state, getters) => (paths) => _.filter(_.map(paths, (path) => getters.getNodeByKey(path)), (n) => n)
 	},
 	mutations: {
 		login (state, user) {
@@ -71,16 +71,16 @@ export default new Vuex.Store({
 				state.user = identity
 		},
 		setNode (state, node) {
-			let key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
-			let existingIndex = _.findIndex(state.nodes, (n) => n.full_key == key)
+			let key = utils.normalizeKey(utils.getCompositeKey(node.path, node.reference_path))
+			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == key)
 			let existing = existingIndex >= 0 ? state.nodes[existingIndex] : null
 			
-			node.full_key = key
+			node.group_key = key
 			if(node.references == null) {
 				node.references = existing ? existing.references : []
 			} else {
 				node.references = _.map(node.references, (n) => { return {
-					key: n.key,
+					path: n.path,
 					reference_result: n.reference_result
 				}})
 			}
@@ -89,7 +89,7 @@ export default new Vuex.Store({
 				node.inverse_references = existing ? existing.inverse_references : []
 			} else {
 				node.inverse_references = _.map(node.inverse_references, (n) => { return {
-					key: n.key,
+					path: n.path,
 					reference_result: n.reference_result
 				}})
 			}
@@ -126,7 +126,7 @@ export default new Vuex.Store({
 		search({commit, state}, query) {
 			return new Promise((resolve, reject) => {
 				Api.search(query, (node) => {
-					node.key = 'search_' + query
+					node.path = ['Search', query]
 					_.each(node.references, (reference) => commit('setNode', reference))
 					commit('setNode', node)
 					resolve(node)
@@ -143,7 +143,7 @@ export default new Vuex.Store({
 		},
 		setVote({commit}, {node, choice}) {
 			return new Promise((resolve, reject) => {
-				Api.setVote(node.key, node.reference_key, choice, function(node) {
+				Api.setVote(node.path, node.reference_path, choice, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})
@@ -151,7 +151,7 @@ export default new Vuex.Store({
 		},
 		unsetVote({commit}, node) {
 			return new Promise((resolve, reject) => {
-				Api.unsetVote(node.key, node.reference_key, function(node) {
+				Api.unsetVote(node.path, node.reference_path, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})

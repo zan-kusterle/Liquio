@@ -5,28 +5,24 @@ defmodule Liquio.Vote do
 	schema "votes" do
 		belongs_to :identity, Liquio.Identity
 
-		field :title, :string
-		field :choice_type, :string
-		field :key, :string
-
-		field :reference_title, :string
-		field :reference_choice_type, :string
-		field :reference_key, :string
+		field :path, {:array, :string}
+		field :reference_path, {:array, :string}
 		field :filter_key, :string
-
 		field :group_key, :string
+		field :search_text, :string
 
+		field :choice_type, :string
+		field :choice, :float
+		
 		field :at_date, Timex.Ecto.Date
 		timestamps(inserted_at: :datetime, updated_at: false, usec: true)
 		field :is_last, :boolean
-
-		field :choice, :float
 	end
 
 	def search(query, search_term) do
 		from(v in query,
-		where: fragment("? % ?", v.title, ^search_term),
-		order_by: fragment("similarity(?, ?) DESC", v.title, ^search_term))
+		where: fragment("? % ?", v.search_text, ^search_term),
+		order_by: fragment("similarity(?, ?) DESC", v.search_text, ^search_term))
 	end
 
 	def current_by(node, identity) do
@@ -63,7 +59,7 @@ defmodule Liquio.Vote do
 
 	defp get_last(node, identity) do
 		query = from(v in Vote, where:
-			v.group_key == ^node.key and
+			v.group_key == ^node.group_key and
 			v.identity_id == ^identity.id and
 			v.is_last
 		)
@@ -72,18 +68,18 @@ defmodule Liquio.Vote do
 
 	defp insert(node, identity, choice) do
 		Repo.insert!(%Vote{
-			:title => node.title,
-			:choice_type => to_string(node.choice_type),
-			:key => node.key,
-			:reference_title => node.reference_title,
-			:reference_choice_type => node.reference_choice_type,
-			:filter_key => "main",
-			:reference_key => node.reference_key,
-			:group_key => node.key,
 			:identity_id => identity.id,
+
+			:path => [node.title],
+			:reference_path => [node.reference_title],
+			:filter_key => "main",
+			:group_key => node.group_key,
+
+			:choice_type => to_string(node.choice_type),
+			:choice => choice,
+			
 			:is_last => true,
-			:at_date => Timex.today(),
-			:choice => choice
+			:at_date => Timex.today()
 		})
 	end
 end

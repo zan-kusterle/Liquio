@@ -46,7 +46,7 @@ defmodule Liquio.NodeRepo do
 	end
 	def load(node, calculation_opts, user) do
 		key = {
-			{"nodes", {node.key, node.reference_key}, calculation_opts.datetime},
+			{"nodes", node.group_key, calculation_opts.datetime},
 			{
 				calculation_opts.trust_metric_url,
 				calculation_opts.minimum_voting_power,
@@ -65,10 +65,10 @@ defmodule Liquio.NodeRepo do
 	end
 
 	def invalidate_cache(node) do
-		ResultsCache.unset({"nodes", {node.key, node.reference_key}})
-		if node.reference_key != nil do
-			ResultsCache.unset({"nodes", {node.key, nil}})
-			ResultsCache.unset({"nodes", {node.reference_key, nil}})
+		ResultsCache.unset({"nodes", node.group_key})
+		if node.reference_path != nil do
+			ResultsCache.unset({"nodes", Node.get_group_key(node.path, nil)})
+			ResultsCache.unset({"nodes", Node.get_group_key(node.reference_path, nil)})
 		end
 	end
 end

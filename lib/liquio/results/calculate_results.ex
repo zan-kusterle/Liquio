@@ -3,8 +3,8 @@ defmodule Liquio.CalculateResults do
 	alias Liquio.{Identity, Repo, GetData, Results, CalculateMemoServer}
 
 	def calculate(node, calculation_opts) do
-		votes = GetData.get_votes(node.key, node.reference_key, calculation_opts.datetime)
-		votes = if node.reference_key == nil do votes |> Enum.filter(fn({_k, v}) -> v.reference_key == nil end) |> Enum.into(%{}) else votes end
+		votes = GetData.get_votes(node.group_key, calculation_opts.datetime)
+		votes = if node.reference_path == nil do votes |> Enum.filter(fn({_k, v}) -> v.reference_path == nil end) |> Enum.into(%{}) else votes end
 
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))

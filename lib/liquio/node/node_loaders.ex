@@ -5,7 +5,6 @@ defmodule Liquio.NodeLoaders do
 	def load(node, calculation_opts, user) do
 		node = node
 		|> Map.put(:calculation_opts, calculation_opts)
-		|> load_unit()
 		|> load_references(calculation_opts)
 		|> load_inverse_references(calculation_opts)
 		|> load_results(calculation_opts)
@@ -54,14 +53,6 @@ defmodule Liquio.NodeLoaders do
 		|> Map.put(:own_contribution, contribution)
 	end
 
-	defp load_unit(node) do
-		{unit_type, unit_a, unit_b} = Node.choice_type_to_unit(node.choice_type)
-		node
-		|> Map.put(:unit_type, unit_type)
-		|> Map.put(:unit_a, unit_a)
-		|> Map.put(:unit_b, unit_b)
-	end
-
 	defp load_results(node, calculation_opts) do
 		node = if not Map.has_key?(node, :topics) do
 			node |> load_inverse_references(calculation_opts, 1)
@@ -89,7 +80,7 @@ defmodule Liquio.NodeLoaders do
 	defp load_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
-			reference_nodes = from(v in Vote, where: v.group_key == ^node.key and not is_nil(v.reference_key) and v.is_last == true and not is_nil(v.choice))
+			reference_nodes = from(v in Vote, where: v.group_key == ^node.group_key and not is_nil(v.reference_path) and v.is_last == true and not is_nil(v.choice))
 			|> Repo.all
 			|> Enum.group_by(& &1.reference_key)
 			|> prepare_reference_nodes(calculation_opts)
@@ -111,7 +102,7 @@ defmodule Liquio.NodeLoaders do
 	defp load_inverse_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
-			inverse_reference_nodes = from(v in Vote, where: v.reference_title == ^String.downcase(node.title) and v.is_last == true and not is_nil(v.choice))
+			inverse_reference_nodes = from(v in Vote, where: v.reference_path == ^node.path and v.is_last == true and not is_nil(v.choice))
 			|> Repo.all
 			|> Enum.group_by(& &1.key)
 			|> prepare_reference_nodes(calculation_opts)

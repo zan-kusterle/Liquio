@@ -2,16 +2,13 @@ defmodule Liquio.Results do
 	alias Liquio.Node
 
 	def from_contribution(contribution) do
-		{unit_type, _, _} = Node.choice_type_to_unit(contribution.choice_type)
-
 		%{
 			:total => 0.0,
 			:turnout_ratio => 0.0,
 			:count => 1,
 			:mean => contribution.choice,
 			:choice_type => contribution.choice_type,
-			:contributions => [contribution],
-			:unit_type => unit_type
+			:contributions => [contribution]
 		} |> load()
 	end
 
@@ -19,16 +16,24 @@ defmodule Liquio.Results do
 		choice_type = if Enum.empty?(contributions) do nil else Enum.at(contributions, 0).choice_type end
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		trust_metric_size = MapSet.size(trust_metric_ids)
-		{unit_type, _, _} = Node.choice_type_to_unit(choice_type)
+
+		time_weighted_contributions =
+			if vote_weight_halving_days == nil do
+				contributions
+			else
+				contributions |> Enum.map(fn(contribution) ->
+					Map.put(contribution, :voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
+				end)
+			end
 
 		%{
 			:total => total_power,
 			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(contributions),
-			:mean => aggregate(contributions, datetime, vote_weight_halving_days, choice_type, trust_metric_size),
+			:mean => mean(time_weighted_contributions),
+			:median => median(time_weighted_contributions),
 			:choice_type => choice_type,
-			:contributions => contributions,
-			:unit_type => unit_type
+			:contributions => contributions
 		} |> load()
 	end
 
@@ -45,7 +50,7 @@ defmodule Liquio.Results do
 	end
 
 	defp results_color(results) do
-		if results.unit_type == :probability and results.count > 0 do
+		if results.choice_type == :probability and results.count > 0 do
 			cond do
 				results.mean == nil -> "#ddd"
 				results.mean < 0.25 -> "rgb(255, 164, 164)"
@@ -69,7 +74,7 @@ defmodule Liquio.Results do
 		if results.mean == nil do
 			"?"
 		else
-			if results.unit_type == :probability do
+			if results.choice_type == :probability do
 				"#{round(results.mean * 100)}%"
 			else
 				"#{round(results.mean)}"				
@@ -166,26 +171,6 @@ defmodule Liquio.Results do
 			:turnout_ratio => 0,
 			:count => 0
 		})
-	end
-
-	defp aggregate(contributions_for_key, datetime, vote_weight_halving_days, choice_type, trust_metric_size) do
-		adjusted_contributions =
-			if vote_weight_halving_days == nil do
-				contributions_for_key
-			else
-				contributions_for_key |> Enum.map(fn(contribution) ->
-					Map.put(contribution, :voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
-				end)
-			end
-		
-		mean =
-			if choice_type == "probability" do
-				mean(adjusted_contributions)
-			else
-				median(adjusted_contributions)
-			end
-
-		mean
 	end
 
 	defp mean(contributions) do

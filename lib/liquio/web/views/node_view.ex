@@ -11,16 +11,10 @@ defmodule Liquio.Web.NodeView do
 
 	def render("node.json", %{node: node}) do
 		%{
-			:title => node.title,
 			:choice_type => node.choice_type,
-			:key => node.key,
-			:unit_type => Map.get(node, :unit_type),
-			:unit_a => Map.get(node, :unit_a),
-			:unit_b => Map.get(node, :unit_b),
-			:reference_title => node.reference_title,
-			:reference_choice_type => node.reference_choice_type,
-			:reference_key => node.reference_key,
-			:results => if node.choice_type != nil or node.reference_key != nil and Map.has_key?(node, :results) do
+			:path => node.path,
+			:reference_path => node.reference_path,
+			:results => if Map.has_key?(node, :results) and (node.choice_type != nil or node.reference_path != nil)do
 				node.results
 				|> Map.put(:contributions, Enum.map(node.results.contributions, & render("vote.json", %{vote: &1})))
 			else

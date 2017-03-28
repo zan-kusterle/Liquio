@@ -1,16 +1,17 @@
 defmodule Liquio.Node do
 	alias Liquio.Node
 	
-	@enforce_keys [:choice_type, :key, :reference_key]
-	defstruct [:title, :choice_type, :key, :reference_title, :reference_choice_type, :reference_key]
+	@enforce_keys [:path, :reference_path, :filter_key, :group_key, :choice_type]
+	defstruct [:path, :reference_path, :filter_key, :group_key, :choice_type]
 
 	def decode(key) do
-		{title, choice_type} = decode_key(key)
+		{path, choice_type} = decode_key(key)
 		%Node{
-			title: title,
-			choice_type: choice_type,
-			key: get_key(title, choice_type),
-			reference_key: nil
+			path: path,
+			reference_path: nil,
+			filter_key: "main",
+			group_key: get_group_key(path, nil, "main"),
+			choice_type: choice_type
 		}
 	end
 
@@ -41,36 +42,32 @@ defmodule Liquio.Node do
 		clean_key = key |> String.replace("___", "") |> String.trim(" ")
 		path = String.split(clean_key, "_")
 		choice_type = if Enum.count(path) > 1 do
-			if String.length(Enum.at(path, 1)) == 0 do nil else Enum.at(path, 1) end
+			if String.length(List.last(path)) == 0 do nil else List.last(path) end
 		else
 			nil
 		end
-		choice_note = if Enum.count(path) > 2 do Enum.at(path, 2) else nil end
+		clean_path = if choice_type == nil do path else Enum.slice(path, 0..Enum.count(path) - 1) end
 
-		{title, choice_type} = if choice_type == nil do
-			{clean_key, nil}
-		else
-			clean_title = String.slice(clean_key, 0, String.length(clean_key) - String.length(to_string(choice_type))) |> String.trim("_") |> String.trim("-")
-			{clean_title, choice_type |> String.downcase}
+		clean_choice_type = cond do
+			choice_type == nil -> nil
+			String.downcase(choice_type) == "probability" -> :probability
+			String.downcase(choice_type) == "quantity" -> :quantity
+			true -> nil
 		end
 
-		title = if String.starts_with?(clean_key, "http://") or String.starts_with?(clean_key, "https://") do
-			title
-		else
-			title |> String.replace("-", " ")
-		end
-
-		{title, choice_type}
+		{clean_path, clean_choice_type && to_string(clean_choice_type)}
 	end
 	
 	defp get_key(title, choice_type) do
 		"#{title |> String.replace(" ", "-")}_#{choice_type |> to_string |> String.replace("_", "-")}" |> String.trim("-")
 	end
 
-	def choice_type_to_unit(choice_type) do
-		units = Application.get_env(:liquio, :units)
-		unit = if Map.has_key?(units, choice_type) do units[choice_type] else nil end
-		{unit_type, unit_a, unit_b} = if unit do unit else {:probability, to_string(choice_type), nil} end
-		{unit_type, unit_a, unit_b}
+	def get_group_key(path, reference_path) do
+		get_group_key(path, reference_path, "main")
+	end
+	def get_group_key(path, reference_path, filter_key) do
+		[Enum.join(path, "_"), if reference_path do Enum.join(reference_path, "_") else nil end, filter_key]
+		|> Enum.filter(& &1 != nil)
+		|> Enum.join("___")
 	end
 end
