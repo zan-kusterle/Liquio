@@ -1,11 +1,6 @@
 defmodule Liquio.Vote do
 	use Liquio.Web, :model
-
-	alias Liquio.Repo
-	alias Liquio.Node
-	alias Liquio.Vote
-	alias Liquio.VoteData
-	alias Liquio.ResultsCache
+	alias Liquio.{Repo, NodeRepo, Vote}
 
 	schema "votes" do
 		belongs_to :identity, Liquio.Identity
@@ -17,7 +12,7 @@ defmodule Liquio.Vote do
 		field :reference_title, :string
 		field :reference_choice_type, :string
 		field :reference_key, :string
-		field :reference_choice_unit, :string
+		field :filter_key, :string
 
 		field :group_key, :string
 
@@ -44,31 +39,16 @@ defmodule Liquio.Vote do
 	end
 
 	def set(node, identity, choice) do
-		current = current_by(node, identity)
 		remove_current_last(node.key, identity.id)
-		result = Repo.insert(%Vote{
-			:title => node.title,
-			:choice_type => to_string(node.choice_type),
-			:group_key => node.key,
-			:identity_id => identity.id,
-			:is_last => true,
-			:choice => choice
-		})
-		invalidate_results_cache(node)
+		result = insert(node, identity, choice)
+		NodeRepo.invalidate_cache(node)
 		result
 	end
 
 	def delete(node, identity) do
 		remove_current_last(node.key, identity.id)
-		result = Repo.insert!(%Vote{
-			:title => node.title,
-			:choice_type => to_string(node.choice_type),
-			:group_key => node.key,
-			:identity_id => identity.id,
-			:is_last => true,
-			:choice => nil
-		})
-		invalidate_results_cache(node)
+		result = insert(node, identity, nil)
+		NodeRepo.invalidate_cache(node)
 		result
 	end
 
@@ -81,7 +61,7 @@ defmodule Liquio.Vote do
 		|> Repo.update_all([])
 	end
 
-	def get_last(node, identity) do
+	defp get_last(node, identity) do
 		query = from(v in Vote, where:
 			v.group_key == ^node.key and
 			v.identity_id == ^identity.id and
@@ -90,11 +70,20 @@ defmodule Liquio.Vote do
 		Repo.all(query)
 	end
 
-	defp invalidate_results_cache(node) do
-		ResultsCache.unset({"nodes", {node.key, node.reference_key}})
-		if node.reference_key != nil do
-			ResultsCache.unset({"nodes", {node.key, nil}})
-			ResultsCache.unset({"nodes", {node.reference_key, nil}})
-		end
+	defp insert(node, identity, choice) do
+		Repo.insert!(%Vote{
+			:title => node.title,
+			:choice_type => to_string(node.choice_type),
+			:key => node.key,
+			:reference_title => node.reference_title,
+			:reference_choice_type => node.reference_choice_type,
+			:filter_key => "main",
+			:reference_key => node.reference_key,
+			:group_key => node.key,
+			:identity_id => identity.id,
+			:is_last => true,
+			:at_date => Timex.today(),
+			:choice => choice
+		})
 	end
 end

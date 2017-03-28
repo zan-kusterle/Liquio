@@ -5,10 +5,10 @@ defmodule Liquio.CalculateResults do
 	def calculate(node, calculation_opts) do
 		votes = GetData.get_votes(node.key, node.reference_key, calculation_opts.datetime)
 		votes = if node.reference_key == nil do votes |> Enum.filter(fn({_k, v}) -> v.reference_key == nil end) |> Enum.into(%{}) else votes end
+
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
-		|> load_identities()
-		
+				
 		Results.from_contributions(contributions, calculation_opts)
 	end
 
@@ -43,7 +43,7 @@ defmodule Liquio.CalculateResults do
 		contributions = trust_votes |> Enum.map(fn({identity_id, vote}) ->
 			vote
 			|> Map.put(:voting_power, get_power(identity_id, state, uuid, MapSet.new) / 1)
-			|> Map.put(:identity, %Identity{:id => identity_id})
+			|> Map.put(:identity, %{:username => identity_id})
 		end)
 
 		CalculateMemoServer.stop uuid

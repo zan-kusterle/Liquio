@@ -151,7 +151,7 @@ export default new Vuex.Store({
 		},
 		unsetVote({commit}, node) {
 			return new Promise((resolve, reject) => {
-				Api.unsetVote(node.key, node.reference_key && node.reference_key.replace(/\_/g, '-'), function(node) {
+				Api.unsetVote(node.key, node.reference_key, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})

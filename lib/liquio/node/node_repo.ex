@@ -1,5 +1,5 @@
 defmodule Liquio.NodeRepo do
-	alias Liquio.{Node, Identity, Vote, Results, ResultsCache, NodeLoaders, Repo}
+	alias Liquio.{Node, Vote, ResultsCache, NodeLoaders, Repo}
 
 	def all(calculation_opts) do
 		key = {
@@ -61,6 +61,14 @@ defmodule Liquio.NodeRepo do
 			node = NodeLoaders.load(node, calculation_opts, user)
 			ResultsCache.set(key, node)
 			node
+		end
+	end
+
+	def invalidate_cache(node) do
+		ResultsCache.unset({"nodes", {node.key, node.reference_key}})
+		if node.reference_key != nil do
+			ResultsCache.unset({"nodes", {node.key, nil}})
+			ResultsCache.unset({"nodes", {node.reference_key, nil}})
 		end
 	end
 end

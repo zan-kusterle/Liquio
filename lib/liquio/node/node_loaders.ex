@@ -1,6 +1,6 @@
 defmodule Liquio.NodeLoaders do
 	import Ecto.Query, only: [from: 2]
-	alias Liquio.{Repo, Vote, CalculateResults}
+	alias Liquio.{Repo, Node, Vote, CalculateResults, Results}
 
 	def load(node, calculation_opts, user) do
 		node = node
@@ -29,7 +29,7 @@ defmodule Liquio.NodeLoaders do
 
 		contribution = if vote do
 			contribution = if Map.has_key?(node, :results) and user != nil do
-				Enum.find(node.results.contributions, & &1.identity.id == user.id)
+				Enum.find(node.results.contributions, & &1.identity.username == user.username)
 			else
 				nil
 			end
@@ -55,10 +55,7 @@ defmodule Liquio.NodeLoaders do
 	end
 
 	defp load_unit(node) do
-		units = Application.get_env(:liquio, :units)
-		unit = if Map.has_key?(units, node.choice_type) do units[node.choice_type] else nil end
-		{unit_type, unit_a, unit_b} = if unit do unit else {:probability, to_string(node.choice_type), nil} end
-
+		{unit_type, unit_a, unit_b} = Node.choice_type_to_unit(node.choice_type)
 		node
 		|> Map.put(:unit_type, unit_type)
 		|> Map.put(:unit_a, unit_a)
@@ -77,7 +74,7 @@ defmodule Liquio.NodeLoaders do
 		node = if not Enum.empty?(results.contributions) do
 			{best_title, _count} = results.contributions
 			|> Enum.map(& &1.title)
-			|> Enum.group_by(& &1.title)
+			|> Enum.group_by(& &1)
 			|> Enum.map(fn({k, v}) -> {k, Enum.count(v)} end)
 			|> Enum.max_by(fn({title, count}) -> count end)
 
@@ -121,7 +118,7 @@ defmodule Liquio.NodeLoaders do
 
 			inverse_reference_nodes = if depth > 1 do
 				inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
-					inverse_reference_node |> load_inverse_references(calculation_opts, depth: depth - 1)
+					inverse_reference_node |> load_inverse_references(calculation_opts, depth: depth - 1) |> load_references(calculation_opts, 1)
 				end)
 			else
 				inverse_reference_nodes
@@ -143,16 +140,19 @@ defmodule Liquio.NodeLoaders do
 	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do
 		keys_with_votes
 		|> Enum.map(fn({key, votes}) ->
-			{key, CalculateResults.calculate_for_votes(votes, calculation_opts)}
+			results = votes
+			|> Enum.filter(& &1.filter_key == "relevance")
+			|> CalculateResults.calculate_for_votes(calculation_opts)
+			{key, results}
 		end)
 		|> Enum.filter(fn({_key, result}) ->
-			Map.has_key?(result.by_keys, "relevance") and result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
+			result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
 		end)
 		|> Enum.map(fn({key, result}) ->
 			Node.decode(key)
 			|> load_results(calculation_opts)
 			|> Map.put(:reference_result, result)
 		end)
-		|> Enum.sort_by(& -&1.reference_result.by_keys["relevance"].mean)
+		|> Enum.sort_by(& -&1.reference_result.mean)
 	end
 end

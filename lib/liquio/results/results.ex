@@ -1,20 +1,17 @@
 defmodule Liquio.Results do
+	alias Liquio.Node
+
 	def from_contribution(contribution) do
+		{unit_type, _, _} = Node.choice_type_to_unit(contribution.choice_type)
+
 		%{
 			:total => 0.0,
 			:turnout_ratio => 0.0,
 			:count => 1,
-			:by_keys => Enum.map(contribution.choice, fn({k, v}) ->
-				{k, %{
-					:mean => v,
-					:total => 0.0,
-					:turnout_ratio => 0.0,
-					:count => 1
-				}}
-			end) |> Enum.into(%{}),
+			:mean => contribution.choice,
 			:choice_type => contribution.choice_type,
 			:contributions => [contribution],
-			:unit_type => nil
+			:unit_type => unit_type
 		} |> load()
 	end
 
@@ -22,33 +19,16 @@ defmodule Liquio.Results do
 		choice_type = if Enum.empty?(contributions) do nil else Enum.at(contributions, 0).choice_type end
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		trust_metric_size = MapSet.size(trust_metric_ids)
-
-		by_keys = contributions
-		|> Enum.flat_map(fn(contribution) ->
-			Enum.map(contribution.choice, fn({key, choice}) ->
-				%{
-					:key => key,
-					:choice => choice,
-					:default_value => if is_number(choice) do choice else choice[key] end,
-					:voting_power => contribution.voting_power,
-					:datetime => contribution.datetime
-				}
-			end)
-		end)
-		|> Enum.group_by(& &1.key)
-		|> Enum.map(fn({key, contributions_for_key}) ->
-			{key, aggregate_for_key(contributions_for_key, datetime, vote_weight_halving_days, choice_type, trust_metric_size)}
-		end)
-		|> Enum.into(%{})
+		{unit_type, _, _} = Node.choice_type_to_unit(choice_type)
 
 		%{
 			:total => total_power,
 			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(contributions),
-			:by_keys => by_keys,
+			:mean => aggregate(contributions, datetime, vote_weight_halving_days, choice_type, trust_metric_size),
 			:choice_type => choice_type,
 			:contributions => contributions,
-			:unit_type => nil
+			:unit_type => unit_type
 		} |> load()
 	end
 
@@ -59,18 +39,17 @@ defmodule Liquio.Results do
 		results
 		|> Map.put(:text, text)
 		|> Map.put(:color, color)
-		|> Map.put(:embed, "<div class\"area\" style=\"background-color: #{color}\"><p>#{text}</p></div>")
+		|> Map.put(:embed, "<div class=\"area\" style=\"background-color: #{color}\"><div class=\"bubble\"><p>#{text}</p></div></div>")
 		|> Map.put(:by_time, inline_results_by_time(results) |> minify_html)
 		|> Map.put(:distribution, inline_results_distribution(results) |> minify_html)
 	end
 
 	defp results_color(results) do
-		if results.unit_type == :probability do
-			score = if Map.has_key?(results.by_keys, :main) do results.by_keys[:main].mean else nil end
+		if results.unit_type == :probability and results.count > 0 do
 			cond do
-				score == nil -> "#ddd"
-				score < 0.25 -> "rgb(255, 164, 164)"
-				score < 0.75 -> "rgb(249, 226, 110)"
+				results.mean == nil -> "#ddd"
+				results.mean < 0.25 -> "rgb(255, 164, 164)"
+				results.mean < 0.75 -> "rgb(249, 226, 110)"
 				true -> "rgb(140, 232, 140)"
 			end
 		else
@@ -83,33 +62,23 @@ defmodule Liquio.Results do
 		|> String.replace("\t", "")
 		|> String.replace("\n", "")
 		|> String.replace("\r", "\n")
-		|> String.replace("<!DOCTYPE html>", "<!DOCTYPE html>\n")
 		|> String.replace("\"", "'")
 	end
 
-	defp inline_results_value(results) do
-		value = if results != nil and Map.has_key?(results.by_keys, :main) do results.by_keys[:main].mean else nil end
-		
-		if value == nil do
+	defp inline_results_value(results) do		
+		if results.mean == nil do
 			"?"
 		else
 			if results.unit_type == :probability do
-				"#{round(value * 100)}%"
+				"#{round(results.mean * 100)}%"
 			else
-				"#{round(value)}"				
+				"#{round(results.mean)}"				
 			end
 		end
 	end
 
 	defp inline_results_by_time(results) do
-		results_with_datetime = results.by_keys
-		|> Enum.map(fn({time_key, time_results}) ->
-			case Integer.parse(time_key) do
-				{year, ""} -> Map.put(time_results, :datetime, Timex.to_date({year, 1, 1}))
-				:error -> nil
-			end
-		end)
-		|> Enum.filter(& &1 != nil)
+		results_with_datetime = []
 
 		points = results_with_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio})
 		if Enum.count(points) >= 2 do
@@ -199,9 +168,7 @@ defmodule Liquio.Results do
 		})
 	end
 
-	defp aggregate_for_key(contributions_for_key, datetime, vote_weight_halving_days, choice_type, trust_metric_size) do
-		key_total_power = Enum.sum(Enum.map(contributions_for_key, & &1.voting_power))
-
+	defp aggregate(contributions_for_key, datetime, vote_weight_halving_days, choice_type, trust_metric_size) do
 		adjusted_contributions =
 			if vote_weight_halving_days == nil do
 				contributions_for_key
@@ -210,6 +177,7 @@ defmodule Liquio.Results do
 					Map.put(contribution, :voting_power, contribution.voting_power * moving_average_weight(contribution, datetime, vote_weight_halving_days))
 				end)
 			end
+		
 		mean =
 			if choice_type == "probability" do
 				mean(adjusted_contributions)
@@ -217,12 +185,7 @@ defmodule Liquio.Results do
 				median(adjusted_contributions)
 			end
 
-		%{
-			:mean => mean,
-			:total => round(key_total_power),
-			:turnout_ratio => if trust_metric_size == 0 do 0 else key_total_power / trust_metric_size end,
-			:count => Enum.count(contributions_for_key)
-		}
+		mean
 	end
 
 	defp mean(contributions) do

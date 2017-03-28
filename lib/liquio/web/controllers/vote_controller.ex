@@ -1,7 +1,6 @@
 defmodule Liquio.Web.VoteController do
 	use Liquio.Web, :controller
 	
-	plug :scrub_params, "choice" when action in [:create]
 	with_params(%{
 		:node => {Plugs.NodeParam, [name: "node_id"]},
 		:user => {Plugs.CurrentUser, [require: true]}
@@ -9,7 +8,7 @@ defmodule Liquio.Web.VoteController do
 	def create(conn, %{:node => node, :user => user, "choice" => choice}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 
-		Vote.set(node, user, choice["main"])
+		Vote.set(node, user, get_choice(choice))
 		if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 			{:info, "Your vote is now live."}
 		else
@@ -36,4 +35,20 @@ defmodule Liquio.Web.VoteController do
 		|> put_resp_header("location", node_path(conn, :show, node.key))
 		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts, user))
 	end)
+
+	defp get_choice(v) do
+		if is_binary(v) do
+			case Float.parse(v) do
+				{x, _} -> x
+				:error -> nil
+			end
+			v
+		else
+			if is_integer(v) do
+				v * 1.0
+			else
+				v
+			end
+		end
+	end
 end

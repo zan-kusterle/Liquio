@@ -12,7 +12,7 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :reference_title, :string, null: true
 			add :reference_choice_type, :string, null: true
 			add :reference_key, :string, null: true
-			add :reference_choice_unit, :string, null: true
+			add :filter_key, :string, null: true
 
 			add :group_key, :string, null: true
 
