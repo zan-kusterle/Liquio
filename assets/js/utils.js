@@ -2,8 +2,8 @@ export function getKey(title, choice_type) {
 	return encodeURIComponent((title + ' ' + choice_type).trim().replace(/ /g, '-'))
 }
 
-export function getCompositeKey(path, referencePath) {
-	return encodeURIComponent(path.join('_')) + (referencePath ? '/references/' + encodeURIComponent(referencePath.join('_')) : '')
+export function getCompositeKey(key, referenceKey) {
+	return encodeURIComponent(key) + (referenceKey ? '/references/' + encodeURIComponent(referenceKey) : '')
 }
 
 export function normalizeKey(key) {

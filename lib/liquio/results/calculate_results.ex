@@ -8,7 +8,8 @@ defmodule Liquio.CalculateResults do
 
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
-				
+		|> Repo.preload([:identity])
+
 		Results.from_contributions(contributions, calculation_opts)
 	end
 
@@ -18,7 +19,7 @@ defmodule Liquio.CalculateResults do
 		end
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
 		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new)
-		|> load_identities()
+		|> Repo.preload([:identity])
 
 		Results.from_contributions(contributions, calculation_opts)
 	end
@@ -43,7 +44,6 @@ defmodule Liquio.CalculateResults do
 		contributions = trust_votes |> Enum.map(fn({identity_id, vote}) ->
 			vote
 			|> Map.put(:voting_power, get_power(identity_id, state, uuid, MapSet.new) / 1)
-			|> Map.put(:identity, %{:username => identity_id})
 		end)
 
 		CalculateMemoServer.stop uuid
@@ -51,22 +51,11 @@ defmodule Liquio.CalculateResults do
 		total_voting_power = contributions |> Enum.map(& &1.voting_power) |> Enum.sum
 		contributions = contributions |> Enum.map(fn(contribution) ->
 			contribution
-			|> Map.put(:turnout_ratio, contribution.voting_power / total_voting_power)
 			|> Map.put(:weight, contribution.voting_power / total_voting_power)
 		end)
 		
 		contributions
 	end
-
-	defp load_identities(contributions) do
-		identity_ids = Enum.map(contributions, & &1.identity.id)
-		identities = from(i in Identity, where: i.id in ^identity_ids)
-		|> Repo.all
-		|> Enum.into(%{}, & {&1.id, &1})
-		contributions |> Enum.map(fn(contribution) ->
-			Map.put(contribution, :identity, identities[contribution.identity.id])
-		end)
-	end 
 
 	defp calculate_total_weights(identity_id, state = {inverse_delegations, _votes, _topics, _trust_identity_ids}, uuid, path) do
 		unless CalculateMemoServer.visited?(uuid, identity_id) do

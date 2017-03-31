@@ -21,7 +21,7 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 
 		create index(:votes, [:identity_id])
 		create index(:votes, [:choice_type])
-		create unique_index(:votes, [:group_key])
+		create index(:votes, [:group_key])
 		create index(:votes, [:datetime])
 		create index(:votes, [:is_last])
 	end

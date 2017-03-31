@@ -35,14 +35,14 @@ defmodule Liquio.Vote do
 	end
 
 	def set(node, identity, choice) do
-		remove_current_last(node.key, identity.id)
+		remove_current_last(node.group_key, identity.id)
 		result = insert(node, identity, choice)
 		NodeRepo.invalidate_cache(node)
 		result
 	end
 
 	def delete(node, identity) do
-		remove_current_last(node.key, identity.id)
+		remove_current_last(node.group_key, identity.id)
 		result = insert(node, identity, nil)
 		NodeRepo.invalidate_cache(node)
 		result
@@ -70,10 +70,11 @@ defmodule Liquio.Vote do
 		Repo.insert!(%Vote{
 			:identity_id => identity.id,
 
-			:path => [node.title],
-			:reference_path => [node.reference_title],
+			:path => node.path,
+			:reference_path => node.reference_path,
 			:filter_key => "main",
 			:group_key => node.group_key,
+			:search_text => Enum.join(node.path, " "),
 
 			:choice_type => to_string(node.choice_type),
 			:choice => choice,

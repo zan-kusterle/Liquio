@@ -70,7 +70,7 @@ defmodule Liquio.Identity do
 		identity
 		|> preload_trusts()
 		|> preload_delegations()
-		|> preload_votes()
+		#|> preload_votes()
 	end
 
 	def preload_trusts(identity) do
@@ -102,7 +102,7 @@ defmodule Liquio.Identity do
 		|> Repo.preload([:identity])
 
 		nodes = votes
-		|> Enum.group_by(& &1.key)
+		|> Enum.group_by(& &1.group_key)
 		|> Enum.map(fn({key, votes_for_key}) ->
 			{direct_votes, reference_votes} = Enum.split_with(votes_for_key, & &1.reference_key == nil)
 			references = Enum.map(reference_votes, fn(reference_vote) ->

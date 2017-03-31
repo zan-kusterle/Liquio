@@ -2,7 +2,7 @@
 <div>
 	<div v-if="node">
 		<h1 class="title" style="vertical-align: middle;">{{ title || node.title || 'Everything' }}</h1>
-		<a v-if="!title && node.title && node.path[0].startsWith('https://')" :href="node.key" target="_blank" class="title" style="vertical-align: middle;">View content</a>
+		<a v-if="!title && node.title.startsWith('https://')" :href="node.key" target="_blank" class="title" style="vertical-align: middle;">View content</a>
 
 		<div class="score-container">
 			<div>
@@ -25,7 +25,7 @@
 							<span class="number-value">{{ Math.round(vote.choice) }}</span><span class="percent">%</span>
 						</div>
 
-						<div class="range" v-if="first_node.unit_type == 'probability'">
+						<div class="range" v-if="first_node.choice_type == 'probability'">
 							<el-slider v-model="vote.choice" />
 						</div>
 						<div class="number" v-else>
@@ -44,7 +44,7 @@
 
 						<a class="action" v-on:click="set" style="width: 90px;">Save <i class="el-icon-circle-check"></i></a>
 
-						<p class="own-contribution-ratio">Your contribution to the final result is {{ Math.round(this.first_node.own_contribution ? this.first_node.own_contribution.turnout_ratio * 100 : 0) }}%.</p>
+						<p class="own-contribution-ratio">Your contribution to the final result is {{ Math.round(this.first_node.own_contribution ? this.first_node.own_contribution.weight * 100 : 0) }}%.</p>
 					</div>
 				</div>
 			</div>

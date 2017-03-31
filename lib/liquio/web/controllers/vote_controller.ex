@@ -18,7 +18,7 @@ defmodule Liquio.Web.VoteController do
 		calculation_opts = Map.put(calculation_opts, :datetime, Timex.now)
 		conn
 		|> put_status(:created)
-		|> put_resp_header("location", node_path(conn, :show, node.key))
+		|> put_resp_header("location", node_path(conn, :show, Enum.join(node.path, "_")))
 		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts, user))
 	end)
 

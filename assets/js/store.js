@@ -3,6 +3,13 @@ import Vuex from 'vuex'
 let Api = require('api.js')
 let utils = require('utils.js')
 
+let getTitle = (path) => {
+	let title = path.slice(0, path.length - 2).join('/').replace(/\_(.*)/g, '')
+	if(!(title.startsWith('http://') || title.startsWith('https://')))
+		title = title.replace(/-/g, ' ')
+	return title
+}
+
 export default new Vuex.Store({
 	plugins: [],
 	state: {
@@ -18,15 +25,17 @@ export default new Vuex.Store({
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => {
 				return {key, referenceKey}
 		})),
-		nodeKey: (state) => state.route.params.key.split('_') ||  [''],
+		nodePath: (state) => (state.route.params.key || '').split('_').concat(['probability']),
+		nodeKey: (state, getters) => getters.nodePath.join('_'),
+		nodeTitle: (state, getters) => getTitle(getters.nodePath),
 		searchQuery: (state) => state.route.params.query,
 		searchResults: (state, getters) => (query) => {
 			let node = getters.getNodeByKey(['Search', query])
 			return node
 		},
-		getPureNodeByKey: (state, getters) => (path) => {
+		getPureNodeByKey: (state, getters) => (key) => {
 			let node = _.find(state.nodes, (node) => {
-				return node.group_key == utils.normalizeKey(path || path.join('_'))
+				return node.group_key == utils.normalizeKey(key)
 			})
 			return node ? JSON.parse(JSON.stringify(node)) : null
 		},
@@ -71,7 +80,10 @@ export default new Vuex.Store({
 				state.user = identity
 		},
 		setNode (state, node) {
-			let key = utils.normalizeKey(utils.getCompositeKey(node.path, node.reference_path))
+			node.key = node.path.join('_')
+			node.reference_key = node.reference_path ? node.reference_path.join('_') : null
+			node.title = getTitle(node.path)
+			let key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
 			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == key)
 			let existing = existingIndex >= 0 ? state.nodes[existingIndex] : null
 			
@@ -143,7 +155,7 @@ export default new Vuex.Store({
 		},
 		setVote({commit}, {node, choice}) {
 			return new Promise((resolve, reject) => {
-				Api.setVote(node.path, node.reference_path, choice, function(node) {
+				Api.setVote(node.key, node.reference_key, choice, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})

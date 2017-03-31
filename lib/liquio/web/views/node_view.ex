@@ -40,16 +40,13 @@ defmodule Liquio.Web.NodeView do
 	def render("vote.json", %{vote: vote}) do
 		%{
 			:identity_username => vote.identity.username,
-			:title => vote.title,
 			:choice_type => vote.choice_type,
-			:reference_title => vote.reference_title,
-			:reference_choice_type => vote.reference_choice_type,
 			:filter_key => vote.filter_key,
 			:at_date => Timex.format!(vote.at_date, "{ISO:Extended}"),
 			:datetime => Timex.format!(vote.datetime, "{ISO:Extended}"),
 			:choice => vote.choice,
-			:turnout_ratio => Map.get(vote, :turnout_ratio),
-			:turnout_ratio => Map.get(vote, :voting_power)
+			:voting_power => Map.get(vote, :voting_power),
+			:weight => Map.get(vote, :weight)
 		}
 	end
 end

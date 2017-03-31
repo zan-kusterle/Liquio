@@ -64,7 +64,7 @@ defmodule Liquio.NodeLoaders do
 
 		node = if not Enum.empty?(results.contributions) do
 			{best_title, _count} = results.contributions
-			|> Enum.map(& &1.title)
+			|> Enum.map(& Enum.join(&1.path, "/"))
 			|> Enum.group_by(& &1)
 			|> Enum.map(fn({k, v}) -> {k, Enum.count(v)} end)
 			|> Enum.max_by(fn({title, count}) -> count end)

@@ -1,6 +1,6 @@
 <template>
 <div>
-	<el-row :gutter="50" class="liquio-list" v-if="referencingNode && referencingNode.unit_type == 'probability' && nodes.length > 0">
+	<el-row :gutter="50" class="liquio-list" v-if="referencingNode && referencingNode.choice_type == 'probability' && nodes.length > 0">
 		<el-col :span="12">
 			<h3 class="pole-heading">Negative</h3>
 		

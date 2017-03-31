@@ -7,7 +7,7 @@ defmodule Liquio.Results do
 			:turnout_ratio => 0.0,
 			:count => 1,
 			:mean => contribution.choice,
-			:choice_type => contribution.choice_type,
+			:choice_type => String.to_atom(contribution.choice_type),
 			:contributions => [contribution]
 		} |> load()
 	end
@@ -32,7 +32,7 @@ defmodule Liquio.Results do
 			:count => Enum.count(contributions),
 			:mean => mean(time_weighted_contributions),
 			:median => median(time_weighted_contributions),
-			:choice_type => choice_type,
+			:choice_type => choice_type && String.to_atom(choice_type),
 			:contributions => contributions
 		} |> load()
 	end
@@ -70,7 +70,7 @@ defmodule Liquio.Results do
 		|> String.replace("\"", "'")
 	end
 
-	defp inline_results_value(results) do		
+	defp inline_results_value(results) do
 		if results.mean == nil do
 			"?"
 		else
@@ -176,7 +176,7 @@ defmodule Liquio.Results do
 	defp mean(contributions) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		total_score = Enum.sum(Enum.map(contributions, fn(contribution) ->
-			contribution.default_value * contribution.voting_power
+			contribution.choice * contribution.voting_power
 		end))
 		if total_power > 0 do
 			1.0 * total_score / total_power
