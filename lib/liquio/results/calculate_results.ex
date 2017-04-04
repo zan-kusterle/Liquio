@@ -14,7 +14,7 @@ defmodule Liquio.CalculateResults do
 		Results.from_contributions(contributions, calculation_opts)
 	end
 
-	defp calculate(votes, inverse_delegations, trust_identity_ids, topics) do
+	def calculate(votes, inverse_delegations, trust_identity_ids, topics) do
 		topics = if is_list(topics) do MapSet.new(topics) else topics end
 
 		uuid = String.to_atom(UUID.uuid4(:hex))

@@ -11,4 +11,8 @@ defmodule Liquio.Reference do
 			results: %{:relevance => 0.81}
 		}
 	end
+
+	def group_key(reference) do
+		"#{Enum.join(reference.path, "/")} -> #{Enum.join(reference.reference_path, "/")}" |> String.downcase
+	end
 end

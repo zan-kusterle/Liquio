@@ -12,8 +12,7 @@ defmodule Liquio.Web.NodeView do
 	def render("node.json", %{node: node}) do
 		%{
 			:path => node.path,
-			:reference_path => node.reference_path,
-			:results => if Map.has_key?(node, :results) and (node.unit != nil or node.reference_path != nil)do
+			:results => if Map.has_key?(node, :results) do
 				node.results
 				|> Map.put(:contributions, Enum.map(node.results.contributions, & render("vote.json", %{vote: &1})))
 			else

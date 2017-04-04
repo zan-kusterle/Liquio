@@ -1,5 +1,7 @@
 defmodule Liquio.Web.VoteController do
 	use Liquio.Web, :controller
+
+	action_fallback Liquio.Web.FallbackController
 	
 	with_params(%{
 		:node => {Plugs.NodeParam, [name: "node_id"]},
