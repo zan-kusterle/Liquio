@@ -9,7 +9,9 @@
 					<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 15px;"></i>
 				</el-col>
 				<el-col :span="11">
-					<node-input v-if="referenceNodes.length == 0" v-bind:ids="$store.getters.keys" enable-search="false" style="margin-top: 12px; text-align: center;"></node-input>
+					<el-input v-if="referenceNodes.length == 0" v-model="current_title" @keyup.native.enter="view" placeholder="Title" style="max-width: 800px;">
+						<el-button slot="append" icon="caret-right" @click="view"></el-button>
+					</el-input>
 					<liquio-inline v-else v-for="node in referenceNodes" :key="node.key" v-bind:node="node" results-key="main"></liquio-inline>
 				</el-col>
 			</el-row>

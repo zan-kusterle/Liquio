@@ -8,9 +8,11 @@
 			<div>
 				<div v-if="this.node.choice_type != null || resultsKey == 'relevance'">
 					<div v-html="this.node.results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
-					<div style="width: 100%; display: block;" class="choose-units">
-						<node-input :title="node.title" enable-search="false" enable-group="true" enable-others="true"></node-input>
-					</div>
+				</div>
+				<div style="width: 100%; display: block;" class="choose-units">
+					<el-select v-model="choice_type" v-on:change="pickUnit" size="mini">
+						<el-option v-for="unit in $store.state.units" :key="unit.value" v-bind:value="unit.value" v-bind:label="unit.text"></el-option>
+					</el-select>
 				</div>
 			</div>
 
@@ -22,14 +24,14 @@
 						</el-tooltip>
 
 						<div class="number">
-							<span class="number-value">{{ Math.round(vote.choice) }}</span><span class="percent">%</span>
+							<span>{{ Math.round(vote.choice) }}</span><span class="percent">%</span>
 						</div>
 
 						<div class="range" v-if="first_node.choice_type == 'probability'">
 							<el-slider v-model="vote.choice" />
 						</div>
-						<div class="number" v-else>
-							<input class="number-value" v-model="vote.choice" style="width: 140px; text-align: center;"></input>
+						<div class="numeric" v-else>
+							<el-input v-model="vote.choice"></el-input>
 						</div>
 
 						<el-date-picker v-if="vote.at_date" v-model="vote.at_date" type="date" class="datepicker"></el-date-picker>
@@ -110,7 +112,10 @@ export default {
 			},
 			number_format: utils.formatNumber,
 			get_color: utils.getColor,
-			
+			pickUnit: function(unit) {
+				let path = '/' + utils.getKey(first_node.title, unit)
+				self.$router.push(path)
+			}
 		}
 	}
 }
@@ -183,7 +188,7 @@ export default {
 	}
 
 	.vote-choices {
-		width: 700px;
+		width: 750px;
     	margin: 0 auto;
 		text-align: left;
 
@@ -203,10 +208,11 @@ export default {
 				margin-right: 30px;
 			}
 
-			.number {
+			.numeric {
 				display: inline-block;
-				vertical-align: middle;
+				vertical-align: baseline;
 				width: 130px;
+				margin-right: 30px;
 			}
 
 			.action {
@@ -222,7 +228,6 @@ export default {
 			}
 		}
 	}
-	
 
 	.choose-units {
 		margin-top: -2px;
@@ -238,6 +243,9 @@ export default {
 	.number {
 		font-size: 28px;
 		line-height: 24px;
+		display: inline-block;
+		vertical-align: middle;
+		width: 130px;
 	}
 
 	.subtext {

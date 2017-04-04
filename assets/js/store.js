@@ -4,7 +4,9 @@ let Api = require('api.js')
 let utils = require('utils.js')
 
 let getTitle = (path) => {
-	let title = path.slice(0, path.length - 2).join('/').replace(/\_(.*)/g, '')
+	let choice_type = path[path.length - 1]
+	let trim_count = choice_type == 'meta' ? 1 : 2
+	let title = path.slice(0, path.length - trim_count).join('/').replace(/\_(.*)/g, '')
 	if(!(title.startsWith('http://') || title.startsWith('https://')))
 		title = title.replace(/-/g, ' ')
 	return title
@@ -16,7 +18,18 @@ export default new Vuex.Store({
 		user: null,
 		nodes: [],
 		identities: [],
-		calculation_opts: {}
+		calculation_opts: {},
+		units: [
+			{text: 'True - False', value: 'True', choice_type: 'probability'},
+			{text: 'Count', value: 'Count', choice_type: 'quantity'},
+			{text: 'Fact - Lie', value: 'Fact', choice_type: 'probability'},
+			{text: 'Reliable - Unreliable', value: 'Reliable', choice_type: 'probability'},
+			{text: 'Temperature (°C)', value: 'Temperature', choice_type: 'quantity'},
+			{text: 'US Dollars (USD)', value: 'USD', choice_type: 'quantity'},
+			{text: 'Length (m)', value: 'Length', choice_type: 'quantity'},
+			{text: 'Approve - Disapprove', value: 'Approve', choice_type: 'probability'},
+			{text: 'Agree - Disagree', value: 'Agree', choice_type: 'probability'}
+		]
 	},
 	getters: {
 		keys: (state) => state.route.params.key ? state.route.params.key.split('___') : [],
@@ -25,7 +38,14 @@ export default new Vuex.Store({
 			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => {
 				return {key, referenceKey}
 		})),
-		nodePath: (state) => (state.route.params.key || '').split('_').concat(['probability']),
+		nodePath: (state) => {
+			let path = (state.route.params.key || '').split('_')
+			let unit_value = path[path.length - 1]
+			let unit = _.find(state.units, (x) => x.value == unit_value)
+			let choice_type = unit ? unit.choice_type : 'meta'
+			path.push(choice_type)
+			return path
+		},
 		nodeKey: (state, getters) => getters.nodePath.join('_'),
 		nodeTitle: (state, getters) => getTitle(getters.nodePath),
 		searchQuery: (state) => state.route.params.query,
@@ -83,6 +103,8 @@ export default new Vuex.Store({
 			node.key = node.path.join('_')
 			node.reference_key = node.reference_path ? node.reference_path.join('_') : null
 			node.title = getTitle(node.path)
+			let choice_type = node.path[node.path.length - 1]
+			node.unit = choice_type == 'meta' ? null : node.path[node.path.length - 2]
 			let key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
 			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == key)
 			let existing = existingIndex >= 0 ? state.nodes[existingIndex] : null

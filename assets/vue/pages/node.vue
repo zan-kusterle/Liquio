@@ -1,10 +1,10 @@
 <template>
 	<div>
 		<div class="before" v-if="node">
-			<node-input is-inverse="true" v-bind:id="node.key" style="margin-bottom: 40px; text-align: center;"
-				:enable-search="node.path[0] === '' || node.path[0].toLowerCase() === 'search'"
-				:enable-group="node.path[0].toLowerCase() !== 'search'"
-				:enable-others="(node.path[0] === '' || node.choice_type !== null) && node.path[0].toLowerCase() !== 'search'"></node-input>
+			<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px;">
+				<el-button slot="append" icon="caret-right" @click="view_inverse_reference"></el-button>
+			</el-input>
+			
 			<liquio-list v-if="node.path[0] !== ''" v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 		</div>
 
@@ -18,8 +18,10 @@
 
 		<div class="after" v-if="node">
 			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.path[0] === '' || node.path[0].toLowerCase() === 'search' ? null : node" style="text-align: left;"></liquio-list>
-			<p class="subtitle" v-if="node.references.length == 0">There is nothing here.</p>
-			<node-input v-if="node.path[0] !== '' && node.path[0].toLowerCase() !== 'search'" v-bind:id="node.key" enable-search="false" v-bind:enable-group="node.choice_type == null" style="margin-top: 30px; text-align: center;"></node-input>
+			
+			<el-input v-if="node.path[0] !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px;">
+				<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
+			</el-input>
 		</div>
 
 		<div class="footer">
@@ -34,11 +36,37 @@ import CalculationOptions from '../calculation-options.vue'
 import LiquioNode from '../liquio-node.vue'
 import LiquioList from '../liquio-list.vue'
 import NodeInput from '../node-input.vue'
+let utils = require('utils.js')
 
 export default {
 	components: {App, CalculationOptions, LiquioNode, LiquioList, NodeInput},
 	data: function() {
-		return {}
+		let self = this
+
+		return {
+			reference_title: '',
+			inverse_reference_title: '',
+			view_reference: (event) => {
+				if(self.reference_title.length >= 3) {
+					let clean_title = self.reference_title.replace(/\-/, '').trim()
+					let key = self.node.key
+
+					let input_key = encodeURIComponent(utils.getKey(clean_title, self.choice_type))
+					let path = '/' + key + '/references/' + input_key
+					self.$router.push(path)
+				}
+			},
+			view_inverse_reference: (event) => {
+				if(self.inverse_reference_title.length >= 3) {
+					let clean_title = self.inverse_reference_title.trim()
+					let key = self.node.key
+
+					let input_key = encodeURIComponent(utils.getKey(clean_title, self.choice_type))
+					let path = '/' + input_key + '/references/' + key
+					self.$router.push(path)
+				}
+			}
+		}
 	},
 	created: function() {
 		this.fetchData()

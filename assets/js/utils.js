@@ -1,5 +1,5 @@
-export function getKey(title, choice_type) {
-	return encodeURIComponent((title + ' ' + choice_type).trim().replace(/ /g, '-'))
+export function getKey(title, unit) {
+	return encodeURIComponent((title + (unit ? '_' + unit : '')).trim().replace(/ /g, '-'))
 }
 
 export function getCompositeKey(key, referenceKey) {
