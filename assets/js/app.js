@@ -28,6 +28,7 @@ const routes = [
 	{ name: 'search', path: '/search/:query', component: nodeComponent },
 	{ path: '/:key/references', component: referenceComponent },
 	{ path: '/:key/references/:referenceKey', component: referenceComponent },
+	{ path: '/:key/:unit', component: nodeComponent },
 	{ path: '/:key', component: nodeComponent }
 ]
 

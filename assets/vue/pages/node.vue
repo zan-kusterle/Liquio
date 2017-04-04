@@ -9,7 +9,7 @@
 		</div>
 
 		<div v-if="node" class="main">
-			<liquio-node v-bind:node="node" results-key="main"></liquio-node>
+			<liquio-node v-bind:node="node" v-bind:unit="$store.getters.node.unit" results-key="main"></liquio-node>
 		</div>
 		<div v-else class="main">
 			<h1 class="fake-title" v-if="title">{{ title }}</h1>
@@ -35,11 +35,10 @@ import App from '../app.vue'
 import CalculationOptions from '../calculation-options.vue'
 import LiquioNode from '../liquio-node.vue'
 import LiquioList from '../liquio-list.vue'
-import NodeInput from '../node-input.vue'
 let utils = require('utils.js')
 
 export default {
-	components: {App, CalculationOptions, LiquioNode, LiquioList, NodeInput},
+	components: {App, CalculationOptions, LiquioNode, LiquioList},
 	data: function() {
 		let self = this
 
@@ -47,22 +46,16 @@ export default {
 			reference_title: '',
 			inverse_reference_title: '',
 			view_reference: (event) => {
-				if(self.reference_title.length >= 3) {
-					let clean_title = self.reference_title.replace(/\-/, '').trim()
-					let key = self.node.key
-
-					let input_key = encodeURIComponent(utils.getKey(clean_title, self.choice_type))
-					let path = '/' + key + '/references/' + input_key
+				let clean_key = self.reference_title.trim()
+				if(clean_key.length >= 3) {
+					let path = '/' + encodeURIComponent(self.node.key) + '/references/' + encodeURIComponent(clean_key)
 					self.$router.push(path)
 				}
 			},
 			view_inverse_reference: (event) => {
-				if(self.inverse_reference_title.length >= 3) {
-					let clean_title = self.inverse_reference_title.trim()
-					let key = self.node.key
-
-					let input_key = encodeURIComponent(utils.getKey(clean_title, self.choice_type))
-					let path = '/' + input_key + '/references/' + key
+				let clean_key = self.inverse_reference_title.trim()
+				if(clean_key.length >= 3) {
+					let path = '/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(self.node.key)
 					self.$router.push(path)
 				}
 			}
@@ -76,14 +69,14 @@ export default {
 			if(this.$store.getters.searchQuery) {
 				return this.$store.getters.searchResults(this.$store.getters.searchQuery)
 			} else {
-				return this.$store.getters.getNodeByKey(this.$store.getters.nodeKey)
+				return this.$store.getters.getNodeByKey(this.$store.getters.node.key)
 			}
 		},
 		title: function() {
 			if(this.$store.getters.searchQuery) {
 				return 'Results for ' + this.$store.getters.searchQuery
 			} else {
-				return this.$store.getters.nodeTitle
+				return this.$store.getters.node.title
 			}
 		}
 	},
@@ -95,7 +88,7 @@ export default {
 			if(this.$store.getters.searchQuery) {
 				this.$store.dispatch('search', this.$store.getters.searchQuery)
 			} else {
-				this.$store.dispatch('fetchNode', this.$store.getters.nodeKey)
+				this.$store.dispatch('fetchNode', this.$store.getters.node.key)
 			}
 		}
 	}

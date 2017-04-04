@@ -4,9 +4,7 @@ let Api = require('api.js')
 let utils = require('utils.js')
 
 let getTitle = (path) => {
-	let choice_type = path[path.length - 1]
-	let trim_count = choice_type == 'meta' ? 1 : 2
-	let title = path.slice(0, path.length - trim_count).join('/').replace(/\_(.*)/g, '')
+	let title = path.join('/')
 	if(!(title.startsWith('http://') || title.startsWith('https://')))
 		title = title.replace(/-/g, ' ')
 	return title
@@ -20,34 +18,37 @@ export default new Vuex.Store({
 		identities: [],
 		calculation_opts: {},
 		units: [
-			{text: 'True - False', value: 'True', choice_type: 'probability'},
-			{text: 'Count', value: 'Count', choice_type: 'quantity'},
-			{text: 'Fact - Lie', value: 'Fact', choice_type: 'probability'},
-			{text: 'Reliable - Unreliable', value: 'Reliable', choice_type: 'probability'},
-			{text: 'Temperature (°C)', value: 'Temperature', choice_type: 'quantity'},
-			{text: 'US Dollars (USD)', value: 'USD', choice_type: 'quantity'},
-			{text: 'Length (m)', value: 'Length', choice_type: 'quantity'},
-			{text: 'Approve - Disapprove', value: 'Approve', choice_type: 'probability'},
-			{text: 'Agree - Disagree', value: 'Agree', choice_type: 'probability'}
+			{text: 'True - False', value: 'True', is_probability: true},
+			{text: 'Count', value: 'Count', is_probability: false},
+			{text: 'Fact - Lie', value: 'Fact', is_probability: true},
+			{text: 'Reliable - Unreliable', value: 'Reliable', is_probability: true},
+			{text: 'Temperature (°C)', value: 'Temperature', is_probability: false},
+			{text: 'US Dollars (USD)', value: 'USD', is_probability: false},
+			{text: 'Length (m)', value: 'Length', is_probability: false},
+			{text: 'Approve - Disapprove', value: 'Approve', is_probability: true},
+			{text: 'Agree - Disagree', value: 'Agree', is_probability: true}
 		]
 	},
 	getters: {
-		keys: (state) => state.route.params.key ? state.route.params.key.split('___') : [],
-		referencingKeys: (state) => state.route.params.referenceKey ? state.route.params.referenceKey.split('___') : [],
-		referenceKeyPairs: (state, getters) => _.flatMap(getters.keys, (key) =>
-			getters.referencingKeys.length == 0 ? [key] : _.map(getters.referencingKeys, (referenceKey) => {
-				return {key, referenceKey}
-		})),
-		nodePath: (state) => {
-			let path = (state.route.params.key || '').split('_')
-			let unit_value = path[path.length - 1]
-			let unit = _.find(state.units, (x) => x.value == unit_value)
-			let choice_type = unit ? unit.choice_type : 'meta'
-			path.push(choice_type)
-			return path
+		node: (state) => {
+			let path = (state.route.params.key || '').split('/')
+
+			return {
+				path: path,
+				unit: state.route.params.unit || null,
+				key: path.join('/'),
+				title: getTitle(path)
+			}
 		},
-		nodeKey: (state, getters) => getters.nodePath.join('_'),
-		nodeTitle: (state, getters) => getTitle(getters.nodePath),
+		reference: (state) => {
+			let path = (state.route.params.referenceKey || '').split('/')
+
+			return {
+				path: path,
+				key: path.join('/'),
+				title: getTitle(path)
+			}
+		},
 		searchQuery: (state) => state.route.params.query,
 		searchResults: (state, getters) => (query) => {
 			let node = getters.getNodeByKey(['Search', query])
@@ -103,8 +104,7 @@ export default new Vuex.Store({
 			node.key = node.path.join('_')
 			node.reference_key = node.reference_path ? node.reference_path.join('_') : null
 			node.title = getTitle(node.path)
-			let choice_type = node.path[node.path.length - 1]
-			node.unit = choice_type == 'meta' ? null : node.path[node.path.length - 2]
+			node.default_results = node.results["reliability"].probability_mean
 			let key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
 			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == key)
 			let existing = existingIndex >= 0 ? state.nodes[existingIndex] : null

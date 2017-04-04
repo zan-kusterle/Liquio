@@ -25,8 +25,6 @@
 		
 		<div class="after" v-if="nodes.length > 0 && referenceNodes.length > 0 && references.length > 0">
 			<liquio-node v-bind:node="references[0]" v-bind:votable-nodes="references" results-key="relevance" choice-type="probability" v-bind:reference-key="referenceNodes[0].key" title="Relevance Score" style="margin: 40px 0px;"></liquio-node>
-
-			<liquio-node v-if="nodes[0].choice_type" v-bind:node="references[0]" v-bind:votable-nodes="references" results-key="for_choice" v-bind:reference-key="referenceNodes[0].key" title="Choice For Which Reference Provides Evidence" style="margin: 40px 0px;"></liquio-node>
 		</div>
 
 		<div class="footer">
@@ -40,11 +38,10 @@ import App from '../app.vue'
 import CalculationOptions from '../calculation-options.vue'
 import LiquioNode from '../liquio-node.vue'
 import LiquioInline from '../liquio-inline.vue'
-import NodeInput from '../node-input.vue'
 let utils = require('utils.js')
 
 export default {
-	components: {App, LiquioNode, LiquioInline, NodeInput, CalculationOptions},
+	components: {App, LiquioNode, LiquioInline, CalculationOptions},
 	data: function() {
 		return {}
 	},

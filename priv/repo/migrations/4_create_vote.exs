@@ -18,8 +18,8 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 
 			add :unit, :string, null: false
 			add :is_probability, :boolean, default: false
-			add :choice, :float, null: true
 			add :at_date, :date, null: false
+			add :choice, :float, null: true
 			
 			add :datetime, :utc_datetime, null: false
 			add :is_last, :boolean, null: false

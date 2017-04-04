@@ -1,17 +1,16 @@
 defmodule Liquio.Node do
 	alias Liquio.Node
 	
-	@enforce_keys [:path, :reference_path, :filter_key, :group_key, :choice_type]
-	defstruct [:path, :reference_path, :filter_key, :group_key, :choice_type]
+	@enforce_keys [:path, :reference_path, :group_key, :unit]
+	defstruct [:path, :reference_path, :group_key, :unit]
 
 	def decode(key) do
-		{path, choice_type} = decode_key(key)
+		{path, unit} = decode_key(key)
 		%Node{
 			path: path,
 			reference_path: nil,
-			filter_key: "main",
-			group_key: get_group_key(path, nil, "main"),
-			choice_type: choice_type
+			group_key: get_group_key(path, nil),
+			unit: unit
 		}
 	end
 

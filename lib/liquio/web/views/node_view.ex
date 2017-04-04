@@ -11,17 +11,16 @@ defmodule Liquio.Web.NodeView do
 
 	def render("node.json", %{node: node}) do
 		%{
-			:choice_type => node.choice_type,
 			:path => node.path,
 			:reference_path => node.reference_path,
-			:results => if Map.has_key?(node, :results) and (node.choice_type != nil or node.reference_path != nil)do
+			:results => if Map.has_key?(node, :results) and (node.unit != nil or node.reference_path != nil)do
 				node.results
 				|> Map.put(:contributions, Enum.map(node.results.contributions, & render("vote.json", %{vote: &1})))
 			else
 				nil
 			end,
 			:own_contribution => if Map.get(node, :own_contribution) do render("vote.json", %{vote: node.own_contribution}) else nil end,
-			:references => if Map.has_key?(node, :references) do render_many(node.references |> Enum.filter(& &1.choice_type == nil or Map.has_key?(&1, :results) and &1.results.count > 0) , Liquio.Web.NodeView, "reference.json") else nil end,
+			:references => if Map.has_key?(node, :references) do render_many(node.references |> Enum.filter(& &1.unit == nil or Map.has_key?(&1, :results) and &1.results.count > 0) , Liquio.Web.NodeView, "reference.json") else nil end,
 			:inverse_references => if Map.has_key?(node, :inverse_references) do render_many(node.inverse_references, Liquio.Web.NodeView, "node.json") else nil end,
 			:calculation_opts => Map.get(node, :calculation_opts)
 		}
@@ -40,7 +39,8 @@ defmodule Liquio.Web.NodeView do
 	def render("vote.json", %{vote: vote}) do
 		%{
 			:identity_username => vote.identity.username,
-			:choice_type => vote.choice_type,
+			:unit => Map.get(vote, :unit, "Score"),
+			:is_probability => Map.get(vote, :is_probability, true),
 			:filter_key => vote.filter_key,
 			:at_date => Timex.format!(vote.at_date, "{ISO:Extended}"),
 			:datetime => Timex.format!(vote.datetime, "{ISO:Extended}"),

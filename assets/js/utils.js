@@ -1,5 +1,5 @@
 export function getKey(title, unit) {
-	return encodeURIComponent((title + (unit ? '_' + unit : '')).trim().replace(/ /g, '-'))
+	return encodeURIComponent(title.trim().replace(/ /g, '-')) + (unit ? '/' + unit : '')
 }
 
 export function getCompositeKey(key, referenceKey) {

@@ -6,48 +6,46 @@
 
 		<div class="score-container">
 			<div>
-				<div v-if="this.node.choice_type != null || resultsKey == 'relevance'">
+				<div v-if="this.node.results && this.node.results.turnout_ratio > 0.01">
 					<div v-html="this.node.results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 				</div>
 				<div style="width: 100%; display: block;" class="choose-units">
-					<el-select v-model="choice_type" v-on:change="pickUnit" size="mini">
+					<el-select v-model="current_unit" v-on:change="pickUnit" size="mini">
 						<el-option v-for="unit in $store.state.units" :key="unit.value" v-bind:value="unit.value" v-bind:label="unit.text"></el-option>
 					</el-select>
 				</div>
 			</div>
 
-			<div v-if="(node.choice_type != null || node.filter_key == 'relevance')">
-				<div class="vote-choices">
-					<div class="vote-choice" v-for="(vote, index) in votes">
-						<el-tooltip class="action" effect="dark" content="Remove this choice" placement="top">
-							<i @click="votes.splice(index, 1)" class="el-icon-circle-close"></i>
-						</el-tooltip>
+			<div class="vote-choices">
+				<div class="vote-choice" v-for="(vote, index) in votes">
+					<el-tooltip class="action" effect="dark" content="Remove this choice" placement="top">
+						<i @click="votes.splice(index, 1)" class="el-icon-circle-close"></i>
+					</el-tooltip>
 
-						<div class="number">
-							<span>{{ Math.round(vote.choice) }}</span><span class="percent">%</span>
-						</div>
-
-						<div class="range" v-if="first_node.choice_type == 'probability'">
-							<el-slider v-model="vote.choice" />
-						</div>
-						<div class="numeric" v-else>
-							<el-input v-model="vote.choice"></el-input>
-						</div>
-
-						<el-date-picker v-if="vote.at_date" v-model="vote.at_date" type="date" class="datepicker"></el-date-picker>
-						<el-tooltip v-else class="action" effect="dark" content="Set specific date" placement="top">
-							<i @click="vote.at_date = Date.now()" class="el-icon-date" style="margin-left: 5px;"></i>
-						</el-tooltip>
+					<div class="number">
+						<span>{{ Math.round(vote.choice) }}</span><span class="percent">%</span>
 					</div>
-					<div class="vote-choice">
-						<el-tooltip class="action" effect="dark" content="Add your choice" placement="top">
-							<i @click="votes.push({choice: 0, at_date: null})" class="el-icon-plus"></i>
-						</el-tooltip>
 
-						<a class="action" v-on:click="set" style="width: 90px;">Save <i class="el-icon-circle-check"></i></a>
-
-						<p class="own-contribution-ratio">Your contribution to the final result is {{ Math.round(this.first_node.own_contribution ? this.first_node.own_contribution.weight * 100 : 0) }}%.</p>
+					<div class="range" v-if="true || first_node.default_results.is_probability">
+						<el-slider v-model="vote.choice" />
 					</div>
+					<div class="numeric" v-else>
+						<el-input v-model="vote.choice"></el-input>
+					</div>
+
+					<el-date-picker v-if="vote.at_date" v-model="vote.at_date" type="date" class="datepicker"></el-date-picker>
+					<el-tooltip v-else class="action" effect="dark" content="Set specific date" placement="top">
+						<i @click="vote.at_date = Date.now()" class="el-icon-date" style="margin-left: 5px;"></i>
+					</el-tooltip>
+				</div>
+				<div class="vote-choice">
+					<el-tooltip class="action" effect="dark" content="Add your choice" placement="top">
+						<i @click="votes.push({choice: 0, at_date: null})" class="el-icon-plus"></i>
+					</el-tooltip>
+
+					<a class="action" v-on:click="set" style="width: 90px;">Save <i class="el-icon-circle-check"></i></a>
+
+					<p class="own-contribution-ratio">Your contribution to the final result is {{ Math.round(this.first_node.own_contribution ? this.first_node.own_contribution.weight * 100 : 0) }}%.</p>
 				</div>
 			</div>
 
@@ -75,14 +73,12 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
-import NodeInput from './node-input.vue'
 let utils = require('utils.js')
 
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['node', 'votableNodes', 'resultsKey', 'referenceKey', 'title', 'choiceType'],
-	components: {NodeInput},
+	props: ['node', 'votableNodes', 'resultsKey', 'referenceKey', 'title', 'unit'],
 	data: function() {
 		let self = this
 		let nodes = self.votableNodes || [self.node]
@@ -97,7 +93,7 @@ export default {
 			}],
 			mean: 0.5,
 			moment: require('moment'),
-			choice_type: self.choiceType || first_node.choice_type,
+			current_unit: self.unit || first_node.unit,
 			set: function(event) {
 				let choices = _.map(self.votes, (vote) => parseFloat(vote.choice) / 100)
 				_.each(nodes, (node) => {
