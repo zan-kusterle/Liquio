@@ -1,12 +1,40 @@
-defmodule Liquio.NodeLoaders do
-	import Ecto.Query, only: [from: 2]
-	alias Liquio.{Repo, Node, Vote, CalculateResults, Results}
-
+defmodule Liquio.ReferenceRepo do
+	alias Liquio.Repo
+	
+	def load(node, calculation_opts) do
+		load(node, calculation_opts, nil)
+	end
 	def load(node, calculation_opts, user) do
+		key = {
+			{"nodes", node.group_key, calculation_opts.datetime},
+			{
+				calculation_opts.trust_metric_url,
+				calculation_opts.minimum_voting_power,
+				calculation_opts.reference_minimum_turnout,
+				calculation_opts.depth
+			}
+		}
+		cache_results = ResultsCache.get(key)
+		if cache_results do
+			cache_results
+		else
+			node = load_latest(node, calculation_opts, user)
+			ResultsCache.set(key, node)
+			node
+		end
+	end
+
+	def invalidate_cache(node) do
+		ResultsCache.unset({"nodes", {Enum.join(node.path, "/"), Enum.join(node.reference_path, "/")}})
+		ResultsCache.unset({"nodes", {Enum.join(node.path, "/"), nil}})
+		ResultsCache.unset({"nodes", {Enum.join(node.reference_path, "/"), nil}})
+	end
+
+	def load_latest(node, calculation_opts, user) do
 		node = node
 		|> Map.put(:calculation_opts, calculation_opts)
-		|> load_references(calculation_opts)
-		|> load_inverse_references(calculation_opts)
+		|> Reference.load_references(calculation_opts)
+		|> Reference.load_inverse_references(calculation_opts)
 		|> load_results(calculation_opts)
 		|> load_own_contribution(user)
 
@@ -52,35 +80,21 @@ defmodule Liquio.NodeLoaders do
 		|> Map.put(:own_vote, vote)
 		|> Map.put(:own_contribution, contribution)
 	end
+	
+	def load_results(reference, calculation_opts) do
+		votes = ReferenceVote.get_votes(reference.path, reference.reference_path, calculation_opts.datetime)
+		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+		contributions = CalculateResults.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, node.topics) |> Repo.preload([:identity])
+		results = Results.from_contributions(contributions, calculation_opts)
 
-	defp load_results(node, calculation_opts) do
-		node = if not Map.has_key?(node, :topics) do
-			node |> load_inverse_references(calculation_opts, 1)
-		else
-			node
-		end
-
-		results = CalculateResults.calculate(node, calculation_opts)
-
-		node = if not Enum.empty?(results.contributions) do
-			{best_title, _count} = results.contributions
-			|> Enum.map(& Enum.join(&1.path, "/"))
-			|> Enum.group_by(& &1)
-			|> Enum.map(fn({k, v}) -> {k, Enum.count(v)} end)
-			|> Enum.max_by(fn({title, count}) -> count end)
-
-			node |> Node.put_title(best_title)
-		else
-			node
-		end
-
-		Map.put(node, :results, results)
+		node
+		|> Map.put(:results, results)
 	end
 
-	defp load_references(node, calculation_opts, current_depth \\ nil) do
+	def load_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
-			reference_nodes = from(v in Vote, where: v.group_key == ^node.group_key and not is_nil(v.reference_path) and v.is_last == true and not is_nil(v.choice))
+			reference_nodes = from(v in ReferenceVote, where: v.group_key == ^node.group_key and v.is_last == true and not is_nil(v.relevance))
 			|> Repo.all
 			|> Enum.group_by(& &1.reference_key)
 			|> prepare_reference_nodes(calculation_opts)
@@ -99,7 +113,7 @@ defmodule Liquio.NodeLoaders do
 		end
 	end
 
-	defp load_inverse_references(node, calculation_opts, current_depth \\ nil) do
+	def load_inverse_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
 			inverse_reference_nodes = from(v in Vote, where: v.reference_path == ^node.path and v.is_last == true and not is_nil(v.choice))
@@ -116,7 +130,7 @@ defmodule Liquio.NodeLoaders do
 			end
 
 			topics = inverse_reference_nodes
-			|> Enum.filter(& &1.choice_type == nil)
+			|> Enum.filter(& Enum.count(&1.path) == 1 and String.length(Enum.at(&1.path, 0)) <= 20)
 			|> Enum.map(& &1.key)
 
 			node = Map.put(node, :inverse_references, inverse_reference_nodes)

@@ -2,29 +2,21 @@ defmodule Liquio.CalculateResults do
 	import Ecto.Query, only: [from: 2]
 	alias Liquio.{Identity, Repo, GetData, Results, CalculateMemoServer}
 
-	def calculate(node, calculation_opts) do
-		votes = GetData.get_votes(node.group_key, calculation_opts.datetime)
-		votes = if node.reference_path == nil do votes |> Enum.filter(fn({_k, v}) -> v.reference_path == nil end) |> Enum.into(%{}) else votes end
-
-		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
-		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new(node.topics))
-		|> Repo.preload([:identity])
-
-		Results.from_contributions(contributions, calculation_opts)
-	end
 
 	def calculate_for_votes(votes, calculation_opts) do
 		votes = for vote <- votes, into: %{} do
 			{vote.identity_id, vote}
 		end
 		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
-		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, MapSet.new)
+		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, [])
 		|> Repo.preload([:identity])
 
 		Results.from_contributions(contributions, calculation_opts)
 	end
 
 	defp calculate(votes, inverse_delegations, trust_identity_ids, topics) do
+		topics = if is_list(topics) do MapSet.new(topics) else topics end
+
 		uuid = String.to_atom(UUID.uuid4(:hex))
 
 		CalculateMemoServer.start_link uuid

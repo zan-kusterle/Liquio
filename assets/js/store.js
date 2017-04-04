@@ -30,6 +30,11 @@ export default new Vuex.Store({
 		]
 	},
 	getters: {
+		hasNode: (state) => (key) => {
+			return _.find(state.nodes, (node) => {
+				return node.group_key == utils.normalizeKey(key)
+			}) != null
+		},
 		node: (state) => {
 			let path = (state.route.params.key || '').split('/')
 
@@ -101,15 +106,16 @@ export default new Vuex.Store({
 				state.user = identity
 		},
 		setNode (state, node) {
-			node.key = node.path.join('_')
+			node.key = node.path.join('/')
 			node.reference_key = node.reference_path ? node.reference_path.join('_') : null
 			node.title = getTitle(node.path)
-			node.default_results = node.results["reliability"].probability_mean
-			let key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
-			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == key)
+			node.default_results = node.results && node.results["reliability"] ? node.results["reliability"].probability_mean : null
+			node.group_key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
+			node.default_results = {unit: state.route.params.unit}
+
+			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == node.group_key)
 			let existing = existingIndex >= 0 ? state.nodes[existingIndex] : null
-			
-			node.group_key = key
+
 			if(node.references == null) {
 				node.references = existing ? existing.references : []
 			} else {

@@ -57,7 +57,7 @@ defmodule Liquio.CalculationOpts do
 
 		url = Map.get(conn.params, :trust_metric_url)
 		url =
-			if url == nil or not String.starts_with?(url, "http") do
+			if url == nil or not (String.starts_with?(url, "http://") or String.starts_with?(url, "https://")) do
 				TrustMetric.default_trust_metric_url()
 			else
 				url

@@ -9,7 +9,7 @@
 		</div>
 
 		<div v-if="node" class="main">
-			<liquio-node v-bind:node="node" v-bind:unit="$store.getters.node.unit" results-key="main"></liquio-node>
+			<liquio-node v-bind:node="node" v-bind:unit="node.default_results.unit"></liquio-node>
 		</div>
 		<div v-else class="main">
 			<h1 class="fake-title" v-if="title">{{ title }}</h1>
@@ -61,15 +61,16 @@ export default {
 			}
 		}
 	},
-	created: function() {
-		this.fetchData()
-	},
 	computed: {
 		node: function() {
 			if(this.$store.getters.searchQuery) {
+				this.$store.dispatch('search', this.$store.getters.searchQuery)
 				return this.$store.getters.searchResults(this.$store.getters.searchQuery)
 			} else {
-				return this.$store.getters.getNodeByKey(this.$store.getters.node.key)
+				let key = this.$store.getters.node.key
+				if(!this.$store.getters.hasNode(key))
+					this.$store.dispatch('fetchNode', key)
+				return this.$store.getters.getNodeByKey(key)
 			}
 		},
 		title: function() {
@@ -77,18 +78,6 @@ export default {
 				return 'Results for ' + this.$store.getters.searchQuery
 			} else {
 				return this.$store.getters.node.title
-			}
-		}
-	},
-	watch: {
-		'$route': 'fetchData'
-	},
-	methods: {
-		fetchData: function() {
-			if(this.$store.getters.searchQuery) {
-				this.$store.dispatch('search', this.$store.getters.searchQuery)
-			} else {
-				this.$store.dispatch('fetchNode', this.$store.getters.node.key)
 			}
 		}
 	}

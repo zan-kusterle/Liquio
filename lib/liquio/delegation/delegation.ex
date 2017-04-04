@@ -89,4 +89,28 @@ defmodule Liquio.Delegation do
 	def get_by(from_identity, to_identity) do
 		Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id, is_last: true})
 	end
+	
+	def get_inverse_delegations(datetime) do
+		query = "SELECT DISTINCT ON (d.from_identity_id, d.to_identity_id) *
+			FROM delegations AS d
+			WHERE d.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			ORDER BY d.from_identity_id, d.to_identity_id, d.datetime DESC;"
+		res = Ecto.Adapters.SQL.query!(Repo, query , [])
+		cols = Enum.map res.columns, &(String.to_atom(&1))
+		inverse_delegations = res.rows
+		|> Enum.map(fn(row) ->
+			delegation = struct(Liquio.Delegation, Enum.zip(cols, row))
+			if delegation.data do
+				delegation
+				|> Map.put(:weight, delegation.data.weight)
+				|> Map.put(:topics, MapSet.new(delegation.data.topics))
+			else
+				delegation
+			end
+		end)
+		|> Enum.filter(& &1.data != nil)
+		|> Enum.map(& {&1.to_identity_id, &1}) |> Enum.into(%{})
+
+		inverse_delegations
+	end
 end
