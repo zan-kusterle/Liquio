@@ -7,13 +7,12 @@ defmodule Liquio.Results do
 			:turnout_ratio => 0.0,
 			:count => 1,
 			:mean => contribution.choice,
-			:choice_type => String.to_atom(contribution.choice_type),
+			:median => contribution.choice,
 			:contributions => [contribution]
 		} |> load()
 	end
 
 	def from_contributions(contributions, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
-		choice_type = if Enum.empty?(contributions) do nil else Enum.at(contributions, 0).choice_type end
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		trust_metric_size = MapSet.size(trust_metric_ids)
 
@@ -32,7 +31,6 @@ defmodule Liquio.Results do
 			:count => Enum.count(contributions),
 			:mean => mean(time_weighted_contributions),
 			:median => median(time_weighted_contributions),
-			:choice_type => choice_type && String.to_atom(choice_type),
 			:contributions => contributions
 		} |> load()
 	end
@@ -50,7 +48,7 @@ defmodule Liquio.Results do
 	end
 
 	defp results_color(results) do
-		if results.choice_type == :probability and results.count > 0 do
+		if Map.get(results, :is_probability, true) and results.count > 0 do
 			cond do
 				results.mean == nil -> "#ddd"
 				results.mean < 0.25 -> "rgb(255, 164, 164)"
@@ -74,7 +72,7 @@ defmodule Liquio.Results do
 		if results.mean == nil do
 			"?"
 		else
-			if results.choice_type == :probability do
+			if Map.get(results, :is_probability, true) do
 				"#{round(results.mean * 100)}%"
 			else
 				"#{round(results.mean)}"				

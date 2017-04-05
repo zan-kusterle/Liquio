@@ -15,6 +15,8 @@ defmodule Liquio.CalculateResults do
 	end
 
 	def calculate(votes, inverse_delegations, trust_identity_ids, topics) do
+		votes = votes |> Enum.map(& {&1.identity_id, &1}) |> Enum.into(%{})
+
 		topics = if is_list(topics) do MapSet.new(topics) else topics end
 
 		uuid = String.to_atom(UUID.uuid4(:hex))
@@ -23,8 +25,8 @@ defmodule Liquio.CalculateResults do
 
 		state = {inverse_delegations, votes, topics, trust_identity_ids}
 
-		trust_votes = votes |> Enum.filter(fn({identity_id, _vote}) ->
-			MapSet.member?(trust_identity_ids, to_string(identity_id))
+		trust_votes = votes |> Enum.filter(fn({_k, v}) ->
+			MapSet.member?(trust_identity_ids, to_string(v.identity.username))
 		end)
 
 		Enum.each(trust_votes, fn({identity_id, _vote}) ->

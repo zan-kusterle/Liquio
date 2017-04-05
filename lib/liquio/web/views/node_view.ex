@@ -13,8 +13,14 @@ defmodule Liquio.Web.NodeView do
 		%{
 			:path => node.path,
 			:results => if Map.has_key?(node, :results) do
-				node.results
-				|> Map.put(:contributions, Enum.map(node.results.contributions, & render("vote.json", %{vote: &1})))
+				node.results |> Enum.map(fn({unit, unit_results}) ->
+					unit_results = [:probability, :quantity] |> Enum.map(fn(key) ->
+						concrete_results = Map.get(unit_results, key)
+						|> Map.put(:contributions, [])
+						{key, concrete_results}
+					end) |> Enum.into(%{})
+					{unit, unit_results}
+				end) |> Enum.into(%{})
 			else
 				nil
 			end,
@@ -40,7 +46,6 @@ defmodule Liquio.Web.NodeView do
 			:identity_username => vote.identity.username,
 			:unit => Map.get(vote, :unit, "Score"),
 			:is_probability => Map.get(vote, :is_probability, true),
-			:filter_key => vote.filter_key,
 			:at_date => Timex.format!(vote.at_date, "{ISO:Extended}"),
 			:datetime => Timex.format!(vote.datetime, "{ISO:Extended}"),
 			:choice => vote.choice,

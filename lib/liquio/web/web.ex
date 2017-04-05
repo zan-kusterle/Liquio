@@ -47,6 +47,9 @@ defmodule Liquio.Web do
 			alias Liquio.Token
 			alias Liquio.Node
 			alias Liquio.NodeRepo
+			alias Liquio.VoteRepo
+			alias Liquio.ReferenceRepo
+			alias Liquio.ReferenceVote
 			alias Liquio.CalculationOpts
 		end
 	end

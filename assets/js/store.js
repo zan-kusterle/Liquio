@@ -18,15 +18,15 @@ export default new Vuex.Store({
 		identities: [],
 		calculation_opts: {},
 		units: [
-			{text: 'True - False', value: 'True', is_probability: true},
-			{text: 'Count', value: 'Count', is_probability: false},
-			{text: 'Fact - Lie', value: 'Fact', is_probability: true},
-			{text: 'Reliable - Unreliable', value: 'Reliable', is_probability: true},
-			{text: 'Temperature (°C)', value: 'Temperature', is_probability: false},
-			{text: 'US Dollars (USD)', value: 'USD', is_probability: false},
-			{text: 'Length (m)', value: 'Length', is_probability: false},
-			{text: 'Approve - Disapprove', value: 'Approve', is_probability: true},
-			{text: 'Agree - Disagree', value: 'Agree', is_probability: true}
+			{text: 'True - False', value: 'true', is_probability: true},
+			{text: 'Count', value: 'count', is_probability: false},
+			{text: 'Fact - Lie', value: 'fact', is_probability: true},
+			{text: 'Reliable - Unreliable', value: 'reliable', is_probability: true},
+			{text: 'Temperature (°C)', value: 'temperature', is_probability: false},
+			{text: 'US Dollars (USD)', value: 'usd', is_probability: false},
+			{text: 'Length (m)', value: 'length', is_probability: false},
+			{text: 'Approve - Disapprove', value: 'approve', is_probability: true},
+			{text: 'Agree - Disagree', value: 'agree', is_probability: true}
 		]
 	},
 	getters: {
@@ -109,9 +109,10 @@ export default new Vuex.Store({
 			node.key = node.path.join('/')
 			node.reference_key = node.reference_path ? node.reference_path.join('_') : null
 			node.title = getTitle(node.path)
-			node.default_results = node.results && node.results["reliability"] ? node.results["reliability"].probability_mean : null
+			node.unit = "reliable"
+			node.is_probability = true
+			node.default_results = node.results && node.results[node.unit] ? node.results[node.unit].probability : null
 			node.group_key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
-			node.default_results = {unit: state.route.params.unit}
 
 			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == node.group_key)
 			let existing = existingIndex >= 0 ? state.nodes[existingIndex] : null

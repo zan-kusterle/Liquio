@@ -11,7 +11,11 @@ defmodule Liquio.Web.ReferenceVoteController do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Node.put_reference_key(node, reference_node.key)
 
-		Vote.set(reference, user, get_choice(choice))
+		relevance_score = case Float.parse(choice) do
+			{:ok, x} -> x
+			{:error, _} -> nil
+		end
+		ReferenceVote.set(user, reference, relevance_score)
 		if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 			{:info, "Your vote is now live."}
 		else
@@ -32,17 +36,10 @@ defmodule Liquio.Web.ReferenceVoteController do
 	def delete(conn, %{:node => node, :reference_node => reference_node, :user => user}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Node.put_reference_key(node, reference_node.key)
-		Vote.delete(reference, user)
+		ReferenceVote.delete(user, reference)
 
 		conn
 		|> put_status(:created)
 		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(reference, calculation_opts, user))
 	end)
-
-	defp get_choice(v) do
-		case Float.parse(v) do
-			{:ok, x} -> x
-			{:error, _} -> nil
-		end
-	end
 end

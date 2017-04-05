@@ -6,8 +6,8 @@
 
 		<div class="score-container">
 			<div>
-				<div v-if="this.node.results && this.node.results.turnout_ratio > 0.01">
-					<div v-html="this.node.results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+				<div v-if="this.node.default_results && this.node.default_results.turnout_ratio > 0.01">
+					<div v-html="this.node.default_results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 				</div>
 				<div style="width: 100%; display: block;" class="choose-units">
 					<el-select v-model="current_unit" v-on:change="pickUnit" size="mini">
@@ -51,9 +51,9 @@
 
 			<transition name="fade">
 				<div class="vote-container" v-bind:class="{open: true}">
-					<div class="votes" v-if="node.results && node.results.contributions.length > 0">
-						<p class="ui-title">{{ Math.round(node.results.turnout_ratio * 100) }}% turnout</p>
-						<div class="contribution" v-for="contribution in node.results.contributions" :key="contribution.username">
+					<div class="votes" v-if="node.default_results && node.default_results.contributions.length > 0">
+						<p class="ui-title">{{ Math.round(node.default_results.turnout_ratio * 100) }}% turnout</p>
+						<div class="contribution" v-for="contribution in node.default_results.contributions" :key="contribution.username">
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 							</div>
