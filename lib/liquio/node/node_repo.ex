@@ -16,10 +16,10 @@ defmodule Liquio.NodeRepo do
 		else
 			nodes = Vote
 			|> Repo.all
-			|> Enum.map(& &1.key)
+			|> Enum.map(& &1.path)
 			|> Enum.uniq
-			|> Enum.map(& Node.decode(&1) |> load(calculation_opts, nil))
-			|> Enum.sort_by(& -(&1.results.turnout_ratio + 0.05 * Enum.count(&1.references)))
+			|> Enum.map(& %Node{path: &1} |> load(calculation_opts, nil))
+			|> Enum.sort_by(& -(&1.results["all"].probability.turnout_ratio + 0.05 * Enum.count(&1.references)))
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 
 			node = Node.decode("") |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
@@ -46,7 +46,7 @@ defmodule Liquio.NodeRepo do
 	end
 	def load(node, calculation_opts, user) do
 		key = {
-			{"nodes", Node.group_key(node), calculation_opts.datetime},
+			{"nodes", node.path, calculation_opts.datetime},
 			{
 				calculation_opts.trust_metric_url,
 				calculation_opts.minimum_voting_power,
@@ -89,7 +89,7 @@ defmodule Liquio.NodeRepo do
 		vote = if Map.has_key?(node, :own_vote) do
 			node.own_vote
 		else
-			if user do VoteRepo.current_by(user, node, "reliable", true) else nil end
+			if user do VoteRepo.current_by(user, node, "true", true) else nil end
 		end
 
 		contribution = if vote do
@@ -130,20 +130,9 @@ defmodule Liquio.NodeRepo do
 
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
 		results = votes |> Enum.group_by(& &1.unit) |> Enum.map(fn({unit, votes_for_unit}) ->
-			{probability_votes, quantity_votes} = Enum.partition(votes_for_unit, & &1.is_probability)
-
-			contributions = CalculateResults.calculate(probability_votes, inverse_delegations, calculation_opts.trust_metric_ids, node.topics) |> Repo.preload([:identity])
-			probability_results = Results.from_contributions(contributions, calculation_opts) |> Map.put(:is_probability, true)
-
-			contributions = CalculateResults.calculate(quantity_votes, inverse_delegations, calculation_opts.trust_metric_ids, node.topics) |> Repo.preload([:identity])
-			quantity_results = Results.from_contributions(contributions, calculation_opts) |> Map.put(:is_probability, false)
-
-			{unit, %{
-				:probability => probability_results,
-				:quantity => quantity_results
-			}}
+			{unit, get_results(votes_for_unit, inverse_delegations, calculation_opts, node.topics)}
 		end) |> Enum.into(%{})
-		
+		|> Map.put("all", get_results(votes, inverse_delegations, calculation_opts, node.topics))
 
 		node = if not Enum.empty?(votes) do
 			{best_title, _count} = votes
@@ -160,6 +149,21 @@ defmodule Liquio.NodeRepo do
 		node
 		|> Map.put(:votes, votes)
 		|> Map.put(:results, results)
+	end
+
+	defp get_results(votes, inverse_delegations, calculation_opts, topics) do
+		{probability_votes, quantity_votes} = Enum.partition(votes, & &1.is_probability)
+
+		contributions = CalculateResults.calculate(probability_votes, inverse_delegations, calculation_opts.trust_metric_ids, topics) |> Repo.preload([:identity])
+		probability_results = Results.from_contributions(contributions, calculation_opts) |> Map.put(:is_probability, true)
+
+		contributions = CalculateResults.calculate(quantity_votes, inverse_delegations, calculation_opts.trust_metric_ids, topics) |> Repo.preload([:identity])
+		quantity_results = Results.from_contributions(contributions, calculation_opts) |> Map.put(:is_probability, false)
+
+		%{
+			:probability => probability_results,
+			:quantity => quantity_results
+		}
 	end
 	
 	def load_references(node, calculation_opts, current_depth \\ nil) do

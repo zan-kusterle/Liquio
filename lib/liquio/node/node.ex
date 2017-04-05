@@ -9,8 +9,4 @@ defmodule Liquio.Node do
 			path: key |> String.trim(" ") |> String.split("/")
 		}
 	end
-
-	def group_key(%{:path => path}) do
-		path |> Enum.join("/") |> String.downcase
-	end
 end

@@ -35,7 +35,7 @@ export default new Vuex.Store({
 				return node.group_key == utils.normalizeKey(key)
 			}) != null
 		},
-		node: (state) => {
+		currentNode: (state) => {
 			let path = (state.route.params.key || '').split('/')
 
 			return {
@@ -57,6 +57,7 @@ export default new Vuex.Store({
 		searchQuery: (state) => state.route.params.query,
 		searchResults: (state, getters) => (query) => {
 			let node = getters.getNodeByKey(['Search', query])
+			node.title = 'Results for ' + query
 			return node
 		},
 		getPureNodeByKey: (state, getters) => (key) => {
@@ -105,13 +106,15 @@ export default new Vuex.Store({
 			if(state.user && state.user.username == identity.username)
 				state.user = identity
 		},
+		setNodeUnit(state, node, unit) {
+			node.unit = state.route.params.unit || "reliable"
+			node.is_probability = true
+			node.default_results = node.results && node.results[node.unit] ? node.results[node.unit].probability : null
+		},
 		setNode (state, node) {
 			node.key = node.path.join('/')
 			node.reference_key = node.reference_path ? node.reference_path.join('_') : null
 			node.title = getTitle(node.path)
-			node.unit = "reliable"
-			node.is_probability = true
-			node.default_results = node.results && node.results[node.unit] ? node.results[node.unit].probability : null
 			node.group_key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
 
 			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == node.group_key)

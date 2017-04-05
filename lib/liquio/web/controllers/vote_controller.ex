@@ -29,7 +29,7 @@ defmodule Liquio.Web.VoteController do
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
 	def delete(conn, %{:node => node, :user => user}) do
-		VoteRepo.delete(user, node, "reliable", true)
+		VoteRepo.delete(user, node, "true", true)
 
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn

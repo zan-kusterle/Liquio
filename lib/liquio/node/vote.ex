@@ -17,4 +17,10 @@ defmodule Liquio.Vote do
 		field :group_key, :string
 		field :search_text, :string
 	end
+
+	def group_key(%{:path => path, :unit => unit, :is_probability => is_probability}) do
+		path_normalized = path |> Enum.join("/") |> String.downcase
+		unit_type = if is_probability do "score" else "quantity" end
+		"#{path_normalized}___#{unit}___#{unit_type}"
+	end
 end

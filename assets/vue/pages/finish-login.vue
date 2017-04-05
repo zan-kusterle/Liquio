@@ -7,7 +7,6 @@
 	</div>
 </template>
 
-
 <style scoped>
 	.login {
 		background-color: white;
@@ -50,6 +49,7 @@ export default {
 			create: function(event) {
 				self.$router.go('/identities/' + self.username)
 				Api.register(self.$route.params.token, self.username, self.name, function() {
+					self.$router.push('/')
 				})
 			}
 		}

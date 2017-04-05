@@ -16,16 +16,17 @@ defmodule Liquio.Web.NodeView do
 				node.results |> Enum.map(fn({unit, unit_results}) ->
 					unit_results = [:probability, :quantity] |> Enum.map(fn(key) ->
 						concrete_results = Map.get(unit_results, key)
-						|> Map.put(:contributions, [])
+						concrete_results = concrete_results
+						|> Map.put(:contributions, concrete_results.contributions |> Enum.map(& render("vote.json", %{vote: &1})))
 						{key, concrete_results}
 					end) |> Enum.into(%{})
 					{unit, unit_results}
 				end) |> Enum.into(%{})
 			else
-				nil
+				%{}
 			end,
 			:own_contribution => if Map.get(node, :own_contribution) do render("vote.json", %{vote: node.own_contribution}) else nil end,
-			:references => if Map.has_key?(node, :references) do render_many(node.references |> Enum.filter(& &1.unit == nil or Map.has_key?(&1, :results) and &1.results.count > 0) , Liquio.Web.NodeView, "reference.json") else nil end,
+			:references => if Map.has_key?(node, :references) do render_many(node.references |> Enum.filter(& &1.results["all"].probability.count > 0), Liquio.Web.NodeView, "reference.json") else nil end,
 			:inverse_references => if Map.has_key?(node, :inverse_references) do render_many(node.inverse_references, Liquio.Web.NodeView, "node.json") else nil end,
 			:calculation_opts => Map.get(node, :calculation_opts)
 		}

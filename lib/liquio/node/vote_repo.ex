@@ -9,12 +9,11 @@ defmodule Liquio.VoteRepo do
 	end
 
 	def get_at_datetime(path, datetime) do
-		query = "SELECT DISTINCT ON (v.identity_id) *
+		query = "SELECT DISTINCT ON (v.identity_id, v.unit, v.is_probability, v.at_date) *
 			FROM votes AS v
-			WHERE v.group_key = $1 AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
-			ORDER BY v.identity_id, v.datetime DESC;"
-		group_key = Node.group_key(%{path: path})
-		res = Ecto.Adapters.SQL.query!(Repo, query , [group_key])
+			WHERE v.path = $1 AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			ORDER BY v.identity_id, v.unit, v.is_probability, v.at_date, v.datetime DESC;"
+		res = Ecto.Adapters.SQL.query!(Repo, query , [path])
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		votes = res.rows
 		|> Enum.map(fn(row) ->
@@ -24,13 +23,16 @@ defmodule Liquio.VoteRepo do
 			vote
 		end)
 		|> Enum.filter(& &1.choice != nil)
+		|> Enum.map(& {{&1.identity_id, &1.unit, &1.is_probability}, &1}) |> Enum.into(%{}) |> Map.values
 
 		votes
 	end
 
 	def current_by(identity, node, unit, is_probability) do
 		query = from(v in Vote, where:
-			v.group_key == ^Node.group_key(node) and
+			v.path == ^node.path and
+			v.unit == ^unit and
+			v.is_probability == ^is_probability and
 			v.identity_id == ^identity.id and
 			v.is_last
 		)
@@ -43,17 +45,20 @@ defmodule Liquio.VoteRepo do
 	end
 
 	def set(identity, node, unit, is_probability, choice) do
+		group_key = Vote.group_key(%{path: node.path, unit: unit, is_probability: is_probability})
+		
 		from(v in Vote,
-			where: v.group_key == ^Node.group_key(node) and
+			where: v.group_key == ^group_key and
 				v.identity_id == ^identity.id and
 				v.is_last == true,
 			update: [set: [is_last: false]])
 		|> Repo.update_all([])
+
 		result = Repo.insert!(%Vote{
 			:identity_id => identity.id,
 
 			:path => node.path,
-			:group_key => Node.group_key(node),
+			:group_key => group_key,
 			:search_text => Enum.join(node.path, " "),
 
 			:unit => unit,

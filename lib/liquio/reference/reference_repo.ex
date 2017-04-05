@@ -1,6 +1,6 @@
 defmodule Liquio.ReferenceRepo do
 	import Ecto.Query, only: [from: 2]
-	alias Liquio.{Repo, Node, Reference, ReferenceVote, ResultsCache, Results, CalculateResults}
+	alias Liquio.{Repo, Delegation, Node, Reference, ReferenceVote, ResultsCache, Results, CalculateResults}
 	
 	def load(reference, calculation_opts) do
 		load(reference, calculation_opts, nil)
@@ -85,26 +85,29 @@ defmodule Liquio.ReferenceRepo do
 	end
 	
 	def get_references(node, calculation_opts) do
-		group_key = Node.group_key(node)
+		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+
 		from(v in ReferenceVote, where: v.path == ^node.path and v.is_last == true and not is_nil(v.relevance))
 		|> Repo.all
 		|> Enum.group_by(& &1.reference_key)
-		|> prepare_reference_nodes(calculation_opts)
+		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
 	end
 	
 	def get_inverse_references(node, calculation_opts) do
+		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+
 		from(v in ReferenceVote, where: v.reference_path == ^node.path and v.is_last == true and not is_nil(v.relevance))
 		|> Repo.all
 		|> Enum.group_by(& &1.key)
-		|> prepare_reference_nodes(calculation_opts)
+		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
 	end
 
-	defp prepare_reference_nodes(keys_with_votes, calculation_opts) do
+	defp prepare_reference_nodes(keys_with_votes, inverse_delegations, calculation_opts) do
 		keys_with_votes
 		|> Enum.map(fn({key, votes}) ->
-			results = votes
-			|> CalculateResults.calculate_for_votes(calculation_opts)
-			{key, results}
+			contributions = CalculateResults.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, [])
+			|> Repo.preload([:identity])
+			{key, Results.from_contributions(contributions, calculation_opts)}
 		end)
 		|> Enum.filter(fn({_key, result}) ->
 			result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]

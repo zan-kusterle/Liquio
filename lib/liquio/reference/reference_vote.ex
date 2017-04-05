@@ -32,7 +32,8 @@ defmodule Liquio.ReferenceVote do
 			vote
 		end)
 		|> Enum.filter(& &1.choice != nil)
-
+		|> Enum.map(& {&1.identity_id, &1}) |> Enum.into(%{}) |> Map.values
+		
 		votes
 	end
 	

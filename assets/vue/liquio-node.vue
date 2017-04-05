@@ -59,7 +59,7 @@
 							</div>
 							<div class="choice" v-html="contribution.embed" style="height: 40px;"></div>
 							<div class="username"><router-link :to="'/identities/' + contribution.identity_username">{{ contribution.identity_username }}</router-link></div>
-							<div class="date">{{ moment(contribution.datetime).fromNow() }}</div>
+							<div class="date">{{ moment(new Date(contribution.datetime)).fromNow() }}</div>
 						</div>
 					</div>
 				</div>

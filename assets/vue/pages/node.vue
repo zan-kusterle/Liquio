@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="before" v-if="node">
+		<div class="before" v-if="!node.loading">
 			<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px;">
 				<el-button slot="append" icon="caret-right" @click="view_inverse_reference"></el-button>
 			</el-input>
@@ -8,11 +8,11 @@
 			<liquio-list v-if="node.path[0] !== ''" v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 		</div>
 
-		<div v-if="node" class="main">
-			<liquio-node v-bind:node="node" v-bind:unit="node.default_results.unit"></liquio-node>
+		<div v-if="!node.loading" class="main">
+			<liquio-node v-bind:node="node" v-bind:unit="node.unit"></liquio-node>
 		</div>
 		<div v-else class="main">
-			<h1 class="fake-title" v-if="title">{{ title }}</h1>
+			<h1 class="fake-title">{{ node.title }}</h1>
 			<i class="el-icon-loading loading"></i>
 		</div>
 
@@ -36,6 +36,19 @@ import CalculationOptions from '../calculation-options.vue'
 import LiquioNode from '../liquio-node.vue'
 import LiquioList from '../liquio-list.vue'
 let utils = require('utils.js')
+
+let getCurrentNode = ($store) => {
+	let key = $store.getters.currentNode.key
+	if($store.getters.searchQuery) {
+		$store.dispatch('search', $store.getters.searchQuery)
+		return $store.getters.searchResults($store.getters.searchQuery)
+	} else if(!$store.getters.hasNode(key)) {
+		$store.dispatch('fetchNode', key)
+		return $store.getters.currentNode
+	} else {
+		return $store.getters.getNodeByKey(key)
+	}
+}
 
 export default {
 	components: {App, CalculationOptions, LiquioNode, LiquioList},
@@ -61,24 +74,14 @@ export default {
 			}
 		}
 	},
+	watch: {
+		'$route': function() {
+			getCurrentNode(this.$store)
+		}
+	},
 	computed: {
 		node: function() {
-			if(this.$store.getters.searchQuery) {
-				this.$store.dispatch('search', this.$store.getters.searchQuery)
-				return this.$store.getters.searchResults(this.$store.getters.searchQuery)
-			} else {
-				let key = this.$store.getters.node.key
-				if(!this.$store.getters.hasNode(key))
-					this.$store.dispatch('fetchNode', key)
-				return this.$store.getters.getNodeByKey(key)
-			}
-		},
-		title: function() {
-			if(this.$store.getters.searchQuery) {
-				return 'Results for ' + this.$store.getters.searchQuery
-			} else {
-				return this.$store.getters.node.title
-			}
+			return getCurrentNode(this.$store)
 		}
 	}
 }

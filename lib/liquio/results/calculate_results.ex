@@ -2,42 +2,23 @@ defmodule Liquio.CalculateResults do
 	import Ecto.Query, only: [from: 2]
 	alias Liquio.{Identity, Repo, GetData, Results, CalculateMemoServer}
 
-
-	def calculate_for_votes(votes, calculation_opts) do
-		votes = for vote <- votes, into: %{} do
-			{vote.identity_id, vote}
-		end
-		inverse_delegations = GetData.get_inverse_delegations(calculation_opts.datetime)
-		contributions = calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, [])
-		|> Repo.preload([:identity])
-
-		Results.from_contributions(contributions, calculation_opts)
-	end
-
-	def calculate(votes, inverse_delegations, trust_identity_ids, topics) do
-		votes = votes |> Enum.map(& {&1.identity_id, &1}) |> Enum.into(%{})
-
+	def calculate(votes, inverse_delegations, trust_usernames, topics) do
 		topics = if is_list(topics) do MapSet.new(topics) else topics end
-
+		trust_votes = votes |> Enum.filter(& MapSet.member?(trust_usernames, &1.identity.username))
 		uuid = String.to_atom(UUID.uuid4(:hex))
+		state = {inverse_delegations, Enum.map(trust_votes, & {&1.identity.id, &1}) |> Enum.into(%{}), topics, trust_usernames}
 
 		CalculateMemoServer.start_link uuid
 
-		state = {inverse_delegations, votes, topics, trust_identity_ids}
-
-		trust_votes = votes |> Enum.filter(fn({_k, v}) ->
-			MapSet.member?(trust_identity_ids, to_string(v.identity.username))
+		Enum.each(trust_votes, fn(vote) ->
+			calculate_total_weights(vote.identity.id, state, uuid, MapSet.new)
 		end)
 
-		Enum.each(trust_votes, fn({identity_id, _vote}) ->
-			calculate_total_weights(identity_id, state, uuid, MapSet.new)
-		end)
-		
 		CalculateMemoServer.reset_visited(uuid)
 
-		contributions = trust_votes |> Enum.map(fn({identity_id, vote}) ->
+		contributions = trust_votes |> Enum.map(fn(vote) ->
 			vote
-			|> Map.put(:voting_power, get_power(identity_id, state, uuid, MapSet.new) / 1)
+			|> Map.put(:voting_power, get_power(vote.identity.id, state, uuid, MapSet.new) / 1)
 		end)
 
 		CalculateMemoServer.stop uuid
