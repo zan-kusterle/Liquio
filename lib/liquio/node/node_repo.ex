@@ -1,5 +1,5 @@
 defmodule Liquio.NodeRepo do
-	alias Liquio.{Node, Delegation, Vote, VoteRepo, ResultsCache, ReferenceRepo, ReferenceVote, Repo, CalculateResults, Results}
+	alias Liquio.{Node, Delegation, Vote, VoteRepo, ResultsCache, ReferenceRepo, ReferenceVote, Repo, Results}
 
 	def all(calculation_opts) do
 		key = {
@@ -86,53 +86,31 @@ defmodule Liquio.NodeRepo do
 	end
 	
 	def load_own_contribution(node, user) do
-		vote = if Map.has_key?(node, :own_vote) do
-			node.own_vote
+		votes = if Map.has_key?(node, :own_votes) do
+			node.own_votes
 		else
-			if user do VoteRepo.current_by(user, node, "true", true) else nil end
-		end
-
-		contribution = if vote do
-			contribution = if Map.has_key?(node, :results) and user != nil do
-				Enum.find(node.votes, & &1.identity_id == user.id)
-			else
-				nil
-			end
-
-			contribution = if contribution do
-				contribution
-			else
-				vote
-				|> Map.put(:voting_power, 0.0)
-				|> Map.put(:identity, user)
-			end
-			
-			results = Results.from_contribution(contribution)
-			contribution
-			|> Map.put(:results, results)
-		else
-			nil
+			if user do VoteRepo.current_by(user, node) else [] end
 		end
 
 		node
-		|> Map.put(:own_vote, vote)
-		|> Map.put(:own_contribution, contribution)
+		|> Map.put(:own_votes, votes)
+		|> Map.put(:own_results, Results.from_vote(Enum.at(votes, 0)))
 	end
 
 	def load_results(node, calculation_opts) do
 		node = if not Map.has_key?(node, :topics) do
-			node |> ReferenceRepo.load_inverse_references(calculation_opts, 1)
+			node |> NodeRepo.load_inverse_references(calculation_opts, 1)
 		else
 			node
 		end
+		calculation_opts = calculation_opts |> Map.put(:topics, node.topics)
 
 		votes = VoteRepo.get_at_datetime(node.path, calculation_opts.datetime) |> Repo.preload([:identity])
 
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
 		results = votes |> Enum.group_by(& &1.unit) |> Enum.map(fn({unit, votes_for_unit}) ->
-			{unit, get_results(votes_for_unit, inverse_delegations, calculation_opts, node.topics)}
+			{unit, Results.from_votes(votes_for_unit, inverse_delegations, calculation_opts)}
 		end) |> Enum.into(%{})
-		|> Map.put("all", get_results(votes, inverse_delegations, calculation_opts, node.topics))
 
 		node = if not Enum.empty?(votes) do
 			{best_title, _count} = votes
@@ -149,21 +127,7 @@ defmodule Liquio.NodeRepo do
 		node
 		|> Map.put(:votes, votes)
 		|> Map.put(:results, results)
-	end
-
-	defp get_results(votes, inverse_delegations, calculation_opts, topics) do
-		{probability_votes, quantity_votes} = Enum.partition(votes, & &1.is_probability)
-
-		contributions = CalculateResults.calculate(probability_votes, inverse_delegations, calculation_opts.trust_metric_ids, topics) |> Repo.preload([:identity])
-		probability_results = Results.from_contributions(contributions, calculation_opts) |> Map.put(:is_probability, true)
-
-		contributions = CalculateResults.calculate(quantity_votes, inverse_delegations, calculation_opts.trust_metric_ids, topics) |> Repo.preload([:identity])
-		quantity_results = Results.from_contributions(contributions, calculation_opts) |> Map.put(:is_probability, false)
-
-		%{
-			:probability => probability_results,
-			:quantity => quantity_results
-		}
+		|> Map.put(:all_results, Results.from_votes(votes, inverse_delegations, calculation_opts))
 	end
 	
 	def load_references(node, calculation_opts, current_depth \\ nil) do

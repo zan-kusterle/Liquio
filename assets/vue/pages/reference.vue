@@ -65,9 +65,7 @@ export default {
 	},
 	methods: {
 		fetchData: function() {
-			_.each(this.$store.getters.keys, (key) => this.$store.dispatch('fetchNode', key))
-			_.each(this.$store.getters.referencingKeys, (key) => this.$store.dispatch('fetchNode', key))
-			_.each(this.$store.getters.referenceKeyPairs, ({key, referenceKey}) => this.$store.dispatch('fetchReference', {key: key, referenceKey: referenceKey}))
+			this.$store.dispatch('fetchReference', {key: this.$store.getters.currentReference.node.key, referenceKey: this.$store.getters.currentReference.referenceNode.key})
 		}
 	}
 }

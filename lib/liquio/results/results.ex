@@ -1,20 +1,33 @@
 defmodule Liquio.Results do
-	alias Liquio.Node
+	alias Liquio.{Node, CalculateResults, Repo}
 
-	def from_contribution(contribution) do
+	def from_vote(vote) when is_nil(vote) do nil end
+	def from_vote(vote) do
+		contribution = vote
+		|> Map.put(:voting_power, 0.0)
+		|> Repo.preload([:identity])
+		
 		%{
-			:total => 0.0,
-			:turnout_ratio => 0.0,
-			:count => 1,
-			:mean => contribution.choice,
-			:median => contribution.choice,
-			:contributions => [contribution]
-		} |> load()
+			:spectrum => from_contributions([contribution], Timex.now, 1, true),
+			:quantity => from_contributions([contribution], Timex.now, 1, false)
+		}
 	end
 
-	def from_contributions(contributions, %{:datetime => datetime, :vote_weight_halving_days => vote_weight_halving_days, :trust_metric_ids => trust_metric_ids}) do
+	def from_votes(votes, inverse_delegations, calculation_opts = %{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :topics => topics}) do
+		contributions = CalculateResults.calculate(votes, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
+
+		probability_votes = Enum.filter(votes, & &1.choice >= 0.0 and &1.choice <= 1.0)
+		probability_contributions = CalculateResults.calculate(probability_votes, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
+
+		%{
+			:spectrum => from_contributions(probability_contributions, datetime, MapSet.size(calculation_opts.trust_metric_ids), true),
+			:quantity => from_contributions(contributions, datetime, MapSet.size(calculation_opts.trust_metric_ids), false)
+		}
+	end
+
+	def from_contributions(contributions, datetime, trust_metric_size, is_spectrum) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		trust_metric_size = MapSet.size(trust_metric_ids)
+		vote_weight_halving_days = nil
 
 		time_weighted_contributions =
 			if vote_weight_halving_days == nil do
@@ -25,38 +38,25 @@ defmodule Liquio.Results do
 				end)
 			end
 
+		embed_html = if is_spectrum do inline_results_spectrum(mean(time_weighted_contributions)) else inline_results_quantity(median(time_weighted_contributions)) end
+
 		%{
 			:total => total_power,
 			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(contributions),
-			:mean => mean(time_weighted_contributions),
-			:median => median(time_weighted_contributions),
-			:contributions => contributions
-		} |> load()
+			:contributions => contributions,
+			:embed => embed_html |> minify_html,
+			:by_time => inline_results_by_time(nil) |> minify_html,
+			:distribution => inline_results_distribution(nil) |> minify_html
+		}
 	end
 
-	defp load(results) do
-		text = inline_results_value(results) |> minify_html
-		color = results_color(results)
-		
-		results
-		|> Map.put(:text, text)
-		|> Map.put(:color, color)
-		|> Map.put(:embed, "<div class=\"area\" style=\"background-color: #{color}\"><div class=\"bubble\"><p>#{text}</p></div></div>")
-		|> Map.put(:by_time, inline_results_by_time(results) |> minify_html)
-		|> Map.put(:distribution, inline_results_distribution(results) |> minify_html)
-	end
-
-	defp results_color(results) do
-		if Map.get(results, :is_probability, true) and results.count > 0 do
-			cond do
-				results.mean == nil -> "#ddd"
-				results.mean < 0.25 -> "rgb(255, 164, 164)"
-				results.mean < 0.75 -> "rgb(249, 226, 110)"
-				true -> "rgb(140, 232, 140)"
-			end
-		else
-			"#ddd"
+	defp results_color(mean) do
+		cond do
+			mean == nil -> "#ddd"
+			mean < 0.25 -> "rgb(255, 164, 164)"
+			mean < 0.75 -> "rgb(249, 226, 110)"
+			true -> "rgb(140, 232, 140)"
 		end
 	end
 
@@ -68,16 +68,25 @@ defmodule Liquio.Results do
 		|> String.replace("\"", "'")
 	end
 
-	defp inline_results_value(results) do
-		if results.mean == nil do
+	defp inline_results_spectrum(mean) do
+		color = results_color(mean)
+		text = if mean == nil do
 			"?"
 		else
-			if Map.get(results, :is_probability, true) do
-				"#{round(results.mean * 100)}%"
-			else
-				"#{round(results.mean)}"				
-			end
+			"#{round(mean * 100)}%"
 		end
+
+		"<div class=\"area\" style=\"background-color: #{color}\"><div class=\"bubble\"><p>#{text}</p></div></div>"
+	end
+
+	defp inline_results_quantity(mean) do
+		text = if mean == nil do
+			"?"
+		else
+			"#{round(mean)}"
+		end
+
+		"<div class=\"area\" style=\"background-color: #ddd\"><div class=\"bubble\"><p>#{text}</p></div></div>"
 	end
 
 	defp inline_results_by_time(results) do
@@ -160,15 +169,6 @@ defmodule Liquio.Results do
 				"9" -> 	"⁹"
 			end
 		end)
-	end
-
-	def by_key(aggregations_by_key, key) do
-		Map.get(aggregations_by_key, key, %{
-			:mean => nil,
-			:total => 0,
-			:turnout_ratio => 0,
-			:count => 0
-		})
 	end
 
 	defp mean(contributions) do

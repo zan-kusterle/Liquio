@@ -107,7 +107,7 @@ defmodule Liquio.Identity do
 			{direct_votes, reference_votes} = Enum.split_with(votes_for_key, & &1.reference_key == nil)
 			references = Enum.map(reference_votes, fn(reference_vote) ->
 				node = Node.decode(reference_vote.reference_key)
-				|> Map.put(:own_vote, reference_vote)
+				|> Map.put(:own_votes, [reference_vote])
 				node = node
 				|> NodeRepo.load_own_contribution(identity)
 				node
@@ -115,7 +115,7 @@ defmodule Liquio.Identity do
 			end)
 
 			node = Node.decode(key)
-			|> Map.put(:own_vote, Enum.at(direct_votes, 0))
+			|> Map.put(:own_votes, direct_votes)
 			|> NodeRepo.load_own_contribution(identity)
 			|> Map.put(:references, references)
 			node

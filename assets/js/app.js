@@ -25,7 +25,7 @@ const routes = [
 	{ path: '/login', component: loginComponent },
 	{ path: '/login/:token/new', component: finishLoginComponent },
 	{ path: '/identities/:username', component: identityComponent },
-	{ name: 'search', path: '/search/:query', component: nodeComponent },
+	{ path: '/search/:query', component: nodeComponent, name: 'search' },
 	{ path: '/:key/references', component: referenceComponent },
 	{ path: '/:key/references/:referenceKey', component: referenceComponent },
 	{ path: '/:key/:unit', component: nodeComponent },

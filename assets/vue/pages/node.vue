@@ -37,19 +37,6 @@ import LiquioNode from '../liquio-node.vue'
 import LiquioList from '../liquio-list.vue'
 let utils = require('utils.js')
 
-let getCurrentNode = ($store) => {
-	let key = $store.getters.currentNode.key
-	if($store.getters.searchQuery) {
-		$store.dispatch('search', $store.getters.searchQuery)
-		return $store.getters.searchResults($store.getters.searchQuery)
-	} else if(!$store.getters.hasNode(key)) {
-		$store.dispatch('fetchNode', key)
-		return $store.getters.currentNode
-	} else {
-		return $store.getters.getNodeByKey(key)
-	}
-}
-
 export default {
 	components: {App, CalculationOptions, LiquioNode, LiquioList},
 	data: function() {
@@ -74,14 +61,35 @@ export default {
 			}
 		}
 	},
+	created: function() {
+		this.fetchData()
+	},
 	watch: {
-		'$route': function() {
-			getCurrentNode(this.$store)
+		'$route': 'fetchData'
+	},
+	methods: {
+		fetchData: function() {
+			let key = this.$store.getters.currentNode.key
+
+			if(this.$store.getters.searchQuery) {
+				this.$store.dispatch('search', this.$store.getters.searchQuery)
+			}
+			
+			if(!this.$store.getters.hasNode(key)) {
+				this.$store.dispatch('fetchNode', key)
+			}
 		}
 	},
 	computed: {
 		node: function() {
-			return getCurrentNode(this.$store)
+			let key = this.$store.getters.currentNode.key
+			if(this.$store.getters.searchQuery) {
+				return this.$store.getters.searchResults(this.$store.getters.searchQuery)
+			} else if(!this.$store.getters.hasNode(key)) {
+				return this.$store.getters.currentNode
+			} else {
+				return this.$store.getters.getNodeByKey(key)
+			}
 		}
 	}
 }

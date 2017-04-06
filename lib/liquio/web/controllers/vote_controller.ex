@@ -7,10 +7,10 @@ defmodule Liquio.Web.VoteController do
 		:node => {Plugs.NodeParam, [name: "node_id"]},
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
-	def create(conn, %{:node => node, :user => user, "choice" => choice}) do
+	def create(conn, %{:node => node, :user => user, "choice" => choice, "unit" => unit_value}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 
-		VoteRepo.set(user, node, "reliable", true, get_choice(choice))
+		VoteRepo.set(user, node, Vote.decode_unit!(unit_value), get_choice(choice))
 		if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 			{:info, "Your vote is now live."}
 		else
@@ -28,8 +28,8 @@ defmodule Liquio.Web.VoteController do
 		:node => {Plugs.NodeParam, [name: "node_id"]},
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
-	def delete(conn, %{:node => node, :user => user}) do
-		VoteRepo.delete(user, node, "true", true)
+	def delete(conn, %{:node => node, :user => user, "unit" => unit_value}) do
+		VoteRepo.delete(user, node, Vote.decode_unit!(unit_value))
 
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn

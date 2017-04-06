@@ -12,21 +12,23 @@ defmodule Liquio.Web.NodeView do
 	def render("node.json", %{node: node}) do
 		%{
 			:path => node.path,
-			:results => if Map.has_key?(node, :results) do
-				node.results |> Enum.map(fn({unit, unit_results}) ->
-					unit_results = [:probability, :quantity] |> Enum.map(fn(key) ->
-						concrete_results = Map.get(unit_results, key)
-						concrete_results = concrete_results
-						|> Map.put(:contributions, concrete_results.contributions |> Enum.map(& render("vote.json", %{vote: &1})))
-						{key, concrete_results}
-					end) |> Enum.into(%{})
-					{unit, unit_results}
+			:units => if Map.has_key?(node, :results) do
+				node.results |> Enum.map(fn({unit_value, unit_results}) ->
+					unit = Liquio.Vote.decode_unit!(unit_value)
+
+					concrete_results = if unit.type == :spectrum do unit_results.spectrum else unit_results.quantity end
+					concrete_results = concrete_results |> Map.put(:contributions, render_many(concrete_results.contributions, Liquio.Web.NodeView, "vote.json"))
+
+					unit = unit
+					|> Map.put(:type, to_string(unit.type))
+					|> Map.put(:results, concrete_results)
+					{unit.key, unit |> Map.drop([:key])}
 				end) |> Enum.into(%{})
 			else
 				%{}
 			end,
-			:own_contribution => if Map.get(node, :own_contribution) do render("vote.json", %{vote: node.own_contribution}) else nil end,
-			:references => if Map.has_key?(node, :references) do render_many(node.references |> Enum.filter(& &1.results["all"].probability.count > 0), Liquio.Web.NodeView, "node.json") else nil end,
+			:own_contribution => if Map.get(node, :own_contribution) do render("vote.json", %{node: node.own_contribution}) else nil end,
+			:references => if Map.has_key?(node, :references) do render_many(node.references, Liquio.Web.NodeView, "node.json") else nil end,
 			:inverse_references => if Map.has_key?(node, :inverse_references) do render_many(node.inverse_references, Liquio.Web.NodeView, "node.json") else nil end,
 			:calculation_opts => Map.get(node, :calculation_opts)
 		}
@@ -40,11 +42,10 @@ defmodule Liquio.Web.NodeView do
 		}
 	end
 
-	def render("vote.json", %{vote: vote}) do
+	def render("vote.json", %{node: vote}) do
 		%{
 			:identity_username => vote.identity.username,
 			:unit => Map.get(vote, :unit, "Score"),
-			:is_probability => Map.get(vote, :is_probability, true),
 			:at_date => Timex.format!(vote.at_date, "{ISO:Extended}"),
 			:datetime => Timex.format!(vote.datetime, "{ISO:Extended}"),
 			:choice => vote.choice,

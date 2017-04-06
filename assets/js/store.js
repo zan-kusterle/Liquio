@@ -179,15 +179,17 @@ export default new Vuex.Store({
 		},
 		fetchReference({commit, state}, {key, referenceKey}) {
 			return new Promise((resolve, reject) => {
-				Api.getReference(key, referenceKey, (node) => {
-					commit('setNode', node)
-					resolve(node)
+				Api.getReference(key, referenceKey, (reference) => {
+					commit('setNode', reference.node)
+					commit('setNode', reference.reference_node)
+					commit('setReference', reference)
+					resolve(reference)
 				})
 			})
 		},
-		setVote({commit}, {node, choice}) {
+		setVote({commit, state}, {node, choice}) {
 			return new Promise((resolve, reject) => {
-				Api.setVote(node.key, node.reference_key, choice, function(node) {
+				Api.setVote(node.key, state.route.params.unit, choice, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})
