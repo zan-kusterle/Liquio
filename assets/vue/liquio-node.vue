@@ -6,8 +6,8 @@
 
 		<div class="score-container">
 			<div>
-				<div v-if="this.node.default_results && this.node.default_results.turnout_ratio > 0.01">
-					<div v-html="this.node.default_results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+				<div v-if="this.node.default_unit && this.node.default_unit.results.turnout_ratio > 0.01">
+					<div v-html="this.node.default_unit.results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 				</div>
 				<div style="width: 100%; display: block;" class="choose-units">
 					<el-select v-model="current_unit" v-on:change="pickUnit" size="mini">
@@ -26,7 +26,7 @@
 						<span>{{ Math.round(vote.choice) }}</span><span class="percent">%</span>
 					</div>
 
-					<div class="range" v-if="true || first_node.default_results.is_probability">
+					<div class="range" v-if="node.default_unit && node.default_unit.type == 'spectrum'">
 						<el-slider v-model="vote.choice" />
 					</div>
 					<div class="numeric" v-else>
@@ -51,9 +51,9 @@
 
 			<transition name="fade">
 				<div class="vote-container" v-bind:class="{open: true}">
-					<div class="votes" v-if="node.default_results && node.default_results.contributions.length > 0">
-						<p class="ui-title">{{ Math.round(node.default_results.turnout_ratio * 100) }}% turnout</p>
-						<div class="contribution" v-for="contribution in node.default_results.contributions" :key="contribution.username">
+					<div class="votes" v-if="node.default_unit && node.default_unit.results.contributions.length > 0">
+						<p class="ui-title">{{ Math.round(node.default_unit.results.turnout_ratio * 100) }}% turnout</p>
+						<div class="contribution" v-for="contribution in node.default_unit.results.contributions" :key="contribution.username">
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 							</div>
@@ -78,7 +78,7 @@ let utils = require('utils.js')
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['node', 'votableNodes', 'resultsKey', 'referenceKey', 'title', 'unit'],
+	props: ['node', 'votableNodes', 'resultsKey', 'referenceKey', 'title'],
 	data: function() {
 		let self = this
 		let nodes = self.votableNodes || [self.node]
@@ -93,7 +93,7 @@ export default {
 			}],
 			mean: 0.5,
 			moment: require('moment'),
-			current_unit: self.unit || first_node.unit,
+			current_unit: first_node.default_unit,
 			set: function(event) {
 				let choices = _.map(self.votes, (vote) => parseFloat(vote.choice) / 100)
 				_.each(nodes, (node) => {

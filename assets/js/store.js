@@ -17,17 +17,21 @@ export default new Vuex.Store({
 		nodes: [],
 		identities: [],
 		calculation_opts: {},
-		units: [
-			{text: 'True - False', value: 'true', is_probability: true},
-			{text: 'Count', value: 'count', is_probability: false},
-			{text: 'Fact - Lie', value: 'fact', is_probability: true},
-			{text: 'Reliable - Unreliable', value: 'reliable', is_probability: true},
-			{text: 'Temperature (°C)', value: 'temperature', is_probability: false},
-			{text: 'US Dollars (USD)', value: 'usd', is_probability: false},
-			{text: 'Length (m)', value: 'length', is_probability: false},
-			{text: 'Approve - Disapprove', value: 'approve', is_probability: true},
-			{text: 'Agree - Disagree', value: 'agree', is_probability: true}
-		]
+		units: _.map([
+			{key: 'true', text: 'True-False', value: 'true', is_probability: true},
+			{key: 'count', text: 'Count', value: 'count', is_probability: false},
+			{key: 'fact', text: 'Fact-Lie', value: 'fact', is_probability: true},
+			{key: 'reliable', text: 'Reliable-Unreliable', value: 'reliable', is_probability: true},
+			{key: 'temperature', text: 'Temperature (°C)', value: 'temperature', is_probability: false},
+			{key: 'usdollars', text: 'US Dollars (USD)', value: 'usd', is_probability: false},
+			{key: 'euro', text: 'Euro (EUR)', value: 'eur', is_probability: false},
+			{key: 'length', text: 'Length (m)', value: 'length', is_probability: false},
+			{key: 'approve', text: 'Approve-Disapprove', value: 'approve', is_probability: true},
+			{key: 'agree', text: 'Agree-Disagree', value: 'agree', is_probability: true}
+		], (u) => {
+			u.value = u.text.replace(' (', '(')
+			return u
+		})
 	},
 	getters: {
 		hasNode: (state) => (key) => {
@@ -84,6 +88,10 @@ export default new Vuex.Store({
 					}
 					return referenceNode
 				}), (x) => x)
+
+				let unit = _.find(state.units, (u) => u.value == state.route.params.unit)
+				let default_unit = unit && node.units && node.units[unit.key]
+				node.default_unit = default_unit
 			}
 			return node
 		},
@@ -105,11 +113,6 @@ export default new Vuex.Store({
 			
 			if(state.user && state.user.username == identity.username)
 				state.user = identity
-		},
-		setNodeUnit(state, node, unit) {
-			node.unit = state.route.params.unit || "reliable"
-			node.is_probability = true
-			node.default_results = node.results && node.results[node.unit] ? node.results[node.unit].probability : null
 		},
 		setNode (state, node) {
 			node.key = node.path.join('/')

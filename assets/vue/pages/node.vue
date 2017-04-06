@@ -9,7 +9,7 @@
 		</div>
 
 		<div v-if="!node.loading" class="main">
-			<liquio-node v-bind:node="node" v-bind:unit="node.unit"></liquio-node>
+			<liquio-node v-bind:node="node"></liquio-node>
 		</div>
 		<div v-else class="main">
 			<h1 class="fake-title">{{ node.title }}</h1>
