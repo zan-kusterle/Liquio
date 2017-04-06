@@ -8,8 +8,8 @@ defmodule Liquio.Web.ReferenceController do
 	},
 	def show(conn, %{:user => user, :node => node, :reference_node => reference_node}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		reference = Node.put_reference_key(node, reference_node.key) |> NodeRepo.load(calculation_opts, user)
+		reference = Reference.new(node.path, reference_node.path) |> ReferenceRepo.load(calculation_opts, user)
 		conn
-		|> render(Liquio.Web.NodeView, "show.json", node: reference)
+		|> render(Liquio.Web.NodeView, "reference.json", node: reference)
 	end)
 end

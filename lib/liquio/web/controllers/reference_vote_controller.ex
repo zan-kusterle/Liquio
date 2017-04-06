@@ -9,7 +9,7 @@ defmodule Liquio.Web.ReferenceVoteController do
 	},
 	def create(conn, %{:node => node, :reference_node => reference_node, :user => user, "choice" => choice}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		reference = Node.put_reference_key(node, reference_node.key)
+		reference = Reference.new(node.path, reference_node.path)
 
 		relevance_score = case Float.parse(choice) do
 			{:ok, x} -> x
@@ -35,7 +35,7 @@ defmodule Liquio.Web.ReferenceVoteController do
 	},
 	def delete(conn, %{:node => node, :reference_node => reference_node, :user => user}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		reference = Node.put_reference_key(node, reference_node.key)
+		reference = Reference.new(node.path, reference_node.path)
 		ReferenceVote.delete(user, reference)
 
 		conn

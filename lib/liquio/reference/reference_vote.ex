@@ -1,6 +1,6 @@
 defmodule Liquio.ReferenceVote do
 	use Liquio.Web, :model
-	alias Liquio.{Repo, ReferenceRepo, ReferenceVote}
+	alias Liquio.{Repo, Vote, Reference, ReferenceRepo, ReferenceVote}
 
 	schema "reference_votes" do
 		belongs_to :identity, Liquio.Identity
@@ -26,7 +26,7 @@ defmodule Liquio.ReferenceVote do
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		votes = res.rows
 		|> Enum.map(fn(row) ->
-			vote = struct(Liquio.Vote, Enum.zip(cols, row))
+			vote = struct(Vote, Enum.zip(cols, row))
 			{date, {h, m, s, _}} = vote.datetime
 			vote = Map.put(vote, :datetime,  Timex.to_naive_datetime({date, {h, m, s}}))
 			vote
@@ -39,7 +39,7 @@ defmodule Liquio.ReferenceVote do
 	
 	def current_by(identity, reference) do
 		query = from(v in ReferenceVote, where:
-			v.group_key == ^reference.group_key and
+			v.path == ^reference.path and v.reference_path == ^reference.reference_path and
 			v.identity_id == ^identity.id and
 			v.is_last
 		)

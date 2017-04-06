@@ -59,14 +59,14 @@ export default {
 			reference_title: '',
 			inverse_reference_title: '',
 			view_reference: (event) => {
-				let clean_key = self.reference_title.trim()
+				let clean_key = self.reference_title.trim().replace(/\s+/g, '-')
 				if(clean_key.length >= 3) {
 					let path = '/' + encodeURIComponent(self.node.key) + '/references/' + encodeURIComponent(clean_key)
 					self.$router.push(path)
 				}
 			},
 			view_inverse_reference: (event) => {
-				let clean_key = self.inverse_reference_title.trim()
+				let clean_key = self.inverse_reference_title.trim().replace(/\s+/g, '-')
 				if(clean_key.length >= 3) {
 					let path = '/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(self.node.key)
 					self.$router.push(path)

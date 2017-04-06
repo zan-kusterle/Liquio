@@ -35,7 +35,7 @@ export default {
 	}
 
 	.list-simple {
-		column-count: 4;
-		column-gap: 30px;
+		column-count: 3;
+		column-gap: 20px;
 	}
 </style>

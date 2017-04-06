@@ -4,6 +4,10 @@ defmodule Liquio.Reference do
 	@enforce_keys [:path, :reference_path, :results]
 	defstruct [:path, :reference_path, :results]
 
+	def new(path, reference_path) do
+		%Liquio.Reference{path: path, reference_path: reference_path, results: %{:relevance => 0.81}}
+	end
+
 	def decode(key, reference_key) do
 		%Reference{
 			path: key |> String.trim(" ") |> String.split("/"),

@@ -40,6 +40,12 @@
 	</head>
 
 	<body>
-		advantages over other systems (own trust metric, delegations, references -> practical applications)
+		<ul>
+			<li>Spot fake and biased news before even opening them.</li>
+			<li>Trust metrics eliminate moderation by giving you full control over who you trust.</li>
+			<li>Instant reliability scores for links on the web.</li>
+			<li>Democratic lists of polls alongside relevant paragraphs on news websites.</li>
+			<li>Delegations minimize population sampling bias and provide reliable results even with few votes cast.</li>
+		</ul>
 	</body>
 </html>
