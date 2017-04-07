@@ -14,7 +14,7 @@ export function getNode(key, cb) {
 export function getReference(key, reference_key, cb) {
 	let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key)
 	axios.get(url).then(function (response) {
-		cb(response.data.data)
+		cb(response.data)
 	}).catch(function (error) {
 	})
 }
@@ -112,20 +112,23 @@ export function setVote(key, unit, choice, cb) {
 	}).catch(function (error) {
 	})
 }
-
-export function setReferenceVote(key, reference_key, relevance, cb) {
-	for(var choice_key in choice)
-		choice[choice_key + ''] = parseFloat(choice[choice_key])
-	
-	let url = '/api/nodes/' + encodeURIComponent(key) + (reference_key ? '/references/' + encodeURIComponent(reference_key) : '') + '/votes'
-	axios.post(url, {choice: choice}).then(function (response) {
+export function unsetVote(key, unit, cb) {
+	let url = '/api/nodes/' + encodeURIComponent(key) + '/votes'
+	axios.delete(url, {unit: unit}).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {
 	})
 }
 
-export function unsetVote(key, reference_key, cb) {
-	let url = '/api/nodes/' + encodeURIComponent(key) + (reference_key ? '/references/' + encodeURIComponent(reference_key) : '') + '/votes'
+export function setReferenceVote(key, reference_key, relevance, cb) {
+	let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key) + '/votes'
+	axios.post(url, {relevance: relevance}).then(function (response) {
+		cb(response.data.data)
+	}).catch(function (error) {
+	})
+}
+export function unsetReferenceVote(key, reference_key, cb) {
+	let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key) + '/votes'
 	axios.delete(url).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {

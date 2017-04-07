@@ -1,21 +1,16 @@
 defmodule Liquio.Web.ReferenceVoteController do
 	use Liquio.Web, :controller
 	
-	plug :scrub_params, "choice" when action in [:create]
 	with_params(%{
 		:node => {Plugs.NodeParam, [name: "node_id"]},
 		:reference_node => {Plugs.NodeParam, [name: "reference_id"]},
 		:user => {Plugs.CurrentUser, [require: true]}
 	},
-	def create(conn, %{:node => node, :reference_node => reference_node, :user => user, "choice" => choice}) do
+	def create(conn, %{:node => node, :reference_node => reference_node, :user => user, "relevance" => relevance}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Reference.new(node.path, reference_node.path)
-
-		relevance_score = case Float.parse(choice) do
-			{:ok, x} -> x
-			{:error, _} -> nil
-		end
-		ReferenceVote.set(user, reference, relevance_score)
+		
+		ReferenceVote.set(user, reference, get_relevance(relevance))
 		if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
 			{:info, "Your vote is now live."}
 		else
@@ -42,4 +37,20 @@ defmodule Liquio.Web.ReferenceVoteController do
 		|> put_status(:created)
 		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(reference, calculation_opts, user))
 	end)
+
+	defp get_relevance(v) do
+		if is_binary(v) do
+			case Float.parse(v) do
+				{x, _} -> x
+				:error -> nil
+			end
+			v
+		else
+			if is_integer(v) do
+				v * 1.0
+			else
+				v
+			end
+		end
+	end
 end

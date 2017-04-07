@@ -15,6 +15,7 @@ export default new Vuex.Store({
 	state: {
 		user: null,
 		nodes: [],
+		references: [],
 		identities: [],
 		calculation_opts: {},
 		units: _.map([
@@ -49,7 +50,7 @@ export default new Vuex.Store({
 				title: getTitle(path)
 			}
 		},
-		reference: (state) => {
+		currentReference: (state) => {
 			let path = (state.route.params.referenceKey || '').split('/')
 
 			return {
@@ -95,7 +96,13 @@ export default new Vuex.Store({
 			}
 			return node
 		},
-		getNodesByKeys: (state, getters) => (paths) => _.filter(_.map(paths, (path) => getters.getNodeByKey(path)), (n) => n)
+		getNodesByKeys: (state, getters) => (paths) => _.filter(_.map(paths, (path) => getters.getNodeByKey(path)), (n) => n),
+		getReference: (state, getters) => (key, reference_key) => {
+			let reference = _.find(state.references, (reference) => {
+				return reference.node.group_key == utils.normalizeKey(key) && reference.referencing_node.group_key == utils.normalizeKey(reference_key)
+			})
+			return reference ? JSON.parse(JSON.stringify(reference)) : null
+		}
 	},
 	mutations: {
 		login (state, user) {
@@ -147,6 +154,9 @@ export default new Vuex.Store({
 
 			if(node.calculation_opts)
 				state.calculation_opts = node.calculation_opts
+		},
+		setReference (state, reference) {
+			state.references.push(reference)
 		}
 	},
 	actions: {
@@ -184,7 +194,7 @@ export default new Vuex.Store({
 			return new Promise((resolve, reject) => {
 				Api.getReference(key, referenceKey, (reference) => {
 					commit('setNode', reference.node)
-					commit('setNode', reference.reference_node)
+					commit('setNode', reference.referencing_node)
 					commit('setReference', reference)
 					resolve(reference)
 				})
@@ -200,8 +210,24 @@ export default new Vuex.Store({
 		},
 		unsetVote({commit}, node) {
 			return new Promise((resolve, reject) => {
-				Api.unsetVote(node.path, node.reference_path, function(node) {
+				Api.unsetVote(node.key, state.route.params.unit, function(node) {
 					commit('setNode', node)
+					resolve(node)
+				})
+			})
+		},
+		setReferenceVote({commit, state}, {reference, relevance}) {
+			return new Promise((resolve, reject) => {
+				Api.setReferenceVote(reference.node.key, reference.referencing_node.key, relevance, function(reference) {
+					commit('setReference', reference)
+					resolve(node)
+				})
+			})
+		},
+		unsetReferenceVote({commit}, reference) {
+			return new Promise((resolve, reject) => {
+				Api.unsetReferenceVote(reference.node.key, reference.referencing_node.key, function(reference) {
+					commit('setReference', reference)
 					resolve(node)
 				})
 			})

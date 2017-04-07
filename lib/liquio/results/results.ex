@@ -1,31 +1,34 @@
 defmodule Liquio.Results do
 	alias Liquio.{Node, CalculateResults, Repo}
 
-	def from_vote(vote) when is_nil(vote) do nil end
-	def from_vote(vote) do
-		contribution = vote
-		|> Map.put(:voting_power, 0.0)
-		|> Repo.preload([:identity])
-		
-		%{
-			:spectrum => from_contributions([contribution], Timex.now, 1, true),
-			:quantity => from_contributions([contribution], Timex.now, 1, false)
-		}
+	def from_votes_by_units(votes, inverse_delegations, calculation_opts) do
+		votes |> Enum.group_by(& &1.unit) |> Enum.map(fn({unit, votes_for_unit}) ->
+			{unit, from_votes(votes_for_unit, inverse_delegations, calculation_opts)}
+		end) |> Enum.into(%{})
 	end
 
-	def from_votes(votes, inverse_delegations, calculation_opts = %{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :topics => topics}) do
+	def from_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :topics => topics}) do
 		contributions = CalculateResults.calculate(votes, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
 
 		probability_votes = Enum.filter(votes, & &1.choice >= 0.0 and &1.choice <= 1.0)
 		probability_contributions = CalculateResults.calculate(probability_votes, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
 
 		%{
-			:spectrum => from_contributions(probability_contributions, datetime, MapSet.size(calculation_opts.trust_metric_ids), true),
-			:quantity => from_contributions(contributions, datetime, MapSet.size(calculation_opts.trust_metric_ids), false)
+			:spectrum => from_contributions(probability_contributions, datetime, MapSet.size(trust_metric_ids), true),
+			:quantity => from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), false)
 		}
 	end
 
-	def from_contributions(contributions, datetime, trust_metric_size, is_spectrum) do
+	def from_reference_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
+		votes = votes
+		|> Enum.map(& &1 |> Map.put(:choice, &1.relevance))
+		|> Enum.filter(& &1.choice >= 0.0 and &1.choice <= 1.0)
+		contributions = CalculateResults.calculate(votes, inverse_delegations, trust_metric_ids, nil) |> Repo.preload([:identity])
+
+		from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), true)
+	end
+
+	defp from_contributions(contributions, datetime, trust_metric_size, is_spectrum) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
 		vote_weight_halving_days = nil
 
@@ -38,12 +41,14 @@ defmodule Liquio.Results do
 				end)
 			end
 
-		embed_html = if is_spectrum do inline_results_spectrum(mean(time_weighted_contributions)) else inline_results_quantity(median(time_weighted_contributions)) end
+		average = if is_spectrum do mean(time_weighted_contributions) else median(time_weighted_contributions) end
+		embed_html = if is_spectrum do inline_results_spectrum(average) else inline_results_quantity(average) end
 
 		%{
 			:total => total_power,
 			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(contributions),
+			:average => average,
 			:contributions => contributions,
 			:embed => embed_html |> minify_html,
 			:by_time => inline_results_by_time(nil) |> minify_html,

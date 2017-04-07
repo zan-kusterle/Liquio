@@ -44,7 +44,7 @@ defmodule Liquio.ReferenceVote do
 			v.is_last
 		)
 		votes = Repo.all(query)
-		if Enum.empty?(votes) or Enum.at(votes, 0).choice == nil do
+		if Enum.empty?(votes) or Enum.at(votes, 0).relevance == nil do
 			nil
 		else
 			Enum.at(votes, 0)

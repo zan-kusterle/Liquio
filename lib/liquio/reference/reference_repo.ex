@@ -34,36 +34,38 @@ defmodule Liquio.ReferenceRepo do
 	def load_latest(reference, calculation_opts, user) do		
 		reference = reference
 		|> load_results(calculation_opts, user)
-		|> Map.put(:node, Node.new(reference.path) |> NodeRepo.load(calculation_opts, user))
-		|> Map.put(:reference_node, Node.new(reference.reference_path) |> NodeRepo.load(calculation_opts, user))
+		|> load_nodes(calculation_opts, user)
 
 		reference
+	end
+
+	def load_nodes(reference, calculation_opts, user) do
+		reference
+		|> Map.put(:node, Node.new(reference.path) |> NodeRepo.load_results(calculation_opts, user))
+		|> Map.put(:reference_node, Node.new(reference.reference_path) |> NodeRepo.load_results(calculation_opts, user))
 	end
 	
 	def load_results(reference, calculation_opts, user) do
 		votes = ReferenceVote.get_at_datetime(reference.path, reference.reference_path, calculation_opts.datetime)
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
-		contributions = CalculateResults.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, nil) |> Repo.preload([:identity])
-		results = Results.from_contributions(contributions, calculation_opts)		
+		results = Results.from_reference_votes(votes, inverse_delegations, calculation_opts)		
 
-		vote = if Map.has_key?(reference, :own_vote) do
+		own_vote = if Map.has_key?(reference, :own_vote) do
 			reference.own_vote
 		else
 			if user do ReferenceVote.current_by(user, reference) else nil end
 		end
-
-		contribution = if vote do
-			contribution = Enum.find(results.contributions, & &1.identity.username == user.username)
-			contribution
-			|> Map.put(:results, Results.from_contribution(contribution))
+		own_results = if own_vote do
+			own_vote = own_vote |> Repo.preload([:identity])
+			Results.from_reference_votes([own_vote], inverse_delegations, calculation_opts)
 		else
 			nil
 		end
 
 		reference
 		|> Map.put(:results, results)
-		|> Map.put(:own_vote, vote)
-		|> Map.put(:own_contribution, contribution)
+		|> Map.put(:own_vote, own_vote)
+		|> Map.put(:own_results, own_results)
 		|> Map.put(:calculation_opts, calculation_opts)
 	end
 	
@@ -72,8 +74,14 @@ defmodule Liquio.ReferenceRepo do
 
 		from(v in ReferenceVote, where: v.path == ^node.path and v.is_last == true and not is_nil(v.relevance))
 		|> Repo.all
-		|> Enum.group_by(& &1.reference_key)
+		|> Repo.preload([:identity])
+		|> Enum.group_by(& &1.reference_path)
 		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
+		|> Enum.map(fn({reference_path, result}) ->
+			Reference.new(node.path, reference_path)
+			|> Map.put(:results, result)
+		end)
+		|> Enum.sort_by(& -&1.results.average)
 	end
 	
 	def get_inverse_references(node, calculation_opts) do
@@ -81,25 +89,23 @@ defmodule Liquio.ReferenceRepo do
 
 		from(v in ReferenceVote, where: v.reference_path == ^node.path and v.is_last == true and not is_nil(v.relevance))
 		|> Repo.all
-		|> Enum.group_by(& &1.key)
+		|> Repo.preload([:identity])
+		|> Enum.group_by(& &1.path)
 		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
+		|> Enum.map(fn({path, result}) ->
+			Reference.new(path, node.path)
+			|> Map.put(:results, result)
+		end)
+		|> Enum.sort_by(& -&1.results.average)
 	end
 
 	defp prepare_reference_nodes(keys_with_votes, inverse_delegations, calculation_opts) do
 		keys_with_votes
-		|> Enum.map(fn({key, votes}) ->
-			contributions = CalculateResults.calculate(votes, inverse_delegations, calculation_opts.trust_metric_ids, [])
-			|> Repo.preload([:identity])
-			{key, Results.from_contributions(contributions, calculation_opts)}
+		|> Enum.map(fn({k, votes}) ->
+			{k, Results.from_reference_votes(votes, inverse_delegations, calculation_opts)}
 		end)
-		|> Enum.filter(fn({_key, result}) ->
+		|> Enum.filter(fn({_k, result}) ->
 			result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
 		end)
-		|> Enum.map(fn({key, result}) ->
-			Node.decode(key)
-			|> load_results(calculation_opts, nil)
-			|> Map.put(:reference_result, result)
-		end)
-		|> Enum.sort_by(& -&1.reference_result.mean)
 	end
 end
