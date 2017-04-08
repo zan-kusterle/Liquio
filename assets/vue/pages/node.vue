@@ -14,7 +14,7 @@
 
 			<div class="score-container">
 				<div>
-					<div v-if="this.node.default_unit && this.node.default_unit.results.turnout_ratio > 0.01">
+					<div v-if="this.node.default_unit && this.node.default_unit.results && this.node.default_unit.results.turnout_ratio > 0.01">
 						<div v-html="this.node.default_unit.results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 					</div>
 					<div style="width: 100%; display: block;" class="choose-units">
@@ -24,7 +24,7 @@
 					</div>
 				</div>
 
-				<vote v-bind:node="node"></vote>
+				<vote v-bind:node="node" v-if="node"></vote>
 			</div>
 		</div>
 		<div v-else class="main">
@@ -33,7 +33,7 @@
 		</div>
 
 		<div class="after" v-if="node">
-			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.path[0] === '' || node.path[0].toLowerCase() === 'search' ? null : node" style="text-align: left;"></liquio-list>
+			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node" style="text-align: left;"></liquio-list>
 			
 			<el-input v-if="node.path[0] !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px;">
 				<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
@@ -94,9 +94,7 @@ export default {
 
 			if(this.$store.getters.searchQuery) {
 				this.$store.dispatch('search', this.$store.getters.searchQuery)
-			}
-			
-			if(!this.$store.getters.hasNode(key)) {
+			} else {
 				this.$store.dispatch('fetchNode', key)
 			}
 		}

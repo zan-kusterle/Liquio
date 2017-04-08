@@ -19,16 +19,17 @@ export default new Vuex.Store({
 		identities: [],
 		calculation_opts: {},
 		units: _.map([
-			{key: 'true', text: 'True-False', value: 'true', is_probability: true},
-			{key: 'count', text: 'Count', value: 'count', is_probability: false},
-			{key: 'fact', text: 'Fact-Lie', value: 'fact', is_probability: true},
-			{key: 'reliable', text: 'Reliable-Unreliable', value: 'reliable', is_probability: true},
-			{key: 'temperature', text: 'Temperature (°C)', value: 'temperature', is_probability: false},
-			{key: 'usdollars', text: 'US Dollars (USD)', value: 'usd', is_probability: false},
-			{key: 'euro', text: 'Euro (EUR)', value: 'eur', is_probability: false},
-			{key: 'length', text: 'Length (m)', value: 'length', is_probability: false},
-			{key: 'approve', text: 'Approve-Disapprove', value: 'approve', is_probability: true},
-			{key: 'agree', text: 'Agree-Disagree', value: 'agree', is_probability: true}
+			{key: 'true', text: 'True-False', value: 'true', type: 'spectrum'},
+			{key: 'count', text: 'Count', value: 'count', type: 'quantity'},
+			{key: 'year', text: 'Year', value: 'year', type: 'quantity'},
+			{key: 'fact', text: 'Fact-Lie', value: 'fact', type: 'spectrum'},
+			{key: 'reliable', text: 'Reliable-Unreliable', value: 'reliable', type: 'spectrum'},
+			{key: 'temperature', text: 'Temperature (°C)', value: 'temperature', type: 'quantity'},
+			{key: 'usdollars', text: 'US Dollars (USD)', value: 'usd', type: 'quantity'},
+			{key: 'euro', text: 'Euro (EUR)', value: 'eur', type: 'quantity'},
+			{key: 'length', text: 'Length (m)', value: 'length', type: 'quantity'},
+			{key: 'approve', text: 'Approve-Disapprove', value: 'approve', type: 'spectrum'},
+			{key: 'agree', text: 'Agree-Disagree', value: 'agree', type: 'spectrum'}
 		], (u) => {
 			u.value = u.text.replace(' (', '(')
 			return u
@@ -76,6 +77,7 @@ export default new Vuex.Store({
 			if(node) {
 				node.references = _.filter(_.map(node.references, (n) => {
 					let referenceNode = getters.getPureNodeByKey(n.path)
+					referenceNode.default_unit = referenceNode.units && referenceNode.units['true']
 					if(referenceNode) {
 						referenceNode.reference_result = n.reference_result
 					}
@@ -84,15 +86,26 @@ export default new Vuex.Store({
 
 				node.inverse_references = _.filter(_.map(node.inverse_references, (n) => {
 					let referenceNode = getters.getPureNodeByKey(n.path)
+					referenceNode.default_unit = referenceNode.units && referenceNode.units['true']
 					if(referenceNode) {
 						referenceNode.reference_result = n.reference_result
 					}
 					return referenceNode
 				}), (x) => x)
 
-				let unit = _.find(state.units, (u) => u.value == state.route.params.unit)
-				let default_unit = unit && node.units && node.units[unit.key]
-				node.default_unit = default_unit
+				let unit = state.units[0]
+				let bestResults = _.maxBy(node.units, (u) => u.turnout_ratio)
+				let currentNode = getters.currentNode
+				if(node.key == currentNode.key && currentNode.unit) {
+					let activeUnit = _.find(state.units, (u) => u.text == currentNode.unit)
+					if(activeUnit)
+						unit = activeUnit
+				} else if(bestResults) {
+					console.log(bestResults)
+				}
+				
+				node.default_unit = node.units[unit.key] || unit
+				node.own_default_unit = node.own_results && node.own_results[unit.key]
 			}
 			return node
 		},
@@ -200,17 +213,17 @@ export default new Vuex.Store({
 				})
 			})
 		},
-		setVote({commit, state}, {node, choice}) {
+		setVote({commit, state}, {node, unit, at_date, choice}) {
 			return new Promise((resolve, reject) => {
-				Api.setVote(node.key, state.route.params.unit, choice, function(node) {
+				Api.setVote(node.key, unit, at_date, choice, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})
 			})
 		},
-		unsetVote({commit}, node) {
+		unsetVote({commit}, {node, unit, at_date}) {
 			return new Promise((resolve, reject) => {
-				Api.unsetVote(node.key, state.route.params.unit, function(node) {
+				Api.unsetVote(node.key, unit, at_date, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})

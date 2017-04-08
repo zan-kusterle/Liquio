@@ -80,6 +80,7 @@ defmodule Liquio.ReferenceRepo do
 		|> Enum.map(fn({reference_path, result}) ->
 			Reference.new(node.path, reference_path)
 			|> Map.put(:results, result)
+			|> Map.put(:node, node)
 		end)
 		|> Enum.sort_by(& -&1.results.average)
 	end
@@ -95,6 +96,7 @@ defmodule Liquio.ReferenceRepo do
 		|> Enum.map(fn({path, result}) ->
 			Reference.new(path, node.path)
 			|> Map.put(:results, result)
+			|> Map.put(:reference_node, node)
 		end)
 		|> Enum.sort_by(& -&1.results.average)
 	end

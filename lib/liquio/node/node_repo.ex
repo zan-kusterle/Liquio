@@ -19,10 +19,13 @@ defmodule Liquio.NodeRepo do
 			|> Enum.map(& &1.path)
 			|> Enum.uniq
 			|> Enum.map(& %Node{path: &1} |> load(calculation_opts, nil))
-			|> Enum.sort_by(& -(&1.all_results.spectrum.turnout_ratio + 0.05 * Enum.count(&1.references)))
+			|> Enum.map(& Map.put(&1, :turnout, &1.results |> Enum.map(fn({_, v}) -> v.quantity.turnout_ratio end) |> Enum.sum))
+			|> Enum.sort_by(& -(&1.turnout + 0.05 * Enum.count(&1.references)))
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
-
-			node = Node.decode("") |> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
+			
+			node = Node.decode("")
+			|> Map.put(:references, Enum.map(nodes, & %{results: &1, node: nil, reference_node: &1}))
+			|> Map.put(:calculation_opts, calculation_opts)
 
 			ResultsCache.set(key, node)
 			node
@@ -123,15 +126,15 @@ defmodule Liquio.NodeRepo do
 		node
 		|> Map.put(:votes, votes)
 		|> Map.put(:own_votes, own_votes)
-		|> Map.put(:results, Results.from_votes_by_units(votes, inverse_delegations, calculation_opts))
-		|> Map.put(:all_results, Results.from_votes(votes, inverse_delegations, calculation_opts))
-		|> Map.put(:own_results, Results.from_votes_by_units(own_votes, inverse_delegations, calculation_opts))
+		|> Map.put(:results, Results.from_votes(votes, inverse_delegations, calculation_opts))
+		|> Map.put(:own_results, Results.from_votes(own_votes, inverse_delegations, calculation_opts))
 	end
 	
 	def load_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
 			reference_nodes = ReferenceRepo.get_references(node, calculation_opts)
+			|> Enum.map(& &1 |> ReferenceRepo.load_nodes(calculation_opts, nil))
 
 			reference_nodes = if depth > 1 do
 				reference_nodes |> Enum.map(fn(reference_node) ->

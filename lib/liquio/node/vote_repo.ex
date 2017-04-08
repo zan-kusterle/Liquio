@@ -36,8 +36,8 @@ defmodule Liquio.VoteRepo do
 		) |> Repo.all
 	end
 
-	def set(identity, node, unit, choice) do
-		group_key = Vote.group_key(%{path: node.path, unit: unit})
+	def set(identity, node, unit, at_date, choice) do
+		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
 		
 		from(v in Vote,
 			where: v.group_key == ^group_key and
@@ -57,14 +57,14 @@ defmodule Liquio.VoteRepo do
 			:choice => choice,
 			
 			:is_last => true,
-			:at_date => Timex.today()
+			:at_date => at_date
 		})
 
 		NodeRepo.invalidate_cache(node)
 		result
 	end
 
-	def delete(identity, node, unit) do
-		VoteRepo.set(identity, node, unit, nil)
+	def delete(identity, node, unit, at_date) do
+		set(identity, node, unit, at_date, nil)
 	end
 end

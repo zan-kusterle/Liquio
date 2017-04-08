@@ -10,12 +10,34 @@ defmodule Liquio.Web.NodeView do
 	end
 
 	def render("node.json", %{node: node}) do
+		references =  if Map.has_key?(node, :references) do
+			node.references |> Enum.map(fn(%{:results => results, :reference_node => reference_node}) ->
+				results = results
+				|> Map.put(:contributions, render_many(results.contributions, Liquio.Web.NodeView, "reference_vote.json"))
+				render(Liquio.Web.NodeView, "node.json", %{node: reference_node})
+				|> Map.put(:reference_results, results)
+			end)
+		else
+			nil
+		end
+
+		inverse_references =  if Map.has_key?(node, :inverse_references) do
+			node.inverse_references |> Enum.map(fn(%{:results => results, :node => reference_node}) ->
+				results = results
+				|> Map.put(:contributions, render_many(results.contributions, Liquio.Web.NodeView, "reference_vote.json"))
+				render(Liquio.Web.NodeView, "node.json", %{node: reference_node})
+				|> Map.put(:reference_results, results)
+			end)
+		else
+			nil
+		end
+
 		%{
 			:path => node.path,
 			:units => render("results.json", %{node: Map.get(node, :results)}),
 			:own_results => render("results.json", %{node: if Map.has_key?(node, :own_results) do node.own_results else nil end}),
-			:references => if Map.has_key?(node, :references) do render_many(Enum.map(node.references, & &1.node), Liquio.Web.NodeView, "node.json") else nil end,
-			:inverse_references => if Map.has_key?(node, :inverse_references) do render_many(node.inverse_references, Liquio.Web.NodeView, "node.json") else nil end,
+			:references => references,
+			:inverse_references => inverse_references,
 			:calculation_opts => Map.get(node, :calculation_opts)
 		}
 	end
@@ -24,8 +46,12 @@ defmodule Liquio.Web.NodeView do
 		%{
 			node: render("node.json", %{node: reference.node}) |> Map.drop([:calculation_opts]),
 			referencing_node: render("node.json", %{node: reference.reference_node}) |> Map.drop([:calculation_opts]),
-			results: reference.results |> Map.put(:contributions, render_many(reference.results.contributions, Liquio.Web.NodeView, "vote.json")),
-			own_results: reference.own_results |> Map.put(:contributions, render_many(reference.own_results.contributions, Liquio.Web.NodeView, "vote.json"))
+			results: reference.results |> Map.put(:contributions, render_many(reference.results.contributions, Liquio.Web.NodeView, "reference_vote.json")),
+			own_results: if reference.own_results do
+				reference.own_results |> Map.put(:contributions, render_many(reference.own_results.contributions, Liquio.Web.NodeView, "reference_vote.json"))
+			else
+				nil
+			end
 		}
 	end
 
@@ -40,17 +66,27 @@ defmodule Liquio.Web.NodeView do
 			unit = unit
 			|> Map.put(:type, to_string(unit.type))
 			|> Map.put(:results, concrete_results)
-			{unit.key, unit |> Map.drop([:key])}
+			{unit.key, unit |> Map.put(:value, unit_value)}
 		end) |> Enum.into(%{})
 	end
 
 	def render("vote.json", %{node: vote}) do
 		%{
 			:identity_username => vote.identity.username,
-			:unit => Map.get(vote, :unit, "Score"),
-			:at_date => Timex.format!(Map.get(vote, :at_date, vote.datetime), "{ISO:Extended}"),
+			:unit => vote.unit,
+			:at_date => Timex.format!(Map.get(vote, :at_date, vote.datetime), "{YYYY}-{0M}-{0D}"),
 			:datetime => Timex.format!(vote.datetime, "{ISO:Extended}"),
 			:choice => vote.choice,
+			:voting_power => Map.get(vote, :voting_power),
+			:weight => Map.get(vote, :weight)
+		}
+	end
+
+	def render("reference_vote.json", %{node: vote}) do
+		%{
+			:identity_username => vote.identity.username,
+			:datetime => Timex.format!(vote.datetime, "{ISO:Extended}"),
+			:relevance => vote.relevance,
 			:voting_power => Map.get(vote, :voting_power),
 			:weight => Map.get(vote, :weight)
 		}

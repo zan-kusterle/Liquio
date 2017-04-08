@@ -1,51 +1,51 @@
 <template>
 <div>
 	<div class="vote-choices">
-		<div class="vote-choice" v-for="(vote, index) in votes">
-			<el-tooltip class="action" effect="dark" content="Remove this choice" placement="top">
-				<i @click="votes.splice(index, 1)" class="el-icon-circle-close"></i>
-			</el-tooltip>
-
-			<div class="number">
-				<span>{{ Math.round(vote.choice) }}</span><span class="percent">%</span>
+		<div class="vote-choice" v-for="(vote, index) in votes_by_time">
+			<div class="row" style="text-align: left; margin: 0px; margin-bottom: -20px;">
+				<i class="el-icon-circle-close" @click="votes.splice(index, 1); remove(vote)"></i>
+				<i class="el-icon-circle-check" @click="save(vote)"></i>
 			</div>
 
-			<div class="range" v-if="node.default_unit && node.default_unit.type == 'spectrum'">
-				<el-slider v-model="vote.choice" />
-			</div>
-			<div class="numeric" v-else>
-				<el-input v-model="vote.choice"></el-input>
+			<div class="row" v-if="votes.length > 1">
+				<el-date-picker v-model="vote.at_date" type="date" class="datepicker" :clearable="false"></el-date-picker>
 			</div>
 
-			<el-date-picker v-if="vote.at_date" v-model="vote.at_date" type="date" class="datepicker"></el-date-picker>
-			<el-tooltip v-else class="action" effect="dark" content="Set specific date" placement="top">
-				<i @click="vote.at_date = Date.now()" class="el-icon-date" style="margin-left: 5px;"></i>
-			</el-tooltip>
+			<div class="row" v-if="node.default_unit && node.default_unit.type == 'spectrum'">
+				<p class="spectrum-side">False</p>
+				<div class="range">
+					<el-slider v-model="vote.choice"></el-slider>
+				</div>
+				<p class="spectrum-side">True</p>
+			</div>
+			<div class="row" v-else>
+				<div class="numeric">
+					<el-input v-model="vote.choice"></el-input>
+				</div>
+			</div>
+
+			<div class="row" style="font-size: 24px;" v-if="node.default_unit && node.default_unit.type == 'spectrum'">{{ Math.round(vote.choice) }}%</div>
+			<div class="row" style="font-size: 20px;" v-else>{{ Math.round(vote.choice) }}</div>
 		</div>
-		<div class="vote-choice">
-			<el-tooltip class="action" effect="dark" content="Add your choice" placement="top">
-				<i @click="votes.push({choice: 0, at_date: null})" class="el-icon-plus"></i>
-			</el-tooltip>
-
-			<a class="action" v-on:click="set" style="width: 90px;">Save <i class="el-icon-circle-check"></i></a>
+		<div class="new-choice" @click="votes.push({choice: 50, at_date: new Date()})">
+			<p v-if="votes.length == 0"><i class="el-icon-plus"></i> Cast vote</p>
+			<p v-else><i class="el-icon-plus"></i> Cast vote for another date</p>
 		</div>
 	</div>
 
-	<transition name="fade">
-		<div class="vote-container" v-bind:class="{open: true}">
-			<div class="votes" v-if="node.default_unit && node.default_unit.results.contributions.length > 0">
-				<p class="ui-title">{{ Math.round(node.default_unit.results.turnout_ratio * 100) }}% turnout</p>
-				<div class="contribution" v-for="contribution in node.default_unit.results.contributions" :key="contribution.username">
-					<div class="weight">
-						<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
-					</div>
-					<div class="choice" v-html="contribution.embed" style="height: 40px;"></div>
-					<div class="username"><router-link :to="'/identities/' + contribution.identity_username">{{ contribution.identity_username }}</router-link></div>
-					<div class="date">{{ moment(new Date(contribution.datetime)).fromNow() }}</div>
+	<div class="vote-container open">
+		<div class="votes" v-if="node.default_unit && node.default_unit.results && node.default_unit.results.contributions.length > 0">
+			<p class="ui-title">{{ Math.round(node.default_unit.results.turnout_ratio * 100) }}% turnout</p>
+			<div class="contribution" v-for="contribution in node.default_unit.results.contributions" :key="contribution.username">
+				<div class="weight">
+					<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 				</div>
+				<div class="choice" v-html="contribution.embed" style="height: 40px;"></div>
+				<div class="username"><router-link :to="'/identities/' + contribution.identity_username">{{ contribution.identity_username }}</router-link></div>
+				<div class="date">{{ moment(new Date(contribution.datetime)).fromNow() }}</div>
 			</div>
 		</div>
-	</transition>
+	</div>
 </div>
 </template>
 
@@ -54,32 +54,44 @@ import Vue from 'vue'
 import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
 let utils = require('utils.js')
+var _ = require('lodash')
 
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['node', 'title'],
+	props: ['node'],
 	data: function() {
 		let self = this
-		return {
-			votes: this.node && this.node.own_results ? this.node.own_results["count"].results.contributions : [],
-			mean: 0.5,
-			moment: require('moment'),
-			set: function(event) {
-				let choices = _.map(self.votes, (vote) => parseFloat(vote.choice) / 100)
-				_.each(nodes, (node) => {
-					_.each(choices, (choice) => self.$store.dispatch('setVote', {node: node, choice: choice}))
-				})
-			},
-			unset: function(event) {
-				_.each(nodes, (node) => self.$store.dispatch('unsetVote', node))
-			},
-			keyup: function(event) {
-				updateInputs()
-			},
-			number_format: utils.formatNumber,
-			get_color: utils.getColor,
 
+		let votes = this.node && this.node.own_default_unit ? this.node.own_default_unit.results.contributions : []
+		votes = _.map(votes, (v) => {
+			if(self.node.default_unit.type == 'spectrum')
+				v.choice *= 100
+			v.at_date = new Date(v.at_date)
+			return v
+		})
+		
+		return {
+			votes: votes,
+			moment: require('moment'),
+			save: function(vote) {
+				if(self.node && self.node.default_unit) {
+					let choice = parseFloat(vote.choice)
+					if(self.node.default_unit.type == 'spectrum')
+						choice /= 100
+					self.$store.dispatch('setVote', {node: self.node, unit: self.node.default_unit.value, at_date: vote.at_date, choice: choice})
+				}
+			},
+			remove: function(vote) {
+				if(self.node && self.node.default_unit) {
+					self.$store.dispatch('unsetVote', {node: self.node, unit: self.node.default_unit.value, at_date: vote.at_date})
+				}
+			}
+		}
+	},
+	computed: {
+		votes_by_time: function() {
+			return _.sortBy(this.votes, (v) => v.at_date)
 		}
 	}
 }
@@ -129,6 +141,12 @@ export default {
 		margin-left: 10px;
 	}
 
+	.spectrum-side {
+		display: inline-block;
+		font-weight: bold;
+		text-transform: lowercase;
+	}
+
 	.score-box {
 		display: inline-block;
 		margin: 20px;
@@ -152,9 +170,8 @@ export default {
 	}
 
 	.vote-choices {
-		width: 750px;
-    	margin: 0 auto;
-		text-align: left;
+		width: 100%;
+		text-align: center;
 
 		.own-contribution-ratio {
 			margin-top: 20px;
@@ -162,33 +179,42 @@ export default {
 			display: inline;
 		}
 
-		.vote-choice {
+		.new-choice {
 			margin-top: 30px;
+		}
+
+		.vote-choice {
+			background-color: #d8d8d8;
+			padding: 15px 20px;
+			width: 600px;
+			margin: 20px auto;
+			display: block;
+
+			.row {
+				margin: 10px 0px;
+			}
 
 			.range {
 				width: 250px;
 				display: inline-block;
 				vertical-align: middle;
-				margin-right: 30px;
+				margin: 0 30px;
 			}
 
 			.numeric {
 				display: inline-block;
-				vertical-align: baseline;
-				width: 130px;
-				margin-right: 30px;
+				width: 220px;
+
+				.el-input__inner {
+					background-color: rgba(0, 0, 0, 0.2);
+					border: none;
+					text-align: center;
+					font-weight: bold;
+				}
 			}
 
 			.action {
-				display: inline-block;
 				font-size: 20px;
-				vertical-align: baseline;
-				margin-right: 40px;
-
-				i {
-					margin-left: 10px;
-					vertical-align: baseline;
-				}
 			}
 		}
 	}
