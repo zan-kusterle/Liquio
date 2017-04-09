@@ -34,7 +34,7 @@ defmodule Liquio.Web.NodeView do
 
 		%{
 			:path => node.path,
-			:units => render("results.json", %{node: Map.get(node, :results)}),
+			:results => render("results.json", %{node: Map.get(node, :results)}),
 			:own_results => render("results.json", %{node: if Map.has_key?(node, :own_results) do node.own_results else nil end}),
 			:references => references,
 			:inverse_references => inverse_references,
@@ -57,17 +57,15 @@ defmodule Liquio.Web.NodeView do
 
 	def render("results.json", %{node: results}) when results == nil do %{} end
 	def render("results.json", %{node: results}) do
-		results |> Enum.map(fn({unit_value, unit_results}) ->
-			unit = Liquio.Vote.decode_unit!(to_string(unit_value))
+		by_units = results.by_units |> Enum.map(fn({k, unit_results}) ->
+			unit_results = unit_results
+			|> Map.put(:contributions, render_many(unit_results.contributions, Liquio.Web.NodeView, "vote.json"))
 
-			concrete_results = if unit.type == :spectrum do unit_results.spectrum else unit_results.quantity end
-			concrete_results = concrete_results |> Map.put(:contributions, render_many(concrete_results.contributions, Liquio.Web.NodeView, "vote.json"))
-
-			unit = unit
-			|> Map.put(:type, to_string(unit.type))
-			|> Map.put(:results, concrete_results)
-			{unit.key, unit |> Map.put(:value, unit_value)}
+			{k, unit_results}
 		end) |> Enum.into(%{})
+
+		results
+		|> Map.put(:by_units, by_units)
 	end
 
 	def render("vote.json", %{node: vote}) do

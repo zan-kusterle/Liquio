@@ -19,12 +19,12 @@ defmodule Liquio.NodeRepo do
 			|> Enum.map(& &1.path)
 			|> Enum.uniq
 			|> Enum.map(& %Node{path: &1} |> load(calculation_opts, nil))
-			|> Enum.map(& Map.put(&1, :turnout, &1.results |> Enum.map(fn({_, v}) -> v.quantity.turnout_ratio end) |> Enum.sum))
+			|> Enum.map(& Map.put(&1, :turnout, &1.results |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum))
 			|> Enum.sort_by(& -(&1.turnout + 0.05 * Enum.count(&1.references)))
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 			
 			node = Node.decode("")
-			|> Map.put(:references, Enum.map(nodes, & %{results: &1, node: nil, reference_node: &1}))
+			|> Map.put(:references, Enum.map(nodes, & %{results: %{:relevance => 0.8, :contributions => []}, node: nil, reference_node: &1}))
 			|> Map.put(:calculation_opts, calculation_opts)
 
 			ResultsCache.set(key, node)

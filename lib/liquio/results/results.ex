@@ -1,10 +1,30 @@
 defmodule Liquio.Results do
-	alias Liquio.{Node, CalculateResults, Repo}
+	alias Liquio.{Node, CalculateResults, Repo, Vote}
 
-	def from_votes(votes, inverse_delegations, calculation_opts) do
-		votes |> Enum.group_by(& &1.unit) |> Enum.map(fn({unit, votes_for_unit}) ->
-			{unit, from_votes_for_unit(votes_for_unit, inverse_delegations, calculation_opts)}
+	def from_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :topics => topics}) do
+		by_units = votes |> Enum.group_by(& &1.unit) |> Enum.map(fn({unit_value, votes_for_unit}) ->
+			unit = Vote.decode_unit!(unit_value)
+
+			votes = if unit.type == :spectrum do
+				Enum.filter(votes, & &1.choice >= 0.0 and &1.choice <= 1.0)
+			else
+				votes
+			end
+			contributions = CalculateResults.calculate(votes, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
+
+			unit_results = from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), unit.type == :spectrum)
+			|> Map.merge(unit)
+			|> Map.put(:type, to_string(unit.type))
+			|> Map.put(:value, unit_value)
+			
+			{unit.key, unit_results}
 		end) |> Enum.into(%{})
+
+		%{
+			:total => 0.0,
+			:turnout_ratio => 0.0,
+			:by_units => by_units
+		}
 	end
 
 	def from_reference_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
@@ -14,18 +34,6 @@ defmodule Liquio.Results do
 		contributions = CalculateResults.calculate(votes, inverse_delegations, trust_metric_ids, nil) |> Repo.preload([:identity])
 
 		from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), true)
-	end
-	
-	defp from_votes_for_unit(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :topics => topics}) do
-		contributions = CalculateResults.calculate(votes, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
-
-		probability_votes = Enum.filter(votes, & &1.choice >= 0.0 and &1.choice <= 1.0)
-		probability_contributions = CalculateResults.calculate(probability_votes, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
-
-		%{
-			:spectrum => from_contributions(probability_contributions, datetime, MapSet.size(trust_metric_ids), true),
-			:quantity => from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), false)
-		}
 	end
 
 	defp from_contributions(contributions, datetime, trust_metric_size, is_spectrum) do
@@ -50,9 +58,11 @@ defmodule Liquio.Results do
 			:count => Enum.count(contributions),
 			:average => average,
 			:contributions => contributions,
-			:embed => embed_html |> minify_html,
-			:by_time => inline_results_by_time(nil) |> minify_html,
-			:distribution => inline_results_distribution(nil) |> minify_html
+			:embeds => %{
+				:main => minify_html(embed_html),
+				:by_time => minify_html(inline_results_by_time(nil)),
+				:distribution => minify_html(inline_results_distribution(nil))
+			}
 		}
 	end
 
@@ -88,7 +98,7 @@ defmodule Liquio.Results do
 		text = if mean == nil do
 			"?"
 		else
-			"#{round(mean)}"
+			"#{format_number(mean)}"
 		end
 
 		"<div class=\"area\" style=\"background-color: #ddd\"><div class=\"bubble\"><p>#{text}</p></div></div>"

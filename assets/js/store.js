@@ -77,7 +77,13 @@ export default new Vuex.Store({
 			if(node) {
 				node.references = _.filter(_.map(node.references, (n) => {
 					let referenceNode = getters.getPureNodeByKey(n.path)
-					referenceNode.default_unit = referenceNode.units && referenceNode.units['true']
+
+					var unit = state.units[0]
+					let bestUnit = _.maxBy(Object.values(referenceNode.results.by_units), (u) => u.turnout_ratio)
+					if(bestUnit)
+						unit = bestUnit
+
+					referenceNode.default_unit = referenceNode.results && referenceNode.results.by_units[unit.key] || unit
 					if(referenceNode) {
 						referenceNode.reference_result = n.reference_result
 					}
@@ -86,26 +92,36 @@ export default new Vuex.Store({
 
 				node.inverse_references = _.filter(_.map(node.inverse_references, (n) => {
 					let referenceNode = getters.getPureNodeByKey(n.path)
-					referenceNode.default_unit = referenceNode.units && referenceNode.units['true']
+
+					var unit = state.units[0]
+					let bestUnit = _.maxBy(Object.values(referenceNode.results.by_units), (u) => u.turnout_ratio)
+					if(bestUnit)
+						unit = bestUnit
+
+					referenceNode.default_unit = referenceNode.results.by_units[unit.key] || unit
 					if(referenceNode) {
 						referenceNode.reference_result = n.reference_result
 					}
 					return referenceNode
 				}), (x) => x)
 
-				let unit = state.units[0]
-				let bestResults = _.maxBy(node.units, (u) => u.turnout_ratio)
+				var unit = state.units[0]
+
+				let bestUnit = _.maxBy(Object.values(node.results.by_units), (u) => u.turnout_ratio)
+				if(bestUnit) {
+					unit = bestUnit
+				}
+
 				let currentNode = getters.currentNode
 				if(node.key == currentNode.key && currentNode.unit) {
 					let activeUnit = _.find(state.units, (u) => u.text == currentNode.unit)
-					if(activeUnit)
-						unit = activeUnit
-				} else if(bestResults) {
-					console.log(bestResults)
+					if(activeUnit) {
+						unit = node.results.by_units[activeUnit.key] || activeUnit
+					}
 				}
 				
-				node.default_unit = node.units[unit.key] || unit
-				node.own_default_unit = node.own_results && node.own_results[unit.key]
+				node.default_unit = unit
+				node.own_default_unit = node.own_results && node.own_results.by_units[unit.key]
 			}
 			return node
 		},
@@ -213,17 +229,17 @@ export default new Vuex.Store({
 				})
 			})
 		},
-		setVote({commit, state}, {node, unit, at_date, choice}) {
+		setVote({commit, state}, {key, unit, at_date, choice}) {
 			return new Promise((resolve, reject) => {
-				Api.setVote(node.key, unit, at_date, choice, function(node) {
+				Api.setVote(key, unit, at_date, choice, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})
 			})
 		},
-		unsetVote({commit}, {node, unit, at_date}) {
+		unsetVote({commit}, {key, unit, at_date}) {
 			return new Promise((resolve, reject) => {
-				Api.unsetVote(node.key, unit, at_date, function(node) {
+				Api.unsetVote(key, unit, at_date, function(node) {
 					commit('setNode', node)
 					resolve(node)
 				})

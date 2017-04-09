@@ -41,10 +41,10 @@
 
 	<body>
 		<ul>
-			<li>Spot fake and biased news before even opening them.</li>
-			<li>Get the most relevant data for any link, webpage or text paragraph on the web.</li>
-			<li>Delegate your vote to increase reliability and fairness of results, even when few votes are cast.</li>
-			<li>You can choose the people you trust by changing your trust metric.</li>
+			<li>Spot fake and biased news before you even open them.</li>
+			<li>Get scores and references for any website, link or paragraph of text on the web.</li>
+			<li>Delegate your vote to increase reliability and fairness of results, even for polls with few votes.</li>
+			<li>Zero moderation. You can choose the people you trust by changing your trust metric.</li>
 		</ul>
 	</body>
 </html>

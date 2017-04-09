@@ -11,7 +11,7 @@
 				<el-date-picker v-model="vote.at_date" type="date" class="datepicker" :clearable="false"></el-date-picker>
 			</div>
 
-			<div class="row" v-if="node.default_unit && node.default_unit.type == 'spectrum'">
+			<div class="row" v-if="vote.unit_type == 'spectrum'">
 				<p class="spectrum-side">False</p>
 				<div class="range">
 					<el-slider v-model="vote.choice"></el-slider>
@@ -24,19 +24,19 @@
 				</div>
 			</div>
 
-			<div class="row" style="font-size: 24px;" v-if="node.default_unit && node.default_unit.type == 'spectrum'">{{ Math.round(vote.choice) }}%</div>
+			<div class="row" style="font-size: 24px;" v-if="vote.unit_type == 'spectrum'">{{ Math.round(vote.choice) }}%</div>
 			<div class="row" style="font-size: 20px;" v-else>{{ Math.round(vote.choice) }}</div>
 		</div>
-		<div class="new-choice" @click="votes.push({choice: 50, at_date: new Date()})">
+		<div class="new-choice" @click="new_vote">
 			<p v-if="votes.length == 0"><i class="el-icon-plus"></i> Cast vote</p>
 			<p v-else><i class="el-icon-plus"></i> Cast vote for another date</p>
 		</div>
 	</div>
 
 	<div class="vote-container open">
-		<div class="votes" v-if="node.default_unit && node.default_unit.results && node.default_unit.results.contributions.length > 0">
-			<p class="ui-title">{{ Math.round(node.default_unit.results.turnout_ratio * 100) }}% turnout</p>
-			<div class="contribution" v-for="contribution in node.default_unit.results.contributions" :key="contribution.username">
+		<div class="votes" v-if="results && results.contributions && results.contributions.length > 0">
+			<p class="ui-title">{{ Math.round(results.turnout_ratio * 100) }}% turnout</p>
+			<div class="contribution" v-for="contribution in results.contributions" :key="contribution.username">
 				<div class="weight">
 					<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 				</div>
@@ -59,33 +59,25 @@ var _ = require('lodash')
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['node'],
+	props: ['votes', 'results'],
 	data: function() {
 		let self = this
-
-		let votes = this.node && this.node.own_default_unit ? this.node.own_default_unit.results.contributions : []
-		votes = _.map(votes, (v) => {
-			if(self.node.default_unit.type == 'spectrum')
-				v.choice *= 100
-			v.at_date = new Date(v.at_date)
-			return v
-		})
 		
 		return {
-			votes: votes,
 			moment: require('moment'),
+			new_vote: function() {
+				let unit = self.votes.length > 0 ? self.votes[0] : {unit_type: 'spectrum', value: 'True-False'}
+				let choice = unit.unit_type == 'spectrum' ? 50 : 0
+				self.votes.push({choice: choice, unit: unit.value, unit_type: unit.unit_type, at_date: new Date()})
+			},
 			save: function(vote) {
-				if(self.node && self.node.default_unit) {
-					let choice = parseFloat(vote.choice)
-					if(self.node.default_unit.type == 'spectrum')
-						choice /= 100
-					self.$store.dispatch('setVote', {node: self.node, unit: self.node.default_unit.value, at_date: vote.at_date, choice: choice})
-				}
+				let choice = parseFloat(vote.choice)
+				if(vote.unit_type == 'spectrum')
+					choice /= 100
+				this.$emit('set', {key: vote.key, unit: vote.unit, at_date: vote.at_date, choice: choice})
 			},
 			remove: function(vote) {
-				if(self.node && self.node.default_unit) {
-					self.$store.dispatch('unsetVote', {node: self.node, unit: self.node.default_unit.value, at_date: vote.at_date})
-				}
+				this.$emit('unset', {key: vote.key, unit: vote.unit, at_date: vote.at_date})
 			}
 		}
 	},
@@ -184,7 +176,7 @@ export default {
 		}
 
 		.vote-choice {
-			background-color: #d8d8d8;
+			background-color: #eee;
 			padding: 15px 20px;
 			width: 600px;
 			margin: 20px auto;

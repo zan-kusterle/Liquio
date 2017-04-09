@@ -13,9 +13,7 @@ export default {
 	props: ['nodes', 'referencingNode', 'referencesNode'],
 	components: { LiquioInline },
 	data: function() {
-		return {
-			getReferenceShown: !this.referencingNode && !this.referencesNode
-		}
+		return {}
 	}
 }
 </script>

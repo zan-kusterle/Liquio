@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<div class="before" v-if="!node.loading">
-			<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px;">
-				<el-button slot="append" icon="caret-right" @click="view_inverse_reference"></el-button>
-			</el-input>
-			
 			<liquio-list v-if="node.path[0] !== ''" v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
+
+			<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px; margin-top: 20px;">
+				<el-button slot="prepend" icon="caret-left" @click="view_inverse_reference"></el-button>
+			</el-input>
 		</div>
 
 		<div v-if="node && !node.loading" class="main">
@@ -13,9 +13,9 @@
 			<a v-if="node.title.startsWith('https://')" :href="node.key" target="_blank" class="title" style="vertical-align: middle;">View content</a>
 
 			<div class="score-container">
-				<div>
-					<div v-if="this.node.default_unit && this.node.default_unit.results && this.node.default_unit.results.turnout_ratio > 0.01">
-						<div v-html="this.node.default_unit.results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+				<div style="margin-bottom: 20px;">
+					<div v-if="this.node.default_unit && this.node.default_unit.turnout_ratio > 0.01">
+						<div v-html="this.node.default_unit.embeds.main" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 					</div>
 					<div style="width: 100%; display: block;" class="choose-units">
 						<el-select v-model="current_unit" v-on:change="pickUnit" size="mini">
@@ -24,7 +24,10 @@
 					</div>
 				</div>
 
-				<vote v-bind:node="node" v-if="node"></vote>
+				<i class="el-icon-caret-bottom" id="toggle_details_button" @click="isVoteOpen = !isVoteOpen" style="font-size: 28px;"></i>
+				<transition v-on:enter="enter" v-on:leave="leave" v-bind:css="false">
+					<vote :votes="votes" :results="node.default_unit" v-on:set="setVote" v-on:unset="unsetVote" v-if="isVoteOpen"></vote>
+				</transition>
 			</div>
 		</div>
 		<div v-else class="main">
@@ -33,11 +36,11 @@
 		</div>
 
 		<div class="after" v-if="node">
-			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node" style="text-align: left;"></liquio-list>
-			
-			<el-input v-if="node.path[0] !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px;">
+			<el-input v-if="node.path[0] !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px; margin-bottom: 20px;">
 				<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
 			</el-input>
+
+			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node" style="text-align: left;"></liquio-list>
 		</div>
 
 		<div class="footer">
@@ -59,6 +62,8 @@ export default {
 		let self = this
 
 		return {
+			isVoteOpen: false,
+			votes: [],
 			reference_title: '',
 			inverse_reference_title: '',
 			view_reference: (event) => {
@@ -75,10 +80,21 @@ export default {
 					self.$router.push(path)
 				}
 			},
-			current_unit: self.$store.state.route.params.unit,
+			current_unit: null,
 			pickUnit: function(unit) {
-				let path = '/' + self.$store.getters.currentNode.key + '/' + unit
-				self.$router.push(path)
+				let currentNode = self.$store.getters.currentNode
+				if(unit != self.node.default_unit.value) {
+					let path = '/' + currentNode.key + '/' + unit
+					self.$router.push(path)
+				}
+			},
+			setVote: function(vote) {
+				vote.key = self.node.key
+				self.$store.dispatch('setVote', vote)
+			},
+			unsetVote: function(vote) {
+				vote.key = self.node.key
+				self.$store.dispatch('unsetVote', vote)
 			}
 		}
 	},
@@ -90,13 +106,38 @@ export default {
 	},
 	methods: {
 		fetchData: function() {
+			let self = this
 			let key = this.$store.getters.currentNode.key
 
+			self.isVoteOpen = false
+			
 			if(this.$store.getters.searchQuery) {
 				this.$store.dispatch('search', this.$store.getters.searchQuery)
 			} else {
-				this.$store.dispatch('fetchNode', key)
+				this.$store.dispatch('fetchNode', key).then(() => {
+					let node = self.$store.getters.getNodeByKey(key)
+					self.current_unit = node.default_unit.value
+
+					let votes = this.node && this.node.own_default_unit ? this.node.own_default_unit.contributions : []
+					self.votes = _.map(votes, (v) => {
+						v.key = this.node.key
+						v.unit = self.node.default_unit.value || 'True-False'
+						v.unit_type = self.node.default_unit.type
+						if(v.unit_type == 'spectrum')
+							v.choice *= 100
+						v.at_date = new Date(v.at_date)
+						return v
+					})
+				})
 			}
+		},
+		enter: function (el, done) {
+			Velocity(toggle_details_button, {rotateZ: "+=180"}, {duration: 500})
+			Velocity(el, "slideDown", {duration: 500})
+		},
+		leave: function (el, done) {
+			Velocity(toggle_details_button, {rotateZ: "+=180"}, {duration: 500})
+			el.style.display = 'none'
 		}
 	},
 	computed: {

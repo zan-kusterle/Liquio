@@ -41,7 +41,8 @@ defmodule Liquio.ReferenceVote do
 		query = from(v in ReferenceVote, where:
 			v.path == ^reference.path and v.reference_path == ^reference.reference_path and
 			v.identity_id == ^identity.id and
-			v.is_last
+			v.is_last and
+			not is_nil(v.relevance)
 		)
 		votes = Repo.all(query)
 		if Enum.empty?(votes) or Enum.at(votes, 0).relevance == nil do

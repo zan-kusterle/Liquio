@@ -32,7 +32,8 @@ defmodule Liquio.VoteRepo do
 		from(v in Vote, where:
 			v.path == ^node.path and
 			v.identity_id == ^identity.id and
-			v.is_last
+			v.is_last and
+			not is_nil(v.choice)
 		) |> Repo.all
 	end
 

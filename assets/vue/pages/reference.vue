@@ -27,7 +27,7 @@
 			<h1 class="title" style="vertical-align: middle;">Relevance Score</h1>
 
 			<div class="score-container">
-				<div v-html="reference.results.embed" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+				<div v-html="reference.results.embeds.main" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 
 				<div class="vote-choices">
 					<div class="vote-choice">
@@ -50,7 +50,7 @@
 							<div class="weight">
 								<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
 							</div>
-							<div class="choice" v-html="contribution.embed" style="height: 40px;"></div>
+							<div class="choice" v-html="contribution.embeds.main" style="height: 40px;"></div>
 							<div class="username"><router-link :to="'/identities/' + contribution.identity_username">{{ contribution.identity_username }}</router-link></div>
 							<div class="date">{{ moment(new Date(contribution.datetime)).fromNow() }}</div>
 						</div>
