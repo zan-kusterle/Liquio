@@ -1,0 +1,188 @@
+defmodule Liquio.ResultsEmbeds do
+	def inline_results_spectrum(mean, unit) do
+		line_offset = 0.25
+
+		line = "<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x line_offset }\" y1=\"#{ svg_y 0.5 }\" x2=\"#{ svg_x 1 - line_offset }\" y2=\"#{ svg_y 0.5 }\" style=\"stroke: #aaa; stroke-width: 2;\"></line>"
+		point = "<circle cx=\"#{ svg_x(mean * (1 - 2 * line_offset) + line_offset) }\" cy=\"#{ svg_y 0.5 }\" r=\"15\" fill=\"#1f8dd6\"></circle>"
+		negative_text = "<text text-anchor=\"end\" alignment-baseline=\"middle\" x=\"#{svg_x line_offset - 0.05 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"35\">#{String.downcase(unit.negative)}</text>"
+		positive_text = "<text text-anchor=\"start\" alignment-baseline=\"middle\" x=\"#{ svg_x 1 - line_offset + 0.05 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"35\">#{String.downcase(unit.positive)}</text>"
+
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{negative_text}#{line}#{point}#{positive_text}</svg>"
+	end
+
+	def inline_results_quantity(mean, unit) do
+		color = if unit.type == :spectrum do results_color(mean) else "#ddd" end
+
+		text = if mean == nil do
+			"?"
+		else
+			if unit.type == :spectrum do
+				"#{round(mean * 100)}%"
+			else
+				"#{format_number(mean)} #{unit.unit || unit.measurement}"
+			end
+		end
+
+		"<div class=\"area\" style=\"background-color: #{color}\"><div class=\"bubble\"><p>#{text}</p></div></div>"
+	end
+
+	def inline_results_by_time(contributions, aggregator) do
+		results_with_datetime = []
+
+		points = results_with_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio})
+		if Enum.count(points) >= 2 do
+			{min_x, max_x} = Enum.min_max(Enum.map(points, & Timex.to_unix(elem(&1, 0))))
+			{min_y, max_y} = Enum.min_max(Enum.map(points, & elem(&1, 1)))
+
+			min_y = min(0, min_y)
+			max_y = max(0, max_y)
+
+			zero_y =
+				cond do
+					min_y < 0 and max_y > 0 ->
+						-min_y / (max_y - min_y)
+					max_y > 0 ->
+						0
+					min_y < 0 ->
+						1
+				end
+
+			normalized_points = Enum.map(points, fn({x, y, w}) ->
+				nx = if max_x == min_x do 0.5 else (Timex.to_unix(x) - min_x) / (max_x - min_x) end
+				ny = if max_y == min_y do 0.5 else (y - min_y) / (max_y - min_y) end
+				{nx, ny, w, x, y}
+			end)
+
+			line = "<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x 0 }\" y1=\"#{ svg_y zero_y }\" x2=\"#{ svg_x 1 }\" y2=\"#{ svg_y zero_y }\" style=\"stroke: #aaa; stroke-width: 2;\"></line>"
+			path = "<path vector-effect=\"non-scaling-stroke\" fill=\"none\" stroke=\"#4aa5f3\" stroke-width=\"2\" d=\"#{ svg_path normalized_points }\"></path>"
+			"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"none\">#{line}#{path}</svg>"
+		else
+			"?"
+		end
+	end
+
+	def inline_results_distribution(contributions, aggregator) do
+		buckets = contributions |> Enum.group_by(& round(Float.floor(&1.choice * 10)))
+		rects = 0..9
+		|> Enum.map(fn(index) -> {index, Map.get(buckets, index, [])} end)
+		|> Enum.filter(fn({index, bucket_contributions}) -> Enum.count(bucket_contributions) > 0 end)
+		|> Enum.map(fn({index, bucket_contributions}) ->
+			average = aggregator.(bucket_contributions)
+			"<rect x=\"#{svg_x(index / 10)}\" y=\"#{svg_y average}\" width=\"70\" height=\"#{svg_height average}\" style=\"fill:#ccc;\" />"
+		end)
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"none\">#{Enum.join(rects, "")}</svg>"
+	end
+	
+	def svg_path(points) do
+		Enum.map_join(Enum.zip([nil] ++ points, points), " ", fn({previous_point, point}) ->
+			if point == nil do
+				""
+			else
+				{x, y, _, _, _} = point
+				(if previous_point == nil do "M" else "L" end) <> "#{svg_x x},#{svg_y y}"
+			end
+		end)
+	end
+
+	def svg_x(x) do
+		width = 800
+		margin = 30
+		round(x * (width - 2 * margin) + margin)
+	end
+
+	def svg_y(y) do
+		height = 200
+		margin = 30
+		round((1 - y) * (height - 2 * margin) + margin)
+	end
+	
+	def svg_height(ratio) do
+		height = 200
+		margin = 30
+		round(ratio * (height - 2 * margin))
+	end
+
+	defp results_color(mean) do
+		cond do
+			mean == nil -> "#ddd"
+			mean < 0.25 -> "rgb(255, 164, 164)"
+			mean < 0.75 -> "rgb(249, 226, 110)"
+			true -> "rgb(140, 232, 140)"
+		end
+	end
+
+	defp number_format_simple(x, decimals \\ 2) do
+		(x / 1)
+		|> :erlang.float_to_binary([:compact, {:decimals, decimals}])
+		|> String.trim_trailing(".0")
+	end
+
+	defp format_number(x) do
+		abs_x = abs(x)
+		if abs_x > 0 do
+			s = format_greater_than_zero(abs_x)
+			if x < 0 do "-#{s}" else s end
+		else
+			"0"
+		end
+	end
+
+	defp ensure_rounding_sums_to(numbers, precision, target) do
+		rounded = Enum.map(numbers, & Float.round(&1, precision))
+		off = target - Enum.sum(rounded)
+		numbers
+		|> Enum.sort_by(& Float.round(&1, precision) - &1)
+		|> Enum.map(& Float.round(&1, precision))
+	end
+
+	defp format_greater_than_zero(x) do
+		log_x = :math.log10(x)
+		if log_x >= 6 or log_x <= -4 do
+			power = if x > 1 do
+				Float.floor(log_x / 3) * 3
+			else
+				Float.floor(log_x)
+			end
+			base = x / :math.pow(10, power)
+			"#{format_greater_than_zero(base)} x 10#{to_unicode_superscript(round(power))}"
+		else
+			n = max(0, Float.floor(2 - log_x) + 1)
+			round_simple x, round(n)
+		end
+	end
+
+	defp round_simple(x, decimals) do
+		(x / 1)
+		|> :erlang.float_to_binary([:compact, {:decimals, decimals}])
+		|> String.trim_trailing(".0")
+	end
+
+	defp to_unicode_superscript(n) do
+		n
+		|> to_string
+		|> String.graphemes
+		|> Enum.map(fn(digit) ->
+			case digit do
+				"0" -> 	"⁰"
+				"1" -> 	"¹"
+				"2" -> 	"²"
+				"3" -> 	"³"
+				"4" -> 	"⁴"
+				"5" -> 	"⁵"
+				"6" -> 	"⁶"
+				"7" -> 	"⁷"
+				"8" -> 	"⁸"
+				"9" -> 	"⁹"
+			end
+		end)
+	end
+
+	defp minify_html(html) do
+		html
+		|> String.replace("\t", "")
+		|> String.replace("\n", "")
+		|> String.replace("\r", "\n")
+		|> String.replace("\"", "'")
+	end
+
+end

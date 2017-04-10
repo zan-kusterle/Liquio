@@ -1,10 +1,10 @@
 <template>
 <div>
 	<div class="vote-choices">
-		<div class="vote-choice" v-for="(vote, index) in votes_by_time">
+		<div class="vote-choice" v-for="vote in votes_by_time">
 			<div class="row" style="text-align: left; margin: 0px; margin-bottom: -20px;">
-				<i class="el-icon-circle-close" @click="votes.splice(index, 1); remove(vote)"></i>
-				<i class="el-icon-circle-check" @click="save(vote)"></i>
+				<i class="el-icon-circle-close" @click="remove(vote)"></i>
+				<i class="el-icon-circle-check" @click="save(vote)" style="margin-left: 10px;"></i>
 			</div>
 
 			<div class="row" v-if="votes.length > 1">
@@ -28,8 +28,8 @@
 			<div class="row" style="font-size: 20px;" v-else>{{ Math.round(vote.choice) }}</div>
 		</div>
 		<div class="new-choice" @click="new_vote">
-			<p v-if="votes.length == 0"><i class="el-icon-plus"></i> Cast vote</p>
-			<p v-else><i class="el-icon-plus"></i> Cast vote for another date</p>
+			<p v-if="votes.length == 0"><i class="el-icon-plus" style="margin-right: 10px;"></i> Cast your vote</p>
+			<p v-else><i class="el-icon-plus" style="margin-right: 10px;"></i> Cast vote for another date</p>
 		</div>
 	</div>
 
@@ -66,18 +66,25 @@ export default {
 		return {
 			moment: require('moment'),
 			new_vote: function() {
-				let unit = self.votes.length > 0 ? self.votes[0] : {unit_type: 'spectrum', value: 'True-False'}
-				let choice = unit.unit_type == 'spectrum' ? 50 : 0
-				self.votes.push({choice: choice, unit: unit.value, unit_type: unit.unit_type, at_date: new Date()})
+				let unit = self.votes.length > 0 ? self.votes[0].unit : self.results.value
+				let unit_type = self.votes.length > 0 ? self.votes[0].unit_type : self.results.type
+				self.votes.push({
+					unit: unit,
+					unit_type: unit_type,
+					choice: unit_type == 'spectrum' ? 50 : 0,
+					at_date: new Date()
+				})
 			},
 			save: function(vote) {
 				let choice = parseFloat(vote.choice)
 				if(vote.unit_type == 'spectrum')
 					choice /= 100
-				this.$emit('set', {key: vote.key, unit: vote.unit, at_date: vote.at_date, choice: choice})
+				this.$emit('set', {unit: vote.unit, at_date: vote.at_date, choice: choice})
 			},
 			remove: function(vote) {
-				this.$emit('unset', {key: vote.key, unit: vote.unit, at_date: vote.at_date})
+				let index = self.votes.indexOf(vote)
+				if(index > -1) self.votes.splice(index, 1)
+				this.$emit('unset', {unit: vote.unit, at_date: vote.at_date})
 			}
 		}
 	},
@@ -208,17 +215,6 @@ export default {
 			.action {
 				font-size: 20px;
 			}
-		}
-	}
-
-	.choose-units {
-		margin-top: -2px;
-
-		.el-input__inner {
-			text-align: center;
-			padding-left: 30px;
-			border-radius: 0px;
-			border-top: none;
 		}
 	}
 

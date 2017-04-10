@@ -107,7 +107,11 @@ export function unsetDelegation(to_identity_username, cb) {
 
 export function setVote(key, unit, at_date, choice, cb) {
 	let url = '/api/nodes/' + encodeURIComponent(key) + '/votes'
-	axios.post(url, {unit: unit, choice: choice, at_date: at_date.toISOString().substring(0, 10)}).then(function (response) {
+	axios.post(url, {
+		unit: unit,
+		choice: choice,
+		at_date: at_date.getFullYear() + '-' + (at_date.getMonth() + 1) + '-' + at_date.getDate()
+	}).then(function (response) {
 		cb(response.data.data)
 	}).catch(function (error) {
 	})

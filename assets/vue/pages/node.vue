@@ -14,19 +14,29 @@
 
 			<div class="score-container">
 				<div style="margin-bottom: 20px;">
-					<div v-if="this.node.default_unit && this.node.default_unit.turnout_ratio > 0.01">
-						<div v-html="this.node.default_unit.embeds.main" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+					<div v-if="this.node.default_unit && this.node.default_unit.turnout_ratio > 0">
+						<div v-html="this.node.default_unit.embeds.spectrum" v-if="currentResultsView == 'latest' && this.node.default_unit.embeds.spectrum" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+						<div v-html="this.node.default_unit.embeds.value" v-if="currentResultsView == 'latest' && !this.node.default_unit.embeds.spectrum" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+						
+						<div v-html="this.node.default_unit.embeds.distribution" v-if="currentResultsView == 'distribution'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+						<div v-html="this.node.default_unit.embeds.by_time" v-if="currentResultsView == 'by_time'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 					</div>
-					<div style="width: 100%; display: block;" class="choose-units">
-						<el-select v-model="current_unit" v-on:change="pickUnit" size="mini">
-							<el-option v-for="unit in $store.state.units" :key="unit.value" v-bind:value="unit.value" v-bind:label="unit.text"></el-option>
-						</el-select>
-					</div>
+					<span @click="currentResultsView = 'latest'" class="results-view-button">Latest</span>
+					<span @click="currentResultsView = 'distribution'" class="results-view-button">Distribution</span>
+					<span @click="currentResultsView = 'by_time'" class="results-view-button">By time</span>
 				</div>
 
 				<i class="el-icon-caret-bottom" id="toggle_details_button" @click="isVoteOpen = !isVoteOpen" style="font-size: 28px;"></i>
 				<transition v-on:enter="enter" v-on:leave="leave" v-bind:css="false">
-					<vote :votes="votes" :results="node.default_unit" v-on:set="setVote" v-on:unset="unsetVote" v-if="isVoteOpen"></vote>
+					<div v-if="isVoteOpen">
+						<div style="width: 100%; display: block; margin-top: 30px;">
+							<el-select v-model="current_unit" v-on:change="pickUnit">
+								<el-option v-for="unit in $store.state.units" :key="unit.value" v-bind:value="unit.value" v-bind:label="unit.text"></el-option>
+							</el-select>
+						</div>
+						
+						<vote ref="votesContainer" :votes="votes" :results="node.default_unit" v-on:set="setVote" v-on:unset="unsetVote"></vote>
+					</div>
 				</transition>
 			</div>
 		</div>
@@ -63,6 +73,7 @@ export default {
 
 		return {
 			isVoteOpen: false,
+			currentResultsView: 'latest',
 			votes: [],
 			reference_title: '',
 			inverse_reference_title: '',
@@ -102,33 +113,47 @@ export default {
 		this.fetchData()
 	},
 	watch: {
-		'$route': 'fetchData'
+		'$route': function(route, previous) {
+			this.fetchData(route.params.key == previous.params.key)
+		}
 	},
 	methods: {
-		fetchData: function() {
+		fetchData: function(isSameNode) {
 			let self = this
-			let key = this.$store.getters.currentNode.key
+			let handleNode = (node) => {
+				self.current_unit = node.default_unit.value
 
-			self.isVoteOpen = false
-			
+				let votes = node && node.own_default_unit ? node.own_default_unit.contributions : []
+				let unit_type = node && node.own_default_unit ? node.own_default_unit.type : null
+				self.votes = _.map(votes, (v) => {
+					return {
+						unit: node.default_unit.value || 'True-False',
+						unit_type: node.default_unit.type,
+						choice: node.default_unit.type == 'spectrum' ? v.choice * 100 : v.choice,
+						at_date: new Date(v.at_date)
+					}
+				})
+			}
+
+			if(!isSameNode) {
+				let votesContainer = self.$refs.votesContainer
+				if(votesContainer)
+					votesContainer.$el.style.display = 'none'
+				self.isVoteOpen = false
+				self.currentResultsView = 'latest'
+			}
+
+			let key = this.$store.getters.currentNode.key
 			if(this.$store.getters.searchQuery) {
 				this.$store.dispatch('search', this.$store.getters.searchQuery)
 			} else {
-				this.$store.dispatch('fetchNode', key).then(() => {
-					let node = self.$store.getters.getNodeByKey(key)
-					self.current_unit = node.default_unit.value
-
-					let votes = this.node && this.node.own_default_unit ? this.node.own_default_unit.contributions : []
-					self.votes = _.map(votes, (v) => {
-						v.key = this.node.key
-						v.unit = self.node.default_unit.value || 'True-False'
-						v.unit_type = self.node.default_unit.type
-						if(v.unit_type == 'spectrum')
-							v.choice *= 100
-						v.at_date = new Date(v.at_date)
-						return v
+				if(isSameNode) {
+					handleNode(self.$store.getters.getNodeByKey(key))
+				} else {
+					this.$store.dispatch('fetchNode', key).then(() => {
+						handleNode(self.$store.getters.getNodeByKey(key))
 					})
-				})
+				}
 			}
 		},
 		enter: function (el, done) {
@@ -137,7 +162,7 @@ export default {
 		},
 		leave: function (el, done) {
 			Velocity(toggle_details_button, {rotateZ: "+=180"}, {duration: 500})
-			el.style.display = 'none'
+			Velocity(el, "slideUp", {duration: 500})
 		}
 	},
 	computed: {
@@ -156,6 +181,14 @@ export default {
 </script>
 
 <style scoped>
+	.results-view-button {
+		display: inline-block;
+		margin: 5px 10px;
+		color: #555;
+		font-size: 13px;
+		text-transform: lowercase;
+	}
+
 	.fake-title {
 		display: block;
 		font-size: 26px;

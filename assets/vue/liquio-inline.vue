@@ -2,7 +2,7 @@
 <div class="node">
 	<router-link :to="'/' + encodeURIComponent(node.key)" class="link">
 		<div class="content">{{ node.title }}</div>
-		<div v-html="this.node.default_unit.embeds.main" v-if="this.node.default_unit && this.node.default_unit.embeds" style="width: 100%; height: 50px; font-weight: bold;"></div>
+		<div v-html="this.node.default_unit.embeds.value" v-if="this.node.default_unit && this.node.default_unit.embeds" style="width: 100%;"></div>
 	</router-link>
 
 	<div class="references" v-if="node.references">
