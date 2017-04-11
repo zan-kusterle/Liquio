@@ -1,6 +1,6 @@
 defmodule Liquio.Identity do
 	use Liquio.Web, :model
-	alias Liquio.{Repo, Vote, Delegation, Node, NodeRepo, NodeLoaders}
+	alias Liquio.{Repo, Vote, ReferenceVote, Delegation, Node, NodeRepo, NodeLoaders}
 
 	schema "identities" do
 		field :email, :string
@@ -70,7 +70,7 @@ defmodule Liquio.Identity do
 		identity
 		|> preload_trusts()
 		|> preload_delegations()
-		#|> preload_votes()
+		|> preload_votes()
 	end
 
 	def preload_trusts(identity) do
@@ -99,13 +99,15 @@ defmodule Liquio.Identity do
 	def preload_votes(identity) do
 		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.choice))
 		|> Repo.all
-		|> Repo.preload([:identity])
+		|> Enum.map(& Map.put(&1, :identity, identity))
+		votes_by_key = votes |> Enum.group_by(& &1.group_key)
+		reference_votes = from(v in ReferenceVote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.relevance))
+		|> Repo.all
+		|> Enum.map(& Map.put(&1, :identity, identity))
+		reference_votes_by_key = Enum.group_by(reference_votes, & &1.group_key)
 
-		nodes = votes
-		|> Enum.group_by(& &1.group_key)
-		|> Enum.map(fn({key, votes_for_key}) ->
-			{direct_votes, reference_votes} = Enum.split_with(votes_for_key, & &1.reference_key == nil)
-			references = Enum.map(reference_votes, fn(reference_vote) ->
+		nodes = votes_by_key |> Enum.map(fn({key, votes_for_key}) ->
+			references = reference_votes_by_key |> Map.get(key, []) |> Enum.map(fn(reference_vote) ->
 				node = Node.decode(reference_vote.reference_key)
 				|> Map.put(:own_votes, [reference_vote])
 				node = node
@@ -115,13 +117,13 @@ defmodule Liquio.Identity do
 			end)
 
 			node = Node.decode(key)
-			|> Map.put(:own_votes, direct_votes)
+			|> Map.put(:own_votes, votes_for_key)
 			|> NodeRepo.load_results(%{}, identity)
 			|> Map.put(:references, references)
 			node
-			|> Map.put(:results, if node.own_contribution do node.own_contribution.results else nil end)
+			|> Map.put(:results, if node.own_results do node.own_results else nil end)
 		end)
-
+		
 		identity
 		|> Map.put(:vote_nodes, nodes)
 	end

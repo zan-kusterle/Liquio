@@ -1,13 +1,19 @@
 defmodule Liquio.ResultsEmbeds do
 	def inline_results_spectrum(mean, unit) do
-		line_offset = 0.25
+		line_offset = 0.22
 
-		line = "<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x line_offset }\" y1=\"#{ svg_y 0.5 }\" x2=\"#{ svg_x 1 - line_offset }\" y2=\"#{ svg_y 0.5 }\" style=\"stroke: #aaa; stroke-width: 2;\"></line>"
-		point = "<circle cx=\"#{ svg_x(mean * (1 - 2 * line_offset) + line_offset) }\" cy=\"#{ svg_y 0.5 }\" r=\"15\" fill=\"#1f8dd6\"></circle>"
-		negative_text = "<text text-anchor=\"end\" alignment-baseline=\"middle\" x=\"#{svg_x line_offset - 0.05 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"35\">#{String.downcase(unit.negative)}</text>"
-		positive_text = "<text text-anchor=\"start\" alignment-baseline=\"middle\" x=\"#{ svg_x 1 - line_offset + 0.05 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"35\">#{String.downcase(unit.positive)}</text>"
+		line = "<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x line_offset }\" y1=\"#{ svg_y 0.5 }\" x2=\"#{ svg_x 1 - line_offset }\" y2=\"#{ svg_y 0.5 }\" style=\"stroke: #ccc; stroke-width: 3;\"></line>"
+		point = if mean do
+			x = svg_x((1 - mean) * (1 - 2 * line_offset) + line_offset)
+			"<text text-anchor=\"middle\" x=\"#{ x + 8 }\" y=\"65\" font-family=\"Helvetica\" font-size=\"36\">#{round(mean * 100)}%</text>" <>
+			"<line vector-effect=\"non-scaling-stroke\" x1=\"#{ x }\" y1=\"#{ svg_y 0.4 }\" x2=\"#{ x }\" y2=\"#{ svg_y 0.6 }\" style=\"stroke: #555; stroke-width: 2;\"></line>"
+		else
+			""
+		end
+		negative_text = "<text text-anchor=\"start\" alignment-baseline=\"middle\" x=\"#{svg_x 1 - line_offset + 0.03 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"22\" style=\"text-transform: uppercase;\">#{unit.negative}</text>"
+		positive_text = "<text text-anchor=\"end\" alignment-baseline=\"middle\" x=\"#{ svg_x line_offset - 0.03 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"22\" style=\"text-transform: uppercase;\">#{unit.positive}</text>"
 
-		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{negative_text}#{line}#{point}#{positive_text}</svg>"
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{positive_text}#{line}#{point}#{negative_text}</svg>"
 	end
 
 	def inline_results_quantity(mean, unit) do
@@ -23,14 +29,22 @@ defmodule Liquio.ResultsEmbeds do
 			end
 		end
 
-		"<div class=\"area\" style=\"background-color: #{color}\"><div class=\"bubble\"><p>#{text}</p></div></div>"
+		rect = "<rect x=\"0\" y=\"0\" width=\"800\" height=\"200\" style=\"fill: #{color};\" />"
+		text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"400\" y=\"108\" font-family=\"Helvetica\" font-size=\"72\">#{text}</text>"
+
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{rect}#{text}</svg>"
 	end
 
 	def inline_results_by_time(contributions, aggregator) do
-		results_with_datetime = []
+		results_with_datetime = contributions |> Enum.group_by(& &1.datetime.year) |> Enum.map(fn({year, contributions_for_year}) ->
+			%{
+				:year => year,
+				:average => aggregator.(contributions_for_year)
+			}
+		end)
 
-		points = results_with_datetime |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio})
-		if Enum.count(points) >= 2 do
+		points = [] |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio})
+		{line, path} = if Enum.count(points) >= 2 do
 			{min_x, max_x} = Enum.min_max(Enum.map(points, & Timex.to_unix(elem(&1, 0))))
 			{min_y, max_y} = Enum.min_max(Enum.map(points, & elem(&1, 1)))
 
@@ -53,12 +67,14 @@ defmodule Liquio.ResultsEmbeds do
 				{nx, ny, w, x, y}
 			end)
 
-			line = "<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x 0 }\" y1=\"#{ svg_y zero_y }\" x2=\"#{ svg_x 1 }\" y2=\"#{ svg_y zero_y }\" style=\"stroke: #aaa; stroke-width: 2;\"></line>"
-			path = "<path vector-effect=\"non-scaling-stroke\" fill=\"none\" stroke=\"#4aa5f3\" stroke-width=\"2\" d=\"#{ svg_path normalized_points }\"></path>"
-			"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"none\">#{line}#{path}</svg>"
+			{
+				"<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x 0 }\" y1=\"#{ svg_y zero_y }\" x2=\"#{ svg_x 1 }\" y2=\"#{ svg_y zero_y }\" style=\"stroke: #aaa; stroke-width: 2;\"></line>",
+				"<path vector-effect=\"non-scaling-stroke\" fill=\"none\" stroke=\"#4aa5f3\" stroke-width=\"2\" d=\"#{ svg_path normalized_points }\"></path>"
+			}
 		else
-			"?"
+			{"", ""}
 		end
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"none\">#{line}#{path}</svg>"
 	end
 
 	def inline_results_distribution(contributions, aggregator) do
@@ -68,9 +84,10 @@ defmodule Liquio.ResultsEmbeds do
 		|> Enum.filter(fn({index, bucket_contributions}) -> Enum.count(bucket_contributions) > 0 end)
 		|> Enum.map(fn({index, bucket_contributions}) ->
 			average = aggregator.(bucket_contributions)
-			"<rect x=\"#{svg_x(index / 10)}\" y=\"#{svg_y average}\" width=\"70\" height=\"#{svg_height average}\" style=\"fill:#ccc;\" />"
+			"<rect x=\"#{svg_x(index / 10)}\" y=\"#{svg_y average}\" width=\"70\" height=\"#{svg_height average}\" style=\"fill:#ccc;\" />" <>
+			"<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"#{svg_x(index / 10) + 35}\" y=\"150\" font-family=\"Helvetica\" font-size=\"36\">#{index}</text>"
 		end)
-		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"none\">#{Enum.join(rects, "")}</svg>"
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{Enum.join(rects, "")}</svg>"
 	end
 	
 	def svg_path(points) do

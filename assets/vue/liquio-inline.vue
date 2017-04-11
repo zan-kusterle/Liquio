@@ -1,8 +1,12 @@
 <template>
 <div class="node">
 	<router-link :to="'/' + encodeURIComponent(node.key)" class="link">
-		<div class="content">{{ node.title }}</div>
-		<div v-html="this.node.default_unit.embeds.value" v-if="this.node.default_unit && this.node.default_unit.embeds" style="width: 100%;"></div>
+		<div class="content">
+			<span>{{ node.title }}</span>
+			<router-link v-if="referencingNode" :to="'/' + encodeURIComponent(referencingNode.key) + '/references/' + encodeURIComponent(node.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
+			<router-link v-else-if="referencesNode" :to="'/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(referencesNode.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
+		</div>
+		<div v-html="this.node.default_unit.embeds.value" v-if="this.node.default_unit && this.node.default_unit.embeds" style="width: 100%; font-size: 0;"></div>
 	</router-link>
 
 	<div class="references" v-if="node.references">
@@ -24,9 +28,6 @@
 			</div>
 		</router-link>
 	</div>
-
-	<router-link v-if="referencingNode" :to="'/' + encodeURIComponent(referencingNode.key) + '/references/' + encodeURIComponent(node.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
-	<router-link v-else-if="referencesNode" :to="'/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(referencesNode.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
 </div>
 </template>
 
@@ -43,11 +44,12 @@ export default {
 	.node {
 		display: inline-block;
 		width: 100%;
-		margin: 10px 0px;
-		font-size: 15px;
+		margin: 15px 0px;
+		font-size: 20px;
 		text-align: left;
+		background: #f0f0f0;
 		vertical-align: top;
-		border: 1px solid rgba(0, 0, 0, 0.12);
+		border-radius: 2px;
 	}
 
 	.link {
@@ -59,8 +61,7 @@ export default {
 	}
 
 	.content {
-		padding: 8px 10px;
-		background: white;
+		padding: 15px 25px;
 		word-wrap: break-word;
 	}
 
@@ -71,12 +72,8 @@ export default {
 	}
 
 	.reference-link {
-		display: block;
-		background: rgba(0, 0, 0, 0.1);
-		text-align: center;
-		font-size: 10px;
-		padding-top: 8px;
-		padding-bottom: 6px;
+		font-size: 15px;
+		margin-left: 10px;
 	}
 
 	.reference-result {

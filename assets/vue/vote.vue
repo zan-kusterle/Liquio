@@ -4,23 +4,23 @@
 		<div class="vote-choice" v-for="vote in votes_by_time">
 			<div class="row" style="text-align: left; margin: 0px; margin-bottom: -20px;">
 				<i class="el-icon-circle-close" @click="remove(vote)"></i>
-				<i class="el-icon-circle-check" @click="save(vote)" style="margin-left: 10px;"></i>
+				<i class="el-icon-circle-check" v-if="vote.needs_save" @click="save(vote)" style="margin-left: 10px;"></i>
 			</div>
 
 			<div class="row" v-if="votes.length > 1">
-				<el-date-picker v-model="vote.at_date" type="date" class="datepicker" :clearable="false"></el-date-picker>
+				<el-date-picker v-model="vote.at_date" v-on:change="vote.needs_save = true" type="date" class="datepicker" :clearable="false"></el-date-picker>
 			</div>
 
 			<div class="row" v-if="vote.unit_type == 'spectrum'">
-				<p class="spectrum-side">False</p>
+				<p class="spectrum-side">{{ results.negative }}</p>
 				<div class="range">
-					<el-slider v-model="vote.choice"></el-slider>
+					<el-slider v-model="vote.choice" v-on:change="vote.needs_save = true"></el-slider>
 				</div>
-				<p class="spectrum-side">True</p>
+				<p class="spectrum-side">{{ results.positive }}</p>
 			</div>
 			<div class="row" v-else>
 				<div class="numeric">
-					<el-input v-model="vote.choice"></el-input>
+					<el-input v-model="vote.choice" v-on:change="vote.needs_save = true"></el-input>
 				</div>
 			</div>
 
@@ -29,7 +29,7 @@
 		</div>
 		<div class="new-choice" @click="new_vote">
 			<p v-if="votes.length == 0"><i class="el-icon-plus" style="margin-right: 10px;"></i> Cast your vote</p>
-			<p v-else><i class="el-icon-plus" style="margin-right: 10px;"></i> Cast vote for another date</p>
+			<p v-else-if="!single"><i class="el-icon-plus" style="margin-right: 10px;"></i> Cast vote for another date</p>
 		</div>
 	</div>
 
@@ -59,7 +59,7 @@ var _ = require('lodash')
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['votes', 'results'],
+	props: ['single', 'votes', 'results'],
 	data: function() {
 		let self = this
 		
@@ -68,11 +68,16 @@ export default {
 			new_vote: function() {
 				let unit = self.votes.length > 0 ? self.votes[0].unit : self.results.value
 				let unit_type = self.votes.length > 0 ? self.votes[0].unit_type : self.results.type
+				let date = new Date()
+				while(_.some(self.votes, (vote) => vote.at_date.toDateString() === date.toDateString())) {
+					date.setDate(date.getDate() + 1)
+				}
 				self.votes.push({
 					unit: unit,
 					unit_type: unit_type,
 					choice: unit_type == 'spectrum' ? 50 : 0,
-					at_date: new Date()
+					at_date: date,
+					needs_save: true
 				})
 			},
 			save: function(vote) {
@@ -80,10 +85,11 @@ export default {
 				if(vote.unit_type == 'spectrum')
 					choice /= 100
 				this.$emit('set', {unit: vote.unit, at_date: vote.at_date, choice: choice})
+				vote.needs_save = false
 			},
 			remove: function(vote) {
 				let index = self.votes.indexOf(vote)
-				if(index > -1) self.votes.splice(index, 1)
+				if(index >= 0) self.votes.splice(index, 1)
 				this.$emit('unset', {unit: vote.unit, at_date: vote.at_date})
 			}
 		}

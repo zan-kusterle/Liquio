@@ -55,7 +55,7 @@ defmodule Liquio.Web.NodeView do
 		}
 	end
 
-	def render("results.json", %{node: results}) when results == nil do %{} end
+	def render("results.json", %{node: results}) when results == nil do nil end
 	def render("results.json", %{node: results}) do
 		by_units = results.by_units |> Enum.map(fn({k, unit_results}) ->
 			unit_results = unit_results

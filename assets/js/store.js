@@ -21,10 +21,10 @@ export default new Vuex.Store({
 		units: _.map([
 			{key: 'true', text: 'True-False', value: 'true', type: 'spectrum'},
 			{key: 'count', text: 'Count', value: 'count', type: 'quantity'},
-			{key: 'year', text: 'Year', value: 'year', type: 'quantity'},
+			{key: 'year', text: 'Year(AD)', value: 'year', type: 'quantity'},
 			{key: 'fact', text: 'Fact-Lie', value: 'fact', type: 'spectrum'},
 			{key: 'reliable', text: 'Reliable-Unreliable', value: 'reliable', type: 'spectrum'},
-			{key: 'temperature', text: 'Temperature (°C)', value: 'temperature', type: 'quantity'},
+			{key: 'temperature', text: 'Temperature(°C)', value: 'temperature', type: 'quantity'},
 			{key: 'usdollars', text: 'US Dollars (USD)', value: 'usd', type: 'quantity'},
 			{key: 'euro', text: 'Euro (EUR)', value: 'eur', type: 'quantity'},
 			{key: 'length', text: 'Length (m)', value: 'length', type: 'quantity'},
@@ -79,7 +79,8 @@ export default new Vuex.Store({
 					let referenceNode = getters.getPureNodeByKey(n.path)
 
 					var unit = state.units[0]
-					let bestUnit = _.maxBy(Object.values(referenceNode.results.by_units), (u) => u.turnout_ratio)
+					let units = referenceNode.results ? Object.values(referenceNode.results.by_units) : []
+					let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
 					if(bestUnit)
 						unit = bestUnit
 
@@ -94,11 +95,12 @@ export default new Vuex.Store({
 					let referenceNode = getters.getPureNodeByKey(n.path)
 
 					var unit = state.units[0]
-					let bestUnit = _.maxBy(Object.values(referenceNode.results.by_units), (u) => u.turnout_ratio)
+					let units = referenceNode.results ? Object.values(referenceNode.results.by_units) : []
+					let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
 					if(bestUnit)
 						unit = bestUnit
 
-					referenceNode.default_unit = referenceNode.results.by_units[unit.key] || unit
+					referenceNode.default_unit = referenceNode.results && referenceNode.results.by_units[unit.key] || unit
 					if(referenceNode) {
 						referenceNode.reference_result = n.reference_result
 					}
@@ -107,7 +109,8 @@ export default new Vuex.Store({
 
 				var unit = state.units[0]
 
-				let bestUnit = _.maxBy(Object.values(node.results.by_units), (u) => u.turnout_ratio)
+				let units = node.results ? Object.values(node.results.by_units) : []
+				let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
 				if(bestUnit) {
 					unit = bestUnit
 				}
@@ -116,7 +119,7 @@ export default new Vuex.Store({
 				if(node.key == currentNode.key && currentNode.unit) {
 					let activeUnit = _.find(state.units, (u) => u.text == currentNode.unit)
 					if(activeUnit) {
-						unit = node.results.by_units[activeUnit.key] || activeUnit
+						unit = node.results && node.results.by_units[activeUnit.key] || activeUnit
 					}
 				}
 				
@@ -130,7 +133,25 @@ export default new Vuex.Store({
 			let reference = _.find(state.references, (reference) => {
 				return reference.node.group_key == utils.normalizeKey(key) && reference.referencing_node.group_key == utils.normalizeKey(reference_key)
 			})
-			return reference ? JSON.parse(JSON.stringify(reference)) : null
+			if(!reference)
+				return null
+
+			let results = JSON.parse(JSON.stringify(reference.results)) || {}
+			results.type = 'spectrum'
+			results.positive = 'Relevant'
+			results.negative = 'Irrelevant'
+
+			let own_results = JSON.parse(JSON.stringify(reference.own_results)) || {}
+			own_results.type = 'spectrum'
+			own_results.positive = 'Relevant'
+			own_results.negative = 'Irrelevant'
+
+			return {
+				results: results,
+				own_results: own_results,
+				node: getters.getNodeByKey(key),
+				referencing_node: getters.getNodeByKey(reference_key)
+			}
 		}
 	},
 	mutations: {

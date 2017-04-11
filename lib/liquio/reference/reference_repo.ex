@@ -46,7 +46,7 @@ defmodule Liquio.ReferenceRepo do
 	end
 	
 	def load_results(reference, calculation_opts, user) do
-		votes = ReferenceVote.get_at_datetime(reference.path, reference.reference_path, calculation_opts.datetime)
+		votes = ReferenceVote.get_at_datetime(reference.path, reference.reference_path, calculation_opts.datetime) |> Repo.preload([:identity])
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
 		results = Results.from_reference_votes(votes, inverse_delegations, calculation_opts)		
 

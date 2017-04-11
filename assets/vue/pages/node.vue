@@ -15,8 +15,8 @@
 			<div class="score-container">
 				<div style="margin-bottom: 20px;">
 					<div v-if="this.node.default_unit && this.node.default_unit.turnout_ratio > 0">
-						<div v-html="this.node.default_unit.embeds.spectrum" v-if="currentResultsView == 'latest' && this.node.default_unit.embeds.spectrum" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
-						<div v-html="this.node.default_unit.embeds.value" v-if="currentResultsView == 'latest' && !this.node.default_unit.embeds.spectrum" style="width: 300px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+						<div v-html="this.node.default_unit.embeds.spectrum" v-if="currentResultsView == 'latest' && this.node.default_unit.embeds.spectrum" style="width: 500px; display: block; margin: 0px auto; font-size: 36px;"></div>
+						<div v-html="this.node.default_unit.embeds.value" v-if="currentResultsView == 'latest' && !this.node.default_unit.embeds.spectrum" style="width: 400px; display: block; margin: 0px auto; font-size: 36px;"></div>
 						
 						<div v-html="this.node.default_unit.embeds.distribution" v-if="currentResultsView == 'distribution'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 						<div v-html="this.node.default_unit.embeds.by_time" v-if="currentResultsView == 'by_time'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
@@ -130,7 +130,8 @@ export default {
 						unit: node.default_unit.value || 'True-False',
 						unit_type: node.default_unit.type,
 						choice: node.default_unit.type == 'spectrum' ? v.choice * 100 : v.choice,
-						at_date: new Date(v.at_date)
+						at_date: new Date(v.at_date),
+						needs_save: false
 					}
 				})
 			}
@@ -183,9 +184,9 @@ export default {
 <style scoped>
 	.results-view-button {
 		display: inline-block;
-		margin: 5px 10px;
-		color: #555;
-		font-size: 13px;
+		margin: 5px 30px;
+		color: #888;
+		font-size: 12px;
 		text-transform: lowercase;
 	}
 

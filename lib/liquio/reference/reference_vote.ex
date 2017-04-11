@@ -19,19 +19,18 @@ defmodule Liquio.ReferenceVote do
 	def get_at_datetime(path, reference_path, datetime) do
 		query = "SELECT DISTINCT ON (v.identity_id) *
 			FROM reference_votes AS v
-			WHERE lower(v.group_key) = $1 AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			WHERE v.path = $1 AND v.reference_path = $2 AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
-		group_key = Reference.group_key(%{:path => path, :reference_path => reference_path})
-		res = Ecto.Adapters.SQL.query!(Repo, query , [group_key])
+		res = Ecto.Adapters.SQL.query!(Repo, query , [path, reference_path])
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		votes = res.rows
 		|> Enum.map(fn(row) ->
-			vote = struct(Vote, Enum.zip(cols, row))
+			vote = struct(ReferenceVote, Enum.zip(cols, row))
 			{date, {h, m, s, _}} = vote.datetime
-			vote = Map.put(vote, :datetime,  Timex.to_naive_datetime({date, {h, m, s}}))
-			vote
+			vote = vote
+			|> Map.put(:datetime,  Timex.to_naive_datetime({date, {h, m, s}}))
 		end)
-		|> Enum.filter(& &1.choice != nil)
+		|> Enum.filter(& &1.relevance != nil)
 		|> Enum.map(& {&1.identity_id, &1}) |> Enum.into(%{}) |> Map.values
 		
 		votes

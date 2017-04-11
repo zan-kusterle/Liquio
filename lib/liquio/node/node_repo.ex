@@ -19,7 +19,7 @@ defmodule Liquio.NodeRepo do
 			|> Enum.map(& &1.path)
 			|> Enum.uniq
 			|> Enum.map(& %Node{path: &1} |> load(calculation_opts, nil))
-			|> Enum.map(& Map.put(&1, :turnout, &1.results |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum))
+			|> Enum.map(& Map.put(&1, :turnout, &1.results.by_units |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum))
 			|> Enum.sort_by(& -(&1.turnout + 0.05 * Enum.count(&1.references)))
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 			
@@ -36,9 +36,9 @@ defmodule Liquio.NodeRepo do
 		nodes = Vote
 		|> VoteRepo.search(query)
 		|> Repo.all
-		|> Enum.map(& &1.key)
+		|> Enum.map(& &1.path)
 		|> Enum.uniq
-		|> Enum.map(& Node.decode(&1) |> load(calculation_opts |> Map.put(:depth, 0), nil))
+		|> Enum.map(& Node.new(&1) |> load(calculation_opts |> Map.put(:depth, 0), nil))
 
 		Node.decode("Results for #{query}" |> String.replace(" ", "-"))
 		|> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
