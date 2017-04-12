@@ -6,9 +6,4 @@ defmodule Liquio.Web.IndexController do
 		|> put_resp_header("Cache-Control", "public, max-age=864000")
 		|> render(Liquio.Web.LayoutView)
 	end
-
-	def link(conn, _) do
-		conn
-		|> render(Liquio.Web.LayoutView, layout: {Liquio.Web.LayoutView, "link.html"})
-	end
 end

@@ -122,11 +122,11 @@ defmodule Liquio.NodeRepo do
 			end
 		end
 		own_votes = own_votes |> Repo.preload([:identity])
-
+		
 		node
 		|> Map.put(:votes, votes)
-		|> Map.put(:own_votes, own_votes)
 		|> Map.put(:results, Results.from_votes(votes, inverse_delegations, calculation_opts))
+		|> Map.put(:own_votes, own_votes)
 		|> Map.put(:own_results, Results.from_votes(own_votes, inverse_delegations, calculation_opts))
 	end
 	

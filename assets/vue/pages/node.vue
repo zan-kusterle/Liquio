@@ -1,15 +1,15 @@
 <template>
 	<div>
-		<div class="before" v-if="!node.loading">
-			<liquio-list v-if="node.path[0] !== ''" v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
+		<div class="before" v-if="!node.loading && node.title !== ''">
+			<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 
 			<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px; margin-top: 20px;">
 				<el-button slot="prepend" icon="caret-left" @click="view_inverse_reference"></el-button>
 			</el-input>
 		</div>
 
-		<div v-if="node && !node.loading" class="main">
-			<h1 class="title" style="vertical-align: middle;">{{ node.title || 'Everything' }}</h1>
+		<div v-if="!node.loading && node.title !== ''" class="main">
+			<h1 class="title" style="vertical-align: middle;">{{ node.title }}</h1>
 			<a v-if="node.title.startsWith('https://')" :href="node.key" target="_blank" class="title" style="vertical-align: middle;">View content</a>
 
 			<div class="score-container">
@@ -40,17 +40,33 @@
 				</transition>
 			</div>
 		</div>
+		<div v-else-if="!node.loading" class="main">
+			<h1 class="title" style="vertical-align: middle;">A liquid democracy where anyone can vote on anything</h1>
+
+			<div class="get-extension">
+				<router-link to="/link">
+					<el-button>
+						<img src="/images/google-chrome-icon.png" style="vertical-align: middle; width: 32px; opacity: 0.8;"></img>
+						<span style="vertical-align: middle; margin-left: 5px; font-size: 20px;">Get extension</span>
+					</el-button>
+				</router-link>
+			</div>
+
+			<el-input placeholder="Search" v-model="search_title" @keyup.native.enter="search" style="max-width: 800px; margin-top: 20px;">
+				<el-button slot="append" icon="search" @click="search"></el-button>
+			</el-input>
+		</div>
 		<div v-else class="main">
 			<h1 class="fake-title">{{ node.title }}</h1>
 			<i class="el-icon-loading loading"></i>
 		</div>
 
 		<div class="after" v-if="node">
-			<el-input v-if="node.path[0] !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px; margin-bottom: 20px;">
+			<el-input v-if="node.title !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px; margin-bottom: 20px;">
 				<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
 			</el-input>
 
-			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node" style="text-align: left;"></liquio-list>
+			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title === '' ? null : node" style="text-align: left;"></liquio-list>
 		</div>
 
 		<div class="footer">
@@ -75,6 +91,7 @@ export default {
 			isVoteOpen: false,
 			currentResultsView: 'latest',
 			votes: [],
+			search_title: '',
 			reference_title: '',
 			inverse_reference_title: '',
 			view_reference: (event) => {
@@ -90,6 +107,9 @@ export default {
 					let path = '/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(self.node.key)
 					self.$router.push(path)
 				}
+			},
+			search: (event) => {
+				self.$router.push('/search/' + encodeURIComponent(self.search_title))
 			},
 			current_unit: null,
 			pickUnit: function(unit) {
@@ -182,6 +202,11 @@ export default {
 </script>
 
 <style scoped>
+	.get-extension {
+		text-align: center;
+		margin: 20px 0px 40px 0px;
+	}
+
 	.results-view-button {
 		display: inline-block;
 		margin: 5px 30px;

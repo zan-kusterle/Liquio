@@ -12,6 +12,7 @@ Vue.use(VueRouter)
 Vue.use(ElementUI, {locale})
 import { sync } from 'vuex-router-sync'
 import loginComponent from '../vue/pages/login.vue'
+import extensionComponent from '../vue/pages/extension.vue'
 import finishLoginComponent from '../vue/pages/finish-login.vue'
 import identityComponent from '../vue/pages/identity.vue'
 import nodeComponent from '../vue/pages/node.vue'
@@ -22,6 +23,7 @@ let store = require('store.js').default
 
 const routes = [
 	{ path: '/', component: nodeComponent },
+	{ path: '/link', component: extensionComponent },
 	{ path: '/login', component: loginComponent },
 	{ path: '/login/:token/new', component: finishLoginComponent },
 	{ path: '/identities/:username', component: identityComponent },

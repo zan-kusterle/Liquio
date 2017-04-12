@@ -4,8 +4,6 @@
 			<el-row>
 				<el-col :span="12">
 					<router-link to="/" class="logo"><img src="/images/logo.svg"></img></router-link>
-					<h3 class="tagline">A liquid democracy where anyone can vote on anything.</h3>
-					<a onclick="chrome.webstore.install()" class="tagline">Get extension</a>
 				</el-col>
 				<el-col :span="12">
 					<div class="actions" v-if="$store.state.user">
@@ -63,17 +61,6 @@ p {
 		img {
 			width: 100px;
 		}
-	}
-
-	.tagline {
-		display: inline-block;
-		margin: 0px;
-		color: rgba(255, 255, 255, 0.9);
-		font-weight: normal;
-		font-size: 13px;
-		vertical-align: middle;
-		margin-top: 20px;
-		margin-left: 20px;
 	}
 
 	.actions {

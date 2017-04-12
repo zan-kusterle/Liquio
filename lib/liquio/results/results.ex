@@ -1,6 +1,11 @@
 defmodule Liquio.Results do
 	alias Liquio.{Node, CalculateResults, Repo, Vote, ResultsEmbeds}
 
+	def from_votes(votes) do from_votes(votes, %{}) end
+	def from_votes(votes, inverse_delegations) do
+		trust_metric_ids = votes |> Enum.map(& &1.identity.username) |> MapSet.new
+		from_votes(votes, inverse_delegations, %{:datetime => Timex.now, :trust_metric_ids => trust_metric_ids, :topics => nil})
+	end
 	def from_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :topics => topics}) do
 		by_units = votes |> Enum.group_by(& &1.unit) |> Enum.map(fn({unit_value, votes_for_unit}) ->
 			unit = Vote.decode_unit!(unit_value)
@@ -65,8 +70,6 @@ defmodule Liquio.Results do
 			}
 		}
 	end
-
-
 
 	defp mean(contributions) do
 		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))

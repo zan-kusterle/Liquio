@@ -28,11 +28,16 @@ defmodule Liquio.ResultsEmbeds do
 				"#{format_number(mean)} #{unit.unit || unit.measurement}"
 			end
 		end
+		sub_text = if unit.type == :spectrum do String.downcase(unit.positive) else nil end
 
 		rect = "<rect x=\"0\" y=\"0\" width=\"800\" height=\"200\" style=\"fill: #{color};\" />"
 		text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"400\" y=\"108\" font-family=\"Helvetica\" font-size=\"72\">#{text}</text>"
-
-		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{rect}#{text}</svg>"
+		sub_text = if sub_text do
+			"<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"400\" y=\"160\" font-family=\"Helvetica\" font-size=\"28\" fill=\"#222\" font-weight=\"bold\">#{sub_text}</text>"
+		else
+			""
+		end
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{rect}#{text}#{sub_text}</svg>"
 	end
 
 	def inline_results_by_time(contributions, aggregator) do

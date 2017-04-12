@@ -1,6 +1,6 @@
 defmodule Liquio.Identity do
 	use Liquio.Web, :model
-	alias Liquio.{Repo, Vote, ReferenceVote, Delegation, Node, NodeRepo, NodeLoaders}
+	alias Liquio.{Repo, Vote, ReferenceVote, Delegation, Node, NodeRepo, Results}
 
 	schema "identities" do
 		field :email, :string
@@ -110,15 +110,13 @@ defmodule Liquio.Identity do
 			references = reference_votes_by_key |> Map.get(key, []) |> Enum.map(fn(reference_vote) ->
 				node = Node.decode(reference_vote.reference_key)
 				|> Map.put(:own_votes, [reference_vote])
-				node = node
-				|> NodeRepo.load_results(%{}, identity)
 				node
 				|> Map.put(:reference_result, if node.own_contribution do node.own_contribution.results else nil end)
 			end)
 
 			node = Node.decode(key)
 			|> Map.put(:own_votes, votes_for_key)
-			|> NodeRepo.load_results(%{}, identity)
+			|> Map.put(:own_results, Results.from_votes(votes_for_key))
 			|> Map.put(:references, references)
 			node
 			|> Map.put(:results, if node.own_results do node.own_results else nil end)

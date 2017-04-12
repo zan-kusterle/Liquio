@@ -35,7 +35,6 @@ defmodule Liquio.Web.Router do
 	scope "/", Liquio.Web do
 		pipe_through :browser
 
-		get "/link", IndexController, :link
 		get "/*path", IndexController, :app
 	end
 end
