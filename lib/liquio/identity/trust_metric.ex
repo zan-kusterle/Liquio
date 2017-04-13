@@ -16,7 +16,7 @@ defmodule Liquio.TrustMetric do
 
 	def get!(url) do
 		case get(url) do
-			{:ok, ids} -> ids
+			{:ok, usernames} -> usernames
 			_ -> MapSet.new
 		end
 	end
@@ -57,14 +57,6 @@ defmodule Liquio.TrustMetric do
 	defp usernames_from_html(html) do
 		html
 		|> Floki.find(".identity")
-		|> Floki.attribute("id")
-		|> Enum.flat_map(fn(string) ->
-			case Integer.parse(string) do
-				{x, ""} ->
-					[to_string(x)]
-				_ ->
-					[]
-			end
-		end)
+		|> Floki.attribute("username")
 	end
 end

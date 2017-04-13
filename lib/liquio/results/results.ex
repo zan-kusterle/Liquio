@@ -15,9 +15,14 @@ defmodule Liquio.Results do
 			else
 				votes_for_unit
 			end
-			contributions = CalculateResults.calculate(votes_for_unit, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
+			results_by_date = votes_for_unit |> Enum.group_by(& &1.at_date) |> Enum.map(fn({at_date, votes_for_unit_at_date}) ->
+				contributions_at_date = CalculateResults.calculate(votes_for_unit_at_date, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
+				results_at_date = from_contributions(contributions_at_date, datetime, MapSet.size(trust_metric_ids), unit)
+				{at_date, results_at_date}
+			end) |> Enum.into(%{})
+			latest_date = results_by_date |> Map.keys |> Enum.sort |> List.last
 
-			unit_results = from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), unit)
+			unit_results = results_by_date[latest_date]
 			|> Map.merge(unit)
 			|> Map.put(:type, to_string(unit.type))
 			|> Map.put(:value, unit_value)
@@ -32,6 +37,11 @@ defmodule Liquio.Results do
 		}
 	end
 
+	def from_reference_votes(votes) do from_reference_votes(votes, %{}) end
+	def from_reference_votes(votes, inverse_delegations) do
+		trust_metric_ids = votes |> Enum.map(& &1.identity.username) |> MapSet.new
+		from_reference_votes(votes, inverse_delegations, %{:datetime => Timex.now, :trust_metric_ids => trust_metric_ids, :topics => nil})
+	end
 	def from_reference_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
 		votes = votes
 		|> Enum.map(& &1 |> Map.put(:choice, &1.relevance))

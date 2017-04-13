@@ -78,6 +78,7 @@ defmodule Liquio.Identity do
 
 		identity
 		|> Map.put(:trusts_to, inverse_trusts)
+		|> Map.put(:trusts_from, [])
 	end
 
 	def preload_delegations(identity) do
@@ -100,26 +101,26 @@ defmodule Liquio.Identity do
 		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.choice))
 		|> Repo.all
 		|> Enum.map(& Map.put(&1, :identity, identity))
-		votes_by_key = votes |> Enum.group_by(& &1.group_key)
+		votes_by_path = votes |> Enum.group_by(& &1.path)
 		reference_votes = from(v in ReferenceVote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.relevance))
 		|> Repo.all
 		|> Enum.map(& Map.put(&1, :identity, identity))
-		reference_votes_by_key = Enum.group_by(reference_votes, & &1.group_key)
+		reference_votes_by_path = Enum.group_by(reference_votes, & &1.path)
 
-		nodes = votes_by_key |> Enum.map(fn({key, votes_for_key}) ->
-			references = reference_votes_by_key |> Map.get(key, []) |> Enum.map(fn(reference_vote) ->
-				node = Node.decode(reference_vote.reference_key)
-				|> Map.put(:own_votes, [reference_vote])
-				node
-				|> Map.put(:reference_result, if node.own_contribution do node.own_contribution.results else nil end)
+		nodes = votes_by_path |> Enum.map(fn({path, votes_for_path}) ->
+			references = reference_votes_by_path |> Map.get(path, []) |> Enum.map(fn(reference_vote) ->
+				%{
+					:results => Results.from_reference_votes([reference_vote]),
+					:reference_node => Node.new(reference_vote.reference_path)
+				}
 			end)
 
-			node = Node.decode(key)
-			|> Map.put(:own_votes, votes_for_key)
-			|> Map.put(:own_results, Results.from_votes(votes_for_key))
+			node = Node.new(path)
+			|> Map.put(:own_results, Results.from_votes(votes_for_path))
 			|> Map.put(:references, references)
+
 			node
-			|> Map.put(:results, if node.own_results do node.own_results else nil end)
+			|> Map.put(:results, node.own_results)
 		end)
 		
 		identity

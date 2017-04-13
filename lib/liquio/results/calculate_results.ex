@@ -4,29 +4,35 @@ defmodule Liquio.CalculateResults do
 
 	def calculate(votes, inverse_delegations, trust_usernames, topics) do
 		topics = if is_list(topics) do MapSet.new(topics) else topics end
-		trust_votes = votes |> Enum.filter(& MapSet.member?(trust_usernames, &1.identity.username))
+		votes_by_identity = votes |> Enum.group_by(& &1.identity.username)
+		trust_votes = votes_by_identity |> Enum.filter(fn({identity_username, _}) -> MapSet.member?(trust_usernames, identity_username) end)
 		uuid = String.to_atom(UUID.uuid4(:hex))
-		state = {inverse_delegations, Enum.map(trust_votes, & {&1.identity.id, &1}) |> Enum.into(%{}), topics, trust_usernames}
+		state = {inverse_delegations, trust_votes, topics, trust_usernames}
 
 		CalculateMemoServer.start_link uuid
 
-		Enum.each(trust_votes, fn(vote) ->
-			calculate_total_weights(vote.identity.id, state, uuid, MapSet.new)
+		Enum.each(trust_votes, fn({identity_username, _}) ->
+			calculate_total_weights(identity_username, state, uuid, MapSet.new)
 		end)
 
 		CalculateMemoServer.reset_visited(uuid)
 
-		contributions = trust_votes |> Enum.map(fn(vote) ->
-			vote
-			|> Map.put(:voting_power, get_power(vote.identity.id, state, uuid, MapSet.new) / 1)
-		end)
+		contributions_by_identities = trust_votes |> Enum.map(fn({identity_username, identity_votes}) ->
+			{identity_username, %{
+				:voting_power => get_power(identity_username, state, uuid, MapSet.new) / 1,
+				:votes => identity_votes
+			}}
+		end) |> Enum.into(%{})
 
 		CalculateMemoServer.stop uuid
 
-		total_voting_power = contributions |> Enum.map(& &1.voting_power) |> Enum.sum
-		contributions = contributions |> Enum.map(fn(contribution) ->
-			contribution
-			|> Map.put(:weight, contribution.voting_power / total_voting_power)
+		total_voting_power = contributions_by_identities |> Enum.map(fn({_, %{:voting_power => voting_power}}) -> voting_power end) |> Enum.sum
+		contributions = contributions_by_identities |> Enum.flat_map(fn({_, %{:voting_power => voting_power, :votes => identity_votes}}) ->
+			identity_votes |> Enum.map(fn(vote) ->
+				vote
+				|> Map.put(:voting_power, voting_power)
+				|> Map.put(:weight, voting_power / total_voting_power)
+			end)
 		end)
 		
 		contributions

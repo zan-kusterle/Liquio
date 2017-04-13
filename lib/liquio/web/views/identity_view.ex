@@ -14,7 +14,7 @@ defmodule Liquio.Web.IdentityView do
 			username: identity.username,
 			name: identity.name,
 			trusts_to: Map.get(identity, :trusts_to, []),
-			trusts: Map.get(identity, :trusts, []),
+			trusts: Map.get(identity, :trusts_from, []),
 			delegations_to: Map.get(identity, :delegations_to, []) |> Enum.map(& {&1.from_identity.username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
 			delegations: Map.get(identity, :delegations_from, []) |> Enum.map(& {&1.to_identity.username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
 			votes: render_many(Map.get(identity, :vote_nodes, []), Liquio.Web.NodeView, "node.json")

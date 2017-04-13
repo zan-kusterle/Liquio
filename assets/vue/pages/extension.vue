@@ -1,7 +1,7 @@
 <template>
 <div class="extension">
-	<el-row :gutter="80">
-		<el-col :span="12" class="get-extension">
+	<el-row :gutter="50">
+		<el-col :span="8" class="get-extension">
 			<el-button type="primary" size="large" @click="install"  v-if="!isInstalled">
 				<img src="/images/google-chrome-icon.png" style="vertical-align: middle; width: 50px; opacity: 0.7;"></img>
 				<span style="vertical-align: middle; margin-left: 10px; font-size: 22px;">Get free extension</span>
@@ -10,17 +10,15 @@
 				<router-link to="/" style="color: #888;">return to Liquio</router-link>
 			</div>
 		</el-col>
-		<el-col :span="12" class="features">
+		<el-col :span="16" class="features">
 			<ul>
 				<li>See <b>relevant polls</b> for any <b>link</b> or <b>paragraph of text</b> on the web.</li>
 				<li>Spot <b>unreliable</b>, <b>biased</b> or <b>fake news</b> instantly.</li>
-				<li>Completly <b>democracratic without moderation</b>.</li>
+				<li>Completely <b>democratic</b> with <b>no moderation</b>.</li>
 				<li>You can <b>choose</b> the people to trust by changing your <b>trust metric</b>.</li>
 			</ul>
 		</el-col>
 	</el-row>
-
-	
 </div>
 </template>
 
