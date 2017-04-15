@@ -7,6 +7,7 @@ defmodule Liquio.Results do
 		from_votes(votes, inverse_delegations, %{:datetime => Timex.now, :trust_metric_ids => trust_metric_ids, :topics => nil})
 	end
 	def from_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids, :topics => topics}) do
+		votes = votes |> Repo.preload([:identity])
 		by_units = votes |> Enum.group_by(& &1.unit) |> Enum.map(fn({unit_value, votes_for_unit}) ->
 			unit = Vote.decode_unit!(unit_value)
 
@@ -15,14 +16,17 @@ defmodule Liquio.Results do
 			else
 				votes_for_unit
 			end
-			results_by_date = votes_for_unit |> Enum.group_by(& &1.at_date) |> Enum.map(fn({at_date, votes_for_unit_at_date}) ->
-				contributions_at_date = CalculateResults.calculate(votes_for_unit_at_date, inverse_delegations, trust_metric_ids, topics) |> Repo.preload([:identity])
-				results_at_date = from_contributions(contributions_at_date, datetime, MapSet.size(trust_metric_ids), unit)
-				{at_date, results_at_date}
-			end) |> Enum.into(%{})
-			latest_date = results_by_date |> Map.keys |> Enum.sort |> List.last
 
-			unit_results = results_by_date[latest_date]
+			power_by_usernames = CalculateResults.power_by_identities(Enum.map(votes_for_unit, & &1.identity), inverse_delegations, trust_metric_ids, topics)
+			total_voting_power = power_by_usernames |> Enum.map(fn({_, power}) -> power end) |> Enum.sum
+			contributions = votes_for_unit |> Enum.map(fn(vote) ->
+				power = power_by_usernames[vote.identity.username]
+				vote
+				|> Map.put(:voting_power, power)
+				|> Map.put(:weight, power / total_voting_power)
+			end)
+
+			unit_results = from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), unit)
 			|> Map.merge(unit)
 			|> Map.put(:type, to_string(unit.type))
 			|> Map.put(:value, unit_value)
@@ -44,14 +48,29 @@ defmodule Liquio.Results do
 	end
 	def from_reference_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_metric_ids => trust_metric_ids}) do
 		votes = votes
-		|> Enum.map(& &1 |> Map.put(:choice, &1.relevance))
+		|> Repo.preload([:identity])
+		|> Enum.map(& &1 |> Map.put(:choice, &1.relevance) |> Map.put(:at_date, &1.datetime))
 		|> Enum.filter(& &1.choice >= 0.0 and &1.choice <= 1.0)
-		contributions = CalculateResults.calculate(votes, inverse_delegations, trust_metric_ids, nil) |> Repo.preload([:identity])
+		
+		power_by_usernames = CalculateResults.power_by_identities(Enum.map(votes, & &1.identity), inverse_delegations, trust_metric_ids, nil)
+		total_voting_power = power_by_usernames |> Enum.map(fn({_, power}) -> power end) |> Enum.sum
+
+		contributions = votes |> Enum.map(fn(vote) ->
+			power = power_by_usernames[vote.identity.username]
+			vote
+			|> Map.put(:voting_power, power)
+			|> Map.put(:weight, power / total_voting_power)
+		end)
 
 		from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), %{:type => :spectrum, :positive => "Relevant", :negative => "Irrelevant"})
 	end
 
 	defp from_contributions(contributions, datetime, trust_metric_size, unit) do
+		contributions = contributions |> Enum.sort_by(& Timex.to_unix(&1.at_date))
+		latest_contributions = contributions |> Enum.group_by(& &1.identity_id) |> Enum.map(fn({_, contributions_for_identity}) ->
+			contributions_for_identity |> List.last
+		end)
+
 		vote_weight_halving_days = nil
 
 		time_weighted_contributions =
@@ -63,20 +82,20 @@ defmodule Liquio.Results do
 				end)
 			end
 		aggregator = if unit.type == :spectrum do &mean/1 else &median/1 end
-		average = aggregator.(time_weighted_contributions)
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
+		average = aggregator.(latest_contributions)
+		total_power = Enum.sum(Enum.map(latest_contributions, & &1.voting_power))
 
 		%{
 			:total => total_power,
 			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
-			:count => Enum.count(contributions),
+			:count => Enum.count(latest_contributions),
 			:average => average,
 			:contributions => contributions,
 			:embeds => %{
 				:spectrum => if unit.type == :spectrum do ResultsEmbeds.inline_results_spectrum(average, unit) else nil end,
 				:value => ResultsEmbeds.inline_results_quantity(average, unit),
-				:by_time => ResultsEmbeds.inline_results_by_time(time_weighted_contributions, aggregator),
-				:distribution => ResultsEmbeds.inline_results_distribution(time_weighted_contributions, aggregator)
+				:by_time => ResultsEmbeds.inline_results_by_time(contributions, aggregator),
+				:distribution => ResultsEmbeds.inline_results_distribution(latest_contributions, aggregator)
 			}
 		}
 	end

@@ -23,7 +23,7 @@ defmodule Liquio.NodeRepo do
 			|> Enum.sort_by(& -(&1.turnout + 0.05 * Enum.count(&1.references)))
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 			
-			node = Node.decode("")
+			node = Node.new([""])
 			|> Map.put(:references, Enum.map(nodes, & %{results: %{:relevance => 0.8, :contributions => []}, node: nil, reference_node: &1}))
 			|> Map.put(:calculation_opts, calculation_opts)
 
@@ -40,7 +40,7 @@ defmodule Liquio.NodeRepo do
 		|> Enum.uniq
 		|> Enum.map(& Node.new(&1) |> load(calculation_opts |> Map.put(:depth, 0), nil))
 
-		Node.decode("Results for #{query}" |> String.replace(" ", "-"))
+		Node.new(["Results for #{query}"])
 		|> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
 	end
 

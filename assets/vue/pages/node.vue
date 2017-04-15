@@ -26,7 +26,7 @@
 					<span @click="currentResultsView = 'by_time'" class="results-view-button">By time</span>
 				</div>
 
-				<i class="el-icon-caret-bottom" id="toggle_details_button" @click="isVoteOpen = !isVoteOpen" style="font-size: 28px;"></i>
+				<i class="el-icon-caret-bottom" ref="toggle_details" @click="isVoteOpen = !isVoteOpen" style="font-size: 28px;"></i>
 				<transition v-on:enter="enter" v-on:leave="leave" v-bind:css="false">
 					<div v-if="isVoteOpen">
 						<div style="width: 100%; display: block; margin-top: 30px;">
@@ -178,11 +178,11 @@ export default {
 			}
 		},
 		enter: function (el, done) {
-			Velocity(toggle_details_button, {rotateZ: "+=180"}, {duration: 500})
+			Velocity(this.$refs.toggle_details, {rotateZ: "+=180"}, {duration: 500})
 			Velocity(el, "slideDown", {duration: 500})
 		},
 		leave: function (el, done) {
-			Velocity(toggle_details_button, {rotateZ: "+=180"}, {duration: 500})
+			Velocity(this.$refs.toggle_details, {rotateZ: "+=180"}, {duration: 500})
 			Velocity(el, "slideUp", {duration: 500})
 		}
 	},

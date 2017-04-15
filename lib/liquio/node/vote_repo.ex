@@ -9,21 +9,21 @@ defmodule Liquio.VoteRepo do
 	end
 
 	def get_at_datetime(path, datetime) do
-		query = "SELECT DISTINCT ON (v.identity_id, v.unit, v.at_date) *
+		query = "SELECT *
 			FROM votes AS v
 			WHERE v.path = $1 AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
-			ORDER BY v.identity_id, v.unit, v.at_date, v.datetime DESC;"
+			ORDER BY v.datetime;"
 		res = Ecto.Adapters.SQL.query!(Repo, query , [path])
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		votes = res.rows
 		|> Enum.map(fn(row) ->
 			vote = struct(Liquio.Vote, Enum.zip(cols, row))
 			{date, {h, m, s, _}} = vote.datetime
-			vote = Map.put(vote, :datetime,  Timex.to_naive_datetime({date, {h, m, s}}))
+			vote = Map.put(vote, :datetime, Timex.to_naive_datetime({date, {h, m, s}}))
+			vote = Map.put(vote, :at_date, Timex.to_date(vote.at_date))
 			vote
 		end)
 		|> Enum.filter(& &1.choice != nil)
-		|> Enum.map(& {{&1.identity_id, &1.unit}, &1}) |> Enum.into(%{}) |> Map.values
 
 		votes
 	end

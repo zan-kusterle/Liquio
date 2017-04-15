@@ -60,6 +60,6 @@ export default {
 
 .get-extension {
 	text-align: right;
-	margin-top: 50px;
+	margin-top: 30px;
 }
 </style>

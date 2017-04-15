@@ -31,8 +31,7 @@ defmodule Liquio.ReferenceVote do
 			|> Map.put(:datetime,  Timex.to_naive_datetime({date, {h, m, s}}))
 		end)
 		|> Enum.filter(& &1.relevance != nil)
-		|> Enum.map(& {&1.identity_id, &1}) |> Enum.into(%{}) |> Map.values
-		
+				
 		votes
 	end
 	

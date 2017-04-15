@@ -41,14 +41,23 @@ defmodule Liquio.ResultsEmbeds do
 	end
 
 	def inline_results_by_time(contributions, aggregator) do
-		results_with_datetime = contributions |> Enum.group_by(& &1.datetime.year) |> Enum.map(fn({year, contributions_for_year}) ->
-			%{
-				:year => year,
-				:average => aggregator.(contributions_for_year)
-			}
-		end)
+		from_date = List.first(contributions).at_date
+		to_date = List.last(contributions).at_date
 
-		points = [] |> Enum.map(& {&1.datetime, &1.mean, &1.turnout_ratio})
+		num_months = Timex.diff(to_date, from_date, :months)
+		contributions_by_identities = contributions |> Enum.group_by(& &1.identity.id)
+		points = Enum.map(0..num_months, fn(i) ->
+			current_date = Timex.shift(from_date, months: i)
+			current_contributions = contributions_by_identities |> Enum.map(fn({_, contributions_for_identity}) ->
+				contributions_for_identity
+				|> Enum.filter(& Timex.compare(&1.at_date, current_date) <= 0)
+				|> List.last
+			end)
+			average = aggregator.(current_contributions)
+
+			{current_date, average, 1.0}
+		end)
+		
 		{line, path} = if Enum.count(points) >= 2 do
 			{min_x, max_x} = Enum.min_max(Enum.map(points, & Timex.to_unix(elem(&1, 0))))
 			{min_y, max_y} = Enum.min_max(Enum.map(points, & elem(&1, 1)))
@@ -71,7 +80,7 @@ defmodule Liquio.ResultsEmbeds do
 				ny = if max_y == min_y do 0.5 else (y - min_y) / (max_y - min_y) end
 				{nx, ny, w, x, y}
 			end)
-
+			
 			{
 				"<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x 0 }\" y1=\"#{ svg_y zero_y }\" x2=\"#{ svg_x 1 }\" y2=\"#{ svg_y zero_y }\" style=\"stroke: #aaa; stroke-width: 2;\"></line>",
 				"<path vector-effect=\"non-scaling-stroke\" fill=\"none\" stroke=\"#4aa5f3\" stroke-width=\"2\" d=\"#{ svg_path normalized_points }\"></path>"
