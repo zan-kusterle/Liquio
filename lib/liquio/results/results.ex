@@ -27,9 +27,7 @@ defmodule Liquio.Results do
 			end)
 
 			unit_results = from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), unit)
-			|> Map.merge(unit)
-			|> Map.put(:type, to_string(unit.type))
-			|> Map.put(:value, unit_value)
+			|> Map.put(:unit, unit)
 			
 			{unit.key, unit_results}
 		end) |> Enum.into(%{})
@@ -67,9 +65,8 @@ defmodule Liquio.Results do
 
 	defp from_contributions(contributions, datetime, trust_metric_size, unit) do
 		contributions = contributions |> Enum.sort_by(& Timex.to_unix(&1.at_date))
-		latest_contributions = contributions |> Enum.group_by(& &1.identity_id) |> Enum.map(fn({_, contributions_for_identity}) ->
-			contributions_for_identity |> List.last
-		end)
+		contributions_by_identities = contributions |> Enum.group_by(& &1.identity_id)
+		latest_contributions = contributions_by_identities |> Enum.map(fn({_, cs}) -> cs |> List.last end)
 
 		vote_weight_halving_days = nil
 
@@ -90,7 +87,20 @@ defmodule Liquio.Results do
 			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(latest_contributions),
 			:average => average,
-			:contributions => contributions,
+			:latest_contributions => latest_contributions,
+			:contributions_by_identities => contributions_by_identities |> Enum.map(fn({key, contributions_for_identity}) ->
+				{key, %{
+					:contributions => contributions_for_identity |> Enum.map(fn(c) ->
+						c |> Map.put(:embeds, %{
+							:spectrum => if unit.type == :spectrum do ResultsEmbeds.inline_results_spectrum(c.choice, unit) else nil end,
+							:value => ResultsEmbeds.inline_results_quantity(c.choice, unit)
+						})
+					end),
+					:embeds => %{
+						:by_time => ResultsEmbeds.inline_identity_contributions_by_time(contributions_for_identity)
+					}
+				}}
+			end) |> Enum.into(%{}),
 			:embeds => %{
 				:spectrum => if unit.type == :spectrum do ResultsEmbeds.inline_results_spectrum(average, unit) else nil end,
 				:value => ResultsEmbeds.inline_results_quantity(average, unit),

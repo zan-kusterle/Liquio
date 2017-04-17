@@ -57,8 +57,33 @@ defmodule Liquio.ResultsEmbeds do
 
 			{current_date, average, 1.0}
 		end)
-		
-		{line, path} = if Enum.count(points) >= 2 do
+
+		svg_chart(points)
+	end
+
+	def inline_identity_contributions_by_time(identity_contributions) do
+		points = identity_contributions |> Enum.map(fn(contribution) ->
+			{contribution.at_date, contribution.choice, 1.0}
+		end)
+
+		svg_chart(points)
+	end
+
+	def inline_results_distribution(contributions, aggregator) do
+		buckets = contributions |> Enum.group_by(& round(Float.floor(&1.choice * 10)))
+		rects = 0..9
+		|> Enum.map(fn(index) -> {index, Map.get(buckets, index, [])} end)
+		|> Enum.filter(fn({index, bucket_contributions}) -> Enum.count(bucket_contributions) > 0 end)
+		|> Enum.map(fn({index, bucket_contributions}) ->
+			average = aggregator.(bucket_contributions)
+			"<rect x=\"#{svg_x(index / 10)}\" y=\"#{svg_y average}\" width=\"70\" height=\"#{svg_height average}\" style=\"fill:#ccc;\" />" <>
+			"<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"#{svg_x(index / 10) + 35}\" y=\"150\" font-family=\"Helvetica\" font-size=\"36\">#{index}</text>"
+		end)
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{Enum.join(rects, "")}</svg>"
+	end
+
+	defp svg_chart(points) do
+		if Enum.count(points) >= 2 do
 			{min_x, max_x} = Enum.min_max(Enum.map(points, & Timex.to_unix(elem(&1, 0))))
 			{min_y, max_y} = Enum.min_max(Enum.map(points, & elem(&1, 1)))
 
@@ -81,30 +106,16 @@ defmodule Liquio.ResultsEmbeds do
 				{nx, ny, w, x, y}
 			end)
 			
-			{
-				"<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x 0 }\" y1=\"#{ svg_y zero_y }\" x2=\"#{ svg_x 1 }\" y2=\"#{ svg_y zero_y }\" style=\"stroke: #aaa; stroke-width: 2;\"></line>",
-				"<path vector-effect=\"non-scaling-stroke\" fill=\"none\" stroke=\"#4aa5f3\" stroke-width=\"2\" d=\"#{ svg_path normalized_points }\"></path>"
-			}
-		else
-			{"", ""}
-		end
-		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"none\">#{line}#{path}</svg>"
-	end
+			line = "<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x 0 }\" y1=\"#{ svg_y zero_y }\" x2=\"#{ svg_x 1 }\" y2=\"#{ svg_y zero_y }\" style=\"stroke: #aaa; stroke-width: 2;\"></line>"
+			path = "<path vector-effect=\"non-scaling-stroke\" fill=\"none\" stroke=\"#4aa5f3\" stroke-width=\"2\" d=\"#{ svg_path normalized_points }\"></path>"
 
-	def inline_results_distribution(contributions, aggregator) do
-		buckets = contributions |> Enum.group_by(& round(Float.floor(&1.choice * 10)))
-		rects = 0..9
-		|> Enum.map(fn(index) -> {index, Map.get(buckets, index, [])} end)
-		|> Enum.filter(fn({index, bucket_contributions}) -> Enum.count(bucket_contributions) > 0 end)
-		|> Enum.map(fn({index, bucket_contributions}) ->
-			average = aggregator.(bucket_contributions)
-			"<rect x=\"#{svg_x(index / 10)}\" y=\"#{svg_y average}\" width=\"70\" height=\"#{svg_height average}\" style=\"fill:#ccc;\" />" <>
-			"<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"#{svg_x(index / 10) + 35}\" y=\"150\" font-family=\"Helvetica\" font-size=\"36\">#{index}</text>"
-		end)
-		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{Enum.join(rects, "")}</svg>"
+			"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"none\">#{line}#{path}</svg>"
+		else
+			nil
+		end
 	end
 	
-	def svg_path(points) do
+	defp svg_path(points) do
 		Enum.map_join(Enum.zip([nil] ++ points, points), " ", fn({previous_point, point}) ->
 			if point == nil do
 				""
@@ -115,19 +126,19 @@ defmodule Liquio.ResultsEmbeds do
 		end)
 	end
 
-	def svg_x(x) do
+	defp svg_x(x) do
 		width = 800
 		margin = 30
 		round(x * (width - 2 * margin) + margin)
 	end
 
-	def svg_y(y) do
+	defp svg_y(y) do
 		height = 200
 		margin = 30
 		round((1 - y) * (height - 2 * margin) + margin)
 	end
 	
-	def svg_height(ratio) do
+	defp svg_height(ratio) do
 		height = 200
 		margin = 30
 		round(ratio * (height - 2 * margin))
@@ -215,5 +226,4 @@ defmodule Liquio.ResultsEmbeds do
 		|> String.replace("\r", "\n")
 		|> String.replace("\"", "'")
 	end
-
 end

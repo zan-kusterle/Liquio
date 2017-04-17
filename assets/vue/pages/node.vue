@@ -143,7 +143,7 @@ export default {
 			let handleNode = (node) => {
 				self.current_unit = node.default_unit.value
 
-				let votes = node && node.own_default_unit ? node.own_default_unit.contributions : []
+				let votes = node && node.own_default_unit ? node.own_default_unit.own_contributions.contributions : []
 				let unit_type = node && node.own_default_unit ? node.own_default_unit.type : null
 				self.votes = _.map(votes, (v) => {
 					return {

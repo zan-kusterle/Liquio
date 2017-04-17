@@ -24,7 +24,7 @@ defmodule Liquio.NodeRepo do
 			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
 			
 			node = Node.new([""])
-			|> Map.put(:references, Enum.map(nodes, & %{results: %{:relevance => 0.8, :contributions => []}, node: nil, reference_node: &1}))
+			|> Map.put(:references, Enum.map(nodes, & %{results: %{:relevance => 0.8, :latest_contributions => []}, node: nil, reference_node: &1}))
 			|> Map.put(:calculation_opts, calculation_opts)
 
 			ResultsCache.set(key, node)

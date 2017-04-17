@@ -34,15 +34,16 @@
 	</div>
 
 	<div class="vote-container open">
-		<div class="votes" v-if="results && results.contributions && results.contributions.length > 0">
+		<div class="votes" v-if="results && results.contributions_by_identities">
 			<p class="ui-title">{{ Math.round(results.turnout_ratio * 100) }}% turnout</p>
-			<div class="contribution" v-for="contribution in results.contributions" :key="contribution.username">
+			<div class="contribution" v-for="(identity_data, identity_id) in results.contributions_by_identities" :key="identity_id">
 				<div class="weight">
-					<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(contribution.weight * 100)"></el-progress>
+					<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(identity_data.contributions[0].weight * 100)"></el-progress>
 				</div>
-				<div class="choice" v-html="contribution.embed" style="height: 40px;"></div>
-				<div class="username"><router-link :to="'/identities/' + contribution.identity_username">{{ contribution.identity_username }}</router-link></div>
-				<div class="date">{{ moment(new Date(contribution.datetime)).fromNow() }}</div>
+				<div v-if="identity_data.embeds.by_time" v-html="identity_data.embeds.by_time" class="graph-choice"></div>
+				<div class="choice">{{ identity_data.contributions[identity_data.contributions.length - 1].choice }}</div>
+				<div class="username"><router-link :to="'/identities/' + identity_data.contributions[0].identity_username">{{ identity_data.contributions[0].identity_username }}</router-link></div>
+				<div class="date">{{ moment(new Date(identity_data.contributions[identity_data.contributions.length - 1].datetime)).fromNow() }}</div>
 			</div>
 		</div>
 	</div>
@@ -128,12 +129,23 @@ export default {
 		width: 350px;
 		display: inline-block;
 	}
-	.choice {
+	.graph-choice {
 		height: 40px;
 		width: 100px;
 		display: inline-block;
 		vertical-align: middle;
 		margin-left: 30px;
+		margin-right: -20px;
+	}
+	.choice {
+		line-height: 40px;
+		width: 100px;
+		display: inline-block;
+		vertical-align: middle;
+		margin-left: 30px;
+
+		text-align: center;
+		background: #ddd;
 	}
 	.username {
 		width: 150px;
