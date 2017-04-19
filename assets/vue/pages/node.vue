@@ -9,8 +9,11 @@
 		</div>
 
 		<div v-if="!node.loading && node.title !== ''" class="main">
-			<h1 class="title" style="vertical-align: middle;">{{ node.title }}</h1>
-			<a v-if="node.title.startsWith('https://')" :href="node.key" target="_blank" class="title" style="vertical-align: middle;">View content</a>
+			<h1 class="title" style="vertical-align: middle;">
+				{{ node.title }}
+				<a v-if="node.title.startsWith('http:') || node.title.startsWith('https:')" :href="node.key.replace(':', '://')" target="_blank" style="margin-left: 15px; vertical-align: middle;"><i class="el-icon-view"></i></a>
+			</h1>
+			
 
 			<div class="score-container">
 				<div style="margin-bottom: 20px;">
@@ -20,10 +23,11 @@
 						
 						<div v-html="this.node.default_unit.embeds.distribution" v-if="currentResultsView == 'distribution'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 						<div v-html="this.node.default_unit.embeds.by_time" v-if="currentResultsView == 'by_time'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+					
+						<span @click="currentResultsView = 'latest'" class="results-view-button">Latest</span>
+						<span @click="currentResultsView = 'distribution'" v-if="this.node.default_unit.embeds.distribution" class="results-view-button">Distribution</span>
+						<span @click="currentResultsView = 'by_time'" v-if="this.node.default_unit.embeds.by_time" class="results-view-button">By time</span>
 					</div>
-					<span @click="currentResultsView = 'latest'" class="results-view-button">Latest</span>
-					<span @click="currentResultsView = 'distribution'" class="results-view-button">Distribution</span>
-					<span @click="currentResultsView = 'by_time'" class="results-view-button">By time</span>
 				</div>
 
 				<i class="el-icon-caret-bottom" ref="toggle_details" @click="isVoteOpen = !isVoteOpen" style="font-size: 28px;"></i>
@@ -65,8 +69,8 @@
 			<el-input v-if="node.title !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px; margin-bottom: 20px;">
 				<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
 			</el-input>
-
-			<liquio-list v-bind:nodes="node.references" v-bind:referencing-node="node.title === '' ? null : node" style="text-align: left;"></liquio-list>
+			
+			<liquio-list v-bind:nodes="this.node.references" v-bind:referencing-node="node.title === '' ? null : node" style="text-align: left;"></liquio-list>
 		</div>
 
 		<div class="footer">
@@ -80,7 +84,6 @@ import App from '../app.vue'
 import CalculationOptions from '../calculation-options.vue'
 import LiquioList from '../liquio-list.vue'
 import Vote from '../vote.vue'
-let utils = require('utils.js')
 
 export default {
 	components: {App, CalculationOptions, LiquioList, Vote},

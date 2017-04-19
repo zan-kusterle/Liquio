@@ -72,8 +72,7 @@ defmodule Liquio.ReferenceRepo do
 	def get_references(node, calculation_opts) do
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
 
-		from(v in ReferenceVote, where: v.path == ^node.path and v.is_last == true and not is_nil(v.relevance))
-		|> Repo.all
+		ReferenceVote.get_at_datetime(node.path, nil, calculation_opts.datetime)
 		|> Repo.preload([:identity])
 		|> Enum.group_by(& &1.reference_path)
 		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
@@ -88,8 +87,7 @@ defmodule Liquio.ReferenceRepo do
 	def get_inverse_references(node, calculation_opts) do
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
 
-		from(v in ReferenceVote, where: v.reference_path == ^node.path and v.is_last == true and not is_nil(v.relevance))
-		|> Repo.all
+		ReferenceVote.get_at_datetime(nil, node.path, calculation_opts.datetime)
 		|> Repo.preload([:identity])
 		|> Enum.group_by(& &1.path)
 		|> prepare_reference_nodes(inverse_delegations, calculation_opts)

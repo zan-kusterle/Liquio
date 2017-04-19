@@ -4,14 +4,14 @@ defmodule Liquio.ResultsEmbeds do
 
 		line = "<line vector-effect=\"non-scaling-stroke\" x1=\"#{ svg_x line_offset }\" y1=\"#{ svg_y 0.5 }\" x2=\"#{ svg_x 1 - line_offset }\" y2=\"#{ svg_y 0.5 }\" style=\"stroke: #ccc; stroke-width: 3;\"></line>"
 		point = if mean do
-			x = svg_x((1 - mean) * (1 - 2 * line_offset) + line_offset)
+			x = svg_x(mean * (1 - 2 * line_offset) + line_offset)
 			"<text text-anchor=\"middle\" x=\"#{ x + 8 }\" y=\"65\" font-family=\"Helvetica\" font-size=\"36\">#{round(mean * 100)}%</text>" <>
 			"<line vector-effect=\"non-scaling-stroke\" x1=\"#{ x }\" y1=\"#{ svg_y 0.4 }\" x2=\"#{ x }\" y2=\"#{ svg_y 0.6 }\" style=\"stroke: #555; stroke-width: 2;\"></line>"
 		else
 			""
 		end
-		negative_text = "<text text-anchor=\"start\" alignment-baseline=\"middle\" x=\"#{svg_x 1 - line_offset + 0.03 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"22\" style=\"text-transform: uppercase;\">#{unit.negative}</text>"
-		positive_text = "<text text-anchor=\"end\" alignment-baseline=\"middle\" x=\"#{ svg_x line_offset - 0.03 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"22\" style=\"text-transform: uppercase;\">#{unit.positive}</text>"
+		negative_text = "<text text-anchor=\"end\" alignment-baseline=\"middle\" x=\"#{svg_x line_offset - 0.03 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"22\" style=\"text-transform: uppercase;\">#{unit.negative}</text>"
+		positive_text = "<text text-anchor=\"start\" alignment-baseline=\"middle\" x=\"#{ svg_x 1 - line_offset + 0.03 }\" y=\"#{ svg_y 0.5 }\" font-family=\"Helvetica\" font-size=\"22\" style=\"text-transform: uppercase;\">#{unit.positive}</text>"
 
 		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{positive_text}#{line}#{point}#{negative_text}</svg>"
 	end
@@ -37,7 +37,7 @@ defmodule Liquio.ResultsEmbeds do
 		else
 			""
 		end
-		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{rect}#{text}#{sub_text}</svg>"
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{rect}#{text}</svg>"
 	end
 
 	def inline_results_by_time(contributions, _) when length(contributions) < 2 do nil end
@@ -71,8 +71,8 @@ defmodule Liquio.ResultsEmbeds do
 	end
 
 	def inline_results_distribution(contributions, aggregator) do
-		buckets = contributions |> Enum.group_by(& round(Float.floor(&1.choice * 10)))
-		rects = 0..9
+		buckets = contributions |> Enum.group_by(& round(&1.choice * 10))
+		rects = 0..10
 		|> Enum.map(fn(index) -> {index, Map.get(buckets, index, [])} end)
 		|> Enum.filter(fn({index, bucket_contributions}) -> Enum.count(bucket_contributions) > 0 end)
 		|> Enum.map(fn({index, bucket_contributions}) ->

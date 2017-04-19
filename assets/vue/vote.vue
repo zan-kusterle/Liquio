@@ -54,7 +54,6 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
-let utils = require('utils.js')
 var _ = require('lodash')
 
 Vue.use(ElementUI, {locale})

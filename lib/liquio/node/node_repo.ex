@@ -133,18 +133,18 @@ defmodule Liquio.NodeRepo do
 	def load_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
-			reference_nodes = ReferenceRepo.get_references(node, calculation_opts)
+			references = ReferenceRepo.get_references(node, calculation_opts)
 			|> Enum.map(& &1 |> ReferenceRepo.load_nodes(calculation_opts, nil))
 
-			reference_nodes = if depth > 1 do
-				reference_nodes |> Enum.map(fn(reference_node) ->
-					reference_node |> load_references(calculation_opts, depth - 1) |> load_inverse_references(calculation_opts, 1)
+			references = if depth > 1 do
+				references |> Enum.map(fn(reference) ->
+					Map.put(reference, :reference_node, reference.reference_node |> load_references(calculation_opts, depth - 1) |> load_inverse_references(calculation_opts, 1))
 				end)
 			else
-				reference_nodes
+				references
 			end
 
-			Map.put(node, :references, reference_nodes)
+			Map.put(node, :references, references)
 		else
 			node
 		end
@@ -153,23 +153,22 @@ defmodule Liquio.NodeRepo do
 	def load_inverse_references(node, calculation_opts, current_depth \\ nil) do
 		depth = if current_depth == nil do calculation_opts.depth else current_depth end
 		if depth > 0 do
-			inverse_reference_nodes = ReferenceRepo.get_inverse_references(node, calculation_opts)
+			inverse_references = ReferenceRepo.get_inverse_references(node, calculation_opts)
 			|> Enum.map(& ReferenceRepo.load_nodes(&1, calculation_opts, nil))
 
-
-			inverse_reference_nodes = if depth > 1 do
-				inverse_reference_nodes |> Enum.map(fn(inverse_reference_node) ->
-					inverse_reference_node |> load_inverse_references(calculation_opts, depth: depth - 1) |> load_references(calculation_opts, 1)
+			inverse_references = if depth > 1 do
+				inverse_references |> Enum.map(fn(inverse_reference) ->
+					Map.put(inverse_reference, :node, inverse_reference.node |> load_inverse_references(calculation_opts, depth: depth - 1) |> load_references(calculation_opts, 1))
 				end)
 			else
-				inverse_reference_nodes
+				inverse_references
 			end
 
-			topics = inverse_reference_nodes
-			|> Enum.filter(& Enum.count(&1.path) == 1 and String.length(Enum.at(&1.path, 0)) <= 20)
-			|> Enum.map(& Enum.at(&1.path, 0))
+			topics = inverse_references
+			|> Enum.filter(& Enum.count(&1.node.path) == 1 and String.length(Enum.at(&1.node.path, 0)) <= 20)
+			|> Enum.map(& Enum.at(&1.node.path, 0))
 
-			node = Map.put(node, :inverse_references, inverse_reference_nodes)
+			node = Map.put(node, :inverse_references, inverse_references)
 			node = Map.put(node, :topics, topics)
 
 			node

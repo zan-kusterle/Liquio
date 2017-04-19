@@ -104,8 +104,8 @@ defmodule Liquio.Results do
 			:embeds => %{
 				:spectrum => if unit.type == :spectrum do ResultsEmbeds.inline_results_spectrum(average, unit) else nil end,
 				:value => ResultsEmbeds.inline_results_quantity(average, unit),
-				:by_time => ResultsEmbeds.inline_results_by_time(contributions, aggregator),
-				:distribution => ResultsEmbeds.inline_results_distribution(latest_contributions, aggregator)
+				:distribution => if unit.type == :spectrum do ResultsEmbeds.inline_results_distribution(latest_contributions, aggregator) else nil end,
+				:by_time => ResultsEmbeds.inline_results_by_time(contributions, aggregator)
 			}
 		}
 	end

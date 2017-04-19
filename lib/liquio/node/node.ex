@@ -9,6 +9,7 @@ defmodule Liquio.Node do
 	end
 	
 	def decode(key) do
+		key = String.replace(key, "://", ":")
 		%Node{
 			path: key |> String.trim(" ") |> String.split("/")
 		}

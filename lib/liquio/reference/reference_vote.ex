@@ -17,11 +17,37 @@ defmodule Liquio.ReferenceVote do
 	end
 	
 	def get_at_datetime(path, reference_path, datetime) do
+		{path_where, path_params} = if path do
+			q = path |> Enum.with_index |> Enum.map(fn({value, index}) ->
+				"v.path[#{index + 1}] = $#{index + 1}"
+			end) |> Enum.join(" AND ")
+			{q, path}
+		else
+			{nil, []}
+		end
+
+		{reference_path_where, reference_path_params} = if reference_path do
+			q = reference_path |> Enum.with_index |> Enum.map(fn({value, index}) ->
+				"v.reference_path[#{index + 1}] = $#{index + 1 + Enum.count(path_params)}"
+			end) |> Enum.join(" AND ")
+			{q, reference_path}
+		else
+			{nil, []}
+		end
+
+		paths_where = cond do
+			path != nil and reference_path != nil -> "(#{path_where}) AND (#{reference_path_where}) AND"
+			path != nil -> "(#{path_where}) AND"
+			reference_path != nil -> "(#{reference_path_where}) AND"
+			true -> ""
+		end
+
 		query = "SELECT DISTINCT ON (v.identity_id) *
 			FROM reference_votes AS v
-			WHERE v.path = $1 AND v.reference_path = $2 AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			WHERE #{paths_where} v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
-		res = Ecto.Adapters.SQL.query!(Repo, query , [path, reference_path])
+		
+		res = Ecto.Adapters.SQL.query!(Repo, query , path_params ++ reference_path_params)
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		votes = res.rows
 		|> Enum.map(fn(row) ->
@@ -31,7 +57,7 @@ defmodule Liquio.ReferenceVote do
 			|> Map.put(:datetime,  Timex.to_naive_datetime({date, {h, m, s}}))
 		end)
 		|> Enum.filter(& &1.relevance != nil)
-				
+
 		votes
 	end
 	

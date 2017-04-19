@@ -1,24 +1,3 @@
-export function getKey(title, unit) {
-	return encodeURIComponent(title.trim().replace(/ /g, '-')) + (unit ? '/' + unit : '')
-}
-
-export function getCompositeKey(key, referenceKey) {
-	return encodeURIComponent(key) + (referenceKey ? '/references/' + encodeURIComponent(referenceKey) : '')
-}
-
-export function normalizeKey(key) {
-	try {
-		key = decodeURIComponent(key)
-	} catch (e) {
-
-	}
-	return encodeURIComponent(key.toLowerCase())
-}
-
-export function getMultiKey(keys) {
-	return _.map(keys, (k) => encodeURIComponent(k)).join('___')
-}
-
 export function formatNumber(number) {
 	return Math.round(number * 10) / 10
 }

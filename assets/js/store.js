@@ -1,11 +1,10 @@
 import Vuex from 'vuex'
 
 let Api = require('api.js')
-let utils = require('utils.js')
 
 let getTitle = (path) => {
 	let title = path.join('/')
-	if(!(title.startsWith('http://') || title.startsWith('https://')))
+	if(!(title.startsWith('http:') || title.startsWith('https:')))
 		title = title.replace(/-/g, ' ')
 	return title
 }
@@ -38,7 +37,7 @@ export default new Vuex.Store({
 	getters: {
 		hasNode: (state) => (key) => {
 			return _.find(state.nodes, (node) => {
-				return node.group_key == utils.normalizeKey(key)
+				return node.key == key
 			}) != null
 		},
 		currentNode: (state) => {
@@ -68,15 +67,15 @@ export default new Vuex.Store({
 		},
 		getPureNodeByKey: (state, getters) => (key) => {
 			let node = _.find(state.nodes, (node) => {
-				return node.group_key == utils.normalizeKey(key)
+				return node.key == key
 			})
 			return node ? JSON.parse(JSON.stringify(node)) : null
 		},
-		getNodeByKey: (state, getters) => (path) => {
-			let node = getters.getPureNodeByKey(path)
+		getNodeByKey: (state, getters) => (key) => {
+			let node = getters.getPureNodeByKey(key)
 			if(node) {
 				node.references = _.filter(_.map(node.references, (n) => {
-					let referenceNode = getters.getPureNodeByKey(n.path)
+					let referenceNode = getters.getPureNodeByKey(n.path.join('/'))
 
 					var unit = state.units[0]
 					let units = referenceNode.results ? Object.values(referenceNode.results.by_units) : []
@@ -88,11 +87,12 @@ export default new Vuex.Store({
 					if(referenceNode) {
 						referenceNode.reference_result = n.reference_result
 					}
+
 					return referenceNode
 				}), (x) => x)
 
 				node.inverse_references = _.filter(_.map(node.inverse_references, (n) => {
-					let referenceNode = getters.getPureNodeByKey(n.path)
+					let referenceNode = getters.getPureNodeByKey(n.path.join('/'))
 
 					var unit = state.units[0]
 					let units = referenceNode.results ? Object.values(referenceNode.results.by_units) : []
@@ -131,7 +131,7 @@ export default new Vuex.Store({
 		getNodesByKeys: (state, getters) => (paths) => _.filter(_.map(paths, (path) => getters.getNodeByKey(path)), (n) => n),
 		getReference: (state, getters) => (key, reference_key) => {
 			let reference = _.find(state.references, (reference) => {
-				return reference.node.group_key == utils.normalizeKey(key) && reference.referencing_node.group_key == utils.normalizeKey(reference_key)
+				return reference.node.key == key && reference.referencing_node.key == reference_key
 			})
 			if(!reference)
 				return null
@@ -175,9 +175,8 @@ export default new Vuex.Store({
 			node.key = node.path.join('/')
 			node.reference_key = node.reference_path ? node.reference_path.join('_') : null
 			node.title = getTitle(node.path)
-			node.group_key = utils.normalizeKey(utils.getCompositeKey(node.key, node.reference_key))
 
-			let existingIndex = _.findIndex(state.nodes, (n) => n.group_key == node.group_key)
+			let existingIndex = _.findIndex(state.nodes, (n) => n.key == node.key)
 			let existing = existingIndex >= 0 ? state.nodes[existingIndex] : null
 
 			if(node.references == null) {

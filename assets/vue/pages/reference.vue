@@ -39,7 +39,6 @@ import App from '../app.vue'
 import CalculationOptions from '../calculation-options.vue'
 import LiquioInline from '../liquio-inline.vue'
 import Vote from '../vote.vue'
-let utils = require('utils.js')
 
 export default {
 	components: {App, LiquioInline, Vote, CalculationOptions},
