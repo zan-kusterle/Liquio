@@ -1,6 +1,8 @@
 defmodule Liquio.Web.NodeView do
 	use Liquio.Web, :view
 
+	@results_keys [:average, :count, :total, :turnout_ratio, :embeds]
+
 	def render("index.json", %{nodes: nodes}) do
 		%{data: render_many(nodes, Liquio.Web.NodeView, "node.json")}
 	end
@@ -13,7 +15,7 @@ defmodule Liquio.Web.NodeView do
 		references =  if Map.has_key?(node, :references) do
 			node.references |> Enum.map(fn(%{:results => results, :reference_node => reference_node}) ->
 				results = results
-				|> Map.take([:average, :count, :total, :turnout_ratio, :embeds])
+				|> Map.take(@results_keys)
 				|> Map.put(:contributions, render_many(results.latest_contributions, Liquio.Web.NodeView, "reference_vote.json"))
 
 				render(Liquio.Web.NodeView, "node.json", %{node: reference_node})
@@ -26,7 +28,7 @@ defmodule Liquio.Web.NodeView do
 		inverse_references =  if Map.has_key?(node, :inverse_references) do
 			node.inverse_references |> Enum.map(fn(%{:results => results, :node => reference_node}) ->
 				results = results
-				|> Map.take([:average, :count, :total, :turnout_ratio, :embeds])
+				|> Map.take(@results_keys)
 				|> Map.put(:contributions, render_many(results.latest_contributions, Liquio.Web.NodeView, "reference_vote.json"))
 				render(Liquio.Web.NodeView, "node.json", %{node: reference_node})
 				|> Map.put(:reference_results, results)
@@ -49,9 +51,13 @@ defmodule Liquio.Web.NodeView do
 		%{
 			node: render("node.json", %{node: reference.node}) |> Map.drop([:calculation_opts]),
 			referencing_node: render("node.json", %{node: reference.reference_node}) |> Map.drop([:calculation_opts]),
-			results: reference.results |> Map.put(:contributions, render_many(reference.results.latest_contributions, Liquio.Web.NodeView, "reference_vote.json")),
+			results: reference.results
+				|> Map.take(@results_keys)
+				|> Map.put(:contributions, render_many(reference.results.latest_contributions, Liquio.Web.NodeView, "reference_vote.json")),
 			own_results: if reference.own_results do
-				reference.own_results |> Map.put(:contributions, render_many(reference.own_results.latest_contributions, Liquio.Web.NodeView, "reference_vote.json"))
+				reference.own_results
+				|> Map.take(@results_keys)
+				|> Map.put(:contributions, render_many(reference.own_results.latest_contributions, Liquio.Web.NodeView, "reference_vote.json"))
 			else
 				nil
 			end
@@ -70,7 +76,7 @@ defmodule Liquio.Web.NodeView do
 			end) |> Enum.into(%{})
 
 			unit_results = unit_results
-			|> Map.take([:average, :count, :total, :turnout_ratio, :embeds])
+			|> Map.take(@results_keys)
 			|> Map.merge(unit_results.unit)
 
 			unit_results = if is_own do

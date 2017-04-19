@@ -30,7 +30,8 @@ defmodule Liquio.Vote do
 				:type => :spectrum,
 				:key => String.downcase(Enum.at(parts, 0)),
 				:positive => Enum.at(parts, 0),
-				:negative => Enum.at(parts, 1)
+				:negative => Enum.at(parts, 1),
+				:value => "#{Enum.at(parts, 0)}-#{Enum.at(parts, 1)}"
 			}
 		else
 			case String.split(value, "(", parts: 2) do
@@ -45,7 +46,8 @@ defmodule Liquio.Vote do
 							:type => :quantity,
 							:key => String.downcase(left),
 							:measurement => left,
-							:unit => right
+							:unit => right,
+							:value => "#{left}(#{right})"
 						}
 					else
 						nil
@@ -63,7 +65,8 @@ defmodule Liquio.Vote do
 					:type => :quantity,
 					:key => String.downcase(m),
 					:measurement => m,
-					:unit => nil
+					:unit => nil,
+					:value => m
 				}
 			else
 				raise "Unable to decode unit #{value}"

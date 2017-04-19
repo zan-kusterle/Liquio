@@ -41,7 +41,7 @@
 					<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(identity_data.contributions[0].weight * 100)"></el-progress>
 				</div>
 				<div v-if="identity_data.embeds.by_time" v-html="identity_data.embeds.by_time" class="graph-choice"></div>
-				<div class="choice">{{ identity_data.contributions[identity_data.contributions.length - 1].choice }}</div>
+				<div v-html="identity_data.contributions[identity_data.contributions.length - 1].embeds.value" class="choice"></div>
 				<div class="username"><router-link :to="'/identities/' + identity_data.contributions[0].identity_username">{{ identity_data.contributions[0].identity_username }}</router-link></div>
 				<div class="date">{{ moment(new Date(identity_data.contributions[identity_data.contributions.length - 1].datetime)).fromNow() }}</div>
 			</div>
@@ -138,14 +138,12 @@ export default {
 		margin-right: -20px;
 	}
 	.choice {
-		line-height: 40px;
-		width: 100px;
+		height: 40px;
+		width: 140px;
 		display: inline-block;
 		vertical-align: middle;
 		margin-left: 30px;
-
-		text-align: center;
-		background: #ddd;
+		font-weight: bold;
 	}
 	.username {
 		width: 150px;

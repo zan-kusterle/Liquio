@@ -40,6 +40,7 @@ defmodule Liquio.ResultsEmbeds do
 		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{rect}#{text}#{sub_text}</svg>"
 	end
 
+	def inline_results_by_time(contributions, _) when length(contributions) < 2 do nil end
 	def inline_results_by_time(contributions, aggregator) do
 		from_date = List.first(contributions).at_date
 		to_date = List.last(contributions).at_date
@@ -185,8 +186,14 @@ defmodule Liquio.ResultsEmbeds do
 			else
 				Float.floor(log_x)
 			end
+			power = round(power)
 			base = x / :math.pow(10, power)
-			"#{format_greater_than_zero(base)} x 10#{to_unicode_superscript(round(power))}"
+			multiplier_string = case power do
+				6 -> "M"
+				9 -> "B"
+				_ -> " × 10#{to_unicode_superscript(power)}"
+			end
+			"#{format_greater_than_zero(base)}#{multiplier_string}"
 		else
 			n = max(0, Float.floor(2 - log_x) + 1)
 			round_simple x, round(n)
