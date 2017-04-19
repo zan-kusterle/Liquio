@@ -62,6 +62,7 @@ defmodule Liquio.ResultsEmbeds do
 		svg_chart(points)
 	end
 
+	def inline_identity_contributions_by_time(identity_contributions) when length(identity_contributions) < 2 do nil end
 	def inline_identity_contributions_by_time(identity_contributions) do
 		points = identity_contributions |> Enum.map(fn(contribution) ->
 			{contribution.at_date, contribution.choice, 1.0}
@@ -191,7 +192,7 @@ defmodule Liquio.ResultsEmbeds do
 			multiplier_string = case power do
 				6 -> "M"
 				9 -> "B"
-				_ -> " × 10#{to_unicode_superscript(power)}"
+				_ -> "×10#{to_unicode_superscript(power)}"
 			end
 			"#{format_greater_than_zero(base)}#{multiplier_string}"
 		else

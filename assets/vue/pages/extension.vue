@@ -12,10 +12,10 @@
 		</el-col>
 		<el-col :span="16" class="features">
 			<ul>
-				<li>See <b>relevant polls</b> for any <b>link</b> or <b>paragraph of text</b> on the web.</li>
-				<li>Spot <b>unreliable</b>, <b>biased</b> or <b>fake news</b> instantly.</li>
-				<li>Completely <b>democratic</b> with <b>no moderation</b>.</li>
-				<li>You can <b>choose</b> the people to trust by changing your <b>trust metric</b>.</li>
+				<li>See relevant polls for any link or paragraph of text on the web.</li>
+				<li>Spot unreliable, biased or fake news instantly.</li>
+				<li>Fair democracy with zero moderation.</li>
+				<li>Ability to choose the people you trust.</li>
 			</ul>
 		</el-col>
 	</el-row>

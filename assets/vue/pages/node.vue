@@ -24,9 +24,9 @@
 						<div v-html="this.node.default_unit.embeds.distribution" v-if="currentResultsView == 'distribution'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 						<div v-html="this.node.default_unit.embeds.by_time" v-if="currentResultsView == 'by_time'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 					
-						<span @click="currentResultsView = 'latest'" class="results-view-button">Latest</span>
-						<span @click="currentResultsView = 'distribution'" v-if="this.node.default_unit.embeds.distribution" class="results-view-button">Distribution</span>
-						<span @click="currentResultsView = 'by_time'" v-if="this.node.default_unit.embeds.by_time" class="results-view-button">By time</span>
+						<span @click="currentResultsView = 'latest'" v-bind:class="{ active: currentResultsView == 'latest' }" class="results-view-button">Current</span>
+						<span @click="currentResultsView = 'distribution'" v-if="this.node.default_unit.embeds.distribution" v-bind:class="{ active: currentResultsView == 'distribution' }" class="results-view-button">Distribution</span>
+						<span @click="currentResultsView = 'by_time'" v-if="this.node.default_unit.embeds.by_time" v-bind:class="{ active: currentResultsView == 'by_time' }" class="results-view-button">Graph</span>
 					</div>
 				</div>
 
@@ -118,7 +118,7 @@ export default {
 			pickUnit: function(unit) {
 				let currentNode = self.$store.getters.currentNode
 				if(unit != self.node.default_unit.value) {
-					let path = '/' + currentNode.key + '/' + unit
+					let path = '/' + encodeURIComponent(currentNode.key) + '/' + unit
 					self.$router.push(path)
 				}
 			},
@@ -212,10 +212,13 @@ export default {
 
 	.results-view-button {
 		display: inline-block;
-		margin: 5px 30px;
-		color: #888;
-		font-size: 12px;
+		margin: 0px 10px;
+		color: #333;
+		font-size: 14px;
 		text-transform: lowercase;
+	}
+	.results-view-button.active {
+		font-weight: bold;
 	}
 
 	.fake-title {
