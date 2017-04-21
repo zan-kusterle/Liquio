@@ -26,9 +26,9 @@ defmodule Liquio.ReferenceRepo do
 	end
 
 	def invalidate_cache(reference) do
-		ResultsCache.unset({"references", {Enum.join(reference.path, "/"), Enum.join(reference.reference_path, "/")}})
-		ResultsCache.unset({"nodes", {Enum.join(reference.path, "/"), nil}})
-		ResultsCache.unset({"nodes", {Enum.join(reference.reference_path, "/"), nil}})
+		ResultsCache.unset({"references", Reference.group_key(reference)})
+		ResultsCache.unset({"nodes", reference.path})
+		ResultsCache.unset({"nodes", reference.reference_path})
 	end
 
 	def load_latest(reference, calculation_opts, user) do		

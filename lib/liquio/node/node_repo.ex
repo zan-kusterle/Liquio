@@ -3,7 +3,7 @@ defmodule Liquio.NodeRepo do
 
 	def all(calculation_opts) do
 		key = {
-			{"nodes", {"all", nil}, calculation_opts.datetime},
+			{"nodes", "///all", calculation_opts.datetime},
 			{
 				calculation_opts.trust_metric_url,
 				calculation_opts.minimum_voting_power,
@@ -68,7 +68,7 @@ defmodule Liquio.NodeRepo do
 	end
 
 	def invalidate_cache(node) do
-		ResultsCache.unset({"nodes", {Enum.join(node.path, "/"), nil}})
+		ResultsCache.unset({"nodes", node.path})
 	end
 
 	def load_latest(node, calculation_opts, user) do

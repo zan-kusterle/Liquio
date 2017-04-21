@@ -31,7 +31,7 @@ defmodule Liquio.ResultsEmbeds do
 		sub_text = if unit.type == :spectrum do String.downcase(unit.positive) else nil end
 
 		rect = "<rect x=\"0\" y=\"0\" width=\"800\" height=\"200\" style=\"fill: #{color};\" />"
-		text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"400\" y=\"108\" font-family=\"Helvetica\" font-size=\"72\">#{text}</text>"
+		text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"400\" y=\"108\" font-family=\"Helvetica\" font-size=\"96\">#{text}</text>"
 		sub_text = if sub_text do
 			"<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"400\" y=\"160\" font-family=\"Helvetica\" font-size=\"28\" fill=\"#222\" font-weight=\"bold\">#{sub_text}</text>"
 		else

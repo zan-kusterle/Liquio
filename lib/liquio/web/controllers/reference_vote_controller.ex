@@ -20,7 +20,7 @@ defmodule Liquio.Web.ReferenceVoteController do
 		calculation_opts = Map.put(calculation_opts, :datetime, Timex.now)
 		conn
 		|> put_status(:created)
-		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(reference, calculation_opts, user))
+		|> render(Liquio.Web.NodeView, "reference.json", node: ReferenceRepo.load(reference, calculation_opts, user))
 	end)
 
 	with_params(%{

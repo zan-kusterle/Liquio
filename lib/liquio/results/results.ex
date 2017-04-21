@@ -20,7 +20,7 @@ defmodule Liquio.Results do
 			power_by_usernames = CalculateResults.power_by_identities(Enum.map(votes_for_unit, & &1.identity), inverse_delegations, trust_metric_ids, topics)
 			total_voting_power = power_by_usernames |> Enum.map(fn({_, power}) -> power end) |> Enum.sum
 			contributions = votes_for_unit |> Enum.map(fn(vote) ->
-				power = power_by_usernames[vote.identity.username]
+				power = Map.get(power_by_usernames, vote.identity.username, 0)
 				vote
 				|> Map.put(:voting_power, power)
 				|> Map.put(:weight, power / total_voting_power)
@@ -89,6 +89,7 @@ defmodule Liquio.Results do
 			:average => average,
 			:latest_contributions => latest_contributions,
 			:contributions_by_identities => contributions_by_identities |> Enum.map(fn({key, contributions_for_identity}) ->
+				contributions_for_identity = contributions_for_identity |> Enum.sort_by(& -Timex.to_unix(&1.at_date))
 				{key, %{
 					:contributions => contributions_for_identity |> Enum.map(fn(c) ->
 						c |> Map.put(:embeds, %{

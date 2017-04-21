@@ -1,24 +1,28 @@
 <template>
 <div class="extension">
-	<el-row :gutter="50">
-		<el-col :span="8" class="get-extension">
-			<el-button type="primary" size="large" @click="install"  v-if="!isInstalled">
-				<img src="/images/google-chrome-icon.png" style="vertical-align: middle; width: 50px; opacity: 0.7;"></img>
-				<span style="vertical-align: middle; margin-left: 10px; font-size: 22px;">Get free extension</span>
-			</el-button>
-			<div style="font-size: 13px; margin-top: 10px; margin-right: 15px;">
-				<router-link to="/" style="color: #888;">return to Liquio</router-link>
-			</div>
-		</el-col>
-		<el-col :span="16" class="features">
-			<ul>
-				<li>See relevant polls for any link or paragraph of text on the web.</li>
-				<li>Spot unreliable, biased or fake news instantly.</li>
-				<li>Fair democracy with zero moderation.</li>
-				<li>Ability to choose the people you trust.</li>
-			</ul>
-		</el-col>
-	</el-row>
+	<div class="get">
+		<h2>Vote on anything, anywhere on the web</h2>
+		<el-button type="primary" size="large" @click="install" v-if="!isInstalled">
+			<img src="/images/google-chrome-icon.png" style="vertical-align: middle; width: 50px; opacity: 0.7;"></img>
+			<span style="vertical-align: middle; margin-left: 10px; font-size: 22px;">Get free extension</span>
+		</el-button>
+	</div>
+
+	<div class="feature">
+		<h3>Spot unreliable, fake or biased news instantly</h3>
+		<img src="/images/article-score.png"></img>
+		<img src="/images/link-score.png"></img>
+	</div>
+
+	<div class="feature">
+		<h3>Get relevant data at the right time</h3>
+		<img src="/images/inline-links.png"></img>
+	</div>
+
+	<div class="feature">
+		<h3>Built on fair democracy with zero moderation</h3>
+		<p>You have the ability to choose the people you trust.</p>
+	</div>
 </div>
 </template>
 
@@ -39,27 +43,44 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .extension {
-	margin-top: 50px;
+	text-align: center;
 }
 
-.features {
-	text-align: left;
+.feature {
+	margin-bottom: 100px;
 
-	ul {
-		list-style: none;
-		font-size: 16px;
-		padding: 0px;
+	h3 {
+		display: inline-block;
+		border-top: 1px solid #ddd;
+		padding: 20px 80px;
+		padding-bottom: 0px;
+		margin: 0;
+		margin-bottom: 40px;
+		text-transform: uppercase;
+		font-weight: normal;
+		font-size: 18px;
+		color: #111;
+	}
 
-		li {
-			margin: 15px 0px;
-		}
+	img {
+		opacity: 0.8;
+		display: block;
+		margin: 0 auto;
+		margin-bottom: 20px;
 	}
 }
 
-.get-extension {
-	text-align: right;
-	margin-top: 30px;
+.get {
+	margin-bottom: 50px;
+
+	h2 {
+		color: #333;
+		font-weight: normal;
+		font-size: 32px;
+		margin: 0;
+		margin-bottom: 20px;
+	}
 }
 </style>
