@@ -11,7 +11,7 @@ defmodule Liquio.Vote do
 		
 		field :at_date, Timex.Ecto.Date
 		timestamps(inserted_at: :datetime, updated_at: false, usec: true)
-		field :is_last, :boolean
+		field :to_datetime, Timex.Ecto.DateTime
 
 		field :group_key, :string
 		field :search_text, :string

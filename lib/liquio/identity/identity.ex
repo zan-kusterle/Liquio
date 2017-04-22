@@ -98,11 +98,11 @@ defmodule Liquio.Identity do
 	end
 
 	def preload_votes(identity) do
-		votes = from(v in Vote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.choice))
+		votes = from(v in Vote, where: v.identity_id == ^identity.id and is_nil(v.to_datetime) and not is_nil(v.choice))
 		|> Repo.all
 		|> Enum.map(& Map.put(&1, :identity, identity))
 		votes_by_path = votes |> Enum.group_by(& &1.path)
-		reference_votes = from(v in ReferenceVote, where: v.identity_id == ^identity.id and v.is_last == true and not is_nil(v.relevance))
+		reference_votes = from(v in ReferenceVote, where: v.identity_id == ^identity.id and is_nil(v.to_datetime) and not is_nil(v.relevance))
 		|> Repo.all
 		|> Enum.map(& Map.put(&1, :identity, identity))
 		reference_votes_by_path = Enum.group_by(reference_votes, & &1.path)

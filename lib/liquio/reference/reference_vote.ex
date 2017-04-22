@@ -11,7 +11,7 @@ defmodule Liquio.ReferenceVote do
 		field :relevance, :float
 		
 		timestamps(inserted_at: :datetime, updated_at: false, usec: true)
-		field :is_last, :boolean
+		field :to_datetime, Timex.Ecto.DateTime
 
 		field :group_key, :string
 	end
@@ -42,9 +42,10 @@ defmodule Liquio.ReferenceVote do
 			true -> ""
 		end
 
-		query = "SELECT DISTINCT ON (v.identity_id) *
+		query = "SELECT *
 			FROM reference_votes AS v
 			WHERE #{paths_where} v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+				AND (v.to_datetime IS NULL) OR v.to_datetime >= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
 		
 		res = Ecto.Adapters.SQL.query!(Repo, query , path_params ++ reference_path_params)
@@ -65,7 +66,7 @@ defmodule Liquio.ReferenceVote do
 		query = from(v in ReferenceVote, where:
 			v.path == ^reference.path and v.reference_path == ^reference.reference_path and
 			v.identity_id == ^identity.id and
-			v.is_last and
+			is_nil(v.to_datetime) and
 			not is_nil(v.relevance)
 		)
 		votes = Repo.all(query)
@@ -79,11 +80,12 @@ defmodule Liquio.ReferenceVote do
 	def set(identity, reference, relevance) do
 		group_key = Reference.group_key(reference)
 
+		now = Timex.now
 		from(v in ReferenceVote,
 			where: v.group_key == ^group_key and
 				v.identity_id == ^identity.id and
-				v.is_last == true,
-			update: [set: [is_last: false]]
+				is_nil(v.to_datetime),
+			update: [set: [to_datetime: ^now]]
 		) |> Repo.update_all([])
 
 		result = Repo.insert!(%ReferenceVote{
@@ -93,7 +95,7 @@ defmodule Liquio.ReferenceVote do
 			:reference_path => reference.reference_path,
 			:relevance => relevance,
 			
-			:is_last => true,
+			:to_datetime => nil,
 			:group_key => group_key
 		})
 		ReferenceRepo.invalidate_cache(reference)

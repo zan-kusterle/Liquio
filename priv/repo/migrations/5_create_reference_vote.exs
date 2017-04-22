@@ -12,7 +12,7 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :relevance, :float, null: true
 
 			add :datetime, :utc_datetime, null: false
-			add :is_last, :boolean, null: false
+			add :to_datetime, :utc_datetime, null: true
 		end
 
 		create index(:reference_votes, [:identity_id])
@@ -20,6 +20,6 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 		create index(:reference_votes, [:reference_path])
 		create index(:reference_votes, [:group_key])
 		create index(:reference_votes, [:datetime])
-		create index(:reference_votes, [:is_last])
+		create index(:reference_votes, [:to_datetime])
 	end
 end

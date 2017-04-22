@@ -11,7 +11,9 @@ defmodule Liquio.VoteRepo do
 	def get_at_datetime(path, datetime) do
 		query = "SELECT *
 			FROM votes AS v
-			WHERE v.path = $1 AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			WHERE v.path = $1
+				AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+				AND (v.to_datetime IS NULL OR v.to_datetime >='#{Timex.format!(datetime, "{ISO:Basic}")})')
 			ORDER BY v.datetime;"
 		res = Ecto.Adapters.SQL.query!(Repo, query , [path])
 		cols = Enum.map res.columns, &(String.to_atom(&1))
@@ -32,7 +34,7 @@ defmodule Liquio.VoteRepo do
 		from(v in Vote, where:
 			v.path == ^node.path and
 			v.identity_id == ^identity.id and
-			v.is_last and
+			is_nil(v.to_datetime) and
 			not is_nil(v.choice)
 		) |> Repo.all
 	end
@@ -40,11 +42,12 @@ defmodule Liquio.VoteRepo do
 	def set(identity, node, unit, at_date, choice) do
 		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
 		
+		now = Timex.now
 		from(v in Vote,
 			where: v.group_key == ^group_key and
 				v.identity_id == ^identity.id and
-				v.is_last == true,
-			update: [set: [is_last: false]])
+				is_nil(v.to_datetime),
+			update: [set: [to_datetime: ^now]])
 		|> Repo.update_all([])
 
 		result = Repo.insert!(%Vote{
@@ -57,7 +60,7 @@ defmodule Liquio.VoteRepo do
 			:unit => Vote.encode_unit(unit),
 			:choice => choice,
 			
-			:is_last => true,
+			:to_datetime => nil,
 			:at_date => at_date
 		})
 

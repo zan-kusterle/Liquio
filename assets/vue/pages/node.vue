@@ -1,19 +1,25 @@
 <template>
 	<div>
-		<div class="before" v-if="!node.loading && node.title !== ''">
-			<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
+		<div class="before" v-if="!node.loading && node.title !== ''" style="padding-top: 0px;">
+			<transition v-on:enter="inverseReferencesEnter" v-on:leave="inverseReferencesLeave" v-bind:css="false">
+				<div v-if="areInverseReferencesOpen" style="margin-top: 30px; margin-bottom: 30px;">
+					<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
 
-			<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px; margin-top: 20px;">
-				<el-button slot="prepend" icon="caret-left" @click="view_inverse_reference"></el-button>
-			</el-input>
+					<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px; margin-top: 20px;">
+						<el-button slot="prepend" icon="caret-left" @click="view_inverse_reference"></el-button>
+					</el-input>
+				</div>
+			</transition>
+
+			<i class="el-icon-arrow-up" ref="toggle_inverse_references" @click="areInverseReferencesOpen = !areInverseReferencesOpen" style="font-size: 22px;"></i>
 		</div>
+		
 
 		<div v-if="!node.loading && node.title !== ''" class="main">
 			<h1 class="title" style="vertical-align: middle;">
 				{{ node.title }}
 				<a v-if="node.title.startsWith('http:') || node.title.startsWith('https:')" :href="node.key.replace(':', '://')" target="_blank" style="margin-left: 15px; vertical-align: middle;"><i class="el-icon-view"></i></a>
 			</h1>
-			
 
 			<div class="score-container">
 				<div style="margin-bottom: 20px;">
@@ -31,7 +37,7 @@
 				</div>
 
 				<i class="el-icon-caret-bottom" ref="toggle_details" @click="isVoteOpen = !isVoteOpen" style="font-size: 28px;"></i>
-				<transition v-on:enter="enter" v-on:leave="leave" v-bind:css="false">
+				<transition v-on:enter="detailsEnter" v-on:leave="detailsLeave" v-bind:css="false">
 					<div v-if="isVoteOpen">
 						<div style="width: 100%; display: block; margin-top: 30px;">
 							<el-select v-model="current_unit" v-on:change="pickUnit">
@@ -44,8 +50,12 @@
 				</transition>
 			</div>
 		</div>
-		<div v-else-if="!node.loading" class="main">
+		<div v-else-if="!node.loading" class="after">
 			<h1 class="title" style="vertical-align: middle;">A liquid democracy where anyone can vote on anything</h1>
+
+			<el-input placeholder="Search" v-model="search_title" @keyup.native.enter="search" style="max-width: 800px;">
+				<el-button slot="append" icon="search" @click="search"></el-button>
+			</el-input>
 
 			<div class="get-extension">
 				<router-link to="/link">
@@ -55,10 +65,6 @@
 					</el-button>
 				</router-link>
 			</div>
-
-			<el-input placeholder="Search" v-model="search_title" @keyup.native.enter="search" style="max-width: 800px; margin-top: 20px;">
-				<el-button slot="append" icon="search" @click="search"></el-button>
-			</el-input>
 		</div>
 		<div v-else class="main">
 			<h1 class="fake-title">{{ node.title }}</h1>
@@ -92,6 +98,7 @@ export default {
 
 		return {
 			isVoteOpen: false,
+			areInverseReferencesOpen: false,
 			currentResultsView: 'latest',
 			votes: [],
 			search_title: '',
@@ -164,6 +171,7 @@ export default {
 				if(votesContainer)
 					votesContainer.$el.style.display = 'none'
 				self.isVoteOpen = false
+				self.areInverseReferencesOpen = false
 				self.currentResultsView = 'latest'
 			}
 
@@ -180,14 +188,22 @@ export default {
 				}
 			}
 		},
-		enter: function (el, done) {
+		detailsEnter: function (el, done) {
 			Velocity(this.$refs.toggle_details, {rotateZ: "+=180"}, {duration: 500})
 			Velocity(el, "slideDown", {duration: 500})
 		},
-		leave: function (el, done) {
-			Velocity(this.$refs.toggle_details, {rotateZ: "+=180"}, {duration: 500})
-			Velocity(el, "slideUp", {duration: 500})
-		}
+		detailsLeave: function (el, done) {
+			Velocity(this.$refs.toggle_details, {rotateZ: "+=180"}, {duration: 300})
+			Velocity(el, "slideUp", {duration: 300})
+		},
+		inverseReferencesEnter: function(el, done) {
+			Velocity(this.$refs.toggle_inverse_references, {rotateZ: "+=180"}, {duration: 500})
+			Velocity(el, "slideDown", {duration: 500})
+		},
+		inverseReferencesLeave: function (el, done) {
+			Velocity(this.$refs.toggle_inverse_references, {rotateZ: "+=180"}, {duration: 300})
+			Velocity(el, "slideUp", {duration: 300})
+		},
 	},
 	computed: {
 		node: function() {
@@ -207,7 +223,7 @@ export default {
 <style scoped>
 	.get-extension {
 		text-align: center;
-		margin: 20px 0px 40px 0px;
+		margin-top: 50px;
 	}
 
 	.results-view-button {
