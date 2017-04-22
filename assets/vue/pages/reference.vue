@@ -24,8 +24,9 @@
 		
 		<div class="main" v-if="reference && reference.results">
 			<div v-html="reference.results.embeds.spectrum" style="width: 600px; display: block; margin: 0px auto;"></div>
-
-			<vote single=true :votes="votes" :results="reference.results" v-on:set="setVote" v-on:unset="unsetVote"></vote>
+			<vote has-date=false unit="Reliable-Unreliable" is-spectrum=true
+				:own-contributions="reference.own_results.contributions" :results="reference.results"
+				v-on:set="setVote" v-on:unset="unsetVote"></vote>
 		</div>
 	</div>
 </template>
@@ -42,7 +43,6 @@ export default {
 
 		return {
 			referencing_title: '',
-			votes: [],
 			setVote: function(vote) {
 				if(self.reference)
 					self.$store.dispatch('setReferenceVote', {reference: self.reference, relevance: vote.choice})
@@ -84,15 +84,6 @@ export default {
 
 				self.$store.dispatch('fetchReference', {key: self.$store.getters.currentNode.key, referenceKey: self.$store.getters.currentReference.key}).then(() => {
 					let reference = self.$store.getters.getReference(self.$store.getters.currentNode.key, self.$store.getters.currentReference.key)
-					self.votes = _.map(reference.own_results.contributions, (contribution) => {
-						return {
-							unit: 'Relevant-Irrelevant',
-							unit_type: 'spectrum',
-							choice: contribution.relevance * 100,
-							at_date: new Date(contribution.at_date),
-							needs_save: false
-						}
-					})
 				})
 			}
 		}

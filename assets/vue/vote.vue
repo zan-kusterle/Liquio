@@ -1,7 +1,7 @@
 <template>
 <div>
 	<div class="own-contribution" v-for="vote in ownContributions">
-		<div class="value" v-if="isSpectrum">{{ Math.round(vote.choice * 100) }}%</div>
+		<div class="value" v-if="isSpectrum">{{ Math.round((vote.choice || vote.relevance) * 100) }}%</div>
 		<div class="value" v-else>{{ Math.round(vote.choice) }}</div>
 
 		<div class="date">
@@ -14,7 +14,7 @@
 	</div>
 
 	<div class="cast-vote">
-		<div class="date">
+		<div class="date" v-if="hasDate === true || hasDate === 'true'">
 			<el-date-picker v-model="new_date" type="date" class="datepicker" :clearable="false"></el-date-picker>
 		</div>
 
@@ -24,7 +24,7 @@
 			<p class="spectrum-side">{{ results.positive }}</p>
 		</div>
 		<div class="value" v-else>
-			<el-input v-model="new_value"></el-input>
+			<el-input v-model="new_value" class="number"></el-input>
 		</div>
 
 		<el-button @click="save()" class="button">Cast vote</el-button>
@@ -54,7 +54,7 @@ var _ = require('lodash')
 Vue.use(ElementUI, {locale})
 
 export default {
-	props: ['single', 'unit', 'isSpectrum', 'ownContributions', 'results'],
+	props: ['hasDate', 'unit', 'isSpectrum', 'ownContributions', 'results'],
 	data: function() {
 		let self = this
 		
@@ -79,7 +79,7 @@ export default {
 <style lang="less">
 .own-contribution {
 	background-color: #eee;
-	margin: 10px auto;
+	margin: 20px auto;
 	text-align: left;
 	width: 350px;
 	padding: 10px 20px;
@@ -105,8 +105,15 @@ export default {
 .cast-vote {
 	background-color: #eee;
 	width: 500px;
-	margin: 20px auto;
-	padding: 20px 40px;
+	margin: 40px auto;
+	padding: 20px 20px;
+
+	.date {
+		input {
+			text-align: center;
+			padding-left: 20px;
+		}
+	}
 
 	.value {
 		.spectrum-side {
@@ -118,8 +125,18 @@ export default {
 		.range {
 			display: inline-block;
 			vertical-align: middle;
-			width: 300px;
+			width: 260px;
 			margin: 20px;
+		}
+		.number {
+			display: inline-block;
+			vertical-align: middle;
+			width: 200px;
+			margin: 20px;
+
+			input {
+				text-align: center;
+			}
 		}
 	}
 }

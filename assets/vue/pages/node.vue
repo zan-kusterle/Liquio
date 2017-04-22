@@ -4,7 +4,7 @@
 			<transition v-on:enter="inverseReferencesEnter" v-on:leave="inverseReferencesLeave" v-bind:css="false">
 				<div v-if="areInverseReferencesOpen" style="margin-top: 30px; margin-bottom: 30px;">
 					<div class="list-simple">
-						<liquio-inline v-for="node in node.inverse_references" :key="node.key" v-bind:node="node" v-bind:references-node="node"></liquio-inline>
+						<liquio-inline v-for="inverse_reference in node.inverse_references" :key="inverse_reference.key" v-bind:node="inverse_reference" v-bind:references-node="node"></liquio-inline>
 					</div>
 
 					<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px; margin-top: 20px;">
@@ -41,13 +41,13 @@
 				<i class="el-icon-caret-bottom" ref="toggle_details" @click="isVoteOpen = !isVoteOpen" style="font-size: 28px;"></i>
 				<transition v-on:enter="detailsEnter" v-on:leave="detailsLeave" v-bind:css="false">
 					<div v-if="isVoteOpen">
-						<div style="width: 100%; display: block; margin-top: 30px;">
+						<div class="pick-unit">
 							<el-select v-model="current_unit" v-on:change="pickUnit">
 								<el-option v-for="unit in $store.state.units" :key="unit.value" v-bind:value="unit.value" v-bind:label="unit.text"></el-option>
 							</el-select>
 						</div>
 						
-						<vote ref="votesContainer"
+						<vote ref="votesContainer" has-date=true
 							:unit="node.default_unit.value" :is-spectrum="node.default_unit.type == 'spectrum'"
 							:own-contributions="node.own_default_unit ? node.own_default_unit.own_contributions.contributions : []"
 							:results="node.default_unit" v-on:set="setVote" v-on:unset="unsetVote"></vote>
@@ -82,7 +82,7 @@
 			</el-input>
 			
 			<div class="list-simple">
-				<liquio-inline v-for="node in this.node.references" :key="node.key" v-bind:node="node" v-bind:referencing-node="node.title === '' ? null : node" style="text-align: left;"></liquio-inline>
+				<liquio-inline v-for="reference in node.references" :key="reference.key" v-bind:node="reference" v-bind:referencing-node="node.title === '' ? null : node" style="text-align: left;"></liquio-inline>
 			</div>
 		</div>
 	</div>
@@ -210,7 +210,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
 	.title {
 		display: block;
 		margin: 10px 0px;
@@ -255,5 +255,16 @@ export default {
 	.list-simple {
 		column-count: 3;
 		column-gap: 30px;
+	}
+	.pick-unit {
+		width: 100%;
+		display: block;
+		margin-top: 30px;
+
+		.el-input {
+			input {
+				text-align: center;
+			}
+		}
 	}
 </style>
