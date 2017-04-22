@@ -48,7 +48,7 @@ defmodule Liquio.ReferenceVote do
 				AND (v.to_datetime IS NULL) OR v.to_datetime >= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 			ORDER BY v.identity_id, v.datetime DESC;"
 		
-		res = Ecto.Adapters.SQL.query!(Repo, query , path_params ++ reference_path_params)
+		res = Ecto.Adapters.SQL.query!(Repo, query, path_params ++ reference_path_params)
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		votes = res.rows
 		|> Enum.map(fn(row) ->

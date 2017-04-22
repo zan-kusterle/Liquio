@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="before" v-if="!node.loading && node.title !== ''" style="padding-top: 0px;">
+		<div class="before" v-if="node && !node.loading && node.title !== ''" style="padding-top: 0px;">
 			<transition v-on:enter="inverseReferencesEnter" v-on:leave="inverseReferencesLeave" v-bind:css="false">
 				<div v-if="areInverseReferencesOpen" style="margin-top: 30px; margin-bottom: 30px;">
 					<div class="list-simple">
@@ -17,7 +17,7 @@
 		</div>
 		
 
-		<div v-if="!node.loading && node.title !== ''" class="main">
+		<div v-if="node && !node.loading && node.title !== ''" class="main">
 			<h1 class="title">
 				{{ node.title }}
 				<a v-if="node.title.startsWith('http:') || node.title.startsWith('https:')" :href="node.key.replace(':', '://')" target="_blank" style="margin-left: 15px; vertical-align: middle;"><i class="el-icon-view"></i></a>
@@ -199,11 +199,15 @@ export default {
 		node: function() {
 			let key = this.$store.getters.currentNode.key
 			if(this.$store.getters.searchQuery) {
-				return this.$store.getters.searchResults(this.$store.getters.searchQuery)
-			} else if(!this.$store.getters.hasNode(key)) {
-				return this.$store.getters.currentNode
+				let node = this.$store.getters.searchResults(this.$store.getters.searchQuery)
+				if(!node)
+					return this.$store.getters.currentNode
+				return node
 			} else {
-				return this.$store.getters.getNodeByKey(key)
+				let node = this.$store.getters.getNodeByKey(key)
+				if(!node)
+					return this.$store.getters.currentNode
+				return node
 			}
 		}
 	}

@@ -35,14 +35,18 @@ export default new Vuex.Store({
         })
     },
     getters: {
-        hasNode: (state) => (key) => {
-            return _.find(state.nodes, (node) => {
-                return node.key == key
-            }) != null
-        },
         currentNode: (state) => {
-            let path = (state.route.params.key || '').split('/')
+            if (state.route.params.query) {
+                let path = ['search', state.route.params.query]
+                return {
+                    path: path,
+                    unit: null,
+                    key: path.join('/'),
+                    title: 'Results for ' + path[1]
+                }
+            }
 
+            let path = (state.route.params.key || '').split('/')
             return {
                 path: path,
                 unit: state.route.params.unit || null,
@@ -61,13 +65,14 @@ export default new Vuex.Store({
         },
         searchQuery: (state) => state.route.params.query,
         searchResults: (state, getters) => (query) => {
-            let node = getters.getNodeByKey(['Search', query])
-            node.title = 'Results for ' + query
+            let node = getters.getNodeByKey('search/' + query)
+            if (node)
+                node.title = 'Results for ' + query
             return node
         },
         getPureNodeByKey: (state, getters) => (key) => {
             let node = _.find(state.nodes, (node) => {
-                return node.key == key
+                return node.key.toLowerCase() == key.toLowerCase()
             })
             return node ? JSON.parse(JSON.stringify(node)) : null
         },
@@ -131,7 +136,7 @@ export default new Vuex.Store({
         getNodesByKeys: (state, getters) => (paths) => _.filter(_.map(paths, (path) => getters.getNodeByKey(path)), (n) => n),
         getReference: (state, getters) => (key, reference_key) => {
             let reference = _.find(state.references, (reference) => {
-                return reference.key == key.toLowerCase() && reference.reference_key == reference_key.toLowerCase()
+                return reference.key.toLowerCase() == key.toLowerCase() && reference.reference_key.toLowerCase() == reference_key.toLowerCase()
             })
             if (!reference)
                 return null
@@ -208,8 +213,8 @@ export default new Vuex.Store({
                 state.calculation_opts = node.calculation_opts
         },
         setReference(state, reference) {
-            reference.key = reference.node.path.join('/').toLowerCase()
-            reference.reference_key = reference.referencing_node.path.join('_').toLowerCase()
+            reference.key = reference.node.path.join('/')
+            reference.reference_key = reference.referencing_node.path.join('/')
 
             let existingIndex = _.findIndex(state.references, (r) => r.key == reference.key && r.reference_key == reference.reference_key)
 

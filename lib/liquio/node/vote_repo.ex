@@ -9,13 +9,22 @@ defmodule Liquio.VoteRepo do
 	end
 
 	def get_at_datetime(path, datetime) do
+		{path_where, path_params} = if path do
+			q = path |> Enum.with_index |> Enum.map(fn({value, index}) ->
+				"lower(v.path[#{index + 1}]) = $#{index + 1}"
+			end) |> Enum.join(" AND ")
+			{"#{q} AND", Enum.map(path, & String.downcase(&1))}
+		else
+			{"", []}
+		end
+
 		query = "SELECT *
 			FROM votes AS v
-			WHERE v.path = $1
-				AND v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
-				AND (v.to_datetime IS NULL OR v.to_datetime >='#{Timex.format!(datetime, "{ISO:Basic}")})')
+			WHERE #{path_where}
+				v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}' AND
+				(v.to_datetime IS NULL OR v.to_datetime >='#{Timex.format!(datetime, "{ISO:Basic}")})')
 			ORDER BY v.datetime;"
-		res = Ecto.Adapters.SQL.query!(Repo, query , [path])
+		res = Ecto.Adapters.SQL.query!(Repo, query, path_params)
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		votes = res.rows
 		|> Enum.map(fn(row) ->

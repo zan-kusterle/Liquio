@@ -14,17 +14,21 @@ defmodule Liquio.NodeRepo do
 		if cache_results do
 			cache_results
 		else
-			nodes = Vote
+			references = Vote
 			|> Repo.all
 			|> Enum.map(& &1.path)
 			|> Enum.uniq
-			|> Enum.map(& %Node{path: &1} |> load(calculation_opts, nil))
+			|> Enum.map(& Node.new(&1) |> load(calculation_opts, nil))
 			|> Enum.map(& Map.put(&1, :turnout, &1.results.by_units |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum))
-			|> Enum.sort_by(& -(&1.turnout + 0.05 * Enum.count(&1.references)))
-			|> Enum.map(& Map.drop(&1, [:references, :inverse_references]))
+			|> Enum.map(& %{
+				results: %{:relevance => &1.turnout + 0.05 * Enum.count(&1.references), :latest_contributions => []},
+				reference_node: &1 |> Map.drop([:references, :inverse_references]),
+				node: nil
+			})
+			|> Enum.sort_by(& -&1.results.relevance)
 			
-			node = Node.new([""])
-			|> Map.put(:references, Enum.map(nodes, & %{results: %{:relevance => 0.8, :latest_contributions => []}, node: nil, reference_node: &1}))
+			node = Node.new([])
+			|> Map.put(:references, references)
 			|> Map.put(:calculation_opts, calculation_opts)
 
 			ResultsCache.set(key, node)
@@ -33,15 +37,23 @@ defmodule Liquio.NodeRepo do
 	end
 
 	def search(query, calculation_opts) do
-		nodes = Vote
+		references = Vote
 		|> VoteRepo.search(query)
 		|> Repo.all
 		|> Enum.map(& &1.path)
 		|> Enum.uniq
-		|> Enum.map(& Node.new(&1) |> load(calculation_opts |> Map.put(:depth, 0), nil))
+		|> Enum.map(& Node.new(&1) |> load(calculation_opts, nil))
+		|> Enum.map(& Map.put(&1, :turnout, &1.results.by_units |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum))
+		|> Enum.map(& %{
+			results: %{:relevance => &1.turnout + 0.05 * Enum.count(&1.references), :latest_contributions => []},
+			reference_node: &1 |> Map.drop([:references, :inverse_references]),
+			node: nil
+		})
+		|> Enum.sort_by(& -&1.results.relevance)
 
 		Node.new(["Results for #{query}"])
-		|> Map.put(:references, nodes) |> Map.put(:calculation_opts, calculation_opts)
+		|> Map.put(:references, references)
+		|> Map.put(:calculation_opts, calculation_opts)
 	end
 
 	def load(node, calculation_opts) do

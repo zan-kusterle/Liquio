@@ -25,7 +25,8 @@ defmodule Liquio.ResultsEmbeds do
 			if unit.type == :spectrum do
 				"#{round(mean * 100)}%"
 			else
-				"#{format_number(mean)} #{unit.unit || unit.measurement}"
+				unit_text = if unit.measurement == "Count" do "" else unit.unit || unit.measurement end
+				"#{format_number(mean)} #{unit_text}"
 			end
 		end
 		sub_text = if unit.type == :spectrum do String.downcase(unit.positive) else nil end
