@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="node" class="main">
+		<div v-if="node" class="before" style="padding: 20px 80px;">
 			<el-row :gutter="30">
 				<el-col :span="11">
 					<liquio-inline v-bind:node="node"></liquio-inline>
@@ -16,32 +16,27 @@
 				</el-col>
 			</el-row>
 		</div>
-		<div v-else class="main">
+		<div v-else class="before">
 			<div class="main-node">
 				<i class="el-icon-loading loading"></i>
 			</div>
 		</div>
 		
-		<div class="after" v-if="reference && reference.results">
+		<div class="main" v-if="reference && reference.results">
 			<div v-html="reference.results.embeds.spectrum" style="width: 600px; display: block; margin: 0px auto;"></div>
 
 			<vote single=true :votes="votes" :results="reference.results" v-on:set="setVote" v-on:unset="unsetVote"></vote>
-		</div>
-
-		<div class="footer">
-			<calculation-options v-bind:opts="$store.state.calculation_opts"></calculation-options>
 		</div>
 	</div>
 </template>
 
 <script>
 import App from '../app.vue'
-import CalculationOptions from '../calculation-options.vue'
 import LiquioInline from '../liquio-inline.vue'
 import Vote from '../vote.vue'
 
 export default {
-	components: {App, LiquioInline, Vote, CalculationOptions},
+	components: {App, LiquioInline, Vote},
 	data: function() {
 		let self = this
 

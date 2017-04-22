@@ -89,7 +89,7 @@ defmodule Liquio.Results do
 			:average => average,
 			:latest_contributions => latest_contributions,
 			:contributions_by_identities => contributions_by_identities |> Enum.map(fn({key, contributions_for_identity}) ->
-				contributions_for_identity = contributions_for_identity |> Enum.sort_by(& -Timex.to_unix(&1.at_date))
+				contributions_for_identity = contributions_for_identity |> Enum.sort_by(& Timex.to_unix(&1.at_date))
 				{key, %{
 					:contributions => contributions_for_identity |> Enum.map(fn(c) ->
 						c |> Map.put(:embeds, %{

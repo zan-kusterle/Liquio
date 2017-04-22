@@ -1,36 +1,97 @@
 <template>
-	<div>
-		<div class="header">
-			<el-row>
-				<el-col :span="12">
-					<router-link to="/" class="logo"><img src="/images/logo.svg"></img></router-link>
-				</el-col>
-				<el-col :span="12">
-					<div class="actions" v-if="$store.state.user">
-						<router-link :to="'/identities/' + $store.state.user.username"><i class="el-icon-arrow-right" aria-hidden="true"></i>{{ $store.state.user.name }}</router-link>
-						<a href="/api/logout" @click="$store.commit('logout')"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
-					</div>
-					<div class="actions" v-else>
-						<a href="/login"><i class="el-icon-arrow-right" aria-hidden="true"></i> Login</a>
-					</div>
-				</el-col>
-			</el-row>
-		</div>
-		
-		<div class="main-wrap" id="main-wrap">
-			<div class="scrollable">
-				<div class="main-container" style="padding-top: 50px; padding-bottom: 100px;">
-					<slot>There is nothing here.</slot>
+<div>
+	<div class="header">
+		<el-row>
+			<el-col :span="12">
+				<router-link to="/" class="logo"><img src="/images/logo.svg"></img></router-link>
+			</el-col>
+			<el-col :span="12">
+				<div class="actions" v-if="$store.state.user">
+					<a @click="dialogVisible = !dialogVisible"><i class="el-icon-setting"></i></a>
+					<router-link :to="'/identities/' + $store.state.user.username"><i class="el-icon-arrow-right" aria-hidden="true"></i>{{ $store.state.user.name }}</router-link>
+					<a href="/api/logout" @click="$store.commit('logout')"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
 				</div>
+				<div class="actions" v-else>
+					<a href="/login"><i class="el-icon-arrow-right" aria-hidden="true"></i> Login</a>
+				</div>
+			</el-col>
+		</el-row>
+	</div>
+	
+	<div class="main-wrap" id="main-wrap">
+		<div class="scrollable">
+			<div class="main-container" style="padding-top: 50px; padding-bottom: 100px;">
+				<slot>There is nothing here.</slot>
 			</div>
 		</div>
 	</div>
+
+	<el-dialog title="Options" v-model="dialogVisible">
+		<div class="block">
+			<p class="demonstration">Sort</p>
+			<el-select slot="prepend" placeholder="Select" v-model="sortDirection" style="width: 100px;">
+				<el-option value="most" label="Most"></el-option>
+				<el-option value="least" label="Least"></el-option>
+			</el-select>
+			<el-select slot="prepend" placeholder="Select" v-model="sort" style="width: 150px;">
+				<el-option value="top" label="relevant"></el-option>
+				<el-option value="new" label="new"></el-option>
+				<el-option value="variance" label="controversial"></el-option>
+			</el-select>
+		</div>
+
+		<div class="block">
+			<p class="demonstration">View for specific date</p>
+			<el-date-picker type="date" placeholder="Pick a day" v-model="datetime"></el-date-picker>
+		</div>
+
+		<div class="block">
+			<p class="demonstration">Trust metric URL</p>
+			<el-input type="url"></el-input>
+		</div>
+
+		<div class="block">
+			<p class="demonstration">Expecting at least {{ minimum_turnout }}% turnout.</p>
+			<el-slider v-model="minimum_turnout"></el-slider>
+		</div>
+
+		<div class="block">
+			<p class="demonstration">Votes will lose half remaining power every {{ vote_weight_halving_days }} days.</p>
+			<el-slider v-model="vote_weight_halving_days" max="1000"></el-slider>
+		</div>
+
+		<div class="block">
+			<p class="demonstration">Include {{ soft_quorum_t }} fake votes with score 0 when calculating reference relevance.</p>
+			<el-slider v-model="soft_quorum_t"></el-slider>
+		</div>
+
+		<div class="block">
+			<p class="demonstration">At least {{ minimum_relevance_score }}% relevance score to include reference.</p>
+			<el-slider v-model="minimum_relevance_score"></el-slider>
+		</div>
+
+		<span slot="footer" class="dialog-footer">
+			<el-button @click="dialogVisible = false">Cancel</el-button>
+			<el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+		</span>
+	</el-dialog>
+</div>
 </template>
 
 <script>
+
 export default {
 	data: function() {		
-		return {}
+		return {
+			dialogVisible: false,
+			datetime: new Date(),
+			minimum_turnout: 50,
+			vote_weight_halving_days: 1000,
+			soft_quorum_t: 0,
+			minimum_relevance_score: 50,
+			sort: 'top',
+			sortDirection: 'most'
+		}
 	}
 }
 </script>

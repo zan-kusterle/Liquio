@@ -50,7 +50,9 @@
 			</el-row>
 		</div>
 		<div class="after">
-			<liquio-list v-bind:nodes="identity.votes"></liquio-list>
+			<div class="list-simple">
+				<liquio-inline v-for="node in identity.votes" :key="node.key" v-bind:node="node"></liquio-inline>
+			</div>
 		</div>
 	</div>
 	<div v-else>
@@ -62,10 +64,10 @@
 
 <script>
 import App from '../app.vue'
-import LiquioList from '../liquio-list.vue'
+import LiquioInline from '../liquio-inline.vue'
 
 export default {
-	components: {App, LiquioList},
+	components: {App, LiquioInline},
 	data: function() {
 		let self = this
 		let username = this.$route.params.username
@@ -130,5 +132,10 @@ export default {
 .input-new-topic {
 	display: inline-block;
 	width: 100px;
+}
+
+.list-simple {
+	column-count: 3;
+	column-gap: 30px;
 }
 </style>

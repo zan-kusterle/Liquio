@@ -20,8 +20,8 @@
 	</div>
 
 	<div class="feature">
-		<h3>Built on fair democracy with zero moderation</h3>
-		<p>You have the ability to choose the people you trust.</p>
+		<h3>Transparent democracy without moderation</h3>
+		<p>You have the ability to count votes from people you trust.</p>
 	</div>
 </div>
 </template>

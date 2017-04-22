@@ -3,7 +3,9 @@
 		<div class="before" v-if="!node.loading && node.title !== ''" style="padding-top: 0px;">
 			<transition v-on:enter="inverseReferencesEnter" v-on:leave="inverseReferencesLeave" v-bind:css="false">
 				<div v-if="areInverseReferencesOpen" style="margin-top: 30px; margin-bottom: 30px;">
-					<liquio-list v-bind:nodes="node.inverse_references" v-bind:references-node="node"></liquio-list>
+					<div class="list-simple">
+						<liquio-inline v-for="node in node.inverse_references" :key="node.key" v-bind:node="node" v-bind:references-node="node"></liquio-inline>
+					</div>
 
 					<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px; margin-top: 20px;">
 						<el-button slot="prepend" icon="caret-left" @click="view_inverse_reference"></el-button>
@@ -16,7 +18,7 @@
 		
 
 		<div v-if="!node.loading && node.title !== ''" class="main">
-			<h1 class="title" style="vertical-align: middle;">
+			<h1 class="title">
 				{{ node.title }}
 				<a v-if="node.title.startsWith('http:') || node.title.startsWith('https:')" :href="node.key.replace(':', '://')" target="_blank" style="margin-left: 15px; vertical-align: middle;"><i class="el-icon-view"></i></a>
 			</h1>
@@ -45,13 +47,16 @@
 							</el-select>
 						</div>
 						
-						<vote ref="votesContainer" :votes="votes" :results="node.default_unit" v-on:set="setVote" v-on:unset="unsetVote"></vote>
+						<vote ref="votesContainer"
+							:unit="node.default_unit.value" :is-spectrum="node.default_unit.type == 'spectrum'"
+							:own-contributions="node.own_default_unit ? node.own_default_unit.own_contributions.contributions : []"
+							:results="node.default_unit" v-on:set="setVote" v-on:unset="unsetVote"></vote>
 					</div>
 				</transition>
 			</div>
 		</div>
 		<div v-else-if="!node.loading" class="after">
-			<h1 class="title" style="vertical-align: middle;">A liquid democracy where anyone can vote on anything</h1>
+			<h1 class="title">A liquid democracy where anyone can vote on anything</h1>
 
 			<el-input placeholder="Search" v-model="search_title" @keyup.native.enter="search" style="max-width: 800px;">
 				<el-button slot="append" icon="search" @click="search"></el-button>
@@ -76,23 +81,20 @@
 				<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
 			</el-input>
 			
-			<liquio-list v-bind:nodes="this.node.references" v-bind:referencing-node="node.title === '' ? null : node" style="text-align: left;"></liquio-list>
-		</div>
-
-		<div class="footer">
-			<calculation-options v-bind:opts="$store.state.calculation_opts"></calculation-options>
+			<div class="list-simple">
+				<liquio-inline v-for="node in this.node.references" :key="node.key" v-bind:node="node" v-bind:referencing-node="node.title === '' ? null : node" style="text-align: left;"></liquio-inline>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
 import App from '../app.vue'
-import CalculationOptions from '../calculation-options.vue'
-import LiquioList from '../liquio-list.vue'
 import Vote from '../vote.vue'
+import LiquioInline from '../liquio-inline.vue'
 
 export default {
-	components: {App, CalculationOptions, LiquioList, Vote},
+	components: {App, Vote, LiquioInline},
 	data: function() {
 		let self = this
 
@@ -152,18 +154,6 @@ export default {
 			let self = this
 			let handleNode = (node) => {
 				self.current_unit = node.default_unit.value
-
-				let votes = node && node.own_default_unit ? node.own_default_unit.own_contributions.contributions : []
-				let unit_type = node && node.own_default_unit ? node.own_default_unit.type : null
-				self.votes = _.map(votes, (v) => {
-					return {
-						unit: node.default_unit.value || 'True-False',
-						unit_type: node.default_unit.type,
-						choice: node.default_unit.type == 'spectrum' ? v.choice * 100 : v.choice,
-						at_date: new Date(v.at_date),
-						needs_save: false
-					}
-				})
 			}
 
 			if(!isSameNode) {
@@ -221,6 +211,17 @@ export default {
 </script>
 
 <style scoped>
+	.title {
+		display: block;
+		margin: 10px 0px;
+		font-size: 26px;
+		font-weight: normal;
+		color: #333;
+		opacity: 1;
+		word-wrap: break-word;
+		vertical-align: middle;
+	}
+
 	.get-extension {
 		text-align: center;
 		margin-top: 50px;
@@ -229,7 +230,7 @@ export default {
 	.results-view-button {
 		display: inline-block;
 		margin: 0px 10px;
-		color: #333;
+		color: #111;
 		font-size: 14px;
 		text-transform: lowercase;
 	}
@@ -249,5 +250,10 @@ export default {
 
 	.subtitle {
 		font-size: 20px;
+	}
+	
+	.list-simple {
+		column-count: 3;
+		column-gap: 30px;
 	}
 </style>
