@@ -47,9 +47,11 @@ export default {
 			username: '',
 			name: '',
 			create: function(event) {
-				Api.register(self.$route.params.token, self.username, self.name, function() {
-					self.$router.push('/')
-				})
+				self.$store.dispatch('finishRegistration', {
+					token: self.$route.params.token,
+					username: self.username,
+					name: self.name
+				}).then(() => self.$router.push('/'))
 			}
 		}
 	}

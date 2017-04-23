@@ -3,8 +3,9 @@
 		<div class="main">
 			<el-row :gutter="50">
 				<el-col :span="8">
-					<h2>Incoming</h2>
-					<p v-for="incoming_identity in incoming_identities" :key="incoming_identity.username">{{ incoming_identity.username }}</p>
+					<div>&nbsp;
+						<p v-for="incoming_identity in incoming_identities" :key="incoming_identity.username">{{ incoming_identity.username }}</p>
+					</div>
 				</el-col>
 				<el-col :span="8">
 					{{ identity.username }}<br>
@@ -45,7 +46,9 @@
 					</div>
 				</el-col>
 				<el-col :span="8">
-					asdasd
+					<div>&nbsp;
+						<p v-for="current_identity in identities" :key="current_identity.username">{{ current_identity.username }}</p>
+					</div>
 				</el-col>
 			</el-row>
 		</div>
@@ -117,6 +120,14 @@ export default {
 			if(self.identity) {
 				_.each(self.identity.trusts_to, (x) => l.push(x))
 				_.each(self.identity.delegations_to, (x) => l.push(x))
+			}
+			return l
+		},
+		identities: function() {
+			let l = {}
+			if(self.identity) {
+				_.each(self.identity.trusts, (trust) => l.push(x))
+				_.each(self.identity.delegations, (delegation) => l.push(x))
 			}
 			return l
 		}

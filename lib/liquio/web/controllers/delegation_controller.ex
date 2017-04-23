@@ -28,7 +28,7 @@ defmodule Liquio.Web.DelegationController do
 		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id", column: "username"]}
 	},
 	def delete(conn, %{:user => user, :to_identity => to_identity}) do
-		delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: to_identity.id, is_last: true})
+		delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: to_identity.id, to_datetime: nil})
 		if delegation do
 			Delegation.unset(user, to_identity)
 			conn

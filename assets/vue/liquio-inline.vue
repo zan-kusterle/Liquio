@@ -2,7 +2,7 @@
 <div class="node">
 	<router-link :to="'/' + encodeURIComponent(node.key)" class="link">
 		<div class="content">
-			<span>{{ node.title }}</span>
+			<span>{{ node.path.join('/').replace(/-/g, ' ') }}</span>
 			<router-link v-if="referencingNode" :to="'/' + encodeURIComponent(referencingNode.key) + '/references/' + encodeURIComponent(node.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
 			<router-link v-else-if="referencesNode" :to="'/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(referencesNode.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
 		</div>
@@ -17,7 +17,7 @@
 			:key="reference.key"
 			v-if="reference.reference_result && reference.reference_result.by_keys['relevance'] && reference.reference_result.by_keys['relevance'].embed"
 		>
-			<div class="content">{{ reference.title }}</div>
+			<div class="content">{{ reference.path.join('/').replace(/-/g, ' ') }}</div>
 			<div style="font-size: 0px;">
 				<div class="reference-result">
 					<div v-html="reference.reference_result.by_units['relevance'].embed" style="width: 100%; height: 30px;"></div>

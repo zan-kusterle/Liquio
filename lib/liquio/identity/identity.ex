@@ -82,15 +82,15 @@ defmodule Liquio.Identity do
 	end
 
 	def preload_delegations(identity) do
-		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		delegations_from = from(d in Delegation, where: d.from_identity_id == ^identity.id and is_nil(d.to_datetime))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
-		|> Enum.sort_by(& &1.data.weight)
+		|> Enum.sort_by(& &1.weight)
 
-		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and d.is_last == true and not is_nil(d.data))
+		delegations_to = from(d in Delegation, where: d.to_identity_id == ^identity.id and is_nil(d.to_datetime))
 		|> Repo.all
 		|> Repo.preload([:from_identity, :to_identity])
-		|> Enum.sort_by(& &1.data.weight)
+		|> Enum.sort_by(& &1.weight)
 
 		identity
 		|> Map.put(:delegations_from, delegations_from)

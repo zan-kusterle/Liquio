@@ -35,6 +35,13 @@ export default new Vuex.Store({
         })
     },
     getters: {
+        currentUser: (state, getters) => {
+            let user = state.user
+            if (user) {
+                user.votes = _.map(user.votes, (v) => getters.getNodeByKey(v.path.join('/')))
+            }
+            return user
+        },
         currentNode: (state) => {
             if (state.route.params.query) {
                 let path = ['search', state.route.params.query]
@@ -224,9 +231,19 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        fetchIdentity({ commit }, username) {
+        finishRegistration({ commit, state }, { token, username, name }) {
+            return new Promise((resolve, reject) => {
+                Api.register(token, username, name, function(identity) {
+                    commit('setIdentity', identity)
+                    commit('login', identity)
+                    resolve(identity)
+                })
+            })
+        },
+        fetchIdentity({ commit, state }, username) {
             return new Promise((resolve, reject) => {
                 Api.getIdentity(username, (identity) => {
+                    _.each(identity.votes, (node) => commit('setNode', node))
                     commit('setIdentity', identity)
                     if (username == 'me')
                         commit('login', identity)

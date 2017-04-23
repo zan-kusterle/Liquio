@@ -6,9 +6,9 @@
 				<router-link to="/" class="logo"><img src="/images/logo.svg"></img></router-link>
 			</el-col>
 			<el-col :span="12">
-				<div class="actions" v-if="$store.state.user">
+				<div class="actions" v-if="$store.getters.currentUser">
 					<a @click="dialogVisible = !dialogVisible"><i class="el-icon-setting"></i></a>
-					<router-link :to="'/identities/' + $store.state.user.username"><i class="el-icon-arrow-right" aria-hidden="true"></i>{{ $store.state.user.name }}</router-link>
+					<router-link :to="'/identities/' + $store.getters.currentUser.username"><i class="el-icon-arrow-right" aria-hidden="true"></i>{{ $store.getters.currentUser.name }}</router-link>
 					<a href="/api/logout" @click="$store.commit('logout')"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
 				</div>
 				<div class="actions" v-else>

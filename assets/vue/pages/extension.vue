@@ -9,7 +9,7 @@
 	</div>
 
 	<div class="feature">
-		<h3>Spot unreliable, fake or biased news instantly</h3>
+		<h3>Spot unreliable, fake or biased news</h3>
 		<img src="/images/article-score.png"></img>
 		<img src="/images/link-score.png"></img>
 	</div>
@@ -21,7 +21,7 @@
 
 	<div class="feature">
 		<h3>Transparent democracy without moderation</h3>
-		<p>You have the ability to count votes from people you trust.</p>
+		<p>Liquio is a public database of votes. You will always have the ability to only count votes from the people you trust.</p>
 	</div>
 </div>
 </template>
