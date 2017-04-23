@@ -15,12 +15,11 @@
 
 			<i class="el-icon-arrow-up" ref="toggle_inverse_references" @click="areInverseReferencesOpen = !areInverseReferencesOpen" style="font-size: 22px;"></i>
 		</div>
-		
 
-		<div v-if="node && !node.loading && node.title !== ''" class="main">
+		<div v-if="node && !node.loading && node.path.length > 0" class="main">
 			<h1 class="title">
-				{{ node.title }}
-				<a v-if="node.title.startsWith('http:') || node.title.startsWith('https:')" :href="node.key.replace(':', '://')" target="_blank" style="margin-left: 15px; vertical-align: middle;"><i class="el-icon-view"></i></a>
+				<a v-for="(segment, index) in node.path_segments" :href="segment.href" v-if="node.path[0].startsWith('http:') || node.path[0].startsWith('https:')" target="_blank"><span v-if="index > 0">/</span>{{segment.text}}</a>
+				<span v-else>{{ node.title }}</span>
 			</h1>
 
 			<div class="score-container">
@@ -197,19 +196,30 @@ export default {
 	},
 	computed: {
 		node: function() {
-			let key = this.$store.getters.currentNode.key
-			if(this.$store.getters.searchQuery) {
-				let node = this.$store.getters.searchResults(this.$store.getters.searchQuery)
-				if(!node)
-					return this.$store.getters.currentNode
-				return node
-			} else {
-				let node = this.$store.getters.getNodeByKey(key)
-				if(!node)
-					return this.$store.getters.currentNode
-				return node
-			}
+			let node = getNode(this.$store)
+			node.path_segments = _.map(node.path, (s, index) => {
+				return {
+					href: node.path.slice(0, index + 1).join('/').replace(':', '://'),
+					text: index == 0 ? node.path[index].replace(':', '://') : node.path[index]
+				}
+			})
+			return node
 		}
+	}
+}
+
+let getNode = ($store) => {
+	let key = $store.getters.currentNode.key
+	if($store.getters.searchQuery) {
+		let node = $store.getters.searchResults($store.getters.searchQuery)
+		if(!node)
+			return $store.getters.currentNode
+		return node
+	} else {
+		let node = $store.getters.getNodeByKey(key)
+		if(!node)
+			return $store.getters.currentNode
+		return node
 	}
 }
 </script>
