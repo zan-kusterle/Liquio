@@ -23,7 +23,7 @@ defmodule Liquio.Results do
 				power = Map.get(power_by_usernames, vote.identity.username, 0)
 				vote
 				|> Map.put(:voting_power, power)
-				|> Map.put(:weight, power / total_voting_power)
+				|> Map.put(:weight, if total_voting_power > 0 do power / total_voting_power else 0 end)
 			end)
 
 			unit_results = from_contributions(contributions, datetime, MapSet.size(trust_metric_ids), unit)
