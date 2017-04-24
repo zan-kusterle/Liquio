@@ -56,10 +56,15 @@ defmodule Liquio.ResultsEmbeds do
 				|> List.last
 			end)
 			|> Enum.filter(& &1 != nil)
-			average = aggregator.(current_contributions)
-
-			{current_date, average, 1.0}
+			
+			if Enum.count(current_contributions) > 0 do
+				average = aggregator.(current_contributions)
+				{current_date, average, 1.0}
+			else
+				nil
+			end
 		end)
+		|> Enum.filter(& &1 != nil)
 
 		svg_chart(points)
 	end
