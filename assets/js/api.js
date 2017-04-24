@@ -66,8 +66,8 @@ export function register(token, username, name, cb) {
 }
 
 export function setTrust(to_identity_username, is_trusted, cb) {
-    let url = '/api/identities/' + encodeURIComponent(to_identity_username) + '/trusts'
-    axios.post(url, { is_trusted: is_trusted }).then(function(response) {
+    let url = '/api/identities/' + encodeURIComponent(to_identity_username)
+    axios.put(url, { is_trusted: is_trusted }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -80,8 +80,8 @@ export function unsetTrust(to_identity_username, cb) {
 }
 
 export function setDelegation(to_identity_username, weight, topics, cb) {
-    let url = '/api/identities/' + encodeURIComponent(to_identity_username) + '/delegations'
-    axios.post(url, { delegation: { weight: weight, topics: topics } }).then(function(response) {
+    let url = '/api/identities/' + encodeURIComponent(to_identity_username)
+    axios.put(url, { delegation: { weight: weight, topics: topics } }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -94,8 +94,8 @@ export function unsetDelegation(to_identity_username, cb) {
 }
 
 export function setVote(key, unit, at_date, choice, cb) {
-    let url = '/api/nodes/' + encodeURIComponent(key) + '/votes'
-    axios.post(url, {
+    let url = '/api/nodes/' + encodeURIComponent(key)
+    axios.put(url, {
         unit: unit,
         choice: choice,
         at_date: at_date.getFullYear() + '-' + (at_date.getMonth() + 1) + '-' + at_date.getDate()
@@ -104,20 +104,20 @@ export function setVote(key, unit, at_date, choice, cb) {
     }).catch(function(error) {})
 }
 export function unsetVote(key, unit, at_date, cb) {
-    let url = '/api/nodes/' + encodeURIComponent(key) + '/votes'
+    let url = '/api/nodes/' + encodeURIComponent(key)
     axios.delete(url, { params: { unit: unit, at_date: at_date.toISOString().substring(0, 10) } }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
 
 export function setReferenceVote(key, reference_key, relevance, cb) {
-    let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key) + '/votes'
-    axios.post(url, { relevance: relevance }).then(function(response) {
+    let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key)
+    axios.put(url, { relevance: relevance }).then(function(response) {
         cb(response.data)
     }).catch(function(error) {})
 }
 export function unsetReferenceVote(key, reference_key, cb) {
-    let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key) + '/votes'
+    let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key)
     axios.delete(url).then(function(response) {
         cb(response.data)
     }).catch(function(error) {})

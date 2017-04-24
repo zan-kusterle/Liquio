@@ -55,6 +55,7 @@ defmodule Liquio.ResultsEmbeds do
 				|> Enum.filter(& Timex.compare(&1.at_date, current_date) <= 0)
 				|> List.last
 			end)
+			|> Enum.filter(& &1 != nil)
 			average = aggregator.(current_contributions)
 
 			{current_date, average, 1.0}
