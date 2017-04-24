@@ -64,7 +64,7 @@ defmodule Liquio.Delegation do
 	def get_inverse_delegations(datetime) do
 		query = "SELECT DISTINCT ON (d.from_identity_id, d.to_identity_id) *
 			FROM delegations AS d
-			WHERE d.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
+			WHERE d.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}' AND (d.to_datetime >= '#{Timex.format!(datetime, "{ISO:Basic}")}' OR d.to_datetime IS NULL)
 			ORDER BY d.from_identity_id, d.to_identity_id, d.datetime DESC;"
 		res = Ecto.Adapters.SQL.query!(Repo, query , [])
 		cols = Enum.map res.columns, &(String.to_atom(&1))
