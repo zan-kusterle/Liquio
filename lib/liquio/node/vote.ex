@@ -19,7 +19,7 @@ defmodule Liquio.Vote do
 
 	def group_key(%{:path => path, :unit => unit, :at_date => at_date}) do
 		path_normalized = path |> Enum.join("/") |> String.downcase
-		"#{path_normalized}___#{encode_unit(unit)}___#{Timex.format!(at_date, "{YYYY}-{0M}-{0D}")}"
+		"#{path_normalized}___#{encode_unit(unit) |> String.downcase}___#{Timex.format!(at_date, "{YYYY}-{0M}-{0D}")}"
 	end
 
 	def decode_unit!(value) do

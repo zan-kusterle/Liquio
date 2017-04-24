@@ -21,6 +21,6 @@ defmodule Liquio.Reference do
 	end
 
 	def group_key(reference) do
-		"#{Enum.join(reference.path, "/")} -> #{Enum.join(reference.reference_path, "/")}" |> String.downcase
+		"#{Enum.join(reference.path, "/") |> String.downcase} -> #{Enum.join(reference.reference_path, "/") |> String.downcase}" |> String.downcase
 	end
 end
