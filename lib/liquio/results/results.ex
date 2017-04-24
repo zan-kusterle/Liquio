@@ -54,7 +54,7 @@ defmodule Liquio.Results do
 		total_voting_power = power_by_usernames |> Enum.map(fn({_, power}) -> power end) |> Enum.sum
 
 		contributions = votes |> Enum.map(fn(vote) ->
-			power = power_by_usernames[vote.identity.username]
+			power = Map.get(power_by_usernames, vote.identity.username, 0)
 			vote
 			|> Map.put(:voting_power, power)
 			|> Map.put(:weight, if total_voting_power > 0 do power / total_voting_power else nil end)
