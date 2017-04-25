@@ -19,6 +19,11 @@ defmodule Liquio.CalculationOpts do
 				now
 			end
 		{trust_metric_url, trust_identity_ids} = get_trust_identity_ids(conn)
+		trust_identity_ids = if identity != nil do
+			trust_identity_ids |> MapSet.put(identity.username)
+		else
+			trust_identity_ids
+		end
 		trust_metric_count = MapSet.size(trust_identity_ids)
 		
 		%{

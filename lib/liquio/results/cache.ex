@@ -20,8 +20,12 @@ defmodule Liquio.ResultsCache do
 		unset({name, id, Timex.now})
 	end
 
-	def unset({name, id, datetime}) do
-		Cachex.set(:results_cache, {name, id, datetime_key(datetime)}, nil)
+	def unset({name, path, datetime}) do
+		1..Enum.count(path)
+		|> Enum.map(& Enum.slice(path, 0, &1))
+		|> Enum.each(fn(subpath) ->
+			Cachex.set(:results_cache, {name, subpath, datetime_key(datetime)}, nil)
+		end)
 	end
 
 	defp datetime_key(datetime) do
