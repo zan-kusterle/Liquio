@@ -11,12 +11,13 @@
 	<div class="feature">
 		<h3>Spot unreliable, fake or biased news</h3>
 		<img src="/images/article-score.png"></img>
-		<img src="/images/link-score.png"></img>
+		<img src="/images/link-score-new.png"></img>
 	</div>
 
 	<div class="feature">
 		<h3>Get relevant data at the right time</h3>
 		<img src="/images/inline-links.png"></img>
+		<img src="/images/video-links.png" style="width: 800px; margin-top: 50px; opacity: 1;"></img>
 	</div>
 
 	<div class="feature">
