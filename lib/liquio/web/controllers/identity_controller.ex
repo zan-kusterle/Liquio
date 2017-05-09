@@ -28,15 +28,18 @@ defmodule Liquio.Web.IdentityController do
 		render(conn, "show.json", identity: identity |> Identity.preload())
 	end)
 
-
-	plug :scrub_params, "delegation" when action in [:put]
 	with_params(%{
 		:user => {Plugs.CurrentUser, [require: true]},
-		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id", column: "username"]}
+		:to_identity => {Plugs.IdentityParam, [name: "id", column: :username]}
 	},
-	def update(conn, %{:user => user, :to_identity => to_identity, "delegation" => params}) do
-		params = params |> Map.put("from_identity_id", user.id) |> Map.put("to_identity_id", to_identity.id)
-		changeset = Delegation.changeset(%Delegation{}, params)
+	def update(conn, params = %{:user => user, :to_identity => to_identity}) do
+		changeset = Delegation.changeset(%Delegation{}, %{
+			"from_identity_id" => user.id,
+			"to_identity_id" => to_identity.id,
+			"is_trusting " => Map.get(params, "is_trusting"),
+			"weight " => Map.get(params, "weight"),
+			"topics " => Map.get(params, "topics"),
+		})
 		case Delegation.set(changeset) do
 			{:ok, delegation} ->
 				delegation = Repo.preload delegation, [:from_identity, :to_identity]

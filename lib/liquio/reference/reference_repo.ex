@@ -1,55 +1,16 @@
 defmodule Liquio.ReferenceRepo do
 	import Ecto.Query, only: [from: 2]
-	alias Liquio.{Repo, Delegation, Node, NodeRepo, Reference, ReferenceVote, ResultsCache, Results, CalculateResults}
-	
+	alias Liquio.{Repo, Delegation, Node, NodeRepo, Reference, ReferenceVote, Results, VotingPower}
+
 	def load(reference, calculation_opts) do
 		load(reference, calculation_opts, nil)
 	end
 	def load(reference, calculation_opts, user) do
-		key = {
-			{"references", Reference.group_key(reference), calculation_opts.datetime},
-			{
-				calculation_opts.trust_metric_url,
-				calculation_opts.minimum_voting_power,
-				calculation_opts.reference_minimum_turnout,
-				calculation_opts.depth
-			}
-		}
-		cache_results = ResultsCache.get(key)
-		if cache_results do
-			cache_results
-		else
-			reference = load_latest(reference, calculation_opts, user)
-			ResultsCache.set(key, reference)
-			reference
-		end
-	end
-
-	def invalidate_cache(reference) do
-		ResultsCache.unset({"references", Reference.group_key(reference)})
-		ResultsCache.unset({"nodes", reference.path})
-		ResultsCache.unset({"nodes", reference.reference_path})
-	end
-
-	def load_latest(reference, calculation_opts, user) do		
 		reference = reference
-		|> load_results(calculation_opts, user)
-		|> load_nodes(calculation_opts, user)
-
-		reference
-	end
-
-	def load_nodes(reference, calculation_opts, user) do
-		reference
-		|> Map.put(:node, Node.new(reference.path) |> NodeRepo.load_results(calculation_opts, user))
-		|> Map.put(:reference_node, Node.new(reference.reference_path) |> NodeRepo.load_results(calculation_opts, user))
-	end
-	
-	def load_results(reference, calculation_opts, user) do
-		votes = ReferenceVote.get_at_datetime(reference.path, reference.reference_path, calculation_opts.datetime) |> Repo.preload([:identity])
-		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
-		results = Results.from_reference_votes(votes, inverse_delegations, calculation_opts)		
-
+		|> load_results(calculation_opts)
+		|> Map.put(:node, Node.new(reference.path) |> NodeRepo.load(calculation_opts, user, 0))
+		|> Map.put(:reference_node, Node.new(reference.reference_path) |> NodeRepo.load(calculation_opts, user, 0))
+			
 		own_vote = if Map.has_key?(reference, :own_vote) do
 			reference.own_vote
 		else
@@ -57,15 +18,23 @@ defmodule Liquio.ReferenceRepo do
 		end
 		own_results = if own_vote do
 			own_vote = own_vote |> Repo.preload([:identity])
-			Results.from_reference_votes([own_vote], inverse_delegations, calculation_opts)
+			Results.from_reference_votes([own_vote])
 		else
 			nil
 		end
 
 		reference
-		|> Map.put(:results, results)
 		|> Map.put(:own_vote, own_vote)
 		|> Map.put(:own_results, own_results)
+	end
+	
+	def load_results(reference, calculation_opts) do
+		votes = ReferenceVote.get_at_datetime(reference.path, reference.reference_path, calculation_opts.datetime) |> Repo.preload([:identity])
+		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+		results = Results.from_reference_votes(votes, inverse_delegations, calculation_opts)
+
+		reference
+		|> Map.put(:results, results)
 		|> Map.put(:calculation_opts, calculation_opts)
 	end
 	
@@ -105,7 +74,7 @@ defmodule Liquio.ReferenceRepo do
 			{k, Results.from_reference_votes(votes, inverse_delegations, calculation_opts)}
 		end)
 		|> Enum.filter(fn({_k, result}) ->
-			result.total > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
+			result.voting_power > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
 		end)
 	end
 end

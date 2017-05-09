@@ -98,7 +98,6 @@ defmodule Liquio.ReferenceVote do
 			:to_datetime => nil,
 			:group_key => group_key
 		})
-		ReferenceRepo.invalidate_cache(reference)
 		result
 	end
 

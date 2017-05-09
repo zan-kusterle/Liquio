@@ -9,8 +9,8 @@
 	</div>
 
 	<div class="feature">
-		<h3>Spot unreliable, fake or biased news</h3>
-		<img src="/images/article-score.png"></img>
+		<h3>Spot unreliable and biased news at a glance</h3>
+		<img src="/images/page-score.svg" style="width: 100%;"></img>
 		<img src="/images/link-score-new.png"></img>
 	</div>
 
@@ -59,9 +59,8 @@ export default {
 		padding-bottom: 0px;
 		margin: 0;
 		margin-bottom: 40px;
-		text-transform: uppercase;
 		font-weight: normal;
-		font-size: 18px;
+		font-size: 22px;
 		color: #111;
 	}
 

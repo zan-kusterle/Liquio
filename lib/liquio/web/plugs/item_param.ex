@@ -1,9 +1,13 @@
 defmodule Liquio.Plugs.ItemParam do
 	def handle(_conn, value, opts) do
-		item = if opts[:column] == nil do
-			Liquio.Repo.get(opts[:schema], value)
+		item = if value do
+			if opts[:column] == nil do
+				Liquio.Repo.get(opts[:schema], value)
+			else
+				Liquio.Repo.get_by(opts[:schema], username: value)
+			end
 		else
-			Liquio.Repo.get_by(opts[:schema], username: value)
+			nil
 		end
 		
 		if item != nil and (opts[:validator] == nil or opts[:validator].(item)) do

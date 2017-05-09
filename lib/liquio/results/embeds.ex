@@ -79,20 +79,22 @@ defmodule Liquio.ResultsEmbeds do
 	end
 
 	def inline_results_distribution(contributions, aggregator) do
-		buckets = contributions |> Enum.group_by(& round(&1.choice * 10))
-		rects = buckets
-		|> Enum.map(fn({index, bucket_contributions}) ->
-			average = aggregator.(bucket_contributions) || 0.0
-			y_offset = 0.28
-			"<rect x=\"#{svg_x(index / 10)}\" y=\"#{svg_y(average * (1 - y_offset) + y_offset)}\" width=\"70\" height=\"#{svg_height(average * (1 - y_offset))}\" style=\"fill:#ccc;\" />"
-		end)
-
-		texts = 0..10
+		buckets_by_index = contributions |> Enum.group_by(& round(&1.choice * 10))
+		buckets = 0..10
 		|> Enum.map(fn(index) ->
-			"<text text-anchor=\"middle\" alignment-baseline=\"middle\" x=\"#{svg_x(index / 10) + 35}\" y=\"150\" font-family=\"Helvetica\" font-size=\"22\">#{index}</text>"
+			bucket = Map.get(buckets_by_index, index, [])
+			average = if Enum.empty?(bucket) do 0.0 else aggregator.(bucket) end
+			{index, average}
 		end)
 
-		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{Enum.join(rects, "")}#{Enum.join(texts, "")}</svg>"
+		bars = Enum.map(buckets, fn({index, average}) ->
+			y_offset = 0.3
+
+			"<rect x=\"#{svg_x(index / 10)}\" y=\"#{svg_y(average * (1 - y_offset) + y_offset)}\" width=\"70\" height=\"#{svg_height(average * (1 - y_offset))}\" style=\"fill:#ccc;\" />"
+			"<text text-anchor=\"middle\" alignment-baseline=\"middle\" font-weight=\"bold\" x=\"#{svg_x(index / 10) + 35}\" y=\"150\" font-family=\"Helvetica\" font-size=\"32\">#{index}</text>"
+		end)
+
+		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{Enum.join(bars, "")}</svg>"
 	end
 
 	defp svg_chart(points) do

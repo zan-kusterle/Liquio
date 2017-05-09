@@ -18,7 +18,7 @@ defmodule Liquio.Delegation do
 
 	def changeset(data, params) do
 		data
-		|> cast(params, ["from_identity_id", "to_identity_id"])
+		|> cast(params, ["from_identity_id", "to_identity_id", "is_trusting", "weight", "topics"])
 		|> validate_required(:from_identity_id)
 		|> validate_required(:to_identity_id)
 		|> assoc_constraint(:from_identity)
@@ -32,7 +32,7 @@ defmodule Liquio.Delegation do
 		Repo.insert(changeset)
 	end
 
-	def set(from_identity, to_identity, weight, topics) do
+	def set(from_identity, to_identity, is_trusting, weight, topics) do
 		remove_current_last(from_identity.id, to_identity.id)
 		Repo.insert(%Delegation{
 			from_identity_id: from_identity.id,
@@ -50,11 +50,12 @@ defmodule Liquio.Delegation do
 
 	def remove_current_last(from_identity_id, to_identity_id) do
 		now = Timex.now
-		current_last = Repo.get_by(Delegation,
-			from_identity_id: from_identity_id, to_identity_id: to_identity_id, to_datetime: nil)
-		if current_last do
-			Repo.update! Ecto.Changeset.change current_last, to_datetime: now
-		end
+		from(v in Delegation,
+			where: v.from_identity_id == ^from_identity_id and
+				v.to_identity_id == ^to_identity_id and
+				is_nil(v.to_datetime),
+			update: [set: [to_datetime: ^now]])
+		|> Repo.update_all([])
 	end
 
 	def get_by(from_identity, to_identity) do

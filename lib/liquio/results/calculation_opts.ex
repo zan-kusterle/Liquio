@@ -30,7 +30,7 @@ defmodule Liquio.CalculationOpts do
 			datetime: datetime,
 			depth: depth,
 			trust_metric_url: trust_metric_url,
-			trust_metric_ids: trust_identity_ids,
+			trust_usernames: trust_identity_ids,
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days),
 			reference_minimum_agree: 0.5,
 			minimum_voting_power: 0.05 * trust_metric_count,

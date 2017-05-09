@@ -1,14 +1,12 @@
 defmodule Liquio.Identity do
 	use Liquio.Web, :model
-	alias Liquio.{Repo, Vote, ReferenceVote, Delegation, Node, NodeRepo, Results}
+	alias Liquio.{Repo, Vote, ReferenceVote, Delegation, Node, Results}
 
 	schema "identities" do
 		field :email, :string
 		field :username, :string
 		field :name, :string
-
-		field :trusts, {:map, :boolean}
-
+		
 		timestamps()
 	end
 	

@@ -36,8 +36,8 @@
 			<div class="weight">
 				<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(identity_data.contributions[0].weight * 100)"></el-progress>
 			</div>
-			<div v-if="identity_data.embeds.by_time" v-html="identity_data.embeds.by_time" class="choice"></div>
 			<div v-html="identity_data.contributions[identity_data.contributions.length - 1].embeds.value" class="choice"></div>
+			<div v-if="identity_data.embeds.by_time" v-html="identity_data.embeds.by_time" class="choice"></div>
 			<div class="username"><router-link :to="'/identities/' + identity_data.contributions[0].identity_username">{{ identity_data.contributions[0].identity_username }}</router-link></div>
 			<div class="date">{{ moment(new Date(identity_data.contributions[identity_data.contributions.length - 1].datetime)).fromNow() }}</div>
 		</div>

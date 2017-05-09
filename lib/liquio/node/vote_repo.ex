@@ -1,6 +1,6 @@
 defmodule Liquio.VoteRepo do
 	import Ecto.Query, only: [from: 2]
-	alias Liquio.{Repo, Node, NodeRepo, Vote}
+	alias Liquio.{Repo, Vote}
 
 	def search(query, search_term) do
 		from(v in query,
@@ -10,7 +10,7 @@ defmodule Liquio.VoteRepo do
 
 	def get_at_datetime(path, datetime) do
 		{path_where, path_params} = if path do
-			q = path |> Enum.with_index |> Enum.map(fn({value, index}) ->
+			q = path |> Enum.with_index |> Enum.map(fn({_value, index}) ->
 				"lower(v.path[#{index + 1}]) = $#{index + 1}"
 			end) |> Enum.join(" AND ")
 			{"#{q} AND", Enum.map(path, & String.downcase(&1))}
@@ -73,7 +73,6 @@ defmodule Liquio.VoteRepo do
 			:at_date => at_date
 		})
 
-		NodeRepo.invalidate_cache(node)
 		result
 	end
 

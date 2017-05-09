@@ -24,7 +24,7 @@ defmodule Liquio.Web.ReferenceController do
 		reference = Reference.new(node.path, reference_node.path)
 		
 		ReferenceVote.set(user, reference, get_relevance(relevance))
-		if MapSet.member?(calculation_opts.trust_metric_ids, to_string(user.id)) do
+		if MapSet.member?(calculation_opts.trust_usernames, to_string(user.id)) do
 			{:info, "Your vote is now live."}
 		else
 			{:error, "Your vote is now live, but because you're not in trust metric it will not be counted. Get others to trust your identity by sharing it's URL to get into trust metric or change it in preferences."}

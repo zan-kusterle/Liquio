@@ -33,8 +33,9 @@ defmodule Liquio.Web.IdentityView do
 		%{
 			from_identity: Liquio.Web.IdentityView.render("identity.json", identity: delegation.from_identity),
 			to_identity: Liquio.Web.IdentityView.render("identity.json", identity: delegation.to_identity),
-			weight: delegation.data.weight,
-			topics: delegation.data.topics
+			is_trusting: delegation.is_trusting,
+			weight: delegation.weight,
+			topics: delegation.topics
 		}
 	end
 end
