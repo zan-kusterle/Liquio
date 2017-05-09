@@ -12,7 +12,7 @@ defmodule Liquio.Web.NodeView do
 	end
 
 	def render("node.json", %{node: node}) do
-		references =  if Map.has_key?(node, :references) do
+		references =  if Map.get(node, :references) do
 			node.references |> Enum.map(fn(%{:results => results, :reference_node => reference_node}) ->
 				results = results
 				|> Map.take(@results_keys)
@@ -25,7 +25,7 @@ defmodule Liquio.Web.NodeView do
 			nil
 		end
 
-		inverse_references =  if Map.has_key?(node, :inverse_references) do
+		inverse_references =  if Map.get(node, :inverse_references) do
 			node.inverse_references |> Enum.map(fn(%{:results => results, :node => reference_node}) ->
 				results = results
 				|> Map.take(@results_keys)
