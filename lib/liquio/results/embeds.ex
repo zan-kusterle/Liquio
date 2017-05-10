@@ -79,8 +79,8 @@ defmodule Liquio.ResultsEmbeds do
 	end
 
 	def inline_results_distribution(contributions, aggregator) do
-		buckets_by_index = contributions |> Enum.group_by(& round(&1.choice * 10))
-		buckets = 0..10
+		buckets_by_index = contributions |> Enum.group_by(& round(Float.ceil(&1.choice * 10)))
+		buckets = 1..10
 		|> Enum.map(fn(index) ->
 			bucket = Map.get(buckets_by_index, index, [])
 			average = if Enum.empty?(bucket) do 0.0 else aggregator.(bucket) end
@@ -88,10 +88,15 @@ defmodule Liquio.ResultsEmbeds do
 		end)
 
 		bars = Enum.map(buckets, fn({index, average}) ->
+			ratio = (index - 1) / 10
 			y_offset = 0.3
 
-			"<rect x=\"#{svg_x(index / 10)}\" y=\"#{svg_y(average * (1 - y_offset) + y_offset)}\" width=\"70\" height=\"#{svg_height(average * (1 - y_offset))}\" style=\"fill:#ccc;\" />"
-			"<text text-anchor=\"middle\" alignment-baseline=\"middle\" font-weight=\"bold\" x=\"#{svg_x(index / 10) + 35}\" y=\"150\" font-family=\"Helvetica\" font-size=\"32\">#{index}</text>"
+			text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" font-weight=\"bold\" x=\"#{svg_x(ratio) + 35}\" y=\"160\" font-family=\"Helvetica\" font-size=\"32\">#{index}</text>"
+			if average > 0 do
+				text <> "<rect x=\"#{svg_x(ratio)}\" y=\"#{svg_y(average * (1 - y_offset) + y_offset)}\" width=\"70\" height=\"#{svg_height(average * (1 - y_offset))}\" style=\"fill:#ddd;\" />"
+			else
+				text
+			end
 		end)
 
 		"<svg viewBox=\"0 0 800 200\" class=\"chart\" width=\"100%\" height=\"100%\">#{Enum.join(bars, "")}</svg>"
@@ -102,17 +107,17 @@ defmodule Liquio.ResultsEmbeds do
 			{min_x, max_x} = Enum.min_max(Enum.map(points, & Timex.to_unix(elem(&1, 0))))
 			{min_y, max_y} = Enum.min_max(Enum.map(points, & elem(&1, 1)))
 
-			min_y = min(0, min_y)
-			max_y = max(0, max_y)
+			min_y = min(0.0, min_y)
+			max_y = max(0.0, max_y)
 
 			zero_y =
 				cond do
 					min_y < 0 and max_y > 0 ->
 						-min_y / (max_y - min_y)
 					max_y > 0 ->
-						0
-					min_y < 0 ->
-						1
+						0.0
+					min_y <= 0 ->
+						1.0
 				end
 
 			normalized_points = Enum.map(points, fn({x, y, w}) ->

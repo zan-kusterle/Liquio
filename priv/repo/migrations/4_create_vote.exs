@@ -10,7 +10,7 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :at_date, :date, null: false
 			add :group_key, :string, null: false
 
-			add :choice, :float, null: true
+			add :choice, :float, null: false
 			
 			add :datetime, :utc_datetime, null: false
 			add :to_datetime, :utc_datetime, null: true

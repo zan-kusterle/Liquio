@@ -52,7 +52,7 @@ defmodule Liquio.Mixfile do
 			{:secure_random, "~> 0.5"},
 			{:mailgun, "~> 0.1.2"},
 			{:quantum, ">= 1.5.0"},
-			{:cachex, "~> 2.0"}
+			{:cachex, "~> 2.0"},
 		]
 	end
 

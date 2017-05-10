@@ -49,3 +49,12 @@ config :guardian, Guardian,
 	verify_issuer: true, # optional
 	secret_key: "nCtmk9gVyGfAgab9KMCkQdjXdgGUwTB2SO5piuvoqDoK4t0MEmbpHHzHsiw5GIYR",
 	serializer: Liquio.GuardianSerializer
+
+config :ueberauth, Ueberauth,
+	providers: [
+		google: {Ueberauth.Strategy.Google, []}
+	]
+
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+	client_id: "1073734990208-3rk296sdolui9cs65g9p6654rdtvgimc.apps.googleusercontent.com",
+	client_secret: "-YEJ3rg7h7z9ej_6NH5o16O2"

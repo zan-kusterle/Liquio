@@ -43,22 +43,15 @@ defmodule Liquio.VoteRepo do
 		from(v in Vote, where:
 			v.path == ^node.path and
 			v.identity_id == ^identity.id and
-			is_nil(v.to_datetime) and
-			not is_nil(v.choice)
+			is_nil(v.to_datetime)
 		) |> Repo.all
 	end
 
 	def set(identity, node, unit, at_date, choice) do
 		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
-		
-		now = Timex.now
-		from(v in Vote,
-			where: v.group_key == ^group_key and
-				v.identity_id == ^identity.id and
-				is_nil(v.to_datetime),
-			update: [set: [to_datetime: ^now]])
-		|> Repo.update_all([])
 
+		delete(identity, node, unit, at_date)
+		
 		result = Repo.insert!(%Vote{
 			:identity_id => identity.id,
 
@@ -77,6 +70,14 @@ defmodule Liquio.VoteRepo do
 	end
 
 	def delete(identity, node, unit, at_date) do
-		set(identity, node, unit, at_date, nil)
+		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
+		
+		now = Timex.now
+		from(v in Vote,
+			where: v.group_key == ^group_key and
+				v.identity_id == ^identity.id and
+				is_nil(v.to_datetime),
+			update: [set: [to_datetime: ^now]])
+		|> Repo.update_all([])
 	end
 end

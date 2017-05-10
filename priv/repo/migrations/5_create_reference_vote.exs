@@ -9,7 +9,7 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :reference_path, {:array, :string}, null: false
 			add :group_key, :string, null: false
 
-			add :relevance, :float, null: true
+			add :relevance, :float, null: false
 
 			add :datetime, :utc_datetime, null: false
 			add :to_datetime, :utc_datetime, null: true

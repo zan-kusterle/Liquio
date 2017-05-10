@@ -1,6 +1,30 @@
 defmodule Liquio.Web.LoginController do
 	use Liquio.Web, :controller
 
+	plug Ueberauth
+
+	alias Ueberauth.Strategy.Helpers
+	alias Ueberauth.Strategy.Google
+	
+	def request(conn, _params) do
+		render(conn, "request.html", callback_url: Helpers.callback_url(conn))
+	end
+
+	def callback(conn, _params) do	
+		email = nil
+		if email != nil do
+			identity = Repo.get_by(Identity, email: email)
+			conn = Guardian.Plug.sign_in(conn, identity)
+			access_token = Guardian.Plug.current_token(conn)
+
+			conn
+			|> render(Liquio.Web.IdentityView, "show.json", identity: Map.put(identity, :access_token, access_token))
+		else
+			conn
+			|> send_resp(:unauthorized, "")
+		end
+	end
+
 	def create(conn, %{"email" => email}) do
 		token = Token.new(email)
 		Token.send_token(token)

@@ -80,13 +80,7 @@ defmodule Liquio.ReferenceVote do
 	def set(identity, reference, relevance) do
 		group_key = Reference.group_key(reference)
 
-		now = Timex.now
-		from(v in ReferenceVote,
-			where: v.group_key == ^group_key and
-				v.identity_id == ^identity.id and
-				is_nil(v.to_datetime),
-			update: [set: [to_datetime: ^now]]
-		) |> Repo.update_all([])
+		delete(identity, reference)
 
 		result = Repo.insert!(%ReferenceVote{
 			:identity_id => identity.id,
@@ -102,7 +96,15 @@ defmodule Liquio.ReferenceVote do
 	end
 
 	def delete(identity, reference) do
-		ReferenceVote.set(identity, reference, nil)
+		group_key = Reference.group_key(reference)
+
+		now = Timex.now
+		from(v in ReferenceVote,
+			where: v.group_key == ^group_key and
+				v.identity_id == ^identity.id and
+				is_nil(v.to_datetime),
+			update: [set: [to_datetime: ^now]]
+		) |> Repo.update_all([])
 	end
 
 	def get_references(node, calculation_opts) do

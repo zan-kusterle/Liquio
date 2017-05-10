@@ -65,6 +65,12 @@ export function register(token, username, name, cb) {
     }).catch(function(error) {})
 }
 
+export function loginGoogle(token) {
+    axios.get('/api/login/google/callback?idtoken=' + token).then(function(response) {
+        console.log(response)
+    })
+}
+
 export function setTrust(to_identity_username, is_trusting, cb) {
     let url = '/api/identities/' + encodeURIComponent(to_identity_username)
     axios.put(url, { is_trusting: is_trusting }).then(function(response) {

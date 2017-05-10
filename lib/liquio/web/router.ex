@@ -16,7 +16,12 @@ defmodule Liquio.Web.Router do
 	scope "/api", Liquio.Web do
 		pipe_through :api
 
-		resources "/login", LoginController, only: [:create, :show, :delete]
+		scope "/login" do
+			resources "/", LoginController, only: [:create, :show, :delete]
+			get "/:provider", LoginController, :request
+			get "/:provider/callback", LoginController, :callback
+			post "/:provider/callback", LoginController, :callback
+		end
 		get "/logout", LoginController, :delete
 		resources "/identities", IdentityController, only: [:index, :create, :show, :update, :delete]
 		resources "/nodes", NodeController, only: [:index, :show, :update, :delete] do
