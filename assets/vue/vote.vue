@@ -29,19 +29,6 @@
 
 		<el-button @click="save()" class="button">Cast vote</el-button>
 	</div>
-
-	<div class="contributions" v-if="results && results.contributions_by_identities">
-		<p class="turnout">{{ Math.round(results.turnout_ratio * 100) }}% turnout</p>
-		<div class="contribution" v-for="(identity_data, identity_id) in results.contributions_by_identities" :key="identity_id">
-			<div class="weight">
-				<el-progress :text-inside="true" :stroke-width="24" :percentage="Math.round(identity_data.contributions[0].weight * 100)"></el-progress>
-			</div>
-			<div v-html="identity_data.contributions[identity_data.contributions.length - 1].embeds.value" class="choice"></div>
-			<div v-if="identity_data.embeds.by_time" v-html="identity_data.embeds.by_time" class="choice"></div>
-			<div class="username"><router-link :to="'/identities/' + identity_data.contributions[0].identity_username">{{ identity_data.contributions[0].identity_username }}</router-link></div>
-			<div class="date">{{ moment(new Date(identity_data.contributions[identity_data.contributions.length - 1].datetime)).fromNow() }}</div>
-		</div>
-	</div>
 </div>
 </template>
 
@@ -83,6 +70,7 @@ export default {
 	text-align: left;
 	width: 350px;
 	padding: 10px 20px;
+	border: 1px solid #ccc;
 
 	.remove {
 		display: inline-block;
@@ -107,6 +95,7 @@ export default {
 	width: 500px;
 	margin: 40px auto;
 	padding: 20px 20px;
+	border: 1px solid #ccc;
 
 	.date {
 		input {
@@ -141,42 +130,5 @@ export default {
 	}
 }
 
-.contributions {
-	margin-top: 50px;
 
-	.turnout {
-		font-size: 18px;
-		font-weight: bold;
-		margin-bottom: 50px;
-	}
-
-	.contribution {
-		margin: 10px 0px;
-
-		.weight {
-			width: 300px;
-			display: inline-block;
-			vertical-align: middle;
-		}
-		.choice {
-			width: 140px;
-			height: 40px;
-			display: inline-block;
-			vertical-align: middle;
-			margin-left: 20px;
-		}
-		.username {
-			width: 120px;
-			display: inline-block;
-			vertical-align: middle;
-			margin-left: 20px;
-			text-align: left;
-		}
-		.date {
-			display: inline;
-			vertical-align: middle;
-			text-align: left;
-		}
-	}
-}
 </style>

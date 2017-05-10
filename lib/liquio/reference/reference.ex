@@ -5,7 +5,7 @@ defmodule Liquio.Reference do
 	defstruct [:path, :reference_path, :results]
 
 	def new(path, reference_path) do
-		%Liquio.Reference{path: path, reference_path: reference_path, results: %{:relevance => 0.81}}
+		%Liquio.Reference{path: path, reference_path: reference_path, results: nil}
 	end
 
 	def path_from_key(key) do
@@ -16,7 +16,7 @@ defmodule Liquio.Reference do
 		%Reference{
 			path: path_from_key(key),
 			reference_path: path_from_key(reference_key),
-			results: %{:relevance => 0.81}
+			results: nil
 		}
 	end
 

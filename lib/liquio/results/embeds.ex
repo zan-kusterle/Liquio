@@ -78,20 +78,20 @@ defmodule Liquio.ResultsEmbeds do
 		svg_chart(points)
 	end
 
-	def inline_results_distribution(contributions, aggregator) do
+	def inline_results_distribution(contributions) do
 		buckets_by_index = contributions |> Enum.group_by(& round(Float.ceil(&1.choice * 10)))
 		buckets = 1..10
 		|> Enum.map(fn(index) ->
 			bucket = Map.get(buckets_by_index, index, [])
-			average = if Enum.empty?(bucket) do 0.0 else aggregator.(bucket) end
-			{index, average}
+			voting_power = bucket |> Enum.map(& &1.voting_power) |> Enum.sum
+			{index, voting_power}
 		end)
 
 		bars = Enum.map(buckets, fn({index, average}) ->
 			ratio = (index - 1) / 10
 			y_offset = 0.3
 
-			text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" font-weight=\"bold\" x=\"#{svg_x(ratio) + 35}\" y=\"160\" font-family=\"Helvetica\" font-size=\"32\">#{index}</text>"
+			text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" font-weight=\"bold\" x=\"#{svg_x(ratio) + 35}\" y=\"160\" font-family=\"Helvetica\" font-size=\"24\">< #{index * 10}</text>"
 			if average > 0 do
 				text <> "<rect x=\"#{svg_x(ratio)}\" y=\"#{svg_y(average * (1 - y_offset) + y_offset)}\" width=\"70\" height=\"#{svg_height(average * (1 - y_offset))}\" style=\"fill:#ddd;\" />"
 			else

@@ -27,11 +27,11 @@ defmodule Liquio.NodeRepo do
 		references = reference_results
 		|> Enum.filter(& &1.results.turnout_ratio > 0.0)
 		|> Enum.map(& %{
-			results: %{:relevance => &1.results.turnout_ratio, :latest_contributions => []},
+			results: %{:average => &1.results.turnout_ratio, :latest_contributions => []},
 			reference_node: &1 |> Map.drop([:references, :inverse_references]),
 			node: nil
 		})
-		|> Enum.sort_by(& -&1.results.relevance)
+		|> Enum.sort_by(& -&1.results.average)
 		
 		node = Node.new([])
 		|> Map.put(:references, references)
@@ -49,11 +49,11 @@ defmodule Liquio.NodeRepo do
 		|> Enum.map(& Node.new(&1) |> load(calculation_opts, nil))
 		|> Enum.map(& Map.put(&1, :turnout, &1.results.by_units |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum))
 		|> Enum.map(& %{
-			results: %{:relevance => &1.turnout + 0.05 * Enum.count(&1.references), :latest_contributions => []},
+			results: %{:average => &1.turnout + 0.05 * Enum.count(&1.references), :latest_contributions => []},
 			reference_node: &1 |> Map.drop([:references, :inverse_references]),
 			node: nil
 		})
-		|> Enum.sort_by(& -&1.results.relevance)
+		|> Enum.sort_by(& -&1.results.average)
 
 		Node.new(["Results for #{query}"])
 		|> Map.put(:references, references)
@@ -130,10 +130,12 @@ defmodule Liquio.NodeRepo do
 			references = ReferenceVote.get_references(node, calculation_opts)
 			|> Enum.map(& ReferenceRepo.load(&1, calculation_opts, nil))
 			|> Enum.map(& %{:path => &1.reference_node.path, :results => &1.results})
+			|> Enum.filter(& &1.results.turnout_ratio > 0.2 and &1.results.average >= 0.5)
 				
 			inverse_references = ReferenceVote.get_inverse_references(node, calculation_opts)
 			|> Enum.map(& ReferenceRepo.load(&1, calculation_opts, nil))
 			|> Enum.map(& %{:path => &1.node.path, :results => &1.results})
+			|> Enum.filter(& &1.results.turnout_ratio > 0.2 and &1.results.average >= 0.5)
 			
 			data = %{
 				:references => references,
@@ -144,22 +146,20 @@ defmodule Liquio.NodeRepo do
 		end
 
 		references = reference_results
-		|> Enum.filter(& &1.results.turnout_ratio > 0.2)
 		|> Enum.map(fn(%{:path => path, :results => results}) ->
 			%{
 				results: results,
-				reference_node: Node.new(path) |> load(calculation_opts, nil, 0) |> load_references(calculation_opts, depth - 1),
+				reference_node: Node.new(path) |> load(calculation_opts, nil, depth - 1),
 				node: node
 			}
 		end)
 
 		inverse_references = inverse_reference_results
-		|> Enum.filter(& &1.results.turnout_ratio > 0.2)
 		|> Enum.map(fn(%{:path => path, :results => results}) ->
 			%{
 				results: results,
 				reference_node: node,
-				node: Node.new(path) |> load(calculation_opts, nil, 0) |> load_references(calculation_opts, depth - 1)
+				node: Node.new(path) |> load(calculation_opts, nil, depth - 1)
 			}
 		end)
 

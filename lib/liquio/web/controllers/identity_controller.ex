@@ -36,17 +36,17 @@ defmodule Liquio.Web.IdentityController do
 		changeset = Delegation.changeset(%Delegation{}, %{
 			"from_identity_id" => user.id,
 			"to_identity_id" => to_identity.id,
-			"is_trusting " => Map.get(params, "is_trusting"),
-			"weight " => Map.get(params, "weight"),
-			"topics " => Map.get(params, "topics"),
+			"is_trusting" => Map.get(params, "is_trusting"),
+			"weight" => Map.get(params, "weight"),
+			"topics" => Map.get(params, "topics"),
 		})
 		case Delegation.set(changeset) do
 			{:ok, delegation} ->
 				delegation = Repo.preload delegation, [:from_identity, :to_identity]
 				conn
-				|> put_resp_header("location", identity_path(conn, :show, user.id))
+				|> put_resp_header("location", identity_path(conn, :show, to_identity.username))
 				|> put_status(:created)
-				|> render(Liquio.Web.IdentityView, "show.json", identity: Repo.get!(Identity, user.id) |> Identity.preload())
+				|> render(Liquio.Web.IdentityView, "show.json", identity: Repo.get!(Identity, to_identity.id) |> Identity.preload())
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)

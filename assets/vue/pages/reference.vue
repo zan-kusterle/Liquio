@@ -23,7 +23,10 @@
 		</div>
 		
 		<div class="main" v-if="reference && reference.results">
-			<div v-html="reference.results.embeds.spectrum" style="width: 600px; display: block; margin: 0px auto;"></div>
+			<embeds :results="reference.results"></embeds>
+
+			<p style="font-size: 24px; margin-top: 50px;">Your vote</p>
+
 			<vote has-date=false unit="Reliable-Unreliable" is-spectrum=true
 				:own-contributions="reference.own_results.contributions" :results="reference.results"
 				v-on:set="setVote" v-on:unset="unsetVote"></vote>
@@ -35,9 +38,10 @@
 import App from '../app.vue'
 import LiquioInline from '../liquio-inline.vue'
 import Vote from '../vote.vue'
+import Embeds from '../embeds.vue'
 
 export default {
-	components: {App, LiquioInline, Vote},
+	components: {App, LiquioInline, Vote, Embeds},
 	data: function() {
 		let self = this
 

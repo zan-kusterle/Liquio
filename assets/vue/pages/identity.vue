@@ -13,10 +13,10 @@
 
 					<div style="margin-top: 60px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
 						I trust this identity<br>
-						<el-button @click="$store.dispatch('setTrust', {username: username, is_trusted: false})" :type="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] == false ? 'danger' : null">False</el-button>
-						<el-button @click="$store.dispatch('setTrust', {username: username, is_trusted: true})" :type="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] == true ? 'success' : null">True</el-button>
+						<el-button @click="setTrust(false)" :type="isTrusting === false ? 'danger' : null">False</el-button>
+						<el-button @click="setTrust(true)" :type="isTrusting === true ? 'success' : null">True</el-button>
 						<br>
-						<el-button type="text" @click="$store.dispatch('unsetTrust', username)" v-if="this.$store.state.user && this.$store.state.user.trusts[this.$route.params.username] != null">Remove</el-button>
+						<el-button type="text" @click="setTrust(null)" v-if="isTrusting !== null">Remove</el-button>
 					</div>
 
 					<div style="margin-top: 40px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
@@ -41,7 +41,7 @@
 
 						<div style="margin-top: 20px;">
 							<el-button @click="$store.dispatch('setDelegation', {username: username, weight: weight / 100, topics: topics})">Update</el-button>
-							<el-button @click="$store.dispatch('unsetDelegation', username)" type="danger" v-if="$store.state.user && $store.state.user.delegations[$route.params.username]">Remove</el-button>
+							<el-button @click="$store.dispatch('unsetDelegation', username)" type="danger" v-if="$store.getters.currentDelegation">Remove</el-button>
 						</div>
 					</div>
 				</el-col>
@@ -75,22 +75,22 @@ export default {
 		let self = this
 		let username = this.$route.params.username
 
-		if (self.$store.state.user) {
-			let delegation = self.$store.state.user.delegations[self.$route.params.username]
+		this.$store.dispatch('fetchIdentity', username).then((identity) => {
+			self.identity = identity
+
+			let delegation = self.$store.state.user && identity.delegations_to[self.$store.state.user.username]
 			if(delegation) {
+				self.isTrusting = delegation.is_trusting
 				self.weight = delegation.weight * 100
 				self.topics = delegation.topics
 			}
-		}
-	
-		this.$store.dispatch('fetchIdentity', username).then((identity) => {
-			self.identity = identity
 		})
 
 		return {
 			identity: null,
 			username: username,
 
+			isTrusting: null,
 			topics: [],
 			weight: 100,
         	addingTopic: false,
@@ -112,6 +112,12 @@ export default {
 				self.addingTopic = false
 				self.topic = ''
 			}
+		}
+	},
+	methods: {
+		setTrust: function(isTrusting) {
+			this.$store.dispatch('setTrust', {username: this.username, is_trusted: isTrusting})
+			this.isTrusting = isTrusting
 		}
 	},
 	computed: {
