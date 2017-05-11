@@ -16,13 +16,8 @@
 				</el-col>
 			</el-row>
 		</div>
-		<div v-else class="before">
-			<div class="main-node">
-				<i class="el-icon-loading loading"></i>
-			</div>
-		</div>
 		
-		<div class="main" v-if="reference && reference.results">
+		<div class="main" v-if="reference && reference.results && !reference.loading">
 			<embeds :results="reference.results"></embeds>
 
 			<p style="font-size: 24px; margin-top: 50px;">Your vote</p>
@@ -30,6 +25,11 @@
 			<vote has-date=false unit="Reliable-Unreliable" is-spectrum=true
 				:own-contributions="reference.own_results.contributions" :results="reference.results"
 				v-on:set="setVote" v-on:unset="unsetVote"></vote>
+		</div>
+		<div v-else class="main">
+			<div class="main-node">
+				<i class="el-icon-loading loading"></i>
+			</div>
 		</div>
 	</div>
 </template>
@@ -72,7 +72,10 @@ export default {
 			return this.$store.getters.currentReference.key ? this.$store.getters.getNodeByKey(this.$store.getters.currentReference.key) : null
 		},
 		reference: function() {
-			return this.$store.getters.currentReference.key ? this.$store.getters.getReference(this.$store.getters.currentNode.key, this.$store.getters.currentReference.key) : null
+			let r = this.$store.getters.currentReference.key ? this.$store.getters.getReference(this.$store.getters.currentNode.key, this.$store.getters.currentReference.key) : null
+			if(r)
+				r.loading = false
+			return r
 		}
 	},
 	watch: {

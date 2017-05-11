@@ -20,9 +20,11 @@
 	</div>
 
 	<div v-if="node && !node.loading && node.path.length > 0" class="main">
-		<h1 class="title">
-			<a v-for="(segment, index) in node.path_segments" :href="segment.href" v-if="node.path[0].startsWith('http:') || node.path[0].startsWith('https:')" target="_blank"><span v-if="index > 0">/</span>{{segment.text}}</a>
-			<span v-else>{{ node.title }}</span>
+		<h1 class="title" v-if="node.path[0].startsWith('http:') || node.path[0].startsWith('https:')">
+			<a v-for="(segment, index) in node.path_segments" :href="segment.href" target="_blank"><span v-if="index > 0">/</span>{{segment.text}}</a>
+		</h1>
+		<h1 class="title" v-else>
+			<p>{{ node.title }}</p>
 		</h1>
 
 		<div class="score-container">
@@ -71,7 +73,7 @@
 		<i class="el-icon-loading loading"></i>
 	</div>
 
-	<div class="after" v-if="node">
+	<div class="after" v-if="node && !node.loading">
 		<el-input v-if="node.title !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px; margin-bottom: 20px;">
 			<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
 		</el-input>
@@ -192,30 +194,37 @@ export default {
 	computed: {
 		node: function() {
 			let node = getNode(this.$store)
-			node.path_segments = _.map(node.path, (s, index) => {
-				return {
-					href: node.path.slice(0, index + 1).join('/').replace(':', '://'),
-					text: index == 0 ? node.path[index].replace(':', '://') : node.path[index]
-				}
-			})
+			
 			return node
 		}
 	}
 }
 
 let getNode = ($store) => {
-	let key = $store.getters.currentNode.key
+	let node = $store.getters.currentNode
+	node.loading = true
 	if($store.getters.searchQuery) {
-		let node = $store.getters.searchResults($store.getters.searchQuery)
-		if(!node)
-			return $store.getters.currentNode
-		return node
+		let searchNode = $store.getters.searchResults($store.getters.searchQuery)
+		if(searchNode) {
+			node = searchNode
+			node.loading = false
+		}
 	} else {
-		let node = $store.getters.getNodeByKey(key)
-		if(!node)
-			return $store.getters.currentNode
-		return node
+		let newNode = $store.getters.getNodeByKey(node.key)
+		if(newNode) {
+			node = newNode
+			node.loading = false
+		}
 	}
+
+	node.path_segments = _.map(node.path, (s, index) => {
+		return {
+			href: node.path.slice(0, index + 1).join('/').replace(':', '://'),
+			text: index == 0 ? node.path[index].replace(':', '://') : node.path[index]
+		}
+	})
+	
+	return node
 }
 </script>
 

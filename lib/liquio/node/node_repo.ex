@@ -55,7 +55,7 @@ defmodule Liquio.NodeRepo do
 		})
 		|> Enum.sort_by(& -&1.results.average)
 
-		Node.new(["Results for #{query}"])
+		Node.new(["Results", query])
 		|> Map.put(:references, references)
 		|> Map.put(:calculation_opts, calculation_opts)
 	end

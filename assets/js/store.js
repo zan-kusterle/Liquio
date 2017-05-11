@@ -313,9 +313,9 @@ export default new Vuex.Store({
                 })
             })
         },
-        setDelegation({ commit }, { username, weight, topics }) {
+        setDelegation({ commit }, { username, is_trusted, weight, topics }) {
             return new Promise((resolve, reject) => {
-                Api.setDelegation(username, weight, topics, function(identity) {
+                Api.setDelegation(username, is_trusted, weight, topics, function(identity) {
                     commit('setIdentity', identity)
                     resolve(identity)
                 })
@@ -324,22 +324,6 @@ export default new Vuex.Store({
         unsetDelegation({ commit }, username) {
             return new Promise((resolve, reject) => {
                 Api.unsetDelegation(username, function(identity) {
-                    commit('setIdentity', identity)
-                    resolve(identity)
-                })
-            })
-        },
-        setTrust({ commit }, { username, is_trusted }) {
-            return new Promise((resolve, reject) => {
-                Api.setTrust(username, is_trusted, function(identity) {
-                    commit('setIdentity', identity)
-                    resolve(identity)
-                })
-            })
-        },
-        unsetTrust({ commit }, username) {
-            return new Promise((resolve, reject) => {
-                Api.unsetTrust(username, function(identity) {
                     commit('setIdentity', identity)
                     resolve(identity)
                 })

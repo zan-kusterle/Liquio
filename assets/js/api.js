@@ -71,23 +71,9 @@ export function loginGoogle(token) {
     })
 }
 
-export function setTrust(to_identity_username, is_trusting, cb) {
+export function setDelegation(to_identity_username, is_trusted, weight, topics, cb) {
     let url = '/api/identities/' + encodeURIComponent(to_identity_username)
-    axios.put(url, { is_trusting: is_trusting }).then(function(response) {
-        cb(response.data.data)
-    }).catch(function(error) {})
-}
-
-export function unsetTrust(to_identity_username, cb) {
-    let url = '/api/identities/' + encodeURIComponent(to_identity_username) + '/trusts'
-    axios.delete(url).then(function(response) {
-        cb(response.data.data)
-    }).catch(function(error) {})
-}
-
-export function setDelegation(to_identity_username, weight, topics, cb) {
-    let url = '/api/identities/' + encodeURIComponent(to_identity_username)
-    axios.put(url, { delegation: { weight: weight, topics: topics } }).then(function(response) {
+    axios.put(url, { weight: weight, topics: topics, is_trusting: is_trusted }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }

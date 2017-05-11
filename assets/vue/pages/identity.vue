@@ -40,8 +40,8 @@
 						</div>
 
 						<div style="margin-top: 20px;">
-							<el-button @click="$store.dispatch('setDelegation', {username: username, weight: weight / 100, topics: topics})">Update</el-button>
-							<el-button @click="$store.dispatch('unsetDelegation', username)" type="danger" v-if="$store.getters.currentDelegation">Remove</el-button>
+							<el-button @click="setDelegation()">Update</el-button>
+							<el-button @click="clearDelegation()" type="danger" v-if="$store.getters.currentDelegation">Remove</el-button>
 						</div>
 					</div>
 				</el-col>
@@ -82,7 +82,7 @@ export default {
 			if(delegation) {
 				self.isTrusting = delegation.is_trusting
 				self.weight = delegation.weight * 100
-				self.topics = delegation.topics
+				self.topics = delegation.topics || []
 			}
 		})
 
@@ -115,9 +115,19 @@ export default {
 		}
 	},
 	methods: {
-		setTrust: function(isTrusting) {
-			this.$store.dispatch('setTrust', {username: this.username, is_trusted: isTrusting})
-			this.isTrusting = isTrusting
+		setDelegation: function() {
+			let weight = this.weight ? this.weight / 100 : null
+			let topics = this.topics.length > 0 ? this.topics : null
+			this.$store.dispatch('setDelegation', {username: this.username, is_trusted: this.isTrusting, weight: weight, topics: topics})
+		},
+		clearDelegation: function() {
+			this.topics = []
+			this.weight = 100
+			this.setDelegation()
+		},
+		setTrust: function(is_trusting) {
+			this.isTrusting = is_trusting
+			this.setDelegation()
 		}
 	},
 	computed: {
@@ -130,7 +140,7 @@ export default {
 			return l
 		},
 		identities: function() {
-			let l = {}
+			let l = []
 			if(self.identity) {
 				_.each(self.identity.trusts, (trust) => l.push(x))
 				_.each(self.identity.delegations, (delegation) => l.push(x))
