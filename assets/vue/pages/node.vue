@@ -67,6 +67,15 @@
 				</el-button>
 			</router-link>
 		</div>
+
+		<div class="get-extension">
+			<router-link to="/infuse">
+				<el-button>
+					<img src="/images/icon.svg" style="-webkit-filter: brightness(0%); vertical-align: middle; width: 32px; opacity: 0.8;"></img>
+					<span style="vertical-align: middle; margin-left: 5px; font-size: 20px;">Infuse your website</span>
+				</el-button>
+			</router-link>
+		</div>
 	</div>
 	<div v-else class="main">
 		<h1 class="fake-title">{{ node.title }}</h1>

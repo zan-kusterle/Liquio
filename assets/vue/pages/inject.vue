@@ -1,26 +1,48 @@
 <template>
-<div class="extension">
+<div class="inject">
 	<div class="get">
-		<h2>Let anyone fact check your website</h2>
-		<el-button type="primary" size="large" @click="install" v-if="!isInstalled">
+		<h2>Let anyone see the facts on your website</h2>
+		<el-button type="primary" size="large" @click="dialogVisible = !dialogVisible">
 			<img src="/images/icon.svg" style="-webkit-filter: brightness(1000%); vertical-align: middle; width: 50px; opacity: 0.7;"></img>
 			<span style="vertical-align: middle; margin-left: 10px; font-size: 22px;">Democratize your website</span>
 		</el-button>
 	</div>
 
+	<el-dialog title="Add this code to your site" v-model="dialogVisible">
+<pre style="color: #888; border: 1px solid #ccc; background-color: #f5f5f5; text-align: left; width: 100%;">(function(d, script) {
+    script = d.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.onload = function(){};
+    script.src = '<b>https://liqu.io/infuse.js</b>';
+    d.getElementsByTagName('head')[0].appendChild(script);
+}(document));</pre>
+	</el-dialog>
+
 	<div class="feature">
-		<h3>Provide your audience with relevant democratic data</h3>
-		<img src="/images/page-score.svg" style="width: 100%;"></img>
+		<h3>Add reliable democratic insights to your website</h3>
+		<img src="/images/reference.png" style="max-width: 800px;"></img>
+	</div>
+
+	<div class="feature">
+		<h3>Relevant data at the right time</h3>
 		<img src="/images/inline-links.png"></img>
 	</div>
 
 	<div class="feature">
-		<h3>Complete transparency without censorship</h3>
-		<p>It will always be possible to count votes only from the people you trust.</p>
+		<h3>Make your visitors more confident in what you say being true</h3>
 	</div>
 
 	<div class="feature">
-		<h3>Set the default trust metric on your website, let anyone choose his/her own</h3>
+		<h3>Completely transparent with no censorship or moderation</h3>
+	</div>
+
+	<div class="feature">
+		<h3>Set a default trust metric, let others choose a different one</h3>
+	</div>
+
+	<div class="feature">
+		<h3>Always only count votes from the people you trust</h3>
 	</div>
 </div>
 </template>
@@ -33,27 +55,24 @@ export default {
 	props: [],
 	data: function() {
 		return {
-			isInstalled: chrome.app.isInstalled,
-			install: function() {
-				chrome.webstore.install()
-			}
+			dialogVisible: false
 		}
 	}
 }
 </script>
 
 <style lang="less" scoped>
-.extension {
+.inject {
 	text-align: center;
 }
 
 .feature {
-	margin-bottom: 100px;
+	margin-bottom: 40px;
 
 	h3 {
 		display: inline-block;
-		border-top: 1px solid #ddd;
-		padding: 20px 80px;
+		border-top: 1px solid #eee;
+		padding: 40px 80px;
 		padding-bottom: 0px;
 		margin: 0;
 		margin-bottom: 40px;
@@ -68,6 +87,11 @@ export default {
 		margin: 0 auto;
 		margin-bottom: 20px;
 	}
+}
+
+.footnote {
+	font-size: 15px;
+	color: #aaa;
 }
 
 .get {
