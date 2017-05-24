@@ -18,15 +18,6 @@ config :liquio, Liquio.Web.Endpoint,
 
 config :liquio, ecto_repos: [Liquio.Repo]
 
-config :ueberauth, Ueberauth,
-	providers: [
-		google: {Ueberauth.Strategy.Google, []}
-	]
-
-config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-	client_id: "1073734990208-3rk296sdolui9cs65g9p6654rdtvgimc.apps.googleusercontent.com",
-	client_secret: "-YEJ3rg7h7z9ej_6NH5o16O2"
-
 # Configures Elixir's Logger
 config :logger, :console,
 	format: "$time $metadata[$level] $message\n",
@@ -40,21 +31,3 @@ import_config "#{Mix.env}.exs"
 config :phoenix, :generators,
 	migration: true,
 	binary_id: false
-
-config :guardian, Guardian,
-	allowed_algos: ["HS512"], # optional
-	verify_module: Guardian.JWT,  # optional
-	issuer: "Liquio",
-	ttl: { 30, :days },
-	verify_issuer: true, # optional
-	secret_key: "nCtmk9gVyGfAgab9KMCkQdjXdgGUwTB2SO5piuvoqDoK4t0MEmbpHHzHsiw5GIYR",
-	serializer: Liquio.GuardianSerializer
-
-config :ueberauth, Ueberauth,
-	providers: [
-		google: {Ueberauth.Strategy.Google, []}
-	]
-
-config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-	client_id: "1073734990208-3rk296sdolui9cs65g9p6654rdtvgimc.apps.googleusercontent.com",
-	client_secret: "-YEJ3rg7h7z9ej_6NH5o16O2"

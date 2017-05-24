@@ -47,7 +47,7 @@ defmodule Liquio.ResultsEmbeds do
 		to_date = List.last(contributions).at_date
 
 		num_months = Timex.diff(to_date, from_date, :months)
-		contributions_by_identities = contributions |> Enum.group_by(& &1.identity.id)
+		contributions_by_identities = contributions |> Enum.group_by(& &1.username)
 		points = Enum.map(0..num_months, fn(i) ->
 			current_date = Timex.shift(from_date, months: i)
 			current_contributions = contributions_by_identities |> Enum.map(fn({_, contributions_for_identity}) ->
@@ -91,7 +91,7 @@ defmodule Liquio.ResultsEmbeds do
 			ratio = (index - 1) / 10
 			y_offset = 0.3
 
-			text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" font-weight=\"bold\" x=\"#{svg_x(ratio) + 35}\" y=\"160\" font-family=\"Helvetica\" font-size=\"24\">< #{index * 10}</text>"
+			text = "<text text-anchor=\"middle\" alignment-baseline=\"middle\" font-weight=\"bold\" x=\"#{svg_x(ratio) + 35}\" y=\"160\" font-family=\"Helvetica\" font-size=\"24\">#{index * 10 - 5}</text>"
 			if average > 0 do
 				text <> "<rect x=\"#{svg_x(ratio)}\" y=\"#{svg_y(average * (1 - y_offset) + y_offset)}\" width=\"70\" height=\"#{svg_height(average * (1 - y_offset))}\" style=\"fill:#ddd;\" />"
 			else

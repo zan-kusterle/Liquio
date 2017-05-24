@@ -88,7 +88,7 @@ export default {
 			font-weight: bold;
 		}
 		.username {
-			width: 120px;
+			width: 180px;
 			display: inline-block;
 			vertical-align: middle;
 			margin-left: 30px;

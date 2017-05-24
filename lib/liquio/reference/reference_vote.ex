@@ -1,9 +1,10 @@
 defmodule Liquio.ReferenceVote do
 	use Liquio.Web, :model
-	alias Liquio.{Repo, Vote, Delegation, Results, Reference, ReferenceRepo, ReferenceVote}
+	alias Liquio.{Repo, Vote, Signature, Delegation, Results, Reference, ReferenceRepo, ReferenceVote}
 
 	schema "reference_votes" do
-		belongs_to :identity, Liquio.Identity
+		belongs_to :signature, Liquio.Signature
+		field :username, :string
 
 		field :path, {:array, :string}
 		field :reference_path, {:array, :string}
@@ -46,7 +47,7 @@ defmodule Liquio.ReferenceVote do
 			FROM reference_votes AS v
 			WHERE #{paths_where} v.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}'
 				AND (v.to_datetime IS NULL) OR v.to_datetime >= '#{Timex.format!(datetime, "{ISO:Basic}")}'
-			ORDER BY v.identity_id, v.datetime DESC;"
+			ORDER BY v.username, v.datetime DESC;"
 		
 		res = Ecto.Adapters.SQL.query!(Repo, query, path_params ++ reference_path_params)
 		cols = Enum.map res.columns, &(String.to_atom(&1))
@@ -62,10 +63,10 @@ defmodule Liquio.ReferenceVote do
 		votes
 	end
 	
-	def current_by(identity, reference) do
+	def current_by(username, reference) do
 		query = from(v in ReferenceVote, where:
 			v.path == ^reference.path and v.reference_path == ^reference.reference_path and
-			v.identity_id == ^identity.id and
+			v.username == ^username and
 			is_nil(v.to_datetime) and
 			not is_nil(v.relevance)
 		)
@@ -77,13 +78,26 @@ defmodule Liquio.ReferenceVote do
 		end
 	end
 
-	def set(identity, reference, relevance) do
+	def set(public_key, signature, reference, relevance) do
 		group_key = Reference.group_key(reference)
 
-		delete(identity, reference)
+		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
+		|> Enum.map(& <<rem(&1, 26) + 97>>)
+		|> Enum.slice(0, 16) |> Enum.join("")
+		message = "#{username} #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")} #{relevance}"
+
+		signature = Signature.add!(public_key, message, signature)
+
+		now = Timex.now
+		from(v in ReferenceVote,
+			where: v.group_key == ^group_key and
+				v.username == ^username and
+				is_nil(v.to_datetime),
+			update: [set: [to_datetime: ^now]]
+		) |> Repo.update_all([])
 
 		result = Repo.insert!(%ReferenceVote{
-			:identity_id => identity.id,
+			:username => username,
 
 			:path => reference.path,
 			:reference_path => reference.reference_path,
@@ -95,13 +109,20 @@ defmodule Liquio.ReferenceVote do
 		result
 	end
 
-	def delete(identity, reference) do
+	def delete(public_key, signature, reference) do
 		group_key = Reference.group_key(reference)
+
+		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
+		|> Enum.map(& <<rem(&1, 26) + 97>>)
+		|> Enum.slice(0, 16) |> Enum.join("")
+		message = "#{username} #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")}"
+
+		signature = Signature.add!(public_key, message, signature)
 
 		now = Timex.now
 		from(v in ReferenceVote,
 			where: v.group_key == ^group_key and
-				v.identity_id == ^identity.id and
+				v.username == ^username and
 				is_nil(v.to_datetime),
 			update: [set: [to_datetime: ^now]]
 		) |> Repo.update_all([])
@@ -111,7 +132,7 @@ defmodule Liquio.ReferenceVote do
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
 
 		ReferenceVote.get_at_datetime(node.path, nil, calculation_opts.datetime)
-		|> Repo.preload([:identity])
+		|> Repo.preload([:signature])
 		|> Enum.group_by(& &1.reference_path)
 		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
 		|> Enum.map(fn({reference_path, result}) ->
@@ -126,7 +147,7 @@ defmodule Liquio.ReferenceVote do
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
 
 		ReferenceVote.get_at_datetime(nil, node.path, calculation_opts.datetime)
-		|> Repo.preload([:identity])
+		|> Repo.preload([:signature])
 		|> Enum.group_by(& &1.path)
 		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
 		|> Enum.map(fn({path, result}) ->

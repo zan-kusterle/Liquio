@@ -18,7 +18,7 @@ defmodule Liquio.Mixfile do
 	def application() do
 		[
 			mod: {Liquio, []},
-			extra_applications: [:logger, :ssl, :crontab, :edeliver]
+			extra_applications: [:logger, :ssl, :edeliver]
 		]
 	end
 
@@ -39,9 +39,6 @@ defmodule Liquio.Mixfile do
 			{:phoenix_html, "~> 2.4"},
 			{:gettext, "~> 0.9"},
 			{:cowboy, "~> 1.0"},
-			{:guardian, "~> 0.14.0"},
-			{:ueberauth, "~> 0.4"},
-			{:ueberauth_google, "~> 0.5"},
 			{:uuid, "~> 1.1"},
 			{:httpotion, "~> 3.0.0"},
 			{:poison, "~> 3.0", override: true},
@@ -51,8 +48,8 @@ defmodule Liquio.Mixfile do
 			{:floki, "~> 0.10.0"},
 			{:secure_random, "~> 0.5"},
 			{:mailgun, "~> 0.1.2"},
-			{:quantum, ">= 1.5.0"},
 			{:cachex, "~> 2.0"},
+			{:ed25519, "~> 1.0"}
 		]
 	end
 

@@ -2,7 +2,8 @@ defmodule Liquio.Vote do
 	use Liquio.Web, :model
 
 	schema "votes" do
-		belongs_to :identity, Liquio.Identity
+		belongs_to :signature, Liquio.Signature
+		field :username, :string
 
 		field :path, {:array, :string}
 

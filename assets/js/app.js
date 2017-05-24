@@ -11,10 +11,8 @@ Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(ElementUI, { locale })
 import { sync } from 'vuex-router-sync'
-import loginComponent from '../vue/pages/login.vue'
 import extensionComponent from '../vue/pages/extension.vue'
 import injectComponent from '../vue/pages/inject.vue'
-import finishLoginComponent from '../vue/pages/finish-login.vue'
 import identityComponent from '../vue/pages/identity.vue'
 import nodeComponent from '../vue/pages/node.vue'
 import referenceComponent from '../vue/pages/reference.vue'
@@ -26,8 +24,6 @@ const routes = [
     { path: '/', component: nodeComponent },
     { path: '/link', component: extensionComponent },
     { path: '/infuse', component: injectComponent },
-    { path: '/login', component: loginComponent },
-    { path: '/login/:token/new', component: finishLoginComponent },
     { path: '/identities/:username', component: identityComponent },
     { path: '/search/:query', component: nodeComponent, name: 'search' },
     { path: '/:key/references', component: referenceComponent },
@@ -47,13 +43,11 @@ const app = new Vue({
     store: store,
     components: { App },
     data: function() {
-        this.$store.dispatch('fetchIdentity', 'me')
-
         return {}
     }
 }).$mount('#app')
 
-if (process.env.NODE_ENV == 'production') {
+if (process.env.NODE_ENV === 'production') {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {

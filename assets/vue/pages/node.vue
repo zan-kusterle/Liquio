@@ -44,9 +44,9 @@
 						</el-select>
 					</div>
 					
-					<vote ref="votesContainer" has-date=true
+					<vote ref="votesContainer" v-if="$store.getters.currentKeyPair" has-date=true
 						:unit="node.default_unit.value" :is-spectrum="node.default_unit.type == 'spectrum'"
-						:own-contributions="node.own_default_unit ? node.own_default_unit.own_contributions.contributions : []"
+						:own-contributions="node.default_unit && node.default_unit.contributions_by_identities[$store.getters.currentKeyPair.username] ? node.default_unit.contributions_by_identities[$store.getters.currentKeyPair.username].contributions : []"
 						:results="node.default_unit" v-on:set="setVote" v-on:unset="unsetVote"></vote>
 				</div>
 			</transition>
@@ -139,6 +139,7 @@ export default {
 			},
 			setVote: function(vote) {
 				vote.key = self.node.key
+				vote.keypair = self.$store.getters.currentKeyPair
 				self.$store.dispatch('setVote', vote)
 			},
 			unsetVote: function(vote) {

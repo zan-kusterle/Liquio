@@ -13,7 +13,7 @@ defmodule Liquio.NodeRepo do
 			|> Repo.all
 			|> Enum.map(& &1.path)
 			|> Enum.uniq
-			|> Enum.map(& Node.new(&1) |> load(calculation_opts, nil))
+			|> Enum.map(& Node.new(&1) |> load(calculation_opts))
 			|> Enum.map(& %{:path => &1.path, :results => &1.results})
 
 			Cachex.set(:references, key, %{
@@ -46,7 +46,7 @@ defmodule Liquio.NodeRepo do
 		|> Repo.all
 		|> Enum.map(& &1.path)
 		|> Enum.uniq
-		|> Enum.map(& Node.new(&1) |> load(calculation_opts, nil))
+		|> Enum.map(& Node.new(&1) |> load(calculation_opts))
 		|> Enum.map(& Map.put(&1, :turnout, &1.results.by_units |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum))
 		|> Enum.map(& %{
 			results: %{:average => &1.turnout + 0.05 * Enum.count(&1.references), :latest_contributions => []},
@@ -61,12 +61,9 @@ defmodule Liquio.NodeRepo do
 	end
 
 	def load(node, calculation_opts) do
-		load(node, calculation_opts, nil)
+		load(node, calculation_opts, calculation_opts.depth)
 	end
-	def load(node, calculation_opts, user) do
-		load(node, calculation_opts, user, calculation_opts.depth)
-	end
-	def load(node, calculation_opts, user, depth) do
+	def load(node, calculation_opts, depth) do
 		node = node |> Map.put(:calculation_opts, calculation_opts)
 		node = node |> load_references(calculation_opts, depth)
 		node = node |> load_results(calculation_opts)
@@ -76,21 +73,6 @@ defmodule Liquio.NodeRepo do
 		else
 			node
 		end
-		
-		own_votes = if Map.has_key?(node, :own_votes) do
-			node.own_votes
-		else
-			if user do
-				VoteRepo.current_by(user, node)
-			else
-				[]
-			end
-		end
-		own_votes = own_votes |> Repo.preload([:identity])
-
-		node = node
-		|> Map.put(:own_votes, own_votes)
-		|> Map.put(:own_results, Results.from_votes(own_votes))
 
 		node
 	end
@@ -98,9 +80,11 @@ defmodule Liquio.NodeRepo do
 	defp load_results(node, calculation_opts) do
 		calculation_opts = calculation_opts |> Map.put(:topics, Map.get(node, :topics))
 
-		votes = VoteRepo.get_at_datetime(node.path, calculation_opts.datetime) |> Repo.preload([:identity])
+		votes = VoteRepo.get_at_datetime(node.path, calculation_opts.datetime) |> Repo.preload([:signature])
+		|> Enum.filter(& MapSet.member?(calculation_opts.custom_trust_usernames, &1.username))
 
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+		|> Enum.filter(& MapSet.member?(calculation_opts.custom_trust_usernames, &1.username))
 
 		node = if not Enum.empty?(votes) do
 			{best_title, _count} = votes
@@ -128,12 +112,12 @@ defmodule Liquio.NodeRepo do
 			reference_results
 		else
 			references = ReferenceVote.get_references(node, calculation_opts)
-			|> Enum.map(& ReferenceRepo.load(&1, calculation_opts, nil))
+			|> Enum.map(& ReferenceRepo.load(&1, calculation_opts))
 			|> Enum.map(& %{:path => &1.reference_node.path, :results => &1.results})
 			|> Enum.filter(& &1.results.turnout_ratio > 0.2 and &1.results.average >= 0.5)
 				
 			inverse_references = ReferenceVote.get_inverse_references(node, calculation_opts)
-			|> Enum.map(& ReferenceRepo.load(&1, calculation_opts, nil))
+			|> Enum.map(& ReferenceRepo.load(&1, calculation_opts))
 			|> Enum.map(& %{:path => &1.node.path, :results => &1.results})
 			|> Enum.filter(& &1.results.turnout_ratio > 0.2 and &1.results.average >= 0.5)
 			
@@ -149,7 +133,7 @@ defmodule Liquio.NodeRepo do
 		|> Enum.map(fn(%{:path => path, :results => results}) ->
 			%{
 				results: results,
-				reference_node: Node.new(path) |> load(calculation_opts, nil, depth - 1),
+				reference_node: Node.new(path) |> load(calculation_opts, depth - 1),
 				node: node
 			}
 		end)
@@ -159,7 +143,7 @@ defmodule Liquio.NodeRepo do
 			%{
 				results: results,
 				reference_node: node,
-				node: Node.new(path) |> load(calculation_opts, nil, depth - 1)
+				node: Node.new(path) |> load(calculation_opts, depth - 1)
 			}
 		end)
 

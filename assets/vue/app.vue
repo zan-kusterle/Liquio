@@ -1,18 +1,33 @@
 <template>
 <div>
+	<el-popover ref="login" placement="bottom-end" width="500" trigger="click" :visible-arrow=false>
+		<div class="login">
+			<el-input class="words" v-model="words" @keyup.native.enter="login" placeholder="Login with a list of 13 words">
+				<el-button slot="append" icon="caret-right" @click="login"></el-button>
+			</el-input>
+
+			<a class="generate-new" @click="generate">Generate new identity</a>
+			<p v-if="randomWords" class="mnemonic">{{ randomWords }}</p>
+
+			<div class="identity" v-for="(keypair, index) in $store.getters.availableKeyPairs">
+				<a @click="$store.commit('removeKeyPair(index)')"><i class="el-icon-close" aria-hidden="true"></i></a>
+				<router-link :to="'/identities/' + keypair.username">{{ keypair.username }}</router-link>
+			</div>
+		</div>
+	</el-popover>
+
 	<div class="header">
 		<el-row>
 			<el-col :span="12">
 				<router-link to="/" class="logo"><img src="/images/logo.svg"></img></router-link>
 			</el-col>
 			<el-col :span="12">
-				<div class="actions" v-if="$store.getters.currentUser">
+				<div class="actions">
+					<router-link v-if="$store.getters.currentKeyPair" :to="'/identities/' + $store.getters.currentKeyPair.username">{{ $store.getters.currentKeyPair.username }}</router-link>
+
+					<a v-popover:login><i class="el-icon-plus" aria-hidden="true"></i></a>
+
 					<a @click="dialogVisible = !dialogVisible"><i class="el-icon-setting"></i></a>
-					<router-link :to="'/identities/' + $store.getters.currentUser.username"><i class="el-icon-arrow-right" aria-hidden="true"></i>{{ $store.getters.currentUser.name }}</router-link>
-					<a href="/api/logout" @click="$store.commit('logout')"><i class="el-icon-close" aria-hidden="true"></i> Logout</a>
-				</div>
-				<div class="actions" v-else>
-					<a href="/login"><i class="el-icon-arrow-right" aria-hidden="true"></i> Login</a>
 				</div>
 			</el-col>
 		</el-row>
@@ -28,20 +43,7 @@
 
 	<el-dialog title="Options" v-model="dialogVisible">
 		<div class="block">
-			<p class="demonstration">Sort</p>
-			<el-select slot="prepend" placeholder="Select" v-model="sortDirection" style="width: 100px;">
-				<el-option value="most" label="Most"></el-option>
-				<el-option value="least" label="Least"></el-option>
-			</el-select>
-			<el-select slot="prepend" placeholder="Select" v-model="sort" style="width: 150px;">
-				<el-option value="top" label="relevant"></el-option>
-				<el-option value="new" label="new"></el-option>
-				<el-option value="variance" label="controversial"></el-option>
-			</el-select>
-		</div>
-
-		<div class="block">
-			<p class="demonstration">View for specific date</p>
+			<p class="demonstration">View snapshot at any day</p>
 			<el-date-picker type="date" placeholder="Pick a day" v-model="datetime"></el-date-picker>
 		</div>
 
@@ -51,23 +53,13 @@
 		</div>
 
 		<div class="block">
-			<p class="demonstration">Expecting at least {{ minimum_turnout }}% turnout.</p>
-			<el-slider v-model="minimum_turnout"></el-slider>
-		</div>
-
-		<div class="block">
 			<p class="demonstration">Votes will lose half remaining power every {{ vote_weight_halving_days }} days.</p>
 			<el-slider v-model="vote_weight_halving_days" max="1000"></el-slider>
 		</div>
 
 		<div class="block">
-			<p class="demonstration">Include {{ soft_quorum_t }} fake votes with score 0 when calculating reference relevance.</p>
+			<p class="demonstration">Smooth reference relevance by adding {{ soft_quorum_t }} voting power.</p>
 			<el-slider v-model="soft_quorum_t"></el-slider>
-		</div>
-
-		<div class="block">
-			<p class="demonstration">At least {{ minimum_relevance_score }}% relevance score to include reference.</p>
-			<el-slider v-model="minimum_relevance_score"></el-slider>
 		</div>
 
 		<span slot="footer" class="dialog-footer">
@@ -79,9 +71,22 @@
 </template>
 
 <script>
+let generateWords = () => {
+	var bip39 = require('bip39')
+	var nacl = require('tweetnacl')
+
+	var randomBytes = nacl.randomBytes(32)
+	var mnemonic = bip39.entropyToMnemonic(randomBytes)
+	let fixedLength = mnemonic.split(' ').slice(0, 13).join(' ')
+
+	return fixedLength
+}
+
+let utils = require('utils.js')
 
 export default {
-	data: function() {		
+	data: function() {
+		let self = this
 		return {
 			dialogVisible: false,
 			datetime: new Date(),
@@ -90,7 +95,29 @@ export default {
 			soft_quorum_t: 0,
 			minimum_relevance_score: 50,
 			sort: 'top',
-			sortDirection: 'most'
+			sortDirection: 'most',
+			words: '',
+			randomWords: null,
+			isDone: false,
+			generate: function() {
+				self.randomWords = generateWords()
+			},
+			login: function(event) {
+				var bip39 = require('bip39')
+
+				let words = _.filter(_.map(self.words.split(' '), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
+
+				if(words.length == 13) {
+					let seed = bip39.mnemonicToSeed(words.join(' '))
+					let encoded = utils.encodeBase64(seed)
+
+					let value = localStorage.seeds || ''
+					if(value.indexOf(encoded) === -1) {
+						let newValue = value + encoded + ';'
+						localStorage.setItem('seeds', newValue)
+					}
+				}
+			}
 		}
 	}
 }
@@ -104,6 +131,23 @@ export default {
 
 p {
 	margin: 0px;
+}
+
+.login {
+	padding: 15px;
+
+	.mnemonic {
+		margin-top: 10px;
+		display: block;
+		font-size: 16px;
+	}
+
+	.generate-new {
+		display: inline-block;
+		margin-top: 50px;
+		font-size: 14px;
+		font-weight: bold;
+	}
 }
 
 .header {
@@ -128,14 +172,34 @@ p {
 		font-size: 14px;
 		line-height: 35px;
 		margin-right: 30px;
-		margin-top: 20px;
+		margin-top: 18px;
 		text-align: right;
+
+		.identity {
+			display: inline-block;
+			margin-left: 20px;
+
+			a {
+				margin-left: 15px;
+			}
+
+			i {
+				font-size: 10px;
+				color: rgba(0, 0, 0, 0.2);
+			}
+		}
+
+		i {
+			vertical-align: middle;
+			font-size: 20px;
+		}
 
 		a {
 			color: white;
 			display: inline-block;
+			vertical-align: middle;
 			text-decoration: none;
-			margin: 0px 25px;
+			margin-left: 50px;
 		}
 
 		a:hover {

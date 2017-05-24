@@ -5,8 +5,10 @@ defmodule Liquio.Delegation do
 	alias Liquio.Delegation
 
 	schema "delegations" do
-		belongs_to :from_identity, Liquio.Identity
-		belongs_to :to_identity, Liquio.Identity
+		belongs_to :signature, Liquio.Signature
+		field :username, :string
+		
+		field :to_username, :string
 
 		timestamps(inserted_at: :datetime, updated_at: false, usec: true)
 		field :to_datetime, Timex.Ecto.DateTime
@@ -33,10 +35,10 @@ defmodule Liquio.Delegation do
 	end
 
 	def set(from_identity, to_identity, is_trusting, weight, topics) do
-		remove_current_last(from_identity.id, to_identity.id)
+		remove_current_last(from_identity.username, to_identity.username)
 		Repo.insert(%Delegation{
-			from_identity_id: from_identity.id,
-			to_identity_id: to_identity.id,
+			username: from_identity.username,
+			to_username: to_identity.username,
 			to_datetime: nil,
 			is_trusting: true,
 			weight: weight,
@@ -48,25 +50,25 @@ defmodule Liquio.Delegation do
 		remove_current_last(from_identity.id, to_identity.id)
 	end
 
-	def remove_current_last(from_identity_id, to_identity_id) do
+	def remove_current_last(from_identity_username, to_identity_username) do
 		now = Timex.now
 		from(v in Delegation,
-			where: v.from_identity_id == ^from_identity_id and
-				v.to_identity_id == ^to_identity_id and
+			where: v.from_identity_username == ^from_identity_username and
+				v.to_identity_username == ^to_identity_username and
 				is_nil(v.to_datetime),
 			update: [set: [to_datetime: ^now]])
 		|> Repo.update_all([])
 	end
 
 	def get_by(from_identity, to_identity) do
-		Repo.get_by(Delegation, %{from_identity_id: from_identity.id, to_identity_id: to_identity.id, to_datetime: nil})
+		Repo.get_by(Delegation, %{from_identity_username: from_identity.username, to_identity_username: to_identity.username, to_datetime: nil})
 	end
 	
 	def get_inverse_delegations(datetime) do
-		query = "SELECT DISTINCT ON (d.from_identity_id, d.to_identity_id) *
+		query = "SELECT DISTINCT ON (d.username, d.to_username) *
 			FROM delegations AS d
 			WHERE d.datetime <= '#{Timex.format!(datetime, "{ISO:Basic}")}' AND (d.to_datetime >= '#{Timex.format!(datetime, "{ISO:Basic}")}' OR d.to_datetime IS NULL)
-			ORDER BY d.from_identity_id, d.to_identity_id, d.datetime DESC;"
+			ORDER BY d.username, d.to_username, d.datetime DESC;"
 		res = Ecto.Adapters.SQL.query!(Repo, query , [])
 		cols = Enum.map res.columns, &(String.to_atom(&1))
 		inverse_delegations = res.rows

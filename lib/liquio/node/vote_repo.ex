@@ -1,6 +1,6 @@
 defmodule Liquio.VoteRepo do
 	import Ecto.Query, only: [from: 2]
-	alias Liquio.{Repo, Vote}
+	alias Liquio.{Repo, Vote, Signature}
 
 	def search(query, search_term) do
 		from(v in query,
@@ -39,21 +39,36 @@ defmodule Liquio.VoteRepo do
 		votes
 	end
 
-	def current_by(identity, node) do
+	def current_by(username, node) do
 		from(v in Vote, where:
 			v.path == ^node.path and
-			v.identity_id == ^identity.id and
+			v.username == ^username and
 			is_nil(v.to_datetime)
 		) |> Repo.all
 	end
 
-	def set(identity, node, unit, at_date, choice) do
+	def set(node, public_key, signature, unit, at_date, choice) do
 		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
 
-		delete(identity, node, unit, at_date)
+		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
+		|> Enum.map(& <<rem(&1, 26) + 97>>)
+		|> Enum.slice(0, 16) |> Enum.join("")
+		message = "#{username} #{Enum.join(node.path, "/")} #{unit.key} #{choice}"
+
+		Signature.add!(public_key, message, signature)
+
+		now = Timex.now
+		from(v in Vote,
+			where: v.group_key == ^group_key and
+				v.username == ^username and
+				is_nil(v.to_datetime),
+			update: [set: [to_datetime: ^now]])
+		|> Repo.update_all([])
 		
 		result = Repo.insert!(%Vote{
-			:identity_id => identity.id,
+			:signature_id => signature.id,
+
+			:username => username,
 
 			:path => node.path,
 			:group_key => group_key,
@@ -69,13 +84,20 @@ defmodule Liquio.VoteRepo do
 		result
 	end
 
-	def delete(identity, node, unit, at_date) do
+	def delete(node, public_key, signature, unit, at_date) do
 		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
+
+		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
+		|> Enum.map(& <<rem(&1, 26) + 97>>)
+		|> Enum.slice(0, 16) |> Enum.join("")
+		message = "#{username} #{Enum.join(node.path, "/")} #{unit.key}"
+
+		signature = Signature.add!(public_key, message, signature)
 		
 		now = Timex.now
 		from(v in Vote,
 			where: v.group_key == ^group_key and
-				v.identity_id == ^identity.id and
+				v.username == ^username and
 				is_nil(v.to_datetime),
 			update: [set: [to_datetime: ^now]])
 		|> Repo.update_all([])

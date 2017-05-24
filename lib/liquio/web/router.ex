@@ -3,10 +3,6 @@ defmodule Liquio.Web.Router do
 
 	pipeline :api do
 		plug :accepts, ["json"]
-		plug :fetch_session
-
-		plug Guardian.Plug.VerifySession
-		plug Guardian.Plug.LoadResource
 	end
 
 	pipeline :browser do
@@ -15,15 +11,8 @@ defmodule Liquio.Web.Router do
 	
 	scope "/api", Liquio.Web do
 		pipe_through :api
-
-		scope "/login" do
-			resources "/", LoginController, only: [:create, :show, :delete]
-			get "/:provider", LoginController, :request
-			get "/:provider/callback", LoginController, :callback
-			post "/:provider/callback", LoginController, :callback
-		end
-		get "/logout", LoginController, :delete
-		resources "/identities", IdentityController, only: [:index, :create, :show, :update, :delete]
+		
+		resources "/identities", IdentityController, only: [:index, :show, :update, :delete]
 		resources "/nodes", NodeController, only: [:index, :show, :update, :delete] do
 			resources "/references", ReferenceController, only: [:show, :update, :delete]
 		end

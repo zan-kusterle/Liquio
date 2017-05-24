@@ -1,17 +1,17 @@
 defmodule Liquio.VotingPower do
 	alias Liquio.CalculateMemoServer
 
-	def get(identities, inverse_delegations) do
-		get(identities, inverse_delegations, :timer.seconds(Application.get_env(:liquio, :results_cache_seconds)))
+	def get(usernames, inverse_delegations) do
+		get(usernames, inverse_delegations, :timer.seconds(Application.get_env(:liquio, :results_cache_seconds)))
 	end
-	def get(identities, inverse_delegations, cache_time) do
-		key = {identities |> Enum.map(& &1.id) |> MapSet.new, inverse_delegations}
+	def get(usernames, inverse_delegations, cache_time) do
+		key = {usernames, inverse_delegations}
 
 		power = Cachex.get!(:voting_power, key)
 		power = if power do
 			power
 		else
-			data = calculate(identities, inverse_delegations)
+			data = calculate(usernames, inverse_delegations)
 			Cachex.set(:voting_power, key, data, ttl: cache_time)
 			data
 		end
@@ -19,24 +19,24 @@ defmodule Liquio.VotingPower do
 		power
 	end
 
-	def calculate(identities, inverse_delegations) do
+	def calculate(usernames, inverse_delegations) do
 		uuid = String.to_atom(UUID.uuid4(:hex))
 
 		CalculateMemoServer.start_link uuid
 
-		Enum.each(identities, fn(identity) ->
-			calculate_total_weights(identity.username, inverse_delegations, uuid, MapSet.new)
+		Enum.each(usernames, fn(username) ->
+			calculate_total_weights(username, inverse_delegations, uuid, MapSet.new)
 		end)
 
 		CalculateMemoServer.reset_visited(uuid)
 
-		power_by_identities = identities |> Enum.map(fn(identity) ->
-			{identity.username, get_power(identity.username, inverse_delegations, uuid, MapSet.new) / 1}
+		power_by_usernames = usernames |> Enum.map(fn(username) ->
+			{username, get_power(username, inverse_delegations, uuid, MapSet.new) / 1}
 		end) |> Enum.into(%{})
 
 		CalculateMemoServer.stop uuid
 
-		power_by_identities
+		power_by_usernames
 	end
 
 	defp calculate_total_weights(identity_id, inverse_delegations, uuid, path) do

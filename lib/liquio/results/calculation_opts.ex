@@ -5,7 +5,6 @@ defmodule Liquio.CalculationOpts do
 		# add sort and pagination
 
 		depth = min((if Map.has_key?(conn.params, "depth") do clean_number(Map.get(conn.params, "depth"), whole: true) else nil end) || 1, 3)
-		identity = Guardian.Plug.current_resource(conn)
 		now = Timex.now
 		datetime =
 			if Map.has_key?(conn.params, :datetime) do
@@ -18,19 +17,21 @@ defmodule Liquio.CalculationOpts do
 			else
 				now
 			end
-		{trust_metric_url, trust_identity_ids} = get_trust_identity_ids(conn)
-		trust_identity_ids = if identity != nil do
-			trust_identity_ids |> MapSet.put(identity.username)
+		{trust_metric_url, trust_usernames} = get_trust_usernames(conn)
+		custom_trust_usernames = if Map.has_key?(conn.params, "trust_usernames") do
+			force_usernames = conn.params["trust_usernames"] |> String.split(",") |> Enum.filter(& String.length(&1) > 0)
+			trust_usernames |> MapSet.union(MapSet.new(force_usernames))
 		else
-			trust_identity_ids
+			trust_usernames
 		end
-		trust_metric_count = MapSet.size(trust_identity_ids)
+		trust_metric_count = MapSet.size(trust_usernames)
 		
 		%{
 			datetime: datetime,
 			depth: depth,
 			trust_metric_url: trust_metric_url,
-			trust_usernames: trust_identity_ids,
+			trust_usernames: trust_usernames,
+			custom_trust_usernames: custom_trust_usernames,
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days),
 			reference_minimum_agree: 0.5,
 			minimum_voting_power: 0.05 * trust_metric_count,
@@ -57,9 +58,7 @@ defmodule Liquio.CalculationOpts do
 		end
 	end
 
-	defp get_trust_identity_ids(conn) do
-		identity = Guardian.Plug.current_resource(conn)
-
+	defp get_trust_usernames(conn) do
 		url = Map.get(conn.params, :trust_metric_url)
 		url =
 			if url == nil or not (String.starts_with?(url, "http://") or String.starts_with?(url, "https://")) do

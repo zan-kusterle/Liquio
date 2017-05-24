@@ -1,11 +1,17 @@
 var axios = require('axios')
 var _ = require('lodash')
+var nacl = require('tweetnacl')
+let utils = require('utils.js')
 
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-export function getNode(key, cb) {
+export function getNode(key, opts, cb) {
     let url = '/api/nodes/' + encodeURIComponent(key)
-    axios.get(url).then(function(response) {
+    let params = {
+        trust_metric_url: opts.trust_metric_url,
+        trust_usernames: _.map(opts.keypairs, (k) => k.username).join(',')
+    }
+    axios.get(url, { params: params }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -47,30 +53,6 @@ export function getIdentity(id, cb) {
     }).catch(function(error) {})
 }
 
-export function login(email, cb) {
-    axios.post('/api/login', { email: email }).then(function(response) {
-        cb()
-    }).catch(function(error) {})
-}
-
-export function logout(email, cb) {
-    axios.delete('/api/login').then(function(response) {
-        cb()
-    }).catch(function(error) {})
-}
-
-export function register(token, username, name, cb) {
-    axios.post('/api/identities', { token: token, identity: { username: username, name: name } }).then(function(response) {
-        cb()
-    }).catch(function(error) {})
-}
-
-export function loginGoogle(token) {
-    axios.get('/api/login/google/callback?idtoken=' + token).then(function(response) {
-        console.log(response)
-    })
-}
-
 export function setDelegation(to_identity_username, is_trusted, weight, topics, cb) {
     let url = '/api/identities/' + encodeURIComponent(to_identity_username)
     axios.put(url, { weight: weight, topics: topics, is_trusting: is_trusted }).then(function(response) {
@@ -85,9 +67,17 @@ export function unsetDelegation(to_identity_username, cb) {
     }).catch(function(error) {})
 }
 
-export function setVote(key, unit, at_date, choice, cb) {
+export function setVote(keypair, key, unit, at_date, choice, cb) {
+    let username = _.map(nacl.hash(keypair.publicKey), (byte) => {
+        return String.fromCharCode(97 + byte % 26)
+    }).join('')
+    let message = Uint8Array.from([username, key, unit, choice].join(' '))
+    let message_hash = nacl.hash(message)
+
     let url = '/api/nodes/' + encodeURIComponent(key)
     axios.put(url, {
+        public_key: utils.encodeBase64(keypair.publicKey),
+        signature: utils.encodeBase64(nacl.sign(message_hash, keypair.secretKey)),
         unit: unit,
         choice: choice,
         at_date: at_date.getFullYear() + '-' + (at_date.getMonth() + 1) + '-' + at_date.getDate()
@@ -95,9 +85,21 @@ export function setVote(key, unit, at_date, choice, cb) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
-export function unsetVote(key, unit, at_date, cb) {
+
+export function unsetVote(keypair, key, unit, at_date, cb) {
+    let username = _.map(nacl.hash(keypair.publicKey), (byte) => {
+        return String.fromCharCode(97 + byte % 26)
+    }).join('')
+    let message = Uint8Array.from([username, key, unit].join(' '))
+    let message_hash = nacl.hash(message)
+    let params = {
+        public_key: utils.encodeBase64(keypair.publicKey),
+        signature: utils.encodeBase64(nacl.sign(message_hash, keypair.secretKey)),
+        unit: unit,
+        at_date: at_date.getFullYear() + '-' + (at_date.getMonth() + 1) + '-' + at_date.getDate()
+    }
     let url = '/api/nodes/' + encodeURIComponent(key)
-    axios.delete(url, { params: { unit: unit, at_date: at_date.toISOString().substring(0, 10) } }).then(function(response) {
+    axios.delete(url, { params: params }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -108,6 +110,7 @@ export function setReferenceVote(key, reference_key, relevance, cb) {
         cb(response.data)
     }).catch(function(error) {})
 }
+
 export function unsetReferenceVote(key, reference_key, cb) {
     let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key)
     axios.delete(url).then(function(response) {

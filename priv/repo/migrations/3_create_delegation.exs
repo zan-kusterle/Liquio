@@ -3,8 +3,10 @@ defmodule Liquio.Repo.Migrations.CreateDelegation do
 
 	def change do
 		create table(:delegations) do
-			add :from_identity_id, references(:identities, on_delete: :nothing), null: false
-			add :to_identity_id, references(:identities, on_delete: :nothing), null: false
+			add :signature_id, references(:signatures, on_delete: :nothing), null: false
+			add :username, :string, null: false
+
+			add :to_username, :string, null: false
 
 			add :is_trusting, :boolean, null: true
 			add :weight, :float, null: true
@@ -14,8 +16,8 @@ defmodule Liquio.Repo.Migrations.CreateDelegation do
 			add :to_datetime, :utc_datetime, null: true
 		end
 		
-		create index(:delegations, [:from_identity_id])
-		create index(:delegations, [:to_identity_id])
+		create index(:delegations, [:username])
+		create index(:delegations, [:to_username])
 		create index(:delegations, [:datetime])
 		create index(:delegations, [:to_datetime])
 	end

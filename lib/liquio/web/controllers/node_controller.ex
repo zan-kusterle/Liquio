@@ -13,58 +13,44 @@ defmodule Liquio.Web.NodeController do
 		|> render("show.json", node: NodeRepo.search(query, calculation_opts))
 	end
 
-	with_params(%{
-		:node => {Plugs.NodeParam, [name: "id"]},
-		:user => {Plugs.CurrentUser, [require: false]}
-	},
-	def show(conn, %{:node => node, :user => user}) do
+	def show(conn, %{"id" => id}) do
+		node = Node.decode(id)
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
-		|> render("show.json", node: NodeRepo.load(node, calculation_opts, user))
-	end)
+		|> render("show.json", node: NodeRepo.load(node, calculation_opts, nil))
+	end
 
-	with_params(%{
-		:node => {Plugs.NodeParam, [name: "id"]},
-		:user => {Plugs.CurrentUser, [require: true]}
-	},
-	def update(conn, %{:node => node, :user => user, "choice" => choice, "unit" => unit_value, "at_date" => at_date_string}) do
+	def update(conn, %{"id" => id, "public_key" => public_key, "choice" => choice, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do
+		node = Node.decode(id)
 		at_date = case Timex.parse(at_date_string, "{YYYY}-{0M}-{0D}") do
 			{:ok, x} -> x
 			{:err, _} -> Timex.today()
 		end
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 
-		VoteRepo.set(user, node, Vote.decode_unit!(unit_value), at_date, get_choice(choice))
-		if MapSet.member?(calculation_opts.trust_usernames, to_string(user.id)) do
-			{:info, "Your vote is now live."}
-		else
-			{:error, "Your vote is now live, but because you're not in trust metric it will not be counted. Get others to trust your identity by sharing it's URL to get into trust metric or change it in preferences."}
-		end
+		VoteRepo.set(node, Base.decode64!(public_key), Base.decode64!(signature), Vote.decode_unit!(unit_value), at_date, get_choice(choice))
 
 		calculation_opts = Map.put(calculation_opts, :datetime, Timex.now)
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, Enum.join(node.path, "_")))
-		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts, user))
-	end)
+		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts, nil))
+	end
 
-	with_params(%{
-		:node => {Plugs.NodeParam, [name: "id"]},
-		:user => {Plugs.CurrentUser, [require: true]}
-	},
-	def delete(conn, %{:node => node, :user => user, "unit" => unit_value, "at_date" => at_date_string}) do
+	def delete(conn, %{"id" => id, "public_key" => public_key, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do
+		node = Node.decode(id)
 		at_date = case Timex.parse(at_date_string, "{YYYY}-{0M}-{0D}") do
 			{:ok, x} -> x
 			{:err, _} -> Timex.today()
 		end
-		VoteRepo.delete(user, node, Vote.decode_unit!(unit_value), at_date)
+		VoteRepo.delete(node, Base.decode64!(public_key), Base.decode64!(signature), Vote.decode_unit!(unit_value), at_date)
 
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, node.path |> Enum.join("/")))
-		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts, user))
-	end)
+		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts, nil))
+	end
 
 	defp get_choice(v) do
 		if is_binary(v) do
