@@ -39,16 +39,33 @@ export function getIdentity(username, cb) {
     }).catch(function(error) {})
 }
 
-export function setDelegation(to_identity_username, is_trusted, weight, topics, cb) {
-    let url = '/api/identities/' + encodeURIComponent(to_identity_username)
-    axios.put(url, { weight: weight, topics: topics, is_trusting: is_trusted }).then(function(response) {
+export function setDelegation(opts, to_identity_username, is_trusted, weight, topics, cb) {
+    let message = [opts.keypair.username, to_identity_username, is_trusted || false, weight.toFixed(5), topics ? topics.join(',') : ''].join(' ').trim()
+    let message_hash = nacl.hash(utils.stringToBytes(message))
+    let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
+
+    let params = {
+        public_key: utils.encodeBase64(opts.keypair.publicKey),
+        signature: utils.encodeBase64(signature),
+        weight: weight,
+        topics: topics,
+        is_trusting: is_trusted
+    }
+    axios.put('/api/identities/' + encodeURIComponent(to_identity_username), params).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
 
-export function unsetDelegation(to_identity_username, cb) {
-    let url = '/api/identities/' + encodeURIComponent(to_identity_username) + '/delegations'
-    axios.delete(url).then(function(response) {
+export function unsetDelegation(opts, to_identity_username, cb) {
+    let message = [opts.keypair.username, to_identity_username].join(' ')
+    let message_hash = nacl.hash(utils.stringToBytes(message))
+    let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
+
+    let params = {
+        public_key: utils.encodeBase64(opts.keypair.publicKey),
+        signature: utils.encodeBase64(signature)
+    }
+    axios.delete('/api/identities/' + encodeURIComponent(to_identity_username) + '/delegations', { params: params }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }

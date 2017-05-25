@@ -1,6 +1,6 @@
 defmodule Liquio.VoteRepo do
 	import Ecto.Query, only: [from: 2]
-	alias Liquio.{Repo, Vote, Signature}
+	alias Liquio.{Repo, Vote, Signature, Identity}
 
 	def search(query, search_term) do
 		from(v in query,
@@ -50,9 +50,7 @@ defmodule Liquio.VoteRepo do
 	def set(node, public_key, signature, unit, at_date, choice) do
 		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
 
-		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
-		|> Enum.map(& <<rem(&1, 26) + 97>>)
-		|> Enum.slice(0, 16) |> Enum.join("")
+		username = Identity.username_from_key(public_key)
 		message = "#{username} #{Enum.join(node.path, "/")} #{unit.value} #{:erlang.float_to_binary(choice, decimals: 5)}"
 
 		signature = Signature.add!(public_key, message, signature)
@@ -87,9 +85,7 @@ defmodule Liquio.VoteRepo do
 	def delete(node, public_key, signature, unit, at_date) do
 		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
 
-		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
-		|> Enum.map(& <<rem(&1, 26) + 97>>)
-		|> Enum.slice(0, 16) |> Enum.join("")
+		username = Identity.username_from_key(public_key)
 		message = "#{username} #{Enum.join(node.path, "/")} #{unit.value}"
 
 		signature = Signature.add!(public_key, message, signature)

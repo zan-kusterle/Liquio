@@ -1,8 +1,7 @@
 defmodule Liquio.Delegation do
 	use Liquio.Web, :model
 
-	alias Liquio.Repo
-	alias Liquio.Delegation
+	alias Liquio.{Delegation, Repo, Identity, Signature}
 
 	schema "delegations" do
 		belongs_to :signature, Liquio.Signature
@@ -18,50 +17,50 @@ defmodule Liquio.Delegation do
 		field :topics, {:array, :string}
 	end
 
-	def changeset(data, params) do
-		data
-		|> cast(params, ["from_identity_id", "to_identity_id", "is_trusting", "weight", "topics"])
-		|> validate_required(:from_identity_id)
-		|> validate_required(:to_identity_id)
-		|> assoc_constraint(:from_identity)
-		|> assoc_constraint(:to_identity)
-	end
+	def set(public_key, signature, to_username, is_trusting, weight, topics) do
+		weight = weight * 1.0
+		username = Identity.username_from_key(public_key)
+		message = "#{username} #{to_username} #{if is_trusting do "true" else "false" end} #{:erlang.float_to_binary(weight, decimals: 5)} #{if topics do Enum.join(topics, ",") else "" end}"
+		|> String.trim
 
-	def set(changeset) do
-		remove_current_last(changeset.params["from_identity_id"], changeset.params["to_identity_id"])
-		changeset = changeset
-		|> put_change(:to_datetime, nil)
-		Repo.insert(changeset)
-	end
+		signature = Signature.add!(public_key, message, signature)
 
-	def set(from_identity, to_identity, is_trusting, weight, topics) do
-		remove_current_last(from_identity.username, to_identity.username)
+		now = Timex.now
+		from(v in Delegation,
+			where: v.username == ^username and
+				v.to_username == ^to_username and
+				is_nil(v.to_datetime),
+			update: [set: [to_datetime: ^now]])
+		|> Repo.update_all([])
+
 		Repo.insert(%Delegation{
-			username: from_identity.username,
-			to_username: to_identity.username,
+			signature_id: signature.id,
+			username: username,
+			to_username: to_username,
 			to_datetime: nil,
-			is_trusting: true,
+			is_trusting: is_trusting,
 			weight: weight,
 			topics: topics
 		})
 	end
 
-	def unset(from_identity, to_identity) do
-		remove_current_last(from_identity.id, to_identity.id)
-	end
+	def unset(public_key, signature, to_username) do
+		username = Identity.username_from_key(public_key)
+		message = "#{username} #{to_username}"
 
-	def remove_current_last(from_identity_username, to_identity_username) do
+		signature = Signature.add!(public_key, message, signature)
+
 		now = Timex.now
 		from(v in Delegation,
-			where: v.from_identity_username == ^from_identity_username and
-				v.to_identity_username == ^to_identity_username and
+			where: v.username == ^username and
+				v.to_username == ^to_username and
 				is_nil(v.to_datetime),
 			update: [set: [to_datetime: ^now]])
 		|> Repo.update_all([])
 	end
 
-	def get_by(from_identity, to_identity) do
-		Repo.get_by(Delegation, %{from_identity_username: from_identity.username, to_identity_username: to_identity.username, to_datetime: nil})
+	def get_by(username, to_username) do
+		Repo.get_by(Delegation, %{username: username, to_username: to_username, to_datetime: nil})
 	end
 	
 	def get_inverse_delegations(datetime) do
@@ -77,7 +76,7 @@ defmodule Liquio.Delegation do
 			delegation
 			|> Map.put(:topics, if delegation.topics do MapSet.new(delegation.topics) else nil end)
 		end)
-		|> Enum.map(& {&1.to_identity_id, &1}) |> Enum.into(%{})
+		|> Enum.map(& {&1.to_username, &1}) |> Enum.into(%{})
 
 		inverse_delegations
 	end

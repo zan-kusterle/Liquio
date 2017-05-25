@@ -7,6 +7,7 @@ defmodule Liquio.Repo.Migrations.AddTokens do
 			add :data, :string, null: false
 			add :data_hash, :string, null: false
 			add :signature, :string, null: false
+			add :ipfs_hash, :string, null: false
 		end
 	end
 end

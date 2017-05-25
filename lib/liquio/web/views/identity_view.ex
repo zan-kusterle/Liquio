@@ -12,16 +12,16 @@ defmodule Liquio.Web.IdentityView do
 	def render("identity.json", %{identity: identity}) do
 		%{
 			username: identity.username,
-			delegations_to: Map.get(identity, :delegations_to, []) |> Enum.map(& {&1.from_identity.username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
-			delegations: Map.get(identity, :delegations_from, []) |> Enum.map(& {&1.to_identity.username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
+			delegations_to: Map.get(identity, :delegations_to, []) |> Enum.map(& {&1.username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
+			delegations: Map.get(identity, :delegations_from, []) |> Enum.map(& {&1.to_username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
 			#votes: render_many(Map.get(identity, :vote_nodes, []), Liquio.Web.NodeView, "node.json")
 		}
 	end
 
 	def render("delegation.json", %{delegation: delegation}) do
 		%{
-			from_username: delegation.from_identity.username,
-			to_username: delegation.to_identity.username,
+			from_username: delegation.username,
+			to_username: delegation.to_username,
 			is_trusting: delegation.is_trusting,
 			weight: delegation.weight,
 			topics: delegation.topics

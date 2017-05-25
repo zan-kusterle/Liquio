@@ -2,6 +2,14 @@ defmodule Liquio.Identity do
 	use Liquio.Web, :model
 	alias Liquio.{Repo, Vote, ReferenceVote, Delegation, Node, Results}
 
+	def username_from_key(public_key) do
+		:crypto.hash(:sha512, public_key)
+		|> :binary.bin_to_list
+		|> Enum.map(& <<rem(&1, 26) + 97>>)
+		|> Enum.slice(0, 16)
+		|> Enum.join("")
+	end
+
 	def preload(username) do
 		%{:username => username}
 		|> preload_delegations()

@@ -84,7 +84,8 @@ defmodule Liquio.NodeRepo do
 		|> Enum.filter(& MapSet.member?(calculation_opts.custom_trust_usernames, &1.username))
 
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
-		|> Enum.filter(& MapSet.member?(calculation_opts.custom_trust_usernames, &1.username))
+		|> Enum.filter(fn({username, v}) -> MapSet.member?(calculation_opts.custom_trust_usernames, username) end)
+		|> Enum.into(%{})
 
 		node = if not Enum.empty?(votes) do
 			{best_title, _count} = votes

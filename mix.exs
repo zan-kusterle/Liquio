@@ -47,7 +47,8 @@ defmodule Liquio.Mixfile do
 			{:floki, "~> 0.10.0"},
 			{:secure_random, "~> 0.5"},
 			{:cachex, "~> 2.0"},
-			{:ed25519, "~> 1.0"}
+			{:ed25519, "~> 1.0"},
+			{:elixir_ipfs_api, "~> 0.1.0"}
 		]
 	end
 

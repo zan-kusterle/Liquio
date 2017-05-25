@@ -1,6 +1,6 @@
 defmodule Liquio.ReferenceVote do
 	use Liquio.Web, :model
-	alias Liquio.{Repo, Vote, Signature, Delegation, Results, Reference, ReferenceRepo, ReferenceVote}
+	alias Liquio.{Repo, Vote, Signature, Delegation, Results, Reference, ReferenceRepo, ReferenceVote, Identity}
 
 	schema "reference_votes" do
 		belongs_to :signature, Liquio.Signature
@@ -80,12 +80,8 @@ defmodule Liquio.ReferenceVote do
 
 	def set(public_key, signature, reference, relevance) do
 		group_key = Reference.group_key(reference)
-
-		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
-		|> Enum.map(& <<rem(&1, 26) + 97>>)
-		|> Enum.slice(0, 16) |> Enum.join("")
+		username = Identity.username_from_key(public_key)
 		message = "#{username} #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")} #{:erlang.float_to_binary(relevance, decimals: 5)}"
-
 		signature = Signature.add!(public_key, message, signature)
 
 		now = Timex.now
@@ -113,9 +109,7 @@ defmodule Liquio.ReferenceVote do
 	def delete(public_key, signature, reference) do
 		group_key = Reference.group_key(reference)
 
-		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
-		|> Enum.map(& <<rem(&1, 26) + 97>>)
-		|> Enum.slice(0, 16) |> Enum.join("")
+		username = Identity.username_from_key(public_key)
 		message = "#{username} #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")}"
 
 		signature = Signature.add!(public_key, message, signature)

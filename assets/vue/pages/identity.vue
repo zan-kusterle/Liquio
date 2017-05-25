@@ -77,7 +77,7 @@ export default {
 		this.$store.dispatch('fetchIdentity', username).then((identity) => {
 			self.identity = identity
 
-			let delegation = self.$store.state.user && identity.delegations_to[self.$store.state.user.username]
+			let delegation = self.$store.getters.currentOpts.keypair && identity.delegations_to[self.$store.getters.currentOpts.keypair.username]
 			if(delegation) {
 				self.isTrusting = delegation.is_trusting
 				self.weight = delegation.weight * 100

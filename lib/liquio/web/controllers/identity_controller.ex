@@ -10,46 +10,33 @@ defmodule Liquio.Web.IdentityController do
 		render(conn, "show.json", identity: Identity.preload(username))
 	end
 
-	with_params(%{
-		:to_identity => {Plugs.ItemParam, [name: "id", column: :username]}
-	},
-	def update(conn, params = %{:user => user, :to_identity => to_identity}) do
-		changeset = Delegation.changeset(%Delegation{}, %{
-			"from_identity_id" => user.id,
-			"to_identity_id" => to_identity.id,
-			"is_trusting" => Map.get(params, "is_trusting"),
-			"weight" => Map.get(params, "weight"),
-			"topics" => Map.get(params, "topics"),
-		})
-		case Delegation.set(changeset) do
+	def update(conn, params = %{"public_key" => public_key, "signature" => signature, "id" => to_username}) do
+		case Delegation.set(Base.decode64!(public_key), Base.decode64!(signature), to_username, Map.get(params, "is_trusting"), Map.get(params, "weight"), Map.get(params, "topics")) do
 			{:ok, delegation} ->
-				delegation = Repo.preload delegation, [:from_identity, :to_identity]
 				conn
-				|> put_resp_header("location", identity_path(conn, :show, to_identity.username))
+				|> put_resp_header("location", identity_path(conn, :show, to_username))
 				|> put_status(:created)
-				|> render(Liquio.Web.IdentityView, "show.json", identity: Repo.get!(Identity, to_identity.id) |> Identity.preload())
+				|> render(Liquio.Web.IdentityView, "show.json", identity: Identity.preload(to_username))
 			{:error, changeset} ->
 				conn
 				|> put_status(:unprocessable_entity)
 				|> render(Liquio.Web.ChangesetView, "error.json", changeset: changeset)
 		end
-	end)
+	end
 
-	with_params(%{
-		:to_identity => {Plugs.ItemParam, [schema: Identity, name: "identity_id", column: "username"]}
-	},
-	def delete(conn, %{:user => user, :to_identity => to_identity}) do
-		#delegation = Repo.get_by(Delegation, %{from_identity_id: user.id, to_identity_id: to_identity.id, to_datetime: nil})
-		delegation = nil
+	def delete(conn, %{"public_key" => public_key, "signature" => signature, "id" => to_username}) do
+		username = Identity.username_from_key(public_key)
+		delegation = Delegation.get_by(username, to_username)
+
 		if delegation do
-			Delegation.unset(user, to_identity)
+			Delegation.unset(Base.decode64!(public_key), Base.decode64!(signature), to_username)
 			conn
 			|> put_status(:ok)
-			|> render(Liquio.Web.IdentityView, "show.json", identity: Repo.get!(Identity, user.id) |> Identity.preload())
+			|> render(Liquio.Web.IdentityView, "show.json", identity: Identity.preload(to_username))
 		else
 			conn
 			|> put_status(:not_found)
 			|> render(Liquio.Web.ErrorView, "error.json", message: "Delegation does not exist")
 		end
-	end)
+	end
 end

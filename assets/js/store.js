@@ -12,7 +12,6 @@ let getTitle = (path) => {
 export default new Vuex.Store({
     plugins: [],
     state: {
-        user: null,
         nodes: [],
         references: [],
         identities: [],
@@ -182,21 +181,12 @@ export default new Vuex.Store({
         }
     },
     mutations: {
-        login(state, user) {
-            state.user = user
-        },
-        logout(state) {
-            state.user = null
-        },
         setIdentity(state, identity) {
             let existingIndex = _.findIndex(state.identities, (i) => i.username == identity.username)
 
             if (existingIndex >= 0)
                 state.identities.splice(existingIndex, 1)
             state.identities.push(identity)
-
-            if (state.user && state.user.username == identity.username)
-                state.user = identity
         },
         setNode(state, node) {
             node.key = node.path.join('/')
@@ -328,17 +318,17 @@ export default new Vuex.Store({
                 })
             })
         },
-        setDelegation({ commit }, { username, is_trusted, weight, topics }) {
+        setDelegation({ commit, state, getters }, { username, is_trusted, weight, topics }) {
             return new Promise((resolve, reject) => {
-                Api.setDelegation(username, is_trusted, weight, topics, function(identity) {
+                Api.setDelegation(getters.currentOpts, username, is_trusted, weight, topics, function(identity) {
                     commit('setIdentity', identity)
                     resolve(identity)
                 })
             })
         },
-        unsetDelegation({ commit }, username) {
+        unsetDelegation({ commit, state, getters }, username) {
             return new Promise((resolve, reject) => {
-                Api.unsetDelegation(username, function(identity) {
+                Api.unsetDelegation(getters.currentOpts, username, function(identity) {
                     commit('setIdentity', identity)
                     resolve(identity)
                 })

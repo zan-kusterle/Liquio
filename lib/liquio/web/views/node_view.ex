@@ -27,7 +27,7 @@ defmodule Liquio.Web.NodeView do
 			node.inverse_references |> Enum.map(fn(reference) ->
 				reference_results = render_one(reference, Liquio.Web.ReferenceView, "results.json")
 
-				render(Liquio.Web.NodeView, "node.json", %{node: reference.reference_node})
+				render(Liquio.Web.NodeView, "node.json", %{node: reference.node})
 				|> Map.put(:reference_results, reference_results)
 			end)
 		else
