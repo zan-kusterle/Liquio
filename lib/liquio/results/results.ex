@@ -56,7 +56,6 @@ defmodule Liquio.Results do
 	end
 	def from_reference_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_usernames => trust_usernames}) do
 		votes = votes
-		|> Repo.preload([:identity])
 		|> Enum.map(& &1 |> Map.put(:choice, &1.relevance) |> Map.put(:at_date, &1.datetime))
 		|> Enum.filter(& &1.choice >= 0.0 and &1.choice <= 1.0)
 		

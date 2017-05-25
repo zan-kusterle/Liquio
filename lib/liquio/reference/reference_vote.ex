@@ -84,7 +84,7 @@ defmodule Liquio.ReferenceVote do
 		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
 		|> Enum.map(& <<rem(&1, 26) + 97>>)
 		|> Enum.slice(0, 16) |> Enum.join("")
-		message = "#{username} #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")} #{relevance}"
+		message = "#{username} #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")} #{:erlang.float_to_binary(relevance, decimals: 5)}"
 
 		signature = Signature.add!(public_key, message, signature)
 
@@ -97,6 +97,7 @@ defmodule Liquio.ReferenceVote do
 		) |> Repo.update_all([])
 
 		result = Repo.insert!(%ReferenceVote{
+			:signature_id => signature.id,
 			:username => username,
 
 			:path => reference.path,

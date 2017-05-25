@@ -17,7 +17,7 @@ defmodule Liquio.Web.NodeController do
 		node = Node.decode(id)
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
-		|> render("show.json", node: NodeRepo.load(node, calculation_opts, nil))
+		|> render("show.json", node: NodeRepo.load(node, calculation_opts))
 	end
 
 	def update(conn, %{"id" => id, "public_key" => public_key, "choice" => choice, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do
@@ -34,7 +34,7 @@ defmodule Liquio.Web.NodeController do
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, Enum.join(node.path, "_")))
-		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts, nil))
+		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts))
 	end
 
 	def delete(conn, %{"id" => id, "public_key" => public_key, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do
@@ -49,7 +49,7 @@ defmodule Liquio.Web.NodeController do
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, node.path |> Enum.join("/")))
-		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts, nil))
+		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts))
 	end
 
 	defp get_choice(v) do

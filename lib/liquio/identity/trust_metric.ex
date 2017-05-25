@@ -27,7 +27,7 @@ defmodule Liquio.TrustMetric do
 			Task.async(fn ->
 				if_before_datetime = Timex.shift(Timex.now, seconds: -Application.get_env(:liquio, :trust_metric_cache_time_seconds))
 				if Timex.before?(trust_metric.last_update, if_before_datetime) do
-					response = HTTPotion.get(url, headers: ["If-Modified-Since": Timex.format!(trust_metric.last_update, "{ISO:Extended}")])
+					response = HTTPotion.get(url, headers: ["If-Modified-Since": Timex.format!(trust_metric.last_update, "{ISO:Extended:Z}")])
 					if HTTPotion.Response.success?(response) do
 						usernames = usernames_from_html response.body
 						trust_metric = Ecto.Changeset.change trust_metric, usernames: usernames, last_update: Timex.now

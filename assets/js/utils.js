@@ -19,3 +19,10 @@ export function encodeBase64(u8a) {
         c.push(String.fromCharCode.apply(null, u8a.subarray(i, i + CHUNK_SZ)))
     return btoa(c.join(""))
 }
+
+export function stringToBytes(s) {
+    let buffer = []
+    for (var i = 0; i < s.length; i++)
+        buffer[i] = s.charCodeAt(i)
+    return Uint8Array.from(buffer)
+}

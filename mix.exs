@@ -44,10 +44,8 @@ defmodule Liquio.Mixfile do
 			{:poison, "~> 3.0", override: true},
 			{:timex, "~> 3.0"},
 			{:timex_ecto, "~> 3.0"},
-			{:basic_auth, "~> 1.0.0"},
 			{:floki, "~> 0.10.0"},
 			{:secure_random, "~> 0.5"},
-			{:mailgun, "~> 0.1.2"},
 			{:cachex, "~> 2.0"},
 			{:ed25519, "~> 1.0"}
 		]

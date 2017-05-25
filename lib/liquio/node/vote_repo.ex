@@ -53,9 +53,9 @@ defmodule Liquio.VoteRepo do
 		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
 		|> Enum.map(& <<rem(&1, 26) + 97>>)
 		|> Enum.slice(0, 16) |> Enum.join("")
-		message = "#{username} #{Enum.join(node.path, "/")} #{unit.key} #{choice}"
+		message = "#{username} #{Enum.join(node.path, "/")} #{unit.value} #{:erlang.float_to_binary(choice, decimals: 5)}"
 
-		Signature.add!(public_key, message, signature)
+		signature = Signature.add!(public_key, message, signature)
 
 		now = Timex.now
 		from(v in Vote,
@@ -90,7 +90,7 @@ defmodule Liquio.VoteRepo do
 		username = :crypto.hash(:sha512, public_key) |> :binary.bin_to_list
 		|> Enum.map(& <<rem(&1, 26) + 97>>)
 		|> Enum.slice(0, 16) |> Enum.join("")
-		message = "#{username} #{Enum.join(node.path, "/")} #{unit.key}"
+		message = "#{username} #{Enum.join(node.path, "/")} #{unit.value}"
 
 		signature = Signature.add!(public_key, message, signature)
 		

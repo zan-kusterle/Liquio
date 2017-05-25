@@ -27,7 +27,7 @@ defmodule Liquio.NodeRepo do
 		references = reference_results
 		|> Enum.filter(& &1.results.turnout_ratio > 0.0)
 		|> Enum.map(& %{
-			results: %{:average => &1.results.turnout_ratio, :latest_contributions => []},
+			results: %{:average => &1.results.turnout_ratio},
 			reference_node: &1 |> Map.drop([:references, :inverse_references]),
 			node: nil
 		})

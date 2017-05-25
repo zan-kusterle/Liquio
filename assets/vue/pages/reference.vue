@@ -23,7 +23,8 @@
 			<p style="font-size: 24px; margin-top: 50px;">Your vote</p>
 
 			<vote has-date=false unit="Reliable-Unreliable" is-spectrum=true
-				:own-contributions="reference.own_results.contributions" :results="reference.results"
+				:own-contributions="reference.results.contributions_by_identities[$store.getters.currentOpts.keypair.username] ? reference.results.contributions_by_identities[$store.getters.currentOpts.keypair.username].contributions : []"
+				:results="reference.results"
 				v-on:set="setVote" v-on:unset="unsetVote"></vote>
 		</div>
 		<div v-else class="main">

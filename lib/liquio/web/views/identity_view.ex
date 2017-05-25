@@ -10,21 +10,12 @@ defmodule Liquio.Web.IdentityView do
 	end
 
 	def render("identity.json", %{identity: identity}) do
-		v = %{
+		%{
 			username: identity.username,
-			name: identity.name,
 			delegations_to: Map.get(identity, :delegations_to, []) |> Enum.map(& {&1.from_identity.username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
 			delegations: Map.get(identity, :delegations_from, []) |> Enum.map(& {&1.to_identity.username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
 			#votes: render_many(Map.get(identity, :vote_nodes, []), Liquio.Web.NodeView, "node.json")
 		}
-
-		v = if Map.has_key?(identity, :access_token) do
-			Map.put(v, :access_token, identity.access_token)
-		else
-			v
-		end
-		
-		v
 	end
 
 	def render("delegation.json", %{delegation: delegation}) do

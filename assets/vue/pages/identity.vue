@@ -8,10 +8,9 @@
 					</div>
 				</el-col>
 				<el-col :span="8">
-					{{ identity.username }}<br>
-					{{ identity.name }}
+					{{ identity.username }}
 
-					<div style="margin-top: 60px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
+					<div style="margin-top: 50px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
 						I trust this identity<br>
 						<el-button @click="setTrust(false)" :type="isTrusting === false ? 'danger' : null">False</el-button>
 						<el-button @click="setTrust(true)" :type="isTrusting === true ? 'success' : null">True</el-button>

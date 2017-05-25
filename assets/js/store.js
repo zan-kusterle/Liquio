@@ -17,6 +17,8 @@ export default new Vuex.Store({
         references: [],
         identities: [],
         calculation_opts: {},
+        storageSeeds: localStorage.seeds || '',
+        currentKeyPairIndex: localStorage.currentIndex ? parseInt(localStorage.currentIndex) : 0,
         units: _.map([
             { key: 'true', text: 'True-False', value: 'true', type: 'spectrum' },
             { key: 'count', text: 'Count', value: 'count', type: 'quantity' },
@@ -35,12 +37,12 @@ export default new Vuex.Store({
         })
     },
     getters: {
-        availableKeyPairs: (state, getters) => {
+        currentOpts: (state, getters) => {
             var nacl = require('tweetnacl')
 
-            let availableSeeds = localStorage.seeds ? localStorage.seeds.split(';') : []
+            let availableSeeds = state.storageSeeds.split(';')
 
-            return _.filter(_.map(availableSeeds, (seed) => {
+            let availableKeyPairs = _.filter(_.map(availableSeeds, (seed) => {
                 let seedBytes = new Uint8Array(atob(seed).split("").map((c) => c.charCodeAt(0)))
                 if (seedBytes.length >= 32) {
                     let keypair = nacl.sign.keyPair.fromSeed(seedBytes.slice(0, 32))
@@ -55,15 +57,10 @@ export default new Vuex.Store({
 
                 return null
             }), (k) => k)
-        },
-        currentKeyPair: (state, getters) => {
-            let list = getters.availableKeyPairs
-            return list.length == 0 ? null : list[list.length - 1]
-        },
-        currentOpts: (state, getters) => {
+
             return {
-                keypairs: getters.availableKeyPairs,
-                keypair: getters.currentKeyPair,
+                keypairs: availableKeyPairs,
+                keypair: state.currentKeyPairIndex < availableKeyPairs.length ? availableKeyPairs[state.currentKeyPairIndex] : null,
                 trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.html"
             }
         },
@@ -161,7 +158,6 @@ export default new Vuex.Store({
                 }
 
                 node.default_unit = unit
-                node.own_default_unit = node.own_results && node.own_results.by_units[unit.key]
             }
             return node
         },
@@ -178,14 +174,8 @@ export default new Vuex.Store({
             results.positive = 'Relevant'
             results.negative = 'Irrelevant'
 
-            let own_results = JSON.parse(JSON.stringify(reference.own_results)) || {}
-            own_results.type = 'spectrum'
-            own_results.positive = 'Relevant'
-            own_results.negative = 'Irrelevant'
-
             return {
                 results: results,
-                own_results: own_results,
                 node: getters.getNodeByKey(key),
                 referencing_node: getters.getNodeByKey(reference_key)
             }
@@ -296,9 +286,9 @@ export default new Vuex.Store({
                 })
             })
         },
-        fetchReference({ commit, state }, { key, referenceKey }) {
+        fetchReference({ commit, state, getters }, { key, referenceKey }) {
             return new Promise((resolve, reject) => {
-                Api.getReference(key, referenceKey, (reference) => {
+                Api.getReference(key, referenceKey, getters.currentOpts, (reference) => {
                     commit('setNode', reference.node)
                     commit('setNode', reference.referencing_node)
                     commit('setReference', reference)
@@ -306,9 +296,9 @@ export default new Vuex.Store({
                 })
             })
         },
-        setVote({ commit, state }, { keypair, key, unit, at_date, choice }) {
+        setVote({ commit, state, getters }, { key, unit, at_date, choice }) {
             return new Promise((resolve, reject) => {
-                Api.setVote(keypair, key, unit, at_date, choice, function(node) {
+                Api.setVote(getters.currentOpts, key, unit, at_date, choice, function(node) {
                     commit('setNode', node)
                     resolve(node)
                 })
@@ -316,23 +306,23 @@ export default new Vuex.Store({
         },
         unsetVote({ commit, state, getters }, { key, unit, at_date }) {
             return new Promise((resolve, reject) => {
-                Api.unsetVote(getters.currentKeyPair, key, unit, at_date, function(node) {
+                Api.unsetVote(getters.currentOpts, key, unit, at_date, function(node) {
                     commit('setNode', node)
                     resolve(node)
                 })
             })
         },
-        setReferenceVote({ commit, state }, { reference, relevance }) {
+        setReferenceVote({ commit, state, getters }, { reference, relevance }) {
             return new Promise((resolve, reject) => {
-                Api.setReferenceVote(reference.node.key, reference.referencing_node.key, relevance, function(reference) {
+                Api.setReferenceVote(getters.currentOpts, reference.node.key, reference.referencing_node.key, relevance, function(reference) {
                     commit('setReference', reference)
                     resolve(reference)
                 })
             })
         },
-        unsetReferenceVote({ commit }, reference) {
+        unsetReferenceVote({ commit, state, getters }, reference) {
             return new Promise((resolve, reject) => {
-                Api.unsetReferenceVote(reference.node.key, reference.referencing_node.key, function(reference) {
+                Api.unsetReferenceVote(getters.currentOpts, reference.node.key, reference.referencing_node.key, function(reference) {
                     commit('setReference', reference)
                     resolve(reference)
                 })

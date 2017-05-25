@@ -6,12 +6,19 @@
 				<el-button slot="append" icon="caret-right" @click="login"></el-button>
 			</el-input>
 
-			<a class="generate-new" @click="generate">Generate new identity</a>
-			<p v-if="randomWords" class="mnemonic">{{ randomWords }}</p>
+			<div class="identities">
+				<div class="identity" v-for="(keypair, index) in $store.getters.currentOpts.keypairs">
+					<a @click="setCurrentIndex(index)">{{ keypair.username }}</a>
+					<i @click="removeIndex(index)" class="el-icon-close" aria-hidden="true"></i>
+				</div>
+			</div>
 
-			<div class="identity" v-for="(keypair, index) in $store.getters.availableKeyPairs">
-				<a @click="$store.commit('removeKeyPair(index)')"><i class="el-icon-close" aria-hidden="true"></i></a>
-				<router-link :to="'/identities/' + keypair.username">{{ keypair.username }}</router-link>
+			<div class="generate">
+				<el-button @click="generate()" size="small">Generate new identity</el-button>
+				<div v-if="randomWords">
+					<p>Use the following words to login: <span>{{ randomWords }}</span></p>
+					<el-button size="small">Download words</el-button>
+				</div>
 			</div>
 		</div>
 	</el-popover>
@@ -23,7 +30,7 @@
 			</el-col>
 			<el-col :span="12">
 				<div class="actions">
-					<router-link v-if="$store.getters.currentKeyPair" :to="'/identities/' + $store.getters.currentKeyPair.username">{{ $store.getters.currentKeyPair.username }}</router-link>
+					<router-link v-if="$store.getters.currentOpts.keypair" :to="'/identities/' + $store.getters.currentOpts.keypair.username">{{ $store.getters.currentOpts.keypair.username }}</router-link>
 
 					<a v-popover:login><i class="el-icon-plus" aria-hidden="true"></i></a>
 
@@ -54,7 +61,7 @@
 
 		<div class="block">
 			<p class="demonstration">Votes will lose half remaining power every {{ vote_weight_halving_days }} days.</p>
-			<el-slider v-model="vote_weight_halving_days" max="1000"></el-slider>
+			<el-slider v-model="vote_weight_halving_days" :max=1000></el-slider>
 		</div>
 
 		<div class="block">
@@ -88,6 +95,7 @@ export default {
 	data: function() {
 		let self = this
 		return {
+			
 			dialogVisible: false,
 			datetime: new Date(),
 			minimum_turnout: 50,
@@ -111,11 +119,31 @@ export default {
 					let seed = bip39.mnemonicToSeed(words.join(' '))
 					let encoded = utils.encodeBase64(seed)
 
-					let value = localStorage.seeds || ''
-					if(value.indexOf(encoded) === -1) {
-						let newValue = value + encoded + ';'
-						localStorage.setItem('seeds', newValue)
+					if(self.$store.state.storageSeeds.indexOf(encoded) === -1) {
+						self.$store.state.storageSeeds = self.$store.state.storageSeeds + encoded + ';'
+						localStorage.setItem('seeds', self.$store.state.storageSeeds)
+					} else {
+						self.randomWords = generateWords()
 					}
+				}
+
+				self.words = ''
+			},
+			removeIndex: function(index) {
+				let seeds = _.filter(_.map(self.$store.state.storageSeeds.split(';'), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
+				if(index < seeds.length) {
+					self.$store.state.storageSeeds = self.$store.state.storageSeeds.replace(seeds[index] + ';', '')
+					localStorage.setItem('seeds', self.$store.state.storageSeeds)
+
+					if(index <= self.$store.state.currentKeyPairIndex) {
+						self.$store.state.currentKeyPairIndex -= 1
+					}
+				}
+			},
+			setCurrentIndex: function(index) {
+				if(index !== self.$store.state.currentKeyPairIndex) {
+					self.$store.state.currentKeyPairIndex = index
+					localStorage.setItem('currentIndex', index)
 				}
 			}
 		}
@@ -136,17 +164,35 @@ p {
 .login {
 	padding: 15px;
 
-	.mnemonic {
-		margin-top: 10px;
-		display: block;
-		font-size: 16px;
+	.identities {
+		margin-top: 30px;
+
+		.identity {
+			font-size: 16px;
+			margin-top: 10px;
+
+			i {
+				margin-left: 10px;
+				font-size: 10px;
+			}
+		}
 	}
 
-	.generate-new {
-		display: inline-block;
-		margin-top: 50px;
-		font-size: 14px;
-		font-weight: bold;
+	.generate {
+		margin-top: 30px;
+
+		p {
+			margin-top: 20px;
+			display: block;
+			font-size: 20px;
+
+			span {
+				margin-top: 10px;
+				display: block;
+				font-weight: bold;
+				font-size: 14px;
+			}
+		}
 	}
 }
 

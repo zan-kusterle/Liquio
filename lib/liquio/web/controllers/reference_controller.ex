@@ -10,7 +10,7 @@ defmodule Liquio.Web.ReferenceController do
 		reference = Reference.new(node.path, reference_node.path) |> ReferenceRepo.load(calculation_opts)
 
 		conn
-		|> render(Liquio.Web.NodeView, "reference.json", node: reference)
+		|> render(Liquio.Web.ReferenceView, "show.json", reference: reference)
 	end)
 
 	with_params(%{
@@ -22,11 +22,12 @@ defmodule Liquio.Web.ReferenceController do
 		reference = Reference.new(node.path, reference_node.path)
 		
 		ReferenceVote.set(Base.decode64!(public_key), Base.decode64!(signature), reference, get_relevance(relevance))
-
 		calculation_opts = Map.put(calculation_opts, :datetime, Timex.now)
+		reference = ReferenceRepo.load(reference, calculation_opts)
+		
 		conn
 		|> put_status(:created)
-		|> render(Liquio.Web.NodeView, "reference.json", node: ReferenceRepo.load(reference, calculation_opts))
+		|> render(Liquio.Web.ReferenceView, "show.json", reference: reference)
 	end)
 
 	with_params(%{
@@ -37,10 +38,11 @@ defmodule Liquio.Web.ReferenceController do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Reference.new(node.path, reference_node.path)
 		ReferenceVote.delete(Base.decode64!(public_key), Base.decode64!(signature), reference)
+		reference = NodeRepo.load(reference, calculation_opts)
 
 		conn
 		|> put_status(:created)
-		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(reference, calculation_opts))
+		|> render(Liquio.Web.ReferenceView, "show.json", reference: reference)
 	end)
 
 	defp get_relevance(v) do

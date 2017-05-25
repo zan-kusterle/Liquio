@@ -18,18 +18,13 @@ defmodule Liquio.Signature do
 
 	def add(public_key, data, signature) do
 		data_hash = :crypto.hash(:sha512, data)
-
-		IO.inspect signature
-		IO.inspect data
-		IO.inspect data_hash
-		IO.inspect public_key
-
+		
 		if Ed25519.valid_signature?(signature, data_hash, public_key) do
 			result = Repo.insert!(%Signature{
 				:public_key => Base.encode64(public_key),
 				:data => data,
-				:data_hash => data_hash,
-				:signature => signature
+				:data_hash => Base.encode64(data_hash),
+				:signature => Base.encode64(signature)
 			})
 
 			{:ok, result}
