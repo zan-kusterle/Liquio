@@ -1,5 +1,5 @@
 defmodule Liquio.Identity do
-	use Liquio.Web, :model
+	import Ecto.Query, only: [from: 2]
 	alias Liquio.{Repo, Vote, ReferenceVote, Delegation, Node, Results}
 
 	def username_from_key(public_key) do

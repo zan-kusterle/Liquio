@@ -4,20 +4,20 @@ defmodule Liquio.Web.NodeController do
 	def index(conn, _params) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
-		|> render("show.json", node: NodeRepo.all(calculation_opts))
+		|> render("show.json", node: Node.all(calculation_opts))
 	end
 
 	def search(conn, %{"id" => query}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
-		|> render("show.json", node: NodeRepo.search(query, calculation_opts))
+		|> render("show.json", node: Node.search(query, calculation_opts))
 	end
 
 	def show(conn, %{"id" => id}) do
 		node = Node.decode(id)
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
-		|> render("show.json", node: NodeRepo.load(node, calculation_opts))
+		|> render("show.json", node: Node.load(node, calculation_opts))
 	end
 
 	def update(conn, %{"id" => id, "public_key" => public_key, "choice" => choice, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do
@@ -28,13 +28,13 @@ defmodule Liquio.Web.NodeController do
 		end
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 
-		VoteRepo.set(node, Base.decode64!(public_key), Base.decode64!(signature), Vote.decode_unit!(unit_value), at_date, get_choice(choice))
+		Vote.set(node, Base.decode64!(public_key), Base.decode64!(signature), Vote.decode_unit!(unit_value), at_date, get_choice(choice))
 
 		calculation_opts = Map.put(calculation_opts, :datetime, Timex.now)
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, Enum.join(node.path, "_")))
-		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts))
+		|> render(Liquio.Web.NodeView, "show.json", node: Node.load(node, calculation_opts))
 	end
 
 	def delete(conn, %{"id" => id, "public_key" => public_key, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do
@@ -43,13 +43,13 @@ defmodule Liquio.Web.NodeController do
 			{:ok, x} -> x
 			{:err, _} -> Timex.today()
 		end
-		VoteRepo.delete(node, Base.decode64!(public_key), Base.decode64!(signature), Vote.decode_unit!(unit_value), at_date)
+		Vote.delete(node, Base.decode64!(public_key), Base.decode64!(signature), Vote.decode_unit!(unit_value), at_date)
 
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
 		|> put_status(:created)
 		|> put_resp_header("location", node_path(conn, :show, node.path |> Enum.join("/")))
-		|> render(Liquio.Web.NodeView, "show.json", node: NodeRepo.load(node, calculation_opts))
+		|> render(Liquio.Web.NodeView, "show.json", node: Node.load(node, calculation_opts))
 	end
 
 	defp get_choice(v) do

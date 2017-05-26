@@ -36,21 +36,15 @@ defmodule Liquio.Web do
 
 			import Liquio.Web.Router.Helpers
 			import Liquio.Web.Gettext
-			import Liquio.Plugs.WithParams, only: [with_params: 2]
 
 			alias Liquio.Repo
-			alias Liquio.Plugs
+			alias Liquio.CalculationOpts
 			alias Liquio.Identity
 			alias Liquio.Delegation
 			alias Liquio.Vote
-			alias Liquio.Reference
-			alias Liquio.Token
 			alias Liquio.Node
-			alias Liquio.NodeRepo
-			alias Liquio.VoteRepo
-			alias Liquio.ReferenceRepo
 			alias Liquio.ReferenceVote
-			alias Liquio.CalculationOpts
+			alias Liquio.Reference
 		end
 	end
 

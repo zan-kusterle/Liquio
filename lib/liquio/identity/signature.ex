@@ -1,5 +1,6 @@
 defmodule Liquio.Signature do
-	use Liquio.Web, :model
+	use Ecto.Schema
+	import Ecto.Query, only: [from: 2]
 	alias Liquio.{Repo, Signature}
 
 	schema "signatures" do

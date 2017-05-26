@@ -1,6 +1,8 @@
 defmodule Liquio.ReferenceVote do
-	use Liquio.Web, :model
-	alias Liquio.{Repo, Vote, Signature, Delegation, Results, Reference, ReferenceRepo, ReferenceVote, Identity}
+	use Ecto.Schema
+	use Timex.Ecto.Timestamps
+	import Ecto.Query, only: [from: 2]
+	alias Liquio.{Repo, Vote, Signature, Delegation, Results, Reference, ReferenceVote, Identity}
 
 	schema "reference_votes" do
 		belongs_to :signature, Liquio.Signature

@@ -1,6 +1,7 @@
 defmodule Liquio.Delegation do
-	use Liquio.Web, :model
-
+	use Ecto.Schema
+	use Timex.Ecto.Timestamps
+	import Ecto.Query, only: [from: 2]
 	alias Liquio.{Delegation, Repo, Identity, Signature}
 
 	schema "delegations" do

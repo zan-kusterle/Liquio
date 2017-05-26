@@ -1,5 +1,6 @@
 defmodule Liquio.Reference do
-	alias Liquio.Reference
+	import Ecto.Query, only: [from: 2]
+	alias Liquio.{Repo, Node, Delegation, Reference, ReferenceVote, Results, VotingPower}
 	
 	@enforce_keys [:path, :reference_path, :results]
 	defstruct [:path, :reference_path, :results]
@@ -22,5 +23,22 @@ defmodule Liquio.Reference do
 
 	def group_key(reference) do
 		"#{Enum.join(reference.path, "/") |> String.downcase} -> #{Enum.join(reference.reference_path, "/") |> String.downcase}" |> String.downcase
+	end
+
+	def load(reference, calculation_opts) do
+		reference = reference
+		|> load_results(calculation_opts)
+		|> Map.put(:node, Node.new(reference.path) |> Node.load(calculation_opts, 0))
+		|> Map.put(:reference_node, Node.new(reference.reference_path) |> Node.load(calculation_opts, 0))
+	end
+	
+	def load_results(reference, calculation_opts) do
+		votes = ReferenceVote.get_at_datetime(reference.path, reference.reference_path, calculation_opts.datetime) |> Repo.preload([:signature])
+		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+		results = Results.from_reference_votes(votes, inverse_delegations, calculation_opts)
+
+		reference
+		|> Map.put(:results, results)
+		|> Map.put(:calculation_opts, calculation_opts)
 	end
 end

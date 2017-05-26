@@ -1,8 +1,6 @@
 defmodule Liquio.TrustMetric do
-	use Liquio.Web, :model
-
-	alias Liquio.Repo
-	alias Liquio.TrustMetric
+	use Ecto.Schema
+	alias Liquio.{Repo, TrustMetric}
 
 	schema "trust_metrics" do
 		field :url, :string

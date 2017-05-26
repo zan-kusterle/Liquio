@@ -1,49 +1,43 @@
 defmodule Liquio.Web.ReferenceController do
 	use Liquio.Web, :controller
 
-	with_params(%{
-		:node => {Plugs.NodeParam, [name: "node_id"]},
-		:reference_node => {Plugs.NodeParam, [name: "id"]}
-	},
-	def show(conn, %{:node => node, :reference_node => reference_node}) do
+	def show(conn, %{"node_id" => id, "id" => reference_id}) do
+		node = Node.decode(id)
+		reference_node = Node.decode(reference_id)
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		reference = Reference.new(node.path, reference_node.path) |> ReferenceRepo.load(calculation_opts)
+		reference = Reference.new(node.path, reference_node.path) |> Reference.load(calculation_opts)
 
 		conn
 		|> render(Liquio.Web.ReferenceView, "show.json", reference: reference)
-	end)
+	end
 
-	with_params(%{
-		:node => {Plugs.NodeParam, [name: "node_id"]},
-		:reference_node => {Plugs.NodeParam, [name: "id"]}
-	},
-	def update(conn, %{:node => node, :reference_node => reference_node, "public_key" => public_key, "signature" => signature, "relevance" => relevance}) do
+	def update(conn, %{"node_id" => id, "id" => reference_id, "public_key" => public_key, "signature" => signature, "relevance" => relevance}) do
+		node = Node.decode(id)
+		reference_node = Node.decode(reference_id)
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Reference.new(node.path, reference_node.path)
 		
 		ReferenceVote.set(Base.decode64!(public_key), Base.decode64!(signature), reference, get_relevance(relevance))
 		calculation_opts = Map.put(calculation_opts, :datetime, Timex.now)
-		reference = ReferenceRepo.load(reference, calculation_opts)
+		reference = Reference.load(reference, calculation_opts)
 		
 		conn
 		|> put_status(:created)
 		|> render(Liquio.Web.ReferenceView, "show.json", reference: reference)
-	end)
+	end
 
-	with_params(%{
-		:node => {Plugs.NodeParam, [name: "node_id"]},
-		:reference_node => {Plugs.NodeParam, [name: "id"]}
-	},
-	def delete(conn, %{:node => node, :reference_node => reference_node, "public_key" => public_key, "signature" => signature}) do
+	def delete(conn, %{"node_id" => id, "id" => reference_id, "public_key" => public_key, "signature" => signature}) do
+		node = Node.decode(id)
+		reference_node = Node.decode(reference_id)
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		reference = Reference.new(node.path, reference_node.path)
 		ReferenceVote.delete(Base.decode64!(public_key), Base.decode64!(signature), reference)
-		reference = NodeRepo.load(reference, calculation_opts)
+		reference = Reference.load(reference, calculation_opts)
 
 		conn
 		|> put_status(:created)
 		|> render(Liquio.Web.ReferenceView, "show.json", reference: reference)
-	end)
+	end
 
 	defp get_relevance(v) do
 		if is_binary(v) do
