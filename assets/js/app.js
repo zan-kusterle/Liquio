@@ -11,6 +11,7 @@ Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(ElementUI, { locale })
 import { sync } from 'vuex-router-sync'
+import { CrossStorageHub } from 'cross-storage'
 import extensionComponent from '../vue/pages/extension.vue'
 import injectComponent from '../vue/pages/inject.vue'
 import identityComponent from '../vue/pages/identity.vue'
@@ -47,14 +48,24 @@ const app = new Vue({
     }
 }).$mount('#app')
 
+CrossStorageHub._set = function(params) {
+    return localStorage.setItem('trustMetricURL', params.value)
+}
+CrossStorageHub._get = function(params) {
+    return localStorage.getItem('trustMetricURL')
+}
+CrossStorageHub.init([
+    { origin: /.*/, allow: ['get', 'set'] }
+])
+
 if (process.env.NODE_ENV === 'production') {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
                 // console.log('ServiceWorker registration successful with scope: ', registration.scope);
             }).catch(function(err) {
-                console.log('ServiceWorker registration failed: ', err);
-            });
-        });
+                console.log('ServiceWorker registration failed: ', err)
+            })
+        })
     }
 }

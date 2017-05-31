@@ -12,6 +12,7 @@ defmodule Liquio.Web.IdentityView do
 	def render("identity.json", %{identity: identity}) do
 		%{
 			username: identity.username,
+			is_in_trust_metric: true,
 			delegations_to: Map.get(identity, :delegations_to, []) |> Enum.map(& {&1.username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
 			delegations: Map.get(identity, :delegations_from, []) |> Enum.map(& {&1.to_username, render("delegation.json", %{delegation: &1})}) |> Enum.into(%{}),
 			#votes: render_many(Map.get(identity, :vote_nodes, []), Liquio.Web.NodeView, "node.json")

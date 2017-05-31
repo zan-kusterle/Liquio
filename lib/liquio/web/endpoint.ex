@@ -24,7 +24,7 @@ defmodule Liquio.Web.Endpoint do
 		at: "/",
 		from: :liquio,
 		gzip: true,
-		only: ~w(css fonts images js icons robots.txt serviceworker.js infuse.js index.html)
+		only: ~w(css fonts images js icons robots.txt serviceworker.js index.html)
 
 	plug Plug.Static,
 		at: "/",

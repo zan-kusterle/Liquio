@@ -27,18 +27,18 @@ defmodule Liquio.Reference do
 
 	def load(reference, calculation_opts) do
 		reference = reference
-		|> load_results(calculation_opts)
 		|> Map.put(:node, Node.new(reference.path) |> Node.load(calculation_opts, 0))
 		|> Map.put(:reference_node, Node.new(reference.reference_path) |> Node.load(calculation_opts, 0))
+		|> load_results(calculation_opts)
+		|> Map.put(:calculation_opts, calculation_opts)
 	end
 	
-	def load_results(reference, calculation_opts) do
+	defp load_results(reference, calculation_opts) do
 		votes = ReferenceVote.get_at_datetime(reference.path, reference.reference_path, calculation_opts.datetime) |> Repo.preload([:signature])
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
 		results = Results.from_reference_votes(votes, inverse_delegations, calculation_opts)
 
 		reference
 		|> Map.put(:results, results)
-		|> Map.put(:calculation_opts, calculation_opts)
 	end
 end

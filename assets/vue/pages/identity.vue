@@ -4,11 +4,13 @@
 			<el-row :gutter="50">
 				<el-col :span="8">
 					<div>&nbsp;
-						<p v-for="incoming_identity in incoming_identities" :key="incoming_identity.username">{{ incoming_identity.username }}</p>
+						<p v-for="delegation in identity.delegations_to" :key="delegation.from_username">{{ delegation.from_username }}</p>
 					</div>
 				</el-col>
 				<el-col :span="8">
-					{{ identity.username }}
+					<h2>{{ identity.username }}</h2>
+
+					<p v-if="identity.is_in_trust_metric === false">Not in trust metric</p>
 
 					<div style="margin-top: 50px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
 						I trust this identity<br>
@@ -46,7 +48,7 @@
 				</el-col>
 				<el-col :span="8">
 					<div>&nbsp;
-						<p v-for="current_identity in identities" :key="current_identity.username">{{ current_identity.username }}</p>
+						<p v-for="delegation in identity.delegations" :key="delegation.to_username">{{ delegation.to_username }}</p>
 					</div>
 				</el-col>
 			</el-row>
@@ -127,24 +129,6 @@ export default {
 		setTrust: function(is_trusting) {
 			this.isTrusting = is_trusting
 			this.setDelegation()
-		}
-	},
-	computed: {
-		incoming_identities: function() {
-			let l = []
-			if(self.identity) {
-				_.each(self.identity.trusts_to, (x) => l.push(x))
-				_.each(self.identity.delegations_to, (x) => l.push(x))
-			}
-			return l
-		},
-		identities: function() {
-			let l = []
-			if(self.identity) {
-				_.each(self.identity.trusts, (trust) => l.push(x))
-				_.each(self.identity.delegations, (delegation) => l.push(x))
-			}
-			return l
 		}
 	}
 }

@@ -1,5 +1,5 @@
 <template>
-<div v-if="this.results && Object.keys(this.results.contributions_by_identities).length > 0">
+<div v-if="this.results && this.results.contributions_by_identities && Object.keys(this.results.contributions_by_identities).length > 0">
 	<div v-html="this.results.embeds.spectrum" v-if="currentResultsView == 'latest' && this.results.embeds.spectrum" style="width: 500px; display: block; margin: 0px auto; font-size: 36px;"></div>
 	<div v-html="this.results.embeds.value" v-if="currentResultsView == 'latest' && !this.results.embeds.spectrum" style="width: 400px; display: block; margin: 0px auto; font-size: 36px;"></div>
 	

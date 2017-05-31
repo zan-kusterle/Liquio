@@ -1,6 +1,6 @@
 <template>
 <div>
-	<el-popover ref="login" placement="bottom-end" width="500" trigger="click" :visible-arrow=false>
+	<el-popover ref="login" placement="bottom-end" width="500" trigger="click">
 		<div class="login">
 			<el-input class="words" v-model="words" @keyup.native.enter="login" placeholder="Login with a list of 13 words">
 				<el-button slot="append" icon="caret-right" @click="login"></el-button>
@@ -50,13 +50,13 @@
 
 	<el-dialog title="Options" v-model="dialogVisible">
 		<div class="block">
-			<p class="demonstration">View snapshot at any day</p>
+			<p class="demonstration">View snapshot at any date</p>
 			<el-date-picker type="date" placeholder="Pick a day" v-model="datetime"></el-date-picker>
 		</div>
 
 		<div class="block">
 			<p class="demonstration">Trust metric URL</p>
-			<el-input type="url"></el-input>
+			<el-input type="url" v-model="trustMetricURL"></el-input>
 		</div>
 
 		<div class="block">
@@ -70,8 +70,8 @@
 		</div>
 
 		<span slot="footer" class="dialog-footer">
-			<el-button @click="dialogVisible = false">Cancel</el-button>
-			<el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+			<el-button @click="dialogVisible = false">Close</el-button>
+			<el-button type="primary" @click="dialogVisible = false; saveOptions()">Save</el-button>
 		</span>
 	</el-dialog>
 </div>
@@ -98,7 +98,7 @@ export default {
 			
 			dialogVisible: false,
 			datetime: new Date(),
-			minimum_turnout: 50,
+			trustMetricURL: self.$store.getters.currentOpts.trustMetricURL,
 			vote_weight_halving_days: 1000,
 			soft_quorum_t: 0,
 			minimum_relevance_score: 50,
@@ -144,6 +144,12 @@ export default {
 				if(index !== self.$store.state.currentKeyPairIndex) {
 					self.$store.state.currentKeyPairIndex = index
 					localStorage.setItem('currentIndex', index)
+				}
+			},
+			saveOptions: function() {
+				if(self.$store.state.trustMetricURL !== self.trustMetricURL) {
+					self.$store.state.trustMetricURL = self.trustMetricURL
+					localStorage.setItem('trustMetricURL', self.trustMetricURL)
 				}
 			}
 		}

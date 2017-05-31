@@ -15,9 +15,9 @@ export default new Vuex.Store({
         nodes: [],
         references: [],
         identities: [],
-        calculation_opts: {},
         storageSeeds: localStorage.seeds || '',
         currentKeyPairIndex: localStorage.currentIndex ? parseInt(localStorage.currentIndex) : 0,
+        trustMetricURL: localStorage.trustMetricURL || (process.env.NODE_ENV === 'production' ? 'https://trust-metric.liqu.io' : 'http://127.0.0.1:8080/dev_trust_metric.html'),
         units: _.map([
             { key: 'true', text: 'True-False', value: 'true', type: 'spectrum' },
             { key: 'count', text: 'Count', value: 'count', type: 'quantity' },
@@ -60,7 +60,7 @@ export default new Vuex.Store({
             return {
                 keypairs: availableKeyPairs,
                 keypair: state.currentKeyPairIndex < availableKeyPairs.length ? availableKeyPairs[state.currentKeyPairIndex] : null,
-                trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.html"
+                trustMetricURL: state.trustMetricURL
             }
         },
         currentNode: (state) => {
@@ -220,9 +220,6 @@ export default new Vuex.Store({
             if (existingIndex >= 0)
                 state.nodes.splice(existingIndex, 1)
             state.nodes.push(node)
-
-            if (node.calculation_opts)
-                state.calculation_opts = node.calculation_opts
         },
         setReference(state, reference) {
             reference.key = reference.node.path.join('/')
