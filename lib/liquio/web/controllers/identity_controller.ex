@@ -2,7 +2,7 @@ defmodule Liquio.Web.IdentityController do
 	use Liquio.Web, :controller
 
 	def index(conn, %{}) do
-		identities = Identity |> Repo.all
+		identities = Identity.all()
 		render(conn, "index.json", identities: identities)
 	end
 

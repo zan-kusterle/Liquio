@@ -10,6 +10,28 @@ defmodule Liquio.Identity do
 		|> Enum.join("")
 	end
 
+	def all() do
+		delegations = from(d in Delegation, where: is_nil(d.to_datetime))
+		|> Repo.all
+		
+		delegations_by_usernames = delegations
+		|> Enum.group_by(& &1.username)
+		delegations_by_to_usernames = delegations
+		|> Enum.group_by(& &1.to_username)
+		usernames = Enum.uniq(Map.keys(delegations_by_usernames) ++ Map.keys(delegations_by_to_usernames))
+
+		identities = usernames
+		|> Enum.map(fn(username) ->
+			%{
+				:username => username,
+				:delegations_from => delegations_by_usernames |> Map.get(username, []) |> Enum.sort_by(& &1.weight),
+				:delegations_to => delegations_by_to_usernames |> Map.get(username, []) |> Enum.sort_by(& &1.weight)
+			}
+		end)
+
+		identities
+	end
+
 	def preload(username) do
 		%{:username => username}
 		|> preload_delegations()
