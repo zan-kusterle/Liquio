@@ -122,9 +122,9 @@ defmodule Liquio.Node do
 	defp load_references(node, calculation_opts, depth) do
 		key = {node.path, calculation_opts.trust_usernames}
 
-		reference_results = Cachex.get!(:references, key)
-		%{:references => reference_results, :inverse_references => inverse_reference_results} = if reference_results do
-			reference_results
+		cache_data = Cachex.get!(:references, key)
+		%{:references => reference_results, :inverse_references => inverse_reference_results} = if cache_data do
+			cache_data
 		else
 			references = ReferenceVote.get_references(node, calculation_opts)
 			|> Enum.map(& Reference.load(&1, calculation_opts))
