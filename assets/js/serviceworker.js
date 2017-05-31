@@ -29,8 +29,7 @@ self.addEventListener('install', function(event) {
 self.addEventListener('fetch', function(event) {
     var request = event.request
     var acceptHeader = request.headers.get('Accept')
-
-    let url = new URL(request.url)
+    var url = new URL(request.url)
 
     if (acceptHeader.indexOf('application/json') !== -1) {
         event.respondWith(fetch(request).then(function(response) {
