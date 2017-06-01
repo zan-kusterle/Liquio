@@ -1,7 +1,7 @@
 <template>
 <div class="inject">
 	<div class="get">
-		<h2>Let anyone see the facts on your website</h2>
+		<h2>Let everyone see relevant facts on your website</h2>
 		<el-button type="primary" size="large" @click="dialogVisible = !dialogVisible">
 			<img src="/images/icon.svg" style="-webkit-filter: brightness(1000%); vertical-align: middle; width: 50px; opacity: 0.7;"></img>
 			<span style="vertical-align: middle; margin-left: 10px; font-size: 22px;">Democratize your website</span>
@@ -30,19 +30,7 @@
 	</div>
 
 	<div class="feature">
-		<h3>Make your visitors more confident in what you say being true</h3>
-	</div>
-
-	<div class="feature">
-		<h3>Completely transparent with no censorship or moderation</h3>
-	</div>
-
-	<div class="feature">
-		<h3>Set a default trust metric, let others choose a different one</h3>
-	</div>
-
-	<div class="feature">
-		<h3>Always only count votes from the people you trust</h3>
+		<h3>Completely transparent without moderation or censorship</h3>
 	</div>
 </div>
 </template>

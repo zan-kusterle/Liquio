@@ -68,7 +68,7 @@
 			</router-link>
 		</div>
 
-		<div class="get-extension">
+		<div class="get-extension" style="display: none;">
 			<router-link to="/infuse">
 				<el-button>
 					<img src="/images/icon.svg" style="-webkit-filter: brightness(0%); vertical-align: middle; width: 32px; opacity: 0.8;"></img>
