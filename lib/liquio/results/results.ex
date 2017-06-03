@@ -45,7 +45,8 @@ defmodule Liquio.Results do
 		%{
 			:voting_power => by_units |> Enum.map(fn({_, v}) -> v.voting_power end) |> Enum.sum,
 			:turnout_ratio => by_units |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum,
-			:by_units => by_units
+			:by_units => by_units,
+			:votes => votes
 		}
 	end
 
@@ -78,7 +79,9 @@ defmodule Liquio.Results do
 			|> Map.put(:weight, if total_voting_power > 0 do power / total_voting_power else nil end)
 		end)
 
-		from_contributions(contributions, datetime, MapSet.size(trust_usernames), %{:type => :spectrum, :positive => "Relevant", :negative => "Irrelevant"})
+		unit = %{:type => :spectrum, :positive => "Relevant", :negative => "Irrelevant"}
+		from_contributions(contributions, datetime, MapSet.size(trust_usernames), unit)
+		|> Map.put(:votes, votes)
 	end
 
 	defp from_contributions(contributions, datetime, trust_metric_size, unit) do

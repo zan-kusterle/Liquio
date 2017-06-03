@@ -113,15 +113,21 @@ export function setReferenceVote(opts, key, reference_key, relevance, cb) {
         signature: utils.encodeBase64(signature),
         relevance: relevance
     })
-
     axios.put('/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key), params).then(function(response) {
-        cb(response.data)
+        cb(response.data.data)
     }).catch(function(error) {})
 }
 
 export function unsetReferenceVote(opts, key, reference_key, cb) {
-    let url = '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key)
-    axios.delete(url).then(function(response) {
-        cb(response.data)
+    let message = [opts.keypair.username, key, reference_key].join(' ')
+    let message_hash = nacl.hash(utils.stringToBytes(message))
+    let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
+
+    let params = Object.assign(getCommonParams(opts), {
+        public_key: utils.encodeBase64(opts.keypair.publicKey),
+        signature: utils.encodeBase64(signature)
+    })
+    axios.delete('/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key), { params: params }).then(function(response) {
+        cb(response.data.data)
     }).catch(function(error) {})
 }

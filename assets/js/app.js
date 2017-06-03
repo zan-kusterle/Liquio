@@ -3,10 +3,12 @@ import Vuex from 'vuex'
 import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
 import VueRouter from 'vue-router'
-
+import VueI18n from 'vue-i18n'
 import 'element-ui/lib/theme-default/index.css'
 import velocity from 'velocity-animate'
+import messages from 'texts'
 
+Vue.use(VueI18n)
 Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(ElementUI, { locale })
@@ -39,9 +41,15 @@ const router = new VueRouter({
 })
 sync(store, router)
 
+const i18n = new VueI18n({
+    locale: 'en',
+    messages: messages
+})
+
 const app = new Vue({
     router: router,
     store: store,
+    i18n: i18n,
     components: { App },
     data: function() {
         return {}

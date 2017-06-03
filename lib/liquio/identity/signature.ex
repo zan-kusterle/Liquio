@@ -24,7 +24,14 @@ defmodule Liquio.Signature do
 		if Ed25519.valid_signature?(signature, data_hash, public_key) do
 			conn = %IpfsConnection{host: "127.0.0.1", base: "api/v0", port: 5001}
 			ipfs_content = [data, Base.encode64(public_key), Base.encode64(signature)]
-			case IpfsApi.add(conn, Enum.join(ipfs_content, "//")) do
+
+			ipfs_result = if Mix.env == :prod do
+				IpfsApi.add(conn, Enum.join(ipfs_content, "//"))
+			else
+				{:ok, %{"Hash" => "Development"}}
+			end
+			
+			case ipfs_result do
 				{:ok, ipfs_result} ->
 					result = Repo.insert!(%Signature{
 						:public_key => Base.encode64(public_key),

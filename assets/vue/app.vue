@@ -35,6 +35,11 @@
 					<a v-popover:login><i class="el-icon-plus" aria-hidden="true"></i></a>
 
 					<a @click="dialogVisible = !dialogVisible"><i class="el-icon-setting"></i></a>
+
+					<el-select v-model="language" v-on:change="setLanguage()" size="mini" class="language-select">
+						<el-option label="English" value="en"></el-option>
+						<el-option label="Slovenščina" value="si"></el-option>
+					</el-select>
 				</div>
 			</el-col>
 		</el-row>
@@ -78,6 +83,8 @@
 </template>
 
 <script>
+import Vue from 'vue'
+
 let generateWords = () => {
 	var bip39 = require('bip39')
 	var nacl = require('tweetnacl')
@@ -95,7 +102,7 @@ export default {
 	data: function() {
 		let self = this
 		return {
-			
+			language: 'en',
 			dialogVisible: false,
 			datetime: new Date(),
 			trustMetricURL: self.$store.getters.currentOpts.trustMetricURL,
@@ -151,6 +158,9 @@ export default {
 					self.$store.state.trustMetricURL = self.trustMetricURL
 					localStorage.setItem('trustMetricURL', self.trustMetricURL)
 				}
+			},
+			setLanguage: function() {
+				self.$i18n.locale = self.language
 			}
 		}
 	}
@@ -158,6 +168,15 @@ export default {
 </script>
 
 <style lang="less">
+.language-select {	
+	input {
+		background-color: transparent;
+		color: white;
+		border: none;
+		text-align: right;
+	}
+}
+
 .loading {
 	font-size: 48px;
 	color: #2a9fec;

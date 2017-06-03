@@ -53,7 +53,7 @@
 		</div>
 	</div>
 	<div v-else-if="!node.loading" class="after">
-		<h1 class="title">A liquid democracy where anyone can vote on anything</h1>
+		<h1 class="title">{{ $t("message.tagline") }}</h1>
 
 		<el-input placeholder="Search" v-model="search_title" @keyup.native.enter="search" style="max-width: 800px;">
 			<el-button slot="append" icon="search" @click="search"></el-button>
@@ -139,7 +139,6 @@ export default {
 			},
 			setVote: function(vote) {
 				vote.key = self.node.key
-				vote.keypair = self.$store.getters.currentOpts.keypair
 				self.$store.dispatch('setVote', vote)
 			},
 			unsetVote: function(vote) {

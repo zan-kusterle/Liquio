@@ -16,6 +16,19 @@ defmodule Liquio.Web.NodeView do
 			node.references |> Enum.map(fn(reference) ->
 				reference_results = render_one(reference, Liquio.Web.ReferenceView, "results.json")
 
+				reference_results = if Map.has_key?(reference, :for_choice_results) do
+					for_choice = reference.for_choice_results.by_units
+					|> Enum.map(fn({k, unit_results}) ->
+						{k, unit_results.average}
+					end)
+					|> Enum.into(%{})
+					
+					reference_results
+					|> Map.put(:for_choice, for_choice)
+				else
+					reference_results
+				end
+
 				render(Liquio.Web.NodeView, "node.json", %{node: reference.reference_node})
 				|> Map.put(:reference_results, reference_results)
 			end)
@@ -64,6 +77,7 @@ defmodule Liquio.Web.NodeView do
 
 		results
 		|> Map.put(:by_units, by_units)
+		|> Map.drop([:votes])
 	end
 
 	def render("vote.json", %{node: vote}) do
