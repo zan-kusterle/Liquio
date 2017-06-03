@@ -40,5 +40,6 @@ config :liquio, Liquio.Repo,
 config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.html"
 config :liquio, trust_metric_cache_time_seconds: 5
 config :liquio, results_cache_seconds: 5
+config :liquio, enable_ipfs: false
 
 import_config "dev.secret.exs"

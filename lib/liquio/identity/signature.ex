@@ -25,7 +25,7 @@ defmodule Liquio.Signature do
 			conn = %IpfsConnection{host: "127.0.0.1", base: "api/v0", port: 5001}
 			ipfs_content = [data, Base.encode64(public_key), Base.encode64(signature)]
 
-			ipfs_result = if Mix.env == :prod do
+			ipfs_result = if Application.get_env(:liquio, :enable_ipfs) do
 				IpfsApi.add(conn, Enum.join(ipfs_content, "//"))
 			else
 				{:ok, %{"Hash" => "Development"}}

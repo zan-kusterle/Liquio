@@ -53,9 +53,9 @@
 		</div>
 	</div>
 	<div v-else-if="!node.loading" class="after">
-		<h1 class="title">{{ $t("message.tagline") }}</h1>
+		<h1 class="title">{{ $t('message.tagline') }}</h1>
 
-		<el-input placeholder="Search" v-model="search_title" @keyup.native.enter="search" style="max-width: 800px;">
+		<el-input :placeholder="$t('message.search')" v-model="search_title" @keyup.native.enter="search" style="max-width: 800px;">
 			<el-button slot="append" icon="search" @click="search"></el-button>
 		</el-input>
 
@@ -63,7 +63,7 @@
 			<router-link to="/link">
 				<el-button>
 					<img src="/images/google-chrome-icon.png" style="vertical-align: middle; width: 32px; opacity: 0.8;"></img>
-					<span style="vertical-align: middle; margin-left: 5px; font-size: 20px;">Get extension</span>
+					<span style="vertical-align: middle; margin-left: 5px; font-size: 20px;">{{ $t('message.get_extension') }}</span>
 				</el-button>
 			</router-link>
 		</div>

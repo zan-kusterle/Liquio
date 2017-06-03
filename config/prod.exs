@@ -17,6 +17,7 @@ config :liquio, Liquio.Web.Endpoint,
 config :liquio, default_trust_metric_url: "https://trust-metric.liqu.io"
 config :liquio, trust_metric_cache_time_seconds: 30
 config :liquio, results_cache_seconds: 10
+config :liquio, enable_ipfs: true
 
 config :logger, level: :info
 

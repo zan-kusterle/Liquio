@@ -22,3 +22,4 @@ config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metri
 config :liquio, trust_metric_cache_time_seconds: 5 * 60
 config :liquio, token_lifespan_minutes: 5
 config :liquio, results_cache_seconds: 5
+config :liquio, enable_ipfs: false

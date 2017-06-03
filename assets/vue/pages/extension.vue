@@ -1,7 +1,7 @@
 <template>
 <div class="extension">
 	<div class="get">
-		<h2>Vote on anything, anywhere on the web</h2>
+		<h2>{{ $t('message.extension_tagline') }}</h2>
 		<el-button type="primary" size="large" @click="install" v-if="!isInstalled">
 			<img src="/images/google-chrome-icon.png" style="vertical-align: middle; width: 50px; opacity: 0.7;"></img>
 			<span style="vertical-align: middle; margin-left: 10px; font-size: 22px;">Get free extension</span>
