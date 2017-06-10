@@ -10,8 +10,6 @@ config :liquio, Liquio.Web.Endpoint,
 	],
 	url: [host: "liqu.io", port: 443],
 	cache_static_manifest: "priv/static/manifest.json",
-	server: true,
-	root: ".",
 	force_ssl: [hsts: true, subdomains: true]
 
 config :logger, level: :info
