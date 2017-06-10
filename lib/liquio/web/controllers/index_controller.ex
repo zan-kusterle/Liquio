@@ -10,7 +10,8 @@ defmodule Liquio.Web.IndexController do
 	def page(conn, %{"url" => url}) do
 		url_data = URI.parse(url)
 		root_url = "#{url_data.scheme}://#{url_data.host}"
-		script_url = "http://localhost:8080/inject.js"
+		script_url = Application.get_env(:liquio, :infuse_link)
+		proxy_host = Application.get_env(:liquio, :proxy_host)
 
 		response = HTTPotion.get(url)
 		if HTTPotion.Response.success?(response) do
@@ -41,7 +42,7 @@ defmodule Liquio.Web.IndexController do
 			html = Regex.replace(~r/#{player_html}/i, html, "")
 			html = String.replace(html, "<div class=\"player-api player-width player-height\"></div>", "<div class=\"player-api player-width player-height\">#{embed_html}</div>")
 			html = String.replace(html, "yt.player.Application.create(\"player-api\", ytplayer.config);", "")
-			html = String.replace(html, "<head>", "<head><base href=\"http://proxy-liqu.io\"></base>")
+			html = String.replace(html, "<head>", "<head><base href=\"#{proxy_host}\"></base>")
 			html = String.replace(html, "</body>", "<script src=\"#{script_url}\"></script></body>")			
 
 			conn

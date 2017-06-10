@@ -9,7 +9,7 @@ use Mix.Config
 config :liquio, Liquio.Web.Endpoint,
 	url: [host: "localhost"],
 	root: Path.dirname(__DIR__),
-	secret_key_base: "OXjxWdx9pts7IKCZsEjYzi17TxtdnspYpOWNT9xEkjq1owWJCGF/Rn6C1LzKNkSZ",
+	secret_key_base: "1EVNeOWHQFUVrqCr8huo/xSeJWEyxUCGGB435YvbMO6qANRb58O1M391KZ25Bbaw",
 	render_errors: [view: Liquio.Web.ErrorView, accepts: ~w(html json)],
 	pubsub: [
 		name: Liquio.PubSub,

@@ -31,7 +31,8 @@ self.addEventListener('fetch', function(event) {
     var acceptHeader = request.headers.get('Accept')
     var url = new URL(request.url)
 
-    if (acceptHeader.indexOf('application/json') !== -1) {
+    let is_api = acceptHeader.indexOf('application/json') !== -1
+    if (is_api || url.pathname.startsWith('/page') || url.pathname.startsWith('/resource')) {
         event.respondWith(fetch(request).then(function(response) {
             addToCache(dataCacheName, request, response.clone())
             return response
