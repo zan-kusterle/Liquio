@@ -22,6 +22,8 @@
 	<div v-if="node && !node.loading && node.path.length > 0" class="main">
 		<h1 class="title" v-if="node.path[0].startsWith('http:') || node.path[0].startsWith('https:')">
 			<a v-for="(segment, index) in node.path_segments" :href="segment.href" target="_blank"><span v-if="index > 0">/</span>{{segment.text}}</a>
+			<br>
+			<a :href="'/page/' + encodeURIComponent(node.url)" target="_blank" style="font-size: 18px; font-weight: bold;">Visit with Liquio</a>
 		</h1>
 		<h1 class="title" v-else>
 			<p>{{ node.title }}</p>
@@ -232,6 +234,8 @@ let getNode = ($store) => {
 			text: index == 0 ? node.path[index].replace(':', '://') : node.path[index]
 		}
 	})
+
+	node.url = node.path.join('/').replace(':', '://')
 	
 	return node
 }

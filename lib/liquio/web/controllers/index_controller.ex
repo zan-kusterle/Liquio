@@ -41,10 +41,11 @@ defmodule Liquio.Web.IndexController do
 			html = Regex.replace(~r/#{player_html}/i, html, "")
 			html = String.replace(html, "<div class=\"player-api player-width player-height\"></div>", "<div class=\"player-api player-width player-height\">#{embed_html}</div>")
 			html = String.replace(html, "yt.player.Application.create(\"player-api\", ytplayer.config);", "")
-			html = String.replace(html, "<head>", "<head><base href=\"http://liquio-proxy.com\"></base>")
+			html = String.replace(html, "<head>", "<head><base href=\"http://proxy-liqu.io\"></base>")
 			html = String.replace(html, "</body>", "<script src=\"#{script_url}\"></script></body>")			
 
 			conn
+			|> put_session(:current_domain, root_url)
 			|> put_resp_content_type(response.headers["content-type"])
 			|> put_resp_header("Cache-Control", "no-store, must-revalidate")
 			|> send_resp(200, html)
@@ -54,7 +55,7 @@ defmodule Liquio.Web.IndexController do
 	end
 
 	def resource(conn, %{"path" => path}) do
-		domain = "https://www.youtube.com"
+		domain = get_session(conn, :current_domain) || "https://www.youtube.com"
 
 		url = "#{domain}/#{Enum.join(path, "/")}"
 		response = HTTPotion.get(url)

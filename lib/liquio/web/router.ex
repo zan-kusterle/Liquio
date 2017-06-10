@@ -7,6 +7,7 @@ defmodule Liquio.Web.Router do
 
 	pipeline :browser do
 		plug :accepts, ["html"]
+		plug :fetch_session
 	end
 	
 	scope "/api", Liquio.Web do

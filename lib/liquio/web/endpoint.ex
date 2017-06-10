@@ -63,19 +63,3 @@ defmodule Liquio.Web.Endpoint do
 
 	plug Liquio.Web.Router
 end
-
-defmodule Liquio.ProxyResourcePlug do
-	import Plug.Conn
-
-	def init(opts), do: opts
-
-	def call(conn, _opts) do
-		conn
-	end
-end
-
-defmodule Liquio.Web.ResourceProxyEndpoint do
-	use Phoenix.Endpoint, otp_app: :liquio
-
-	plug Liquio.ProxyResourcePlug
-end
