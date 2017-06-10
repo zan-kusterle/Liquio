@@ -98,6 +98,7 @@ export default new Vuex.Store({
                 node.title = 'Results for ' + query
             return node
         },
+        pageUrl: (state) => state.route.params.url,
         getPureNodeByKey: (state, getters) => (key) => {
             let node = _.find(state.nodes, (node) => {
                 return node.key.toLowerCase() == key.toLowerCase()

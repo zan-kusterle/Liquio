@@ -271,6 +271,14 @@ let getNode = ($store) => {
 .list-simple {
 	column-count: 3;
 	column-gap: 30px;
+
+	@media only screen and (max-width: 1000px) {
+		column-count: 2;
+	}
+
+	@media only screen and (max-width: 600px) {
+		column-count: 1;
+	}
 }
 .pick-unit {
 	width: 100%;

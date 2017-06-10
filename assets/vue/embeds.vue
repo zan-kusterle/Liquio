@@ -1,9 +1,9 @@
 <template>
 <div v-if="this.results && this.results.contributions_by_identities && Object.keys(this.results.contributions_by_identities).length > 0">
-	<div v-html="this.results.embeds.spectrum" v-if="currentResultsView == 'latest' && this.results.embeds.spectrum" style="width: 500px; display: block; margin: 0px auto; font-size: 36px;"></div>
+	<div v-html="this.results.embeds.spectrum" v-if="currentResultsView == 'latest' && this.results.embeds.spectrum" class="spectrum-results"></div>
 	<div v-html="this.results.embeds.value" v-if="currentResultsView == 'latest' && !this.results.embeds.spectrum" style="width: 400px; display: block; margin: 0px auto; font-size: 36px;"></div>
 	
-	<div v-html="this.results.embeds.distribution" v-if="currentResultsView == 'distribution'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
+	<div v-html="this.results.embeds.distribution" v-if="currentResultsView == 'distribution'" class="distribution-results"></div>
 	<div v-html="this.results.embeds.by_time" v-if="currentResultsView == 'by_time'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>
 	<div v-if="currentResultsView == 'raw'" style="width: 800px; margin: 0 auto; font-size: 36px;">
 		<div class="contributions">
@@ -47,6 +47,29 @@ export default {
 </script>
 
 <style scoped lang="less">
+.spectrum-results {
+	width: 500px;
+	display: block;
+	margin: 0px auto;
+	font-size: 36px;
+
+	@media only screen and (max-width: 600px) {
+		width: 100%;
+	}
+}
+
+.distribution-results {
+	width: 800px;
+	height: 120px;
+	display: block;
+	margin: 0px auto;
+	font-size: 36px;
+
+	@media only screen and (max-width: 900px) {
+		width: 100%;
+	}
+}
+
 .results-view-button {
 	display: inline-block;
 	margin: 0px 20px;

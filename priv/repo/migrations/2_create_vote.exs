@@ -24,4 +24,9 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 		create index(:votes, [:datetime])
 		create index(:votes, [:to_datetime])
 	end
+
+	def up do
+		execute "CREATE extension if not exists pg_trgm;"
+		execute "CREATE INDEX votes_search_trgm_index ON votes USING gin (search_text gin_trgm_ops);"
+	end
 end

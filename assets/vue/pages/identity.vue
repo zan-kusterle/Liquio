@@ -2,20 +2,19 @@
 	<div v-if="identity">
 		<div class="main">
 			<el-row :gutter="50">
-				<el-col :span="8">
+				<el-col :span="6">
 					<div>&nbsp;
 						<p v-for="delegation in identity.delegations_to" :key="delegation.from_username">{{ delegation.from_username }}</p>
 					</div>
 				</el-col>
-				<el-col :span="8">
+				<el-col :span="12">
 					<h2>{{ identity.username }}</h2>
 
 					<p v-if="identity.is_in_trust_metric === false">Not in trust metric</p>
 
 					<div style="margin-top: 50px;" v-if="$store.state.user == null || identity.username != $store.state.user.username">
-						I trust this identity<br>
-						<el-button @click="setTrust(false)" :type="isTrusting === false ? 'danger' : null">False</el-button>
-						<el-button @click="setTrust(true)" :type="isTrusting === true ? 'success' : null">True</el-button>
+						<el-button @click="setTrust(false)" :type="isTrusting === false ? 'danger' : null">I distrust this user</el-button>
+						<el-button @click="setTrust(true)" :type="isTrusting === true ? 'success' : null">I trust this user</el-button>
 						<br>
 						<el-button type="text" @click="setTrust(null)" v-if="isTrusting !== null">Remove</el-button>
 					</div>
@@ -46,7 +45,7 @@
 						</div>
 					</div>
 				</el-col>
-				<el-col :span="8">
+				<el-col :span="6">
 					<div>&nbsp;
 						<p v-for="delegation in identity.delegations" :key="delegation.to_username">{{ delegation.to_username }}</p>
 					</div>

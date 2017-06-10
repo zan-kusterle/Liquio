@@ -35,11 +35,6 @@
 					<a v-popover:login><i class="el-icon-plus" aria-hidden="true"></i></a>
 
 					<a @click="dialogVisible = !dialogVisible"><i class="el-icon-setting"></i></a>
-
-					<el-select v-model="language" v-on:change="setLanguage()" size="mini" class="language-select">
-						<el-option label="English" value="en"></el-option>
-						<el-option label="Slovenščina" value="si"></el-option>
-					</el-select>
 				</div>
 			</el-col>
 		</el-row>
@@ -54,6 +49,13 @@
 	</div>
 
 	<el-dialog title="Options" v-model="dialogVisible">
+		<div class="block">
+			<p class="demonstration">Change language</p>
+			<el-select v-model="language" v-on:change="setLanguage()">
+				<el-option label="English" value="en"></el-option>
+				<el-option label="Slovenščina" value="si"></el-option>
+			</el-select>
+		</div>
 		<div class="block">
 			<p class="demonstration">View snapshot at any date</p>
 			<el-date-picker type="date" placeholder="Pick a day" v-model="datetime"></el-date-picker>
@@ -168,15 +170,6 @@ export default {
 </script>
 
 <style lang="less">
-.language-select {	
-	input {
-		background-color: transparent;
-		color: white;
-		border: none;
-		text-align: right;
-	}
-}
-
 .loading {
 	font-size: 48px;
 	color: #2a9fec;

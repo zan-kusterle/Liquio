@@ -19,6 +19,7 @@ import injectComponent from '../vue/pages/inject.vue'
 import identityComponent from '../vue/pages/identity.vue'
 import nodeComponent from '../vue/pages/node.vue'
 import referenceComponent from '../vue/pages/reference.vue'
+import pageComponent from '../vue/pages/page.vue'
 import App from '../vue/app.vue'
 
 let store = require('store.js').default
@@ -29,6 +30,7 @@ const routes = [
     { path: '/infuse', component: injectComponent },
     { path: '/identities/:username', component: identityComponent },
     { path: '/search/:query', component: nodeComponent, name: 'search' },
+    { path: '/page/:url', component: pageComponent },
     { path: '/:key/references', component: referenceComponent },
     { path: '/:key/references/:referenceKey', component: referenceComponent },
     { path: '/:key/:unit', component: nodeComponent },
