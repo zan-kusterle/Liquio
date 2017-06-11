@@ -1,16 +1,16 @@
 APP="liquio"
 
 BUILD_HOST="104.155.115.235"
-BUILD_USER="zan"
+BUILD_USER="liquio"
 BUILD_AT="/home/liquio/builds"
 RELEASE_DIR="/home/liquio/builds/_build/prod/rel/liquio"
 
 STAGING_HOSTS="104.155.115.235"
-STAGING_USER="zan"
+STAGING_USER="liquio"
 TEST_AT="/home/liquio/staging"
 
 PRODUCTION_HOSTS="104.155.115.235"
-PRODUCTION_USER="zan"
+PRODUCTION_USER="liquio"
 DELIVER_TO="/home/liquio"
 
 AUTO_VERSION=commit-count+git-revision+branch
