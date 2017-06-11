@@ -3,8 +3,7 @@ use Mix.Config
 config :liquio, Liquio.Web.Endpoint,
 	http: [port: 4000],
 	url: [host: "liqu.io", port: 443],
-	cache_static_manifest: "priv/static/manifest.json",
-	#force_ssl: [hsts: true, subdomains: true]
+	cache_static_manifest: "priv/static/manifest.json"
 
 config :logger, level: :info
 
