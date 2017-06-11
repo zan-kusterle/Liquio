@@ -1,17 +1,17 @@
 APP="liquio"
 
 BUILD_HOST="104.155.115.235"
-BUILD_USER="liquio"
-BUILD_AT="/home/liquio/builds"
-RELEASE_DIR="/home/liquio/builds/_build/prod/rel/liquio"
+BUILD_USER="zan"
+BUILD_AT="/home/zan/builds"
+RELEASE_DIR="/home/zan/builds/_build/prod/rel/liquio"
 
 STAGING_HOSTS="104.155.115.235"
-STAGING_USER="liquio"
-TEST_AT="/home/liquio/staging"
+STAGING_USER="zan"
+TEST_AT="/home/zan/staging"
 
 PRODUCTION_HOSTS="104.155.115.235"
-PRODUCTION_USER="liquio"
-DELIVER_TO="/home/liquio"
+PRODUCTION_USER="zan"
+DELIVER_TO="/home/zan"
 
 AUTO_VERSION=commit-count+git-revision+branch
 
@@ -30,7 +30,7 @@ pre_erlang_clean_compile() {
 }
 
 pre_erlang_get_and_update_deps() {
-  local _prod_secret_path="/home/liquio/prod.secret.exs"
+  local _prod_secret_path="/home/zan/prod.secret.exs"
   if [ "$TARGET_MIX_ENV" = "prod" ]; then
     __sync_remote "
       ln -sfn '$_prod_secret_path' '$BUILD_AT/config/prod.secret.exs'
