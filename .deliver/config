@@ -22,7 +22,7 @@ pre_erlang_clean_compile() {
     cd '$BUILD_AT'
     mkdir -p priv/static
     cd assets
-    npm install
+    yarn install
     NODE_ENV='production' webpack -p
     cd ..
     MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest
