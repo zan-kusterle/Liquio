@@ -1,9 +1,10 @@
 use Mix.Config
 
 config :liquio, Liquio.Web.Endpoint,
-	http: [port: 4001],
+	http: [port: 4000],
 	https: [
-		port: 4000,
+		port: 4040,
+		otp_app: :liquio,
 		keyfile: "/etc/letsencrypt/live/liqu.io/privkey.pem",
 		certfile: "/etc/letsencrypt/live/liqu.io/cert.pem",
 		cacertfile: "/etc/letsencrypt/live/liqu.io/chain.pem"

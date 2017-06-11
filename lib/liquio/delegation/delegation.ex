@@ -49,7 +49,7 @@ defmodule Liquio.Delegation do
 		username = Identity.username_from_key(public_key)
 		message = "#{username} #{to_username}"
 
-		signature = Signature.add!(public_key, message, signature)
+		_signature = Signature.add!(public_key, message, signature)
 
 		now = Timex.now
 		from(v in Delegation,

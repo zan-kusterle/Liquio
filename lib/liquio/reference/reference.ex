@@ -1,6 +1,5 @@
 defmodule Liquio.Reference do
-	import Ecto.Query, only: [from: 2]
-	alias Liquio.{Repo, Node, Delegation, Reference, ReferenceVote, Results, VotingPower}
+	alias Liquio.{Repo, Node, Delegation, Reference, ReferenceVote, Results}
 	
 	@enforce_keys [:path, :reference_path, :results]
 	defstruct [:path, :reference_path, :results]
@@ -26,7 +25,7 @@ defmodule Liquio.Reference do
 	end
 
 	def load(reference, calculation_opts) do
-		reference = reference
+		reference
 		|> Map.put(:node, Node.new(reference.path) |> Node.load(calculation_opts, 0))
 		|> Map.put(:reference_node, Node.new(reference.reference_path) |> Node.load(calculation_opts, 0))
 		|> load_results(calculation_opts)

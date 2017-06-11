@@ -18,7 +18,10 @@ defmodule Liquio.Mixfile do
 	def application() do
 		[
 			mod: {Liquio, []},
-			extra_applications: [:logger, :ssl, :edeliver]
+			extra_applications: [
+				:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
+				:phoenix_ecto, :postgrex, :ssl, :edeliver
+			]
 		]
 	end
 
@@ -31,8 +34,8 @@ defmodule Liquio.Mixfile do
 			{:phoenix_live_reload, "~> 1.0", only: :dev, runtime: false},
 			{:credo, "~> 0.5", only: [:dev, :test], runtime: false},
 			{:phoenix, "~> 1.3.0-rc", override: true},
-			{:edeliver, "~> 1.4.2"},
 			{:phoenix_pubsub, "~> 1.0"},
+			{:edeliver, "~> 1.4.2"},
 			{:cors_plug, "~> 1.1"},
 			{:postgrex, ">= 0.0.0"},
 			{:phoenix_ecto, "~> 3.0"},
