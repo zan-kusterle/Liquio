@@ -2,17 +2,9 @@ use Mix.Config
 
 config :liquio, Liquio.Web.Endpoint,
 	http: [port: 4000],
-	https: [
-		port: 4040,
-		otp_app: :liquio,
-		keyfile: "/etc/letsencrypt/live/liqu.io/privkey.pem",
-		certfile: "/etc/letsencrypt/live/liqu.io/cert.pem",
-		cacertfile: "/etc/letsencrypt/live/liqu.io/chain.pem"
-	],
-	server: true,
 	url: [host: "liqu.io", port: 443],
 	cache_static_manifest: "priv/static/manifest.json",
-	force_ssl: [hsts: true, subdomains: true]
+	#force_ssl: [hsts: true, subdomains: true]
 
 config :logger, level: :info
 
