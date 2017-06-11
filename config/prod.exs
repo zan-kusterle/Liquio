@@ -8,6 +8,7 @@ config :liquio, Liquio.Web.Endpoint,
 		certfile: "/etc/letsencrypt/live/liqu.io/cert.pem",
 		cacertfile: "/etc/letsencrypt/live/liqu.io/chain.pem"
 	],
+	server: true,
 	url: [host: "liqu.io", port: 443],
 	cache_static_manifest: "priv/static/manifest.json",
 	force_ssl: [hsts: true, subdomains: true]
