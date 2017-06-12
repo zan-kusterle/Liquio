@@ -13,7 +13,7 @@ defmodule Liquio.Web.IndexController do
 		script_url = Application.get_env(:liquio, :infuse_link)
 		proxy_host = Application.get_env(:liquio, :proxy_host)
 
-		response = HTTPotion.get(url)
+		response = HTTPotion.get(url, follow_redirects: true)
 		if HTTPotion.Response.success?(response) do
 			html = response.body
 
@@ -52,17 +52,31 @@ defmodule Liquio.Web.IndexController do
 			|> send_resp(200, html)
 		else
 			conn
+			|> send_resp(404, "Webpage does not exist")
 		end
 	end
 
 	def resource(conn, %{"path" => path}) do
 		domain = get_session(conn, :current_domain) || "https://www.youtube.com"
-
 		url = "#{domain}/#{Enum.join(path, "/")}"
-		response = HTTPotion.get(url)
-		if HTTPotion.Response.success?(response) do
+
+		cache_response = Cachex.get!(:resource_proxy, url)
+		response = if cache_response do
+			cache_response
+		else
+			fresh_response = HTTPotion.get(url, follow_redirects: true)
+			if HTTPotion.Response.success?(fresh_response) do
+				Cachex.set(:resource_proxy, url, fresh_response, ttl: 60)
+				fresh_response
+			else
+				nil
+			end
+		end
+		
+		if response do
 			conn
 			|> put_resp_content_type(response.headers["content-type"])
+			|> put_resp_header("Cache-Control", "no-store, must-revalidate")
 			|> send_resp(200, response.body)
 		else
 			conn

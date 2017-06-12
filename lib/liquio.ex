@@ -15,6 +15,7 @@ defmodule Liquio do
 			# worker(Liquio.Worker, [arg1, arg2, arg3]),
 			worker(Cachex, [:voting_power, []], [id: "voting_power_cache"]),
 			worker(Cachex, [:references, []], [id: "references_cache"]),
+			worker(Cachex, [:resource_proxy, []], [id: "resource_proxy"]),
 		]
 
 		# See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
