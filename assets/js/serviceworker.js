@@ -6,8 +6,6 @@ const assetsCacheName = version + 'assets'
 
 var coreCacheUrls = [
     '/',
-    '/css/app.css',
-    '/js/app.js',
     '/fonts/element-icons.woff',
     '/fonts/element-icons.ttf',
     '/images/logo.svg',
@@ -30,8 +28,7 @@ self.addEventListener('fetch', function(event) {
     var acceptHeader = request.headers.get('Accept')
     var url = new URL(request.url)
 
-    let is_api = acceptHeader.indexOf('application/json') !== -1 || url.pathname.startsWith('/api/')
-    if (is_api || url.origin == 'https://www.google-analytics.com' || url.pathname.startsWith('/page/') || url.pathname.startsWith('/resource/')) {
+    if (url.origin !== 'https://liqu.io' || url.pathname.startsWith('/api/') || url.pathname.startsWith('/page/') || url.pathname.startsWith('/resource/')) {
         event.respondWith(fetch(request).then(function(response) {
             addToCache(dataCacheName, request, response.clone())
             return response
@@ -45,16 +42,16 @@ self.addEventListener('fetch', function(event) {
             if (response)
                 return response
 
-            if (url.pathname.startsWith('/images/') || url.pathname.startsWith('/fonts/')) {
-                return fetch(request).then(function(response) {
-                    addToCache(assetsCacheName, request, response.clone())
-                    return response
-                }).catch(function() {
-                    return caches.match('/index.html')
-                })
-            }
+            let is_asset = url.pathname.startsWith('/js/') || url.pathname.startsWith('/css/') || url.pathname.startsWith('/images/') || url.pathname.startsWith('/fonts/')
+            if (!is_asset)
+                return caches.match('/')
 
-            return caches.match('/index.html')
+            return fetch(request).then(function(response) {
+                addToCache(assetsCacheName, request, response.clone())
+                return response
+            }).catch(function() {
+                return caches.match('/')
+            })
         }))
     }
 })
