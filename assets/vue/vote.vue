@@ -1,6 +1,6 @@
 <template>
 <div>
-	<div class="own-contribution" v-for="vote in ownContributions">
+	<div class="own-contribution" v-for="vote in ownContributions" :key="vote.at_date.toISOString()">
 		<div class="value" v-if="isSpectrum">{{ Math.round((vote.choice || vote.relevance) * 100) }}%</div>
 		<div class="value" v-else>{{ Math.round(vote.choice) }}</div>
 
@@ -129,6 +129,4 @@ export default {
 		}
 	}
 }
-
-
 </style>

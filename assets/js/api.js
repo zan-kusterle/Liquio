@@ -39,6 +39,24 @@ export function getIdentity(username, cb) {
     }).catch(function(error) {})
 }
 
+export function setIdentification(opts, key, name, cb) {
+    let message = [opts.keypair.username, key, name].join(' ').trim()
+    let message_hash = nacl.hash(utils.stringToBytes(message))
+    let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
+
+    let params = {
+        public_key: utils.encodeBase64(opts.keypair.publicKey),
+        signature: utils.encodeBase64(signature),
+        key: key
+    }
+    if (name)
+        params['value'] = name
+
+    axios.post('/api/identities/identifications', params).then(function(response) {
+        cb(response.data.data)
+    }).catch(function(error) {})
+}
+
 export function setDelegation(opts, to_identity_username, is_trusted, weight, topics, cb) {
     let message = [opts.keypair.username, to_identity_username, is_trusted || false, weight.toFixed(5), topics ? topics.join(',') : ''].join(' ').trim()
     let message_hash = nacl.hash(utils.stringToBytes(message))

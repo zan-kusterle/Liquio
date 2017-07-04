@@ -25,7 +25,7 @@ defmodule Liquio.Web.IdentityController do
 	end
 
 	def delete(conn, %{"public_key" => public_key, "signature" => signature, "id" => to_username}) do
-		username = Identity.username_from_key(public_key)
+		username = Identity.username_from_key(Base.decode64!(public_key))
 		delegation = Delegation.get_by(username, to_username)
 
 		if delegation do
@@ -37,6 +37,25 @@ defmodule Liquio.Web.IdentityController do
 			conn
 			|> put_status(:not_found)
 			|> render(Liquio.Web.ErrorView, "error.json", message: "Delegation does not exist")
+		end
+	end
+
+	def set_identification(conn, params = %{"public_key" => public_key, "signature" => signature, "key" => key}) do
+		identification = if Map.has_key?(params, "value") do
+			Identity.set_identification(Base.decode64!(public_key), Base.decode64!(signature), key, params["value"])
+		else
+			Identity.unset_identification(Base.decode64!(public_key), Base.decode64!(signature), key)
+		end
+
+		username = Identity.username_from_key(Base.decode64!(public_key))
+		if identification do
+			conn
+			|> put_status(:ok)
+			|> render(Liquio.Web.IdentityView, "show.json", identity: Identity.preload(username))
+		else
+			conn
+			|> put_status(:bad_request)
+			|> render(Liquio.Web.IdentityView, "show.json", identity: Identity.preload(username))
 		end
 	end
 end

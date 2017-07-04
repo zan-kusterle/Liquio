@@ -8,15 +8,18 @@ import 'element-ui/lib/theme-default/index.css'
 import velocity from 'velocity-animate'
 import messages from 'texts'
 
+require("font-awesome-webpack")
+
 Vue.use(VueI18n)
 Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(ElementUI, { locale })
 import { sync } from 'vuex-router-sync'
 import { CrossStorageHub } from 'cross-storage'
-import extensionComponent from '../vue/pages/extension.vue'
-import injectComponent from '../vue/pages/inject.vue'
+import faqComponent from '../vue/pages/faq.vue'
 import identityComponent from '../vue/pages/identity.vue'
+import indexComponent from '../vue/pages/index.vue'
+import searchComponent from '../vue/pages/search.vue'
 import nodeComponent from '../vue/pages/node.vue'
 import referenceComponent from '../vue/pages/reference.vue'
 import App from '../vue/app.vue'
@@ -24,11 +27,10 @@ import App from '../vue/app.vue'
 let store = require('store.js').default
 
 const routes = [
-    { path: '/', component: nodeComponent },
-    { path: '/link', component: extensionComponent },
-    { path: '/infuse', component: injectComponent },
+    { path: '/', component: indexComponent },
+    { path: '/faq', component: faqComponent },
     { path: '/identities/:username', component: identityComponent },
-    { path: '/search/:query', component: nodeComponent, name: 'search' },
+    { path: '/search/:query', component: searchComponent, name: 'search' },
     { path: '/:key/references', component: referenceComponent },
     { path: '/:key/references/:referenceKey', component: referenceComponent },
     { path: '/:key/:unit', component: nodeComponent },

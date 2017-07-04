@@ -1,5 +1,6 @@
 defmodule Liquio.Signature do
 	use Ecto.Schema
+	use Bitwise
 	import Ecto.Query, only: [from: 2]
 	alias Liquio.{Repo, Signature}
 
@@ -19,7 +20,14 @@ defmodule Liquio.Signature do
 	end
 
 	def add(public_key, data, signature) do
-		data_hash = :crypto.hash(:sha512, data)
+		bytes = data |> String.to_charlist |> Enum.flat_map(fn(code) ->
+			if code <= 255 do
+				[code]
+			else
+				[code >>> 8, code &&& 255]
+			end
+		end)
+		data_hash = :crypto.hash(:sha512, bytes)
 
 		if Ed25519.valid_signature?(signature, data_hash, public_key) do
 			conn = %IpfsConnection{host: "127.0.0.1", base: "api/v0", port: 5001}

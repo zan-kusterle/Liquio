@@ -32,7 +32,7 @@
 				<div class="actions">
 					<router-link v-if="$store.getters.currentOpts.keypair" :to="'/identities/' + $store.getters.currentOpts.keypair.username">{{ $store.getters.currentOpts.keypair.username }}</router-link>
 
-					<a v-popover:login><i class="el-icon-plus" aria-hidden="true"></i></a>
+					<a v-popover:login><i class="fa fa-user"></i></a>
 
 					<a @click="dialogVisible = !dialogVisible"><i class="el-icon-setting"></i></a>
 				</div>

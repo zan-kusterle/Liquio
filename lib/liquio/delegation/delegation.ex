@@ -21,28 +21,30 @@ defmodule Liquio.Delegation do
 	def set(public_key, signature, to_username, is_trusting, weight, topics) do
 		weight = weight * 1.0
 		username = Identity.username_from_key(public_key)
-		message = "#{username} #{to_username} #{if is_trusting do "true" else "false" end} #{:erlang.float_to_binary(weight, decimals: 5)} #{if topics do Enum.join(topics, ",") else "" end}"
-		|> String.trim
+		if username != to_username do
+			message = "#{username} #{to_username} #{if is_trusting do "true" else "false" end} #{:erlang.float_to_binary(weight, decimals: 5)} #{if topics do Enum.join(topics, ",") else "" end}"
+			|> String.trim
 
-		signature = Signature.add!(public_key, message, signature)
+			signature = Signature.add!(public_key, message, signature)
 
-		now = Timex.now
-		from(v in Delegation,
-			where: v.username == ^username and
-				v.to_username == ^to_username and
-				is_nil(v.to_datetime),
-			update: [set: [to_datetime: ^now]])
-		|> Repo.update_all([])
+			now = Timex.now
+			from(v in Delegation,
+				where: v.username == ^username and
+					v.to_username == ^to_username and
+					is_nil(v.to_datetime),
+				update: [set: [to_datetime: ^now]])
+			|> Repo.update_all([])
 
-		Repo.insert(%Delegation{
-			signature_id: signature.id,
-			username: username,
-			to_username: to_username,
-			to_datetime: nil,
-			is_trusting: is_trusting,
-			weight: weight,
-			topics: topics
-		})
+			Repo.insert(%Delegation{
+				signature_id: signature.id,
+				username: username,
+				to_username: to_username,
+				to_datetime: nil,
+				is_trusting: is_trusting,
+				weight: weight,
+				topics: topics
+			})
+		end
 	end
 
 	def unset(public_key, signature, to_username) do

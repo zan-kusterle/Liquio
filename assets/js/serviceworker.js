@@ -6,6 +6,7 @@ const assetsCacheName = version + 'assets'
 
 var coreCacheUrls = [
     '/',
+    '/fonts/fontawesome-webfont.woff2',
     '/fonts/element-icons.woff',
     '/fonts/element-icons.ttf',
     '/images/logo.svg',

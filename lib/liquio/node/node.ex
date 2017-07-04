@@ -28,7 +28,7 @@ defmodule Liquio.Node do
 			|> Enum.map(& &1.path)
 			|> Enum.uniq
 			|> Enum.map(& Node.new(&1) |> load(calculation_opts))
-			|> Enum.map(& %{:path => &1.path, :results => &1.results})
+			|> Enum.map(& %{:path => &1.path, :results => &1.results, :references_count => Enum.count(&1.references)})
 
 			Cachex.set(:references, key, %{
 				:references => latest,
@@ -40,12 +40,13 @@ defmodule Liquio.Node do
 
 		references = reference_results
 		|> Enum.filter(& &1.results.turnout_ratio > 0.0)
+		|> Enum.sort_by(& -&1.references_count)
 		|> Enum.map(& %{
 			results: %{:average => &1.results.turnout_ratio},
 			reference_node: &1 |> Map.drop([:references, :inverse_references]),
 			node: nil
 		})
-		|> Enum.sort_by(& -&1.results.average)
+		
 		
 		node = Node.new([])
 		|> Map.put(:references, references)
@@ -61,13 +62,12 @@ defmodule Liquio.Node do
 		|> Enum.map(& &1.path)
 		|> Enum.uniq
 		|> Enum.map(& Node.new(&1) |> load(calculation_opts))
-		|> Enum.map(& Map.put(&1, :turnout, &1.results.by_units |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum))
+		|> Enum.sort_by(& -Enum.count(&1.references))
 		|> Enum.map(& %{
-			results: %{:average => &1.turnout + 0.05 * Enum.count(&1.references), :latest_contributions => []},
+			results: %{:average => &1.results.turnout_ratio},
 			reference_node: &1 |> Map.drop([:references, :inverse_references]),
 			node: nil
 		})
-		|> Enum.sort_by(& -&1.results.average)
 
 		Node.new(["Results", query])
 		|> Map.put(:references, references)

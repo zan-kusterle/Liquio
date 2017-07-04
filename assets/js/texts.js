@@ -1,7 +1,7 @@
 export default {
     en: {
         message: {
-            tagline: 'A liquid democracy where anyone can vote on anything',
+            tagline: 'Vote on anything, anywhere on the web',
             search: 'Search',
             get_extension: 'Get extension',
             extension_tagline: 'Vote on anything, anywhere on the web'

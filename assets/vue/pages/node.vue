@@ -1,6 +1,6 @@
 <template>
 <div>
-	<div class="before" v-if="node && !node.loading && node.title !== ''" style="padding-top: 0px;">
+	<div class="before" v-if="node && !node.loading" style="padding-top: 0px;">
 		<transition v-on:enter="inverseReferencesEnter" v-on:leave="inverseReferencesLeave" v-bind:css="false">
 			<div v-if="areInverseReferencesOpen" style="margin-top: 30px; margin-bottom: 30px;">
 				<div class="list-simple">
@@ -19,7 +19,7 @@
 		</p>
 	</div>
 
-	<div v-if="node && !node.loading && node.path.length > 0" class="main">
+	<div v-if="node && !node.loading" class="main">
 		<h1 class="title" v-if="node.path[0].startsWith('http:') || node.path[0].startsWith('https:')">
 			<a v-for="(segment, index) in node.path_segments" :href="segment.href" target="_blank"><span v-if="index > 0">/</span>{{segment.text}}</a>
 			<br>
@@ -54,38 +54,13 @@
 			</transition>
 		</div>
 	</div>
-	<div v-else-if="!node.loading" class="after">
-		<h1 class="title">{{ $t('message.tagline') }}</h1>
-
-		<el-input :placeholder="$t('message.search')" v-model="search_title" @keyup.native.enter="search" style="max-width: 800px;">
-			<el-button slot="append" icon="search" @click="search"></el-button>
-		</el-input>
-
-		<div class="get-extension">
-			<router-link to="/link">
-				<el-button>
-					<img src="/images/google-chrome-icon.png" style="vertical-align: middle; width: 32px; opacity: 0.8;"></img>
-					<span style="vertical-align: middle; margin-left: 5px; font-size: 20px;">{{ $t('message.get_extension') }}</span>
-				</el-button>
-			</router-link>
-		</div>
-
-		<div class="get-extension" style="display: none;">
-			<router-link to="/infuse">
-				<el-button>
-					<img src="/images/icon.svg" style="-webkit-filter: brightness(0%); vertical-align: middle; width: 32px; opacity: 0.8;"></img>
-					<span style="vertical-align: middle; margin-left: 5px; font-size: 20px;">Infuse your website</span>
-				</el-button>
-			</router-link>
-		</div>
-	</div>
 	<div v-else class="main">
 		<h1 class="fake-title">{{ node.title }}</h1>
 		<i class="el-icon-loading loading"></i>
 	</div>
 
 	<div class="after" v-if="node && !node.loading">
-		<el-input v-if="node.title !== '' && node.path[0].toLowerCase() !== 'search'" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px; margin-bottom: 20px;">
+		<el-input v-if="node.title !== ''" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px; margin-bottom: 20px;">
 			<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
 		</el-input>
 		
@@ -128,9 +103,7 @@ export default {
 					self.$router.push(path)
 				}
 			},
-			search: (event) => {
-				self.$router.push('/search/' + encodeURIComponent(self.search_title))
-			},
+
 			current_unit: null,
 			pickUnit: function(unit) {
 				let currentNode = self.$store.getters.currentNode
@@ -251,11 +224,6 @@ let getNode = ($store) => {
 	opacity: 1;
 	word-wrap: break-word;
 	vertical-align: middle;
-}
-
-.get-extension {
-	text-align: center;
-	margin-top: 50px;
 }
 
 .fake-title {

@@ -9,6 +9,96 @@ let getTitle = (path) => {
     return title
 }
 
+let parseVotes = (text) => {
+    let lines = text.split('\n')
+    var current_path = []
+    var votes = []
+    var referenceVotes = []
+    _.each(lines, (line) => {
+        line = line.replace(/\s\s\s\s/g, '\t')
+        let num_indents = 0
+        while (line[num_indents] == '\t') {
+            num_indents++
+        }
+        let rest = line.substring(num_indents).trim()
+
+        if (rest.length > 0) {
+            if (line[0] !== '#') {
+                let diff_indents = current_path.length - num_indents - 1
+                if (diff_indents >= 0)
+                    current_path = current_path.slice(0, current_path.length - diff_indents - 1)
+
+                let words = rest.split(' ')
+                let number = parseFloat(words[0])
+                if (number) {
+                    if (words[1] == '->') {
+                        referenceVotes.push({
+                            relevance: number,
+                            path: current_path,
+                            reference_path: words.slice(2).join(' ').split('/')
+                        })
+                    } else if (words[1] == '<-') {
+                        referenceVotes.push({
+                            relevance: number,
+                            path: words.slice(2).join(' ').split('/'),
+                            reference_path: current_path
+                        })
+                    } else {
+                        current_path.push(words.slice(2).join(' '))
+                        votes.push({
+                            choice: number,
+                            unit: words[1].replace(':', ''),
+                            path: current_path
+                        })
+                    }
+                } else {
+                    if (diff_indents === 0)
+                        current_path = []
+                    current_path.push(words.join(' '))
+                }
+            }
+        }
+    })
+
+    return { votes, referenceVotes }
+}
+
+let formatVotes = (votes, referenceVotes) => {
+    var lines = []
+
+    let recursive = (votes, currentPath) => {
+        let depth = currentPath.length
+
+        let currentReferenceVotes = _.filter(referenceVotes, (rv) => rv.path.join('/') === currentPath.join('/'))
+        _.each(currentReferenceVotes, (referenceVote) => {
+            let referenceVoteText = '<b>' + referenceVote.relevance.toFixed(2) + ' @</b>' + referenceVote.reference_path.join('/')
+            for (var i = 0; i < depth; i++)
+                referenceVoteText = '\t' + referenceVoteText
+            lines.push(referenceVoteText)
+        })
+
+        let availableVotes = _.filter(votes, (v) => v.path.length > depth)
+        let byPrefix = _.groupBy(availableVotes, (v) => v.path[depth])
+        _.each(_.sortBy(Object.keys(byPrefix), (k) => -byPrefix[k].length), (prefix) => {
+            let prefixVotes = byPrefix[prefix]
+            let vote = _.find(prefixVotes, (v) => v.path.length - 1 === depth && v.path[depth] === prefix)
+            let segment = prefix
+            if (vote)
+                segment = '<b>' + vote.choice + ' ' + vote.unit + ': </b>' + segment
+            for (var i = 0; i < depth; i++)
+                segment = '\t' + segment
+
+            lines.push(segment)
+            recursive(prefixVotes, currentPath.slice().concat([prefix]))
+        })
+    }
+    recursive(votes, [])
+
+    return lines.join('\n')
+}
+
+window.parseVotes = parseVotes
+
 export default new Vuex.Store({
     plugins: [],
     state: {
@@ -36,6 +126,9 @@ export default new Vuex.Store({
         })
     },
     getters: {
+        parseVotes: () => (data) => {
+            return parseVotes(data)
+        },
         currentOpts: (state, getters) => {
             var nacl = require('tweetnacl')
 
@@ -97,6 +190,12 @@ export default new Vuex.Store({
             if (node)
                 node.title = 'Results for ' + query
             return node
+        },
+        getIdentityByUsername: (state, getters) => (username) => {
+            let identity = _.find(state.identities, (identity) => {
+                return identity.username.toLowerCase() == username.toLowerCase()
+            })
+            return identity ? JSON.parse(JSON.stringify(identity)) : null
         },
         getPureNodeByKey: (state, getters) => (key) => {
             let node = _.find(state.nodes, (node) => {
@@ -184,6 +283,68 @@ export default new Vuex.Store({
         setIdentity(state, identity) {
             let existingIndex = _.findIndex(state.identities, (i) => i.username == identity.username)
 
+            let { _votes, referenceVotes } = parseVotes(`# Example Liquio import file
+
+0.85 Lie-Fact: Most modern nations have universal healthcare paid by taxes
+
+Earth
+	0.2 Length(m): Sea level relative to 1900 A.D.
+	0.8 False-True: Glaciers are retreating almost everywhere
+	1.2 Temperature(C): Temperature rise relative to 1950 A.D.
+
+Denmark
+	0.32 Ratio: Median tax rate
+
+The United States
+	0.2 Ratio: Median tax rate
+
+Global warming
+	0.15 False-True: Not enough historical data is available to know the cause
+	0.9 False-True: Is caused by human activity
+		1.0 -> Earth/Sea level relative to 1900 A.D.
+		1.0 -> Global warming/Not enough historical data is available to know the cause
+		1.0 -> Earth/Temperature rise relative to 1950 A.D.
+
+Bernie Sanders
+	1.0 <- https://www.youtube.com/watch?v=kVnO3Ru2N7s
+	Intro
+		0.91 False-True: Bernie Sanders is an american politician on libertarian left of political spectrum.
+	Policies
+		0.98 False-True: Is consistently for single payer healthcare
+		0.99 Lie-Fact: Takes no corporate money
+			1.0 -> URL
+	36 Duration(Year): Political experience
+		1.0 <- https://www.youtube.com/watch?v=kVnO3Ru2N7s/0:10
+
+Donald Trump
+	1.0 False-True: Said the United States is the highest taxed nation in the world
+		1.0 -> The United States/Median tax rate
+		1.0 -> Denmark/Median tax rate
+	1.0 False-True: Said that global warming is a Chinese hoax
+		1.0 -> Global warming/Is caused by human activity
+	1.0 False-True: Said he supports the Iraq War
+		1.0 False-True: In interview with Howard Stern
+			1.0 -> URL
+	0.05 False-True: Consistently opposed the Iraq War
+		1.0 -> Donald Trump/Said he supports the Iraq War
+
+Artificial intelligence
+	2045 Time(Year): General intelligence invention`)
+
+            let votes = _.flatMap(identity.votes, (vote) => {
+                return _.map(vote.results.by_units, (results_by_unit, unit) => {
+                    return {
+                        choice: results_by_unit.average,
+                        unit: results_by_unit.value,
+                        path: vote.path
+                    }
+                })
+            })
+            identity.votes_text = formatVotes(votes, referenceVotes)
+
+            identity.websites = Object.keys(_.pickBy(identity.identifications, (v, k) =>
+                (v === 'true' && (k.startsWith('http://') || k.startsWith('https://')))))
+
             if (existingIndex >= 0)
                 state.identities.splice(existingIndex, 1)
             state.identities.push(identity)
@@ -237,7 +398,6 @@ export default new Vuex.Store({
             return new Promise((resolve, reject) => {
                 Api.register(token, username, name, function(identity) {
                     commit('setIdentity', identity)
-                    commit('login', identity)
                     resolve(identity)
                 })
             })
@@ -247,8 +407,6 @@ export default new Vuex.Store({
                 Api.getIdentity(username, (identity) => {
                     _.each(identity.votes, (node) => commit('setNode', node))
                     commit('setIdentity', identity)
-                    if (username == 'me')
-                        commit('login', identity)
                     resolve(identity)
                 })
             })
@@ -326,6 +484,14 @@ export default new Vuex.Store({
         unsetDelegation({ commit, state, getters }, username) {
             return new Promise((resolve, reject) => {
                 Api.unsetDelegation(getters.currentOpts, username, function(identity) {
+                    commit('setIdentity', identity)
+                    resolve(identity)
+                })
+            })
+        },
+        setIdentification({ commit, state, getters }, { key, name }) {
+            return new Promise((resolve, reject) => {
+                Api.setIdentification(getters.currentOpts, key, name, function(identity) {
                     commit('setIdentity', identity)
                     resolve(identity)
                 })
