@@ -82,7 +82,7 @@ let formatVotes = (votes, referenceVotes) => {
         _.each(_.sortBy(Object.keys(byPrefix), (k) => -byPrefix[k].length), (prefix) => {
             let prefixVotes = byPrefix[prefix]
             let vote = _.find(prefixVotes, (v) => v.path.length - 1 === depth && v.path[depth] === prefix)
-            let segment = prefix
+            let segment = prefix.replace(/-/g, ' ')
             if (vote)
                 segment = '<b>' + vote.choice + ' ' + vote.unit + ': </b>' + segment
             for (var i = 0; i < depth; i++)
@@ -481,7 +481,7 @@ Artificial intelligence
                 })
             })
         },
-        unsetDelegation({ commit, state, getters }, username) {
+        unsetDelegation({ commit, state, getters }, { username }) {
             return new Promise((resolve, reject) => {
                 Api.unsetDelegation(getters.currentOpts, username, function(identity) {
                     commit('setIdentity', identity)

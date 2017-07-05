@@ -22,6 +22,7 @@ defmodule Liquio.Delegation do
 		weight = weight * 1.0
 		username = Identity.username_from_key(public_key)
 		if username != to_username do
+			topics = if topics do Enum.map(topics, & String.downcase/1) else nil end
 			message = "#{username} #{to_username} #{if is_trusting do "true" else "false" end} #{:erlang.float_to_binary(weight, decimals: 5)} #{if topics do Enum.join(topics, ",") else "" end}"
 			|> String.trim
 
@@ -35,7 +36,7 @@ defmodule Liquio.Delegation do
 				update: [set: [to_datetime: ^now]])
 			|> Repo.update_all([])
 
-			Repo.insert(%Delegation{
+			Repo.insert!(%Delegation{
 				signature_id: signature.id,
 				username: username,
 				to_username: to_username,
@@ -63,7 +64,11 @@ defmodule Liquio.Delegation do
 	end
 
 	def get_by(username, to_username) do
-		Repo.get_by(Delegation, %{username: username, to_username: to_username, to_datetime: nil})
+		from(d in Delegation, where:
+			d.username == ^username and
+			d.to_username == ^to_username and
+			is_nil(d.to_datetime)
+		) |> Repo.first
 	end
 	
 	def get_inverse_delegations(datetime) do

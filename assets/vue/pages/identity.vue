@@ -9,20 +9,23 @@
 	<div v-if="identity">
 		<div class="main">
 			<el-row :gutter="50">
-				<el-col :span="6">
-					<div>&nbsp;
-						<p v-for="delegation in identity.delegations_to" :key="delegation.from_username">{{ delegation.from_username }}</p>
+				<el-col :sm="24" :md="6">
+					&nbsp;
+					<div v-for="delegation in identity.delegations_to" :key="delegation.from_username">
+						<router-link :to="'/identities/' + delegation.from_username">{{ delegation.from_username }}</router-link>
+						<span v-if="delegation.is_trusting === false"><i class="el-icon-warning"></i> untrusts</span>
+						<span v-if="delegation.is_trusting === true">{{ delegation.weight * 100 }}%</span>
+						<span v-if="delegation.is_trusting === true && delegation.topics.length > 0">({{ delegation.topics.join(', ') }})</span>
 					</div>
 				</el-col>
-				<el-col :span="12">
-					<h2 class="username">{{ identity.username }}</h2>
+				<el-col :sm="24" :md="12">
+					<h2 class="username"><i class="el-icon-arrow-right" style="margin-right: 50px;"></i>{{ identity.username }}<i class="el-icon-arrow-right" style="margin-left: 50px;"></i></h2>
 					<h3 v-if="identity.identifications['name']" class="name">{{ identity.identifications['name'] }}</h3>
 					<a v-for="website in identity.websites" :key=website :href=website target="_blank" class="website">{{ website }}</a>
 
 					<p v-if="identity.is_in_trust_metric === false">Not in trust metric</p>
-					
 
-					<div v-if="true || $store.state.user && identity.username === $store.state.user.username" class="add-identifications">
+					<div v-if="$store.getters.currentOpts.keypair && identity.username == $store.getters.currentOpts.keypair.username" class="add-identifications">
 						<div class="add-name">
 							<el-input v-model="publicName" placeholder="Your name"></el-input>
 							<el-button type="success" @click="setName()">Set public name</el-button>
@@ -33,38 +36,44 @@
 							<el-button type="success" @click="addWebpage()">Add webpage</el-button>
 						</div>
 					</div>
-
-					<div v-if="!$store.state.user || identity.username != $store.state.user.username" class="set-delegation">
+					<div v-else class="set-delegation">
 						<el-button @click="setTrust(false)" :type="isTrusting === false ? 'danger' : null">I distrust</el-button>
 						<el-button @click="setTrust(true)" :type="isTrusting === true ? 'success' : null">I trust</el-button>
-
-						<p style="margin-top: 40px;">Delegate your voting power</p>
-						<el-slider v-model="weight"></el-slider>
-
-						<div class="topics">
-							<el-checkbox v-model="hasTopics" class="topics-checkbox">Specific topics only</el-checkbox>
-							<el-select v-if="hasTopics" v-model="topics" multiple allow-create filterable placeholder="Choose topics" class="topics">
-								<el-option v-for="item in allTopics" :key="item.value" :label="item.label" :value="item.value"></el-option>
-							</el-select>
+						
+						<div v-if="isTrusting === true && ownDelegation">
+							<p style="margin-top: 40px;">You're currently delegating <b>{{ Math.round(ownDelegation.weight * 100) }}%</b> of your voting power to this identity<span v-if="ownDelegation.topics.length > 0"> for topics <b>{{ ownDelegation.topics.join(', ') }}</b></span>.</p>
+							<el-button @click="clearDelegation()" type="danger" style="margin-top: 20px;">Stop delegating</el-button>
 						</div>
+						<div v-else-if="isTrusting === true">
+							<p style="margin-top: 40px;">Delegate your voting power</p>
+							<el-slider v-model="weight"></el-slider>
 
-						<div style="margin-top: 20px;">
-							<el-button @click="setDelegation()" v-if="$store.getters.currentDelegation">Update</el-button>
-							<el-button @click="setDelegation()" v-else>Start delegating</el-button>
-							<el-button @click="clearDelegation()" type="danger" v-if="$store.getters.currentDelegation">Remove</el-button>
+							<div class="topics">
+								<el-checkbox v-model="hasTopics" class="topics-checkbox">For specific topics only</el-checkbox>
+								<el-select v-if="hasTopics" v-model="topics" multiple allow-create filterable placeholder="Choose topics" class="topics">
+									<el-option v-for="item in allTopics" :key="item.value" :label="item.label" :value="item.value"></el-option>
+								</el-select>
+							</div>
+
+							<el-button @click="setDelegation()" style="margin-top: 20px;" type="success">Start delegating</el-button>
 						</div>
 					</div>
 				</el-col>
-				<el-col :span="6">
-					<div>&nbsp;
-						<p v-for="delegation in identity.delegations" :key="delegation.to_username">{{ delegation.to_username }}</p>
+				<el-col :sm="24" :md="6">
+					&nbsp;
+					<div v-for="delegation in identity.delegations" :key="delegation.to_username">
+						<router-link :to="'/identities/' + delegation.to_username">{{ delegation.to_username }}</router-link>
+						<span v-if="delegation.is_trusting === false"><i class="el-icon-warning"></i> untrusts</span>
+						<span v-if="delegation.is_trusting === true">{{ delegation.weight * 100 }}%</span>
+						<span v-if="delegation.is_trusting === true && delegation.topics.length > 0">({{ delegation.topics.join(', ') }})</span>
 					</div>
 				</el-col>
 			</el-row>
 		</div>
 		<div class="after">
-			<div class="pure" v-html="identity.votes_text"></div>
-			<el-button @click="importVisible = true">Import votes</el-button>
+			<div class="pure" v-html="identity.votes_text" v-if="identity.votes.length > 0"></div>
+			<div v-else>This identity has no votes.</div>
+			<el-button v-if="$store.getters.currentOpts.keypair && identity.username == $store.getters.currentOpts.keypair.username" @click="importVisible = true" style="margin-top: 30px;">Import votes</el-button>
 		</div>
 	</div>
 	<div v-else>
@@ -85,15 +94,7 @@ export default {
 		let self = this
 		let username = this.$route.params.username
 
-		this.$store.dispatch('fetchIdentity', username).then((identity) => {
-			let delegation = self.$store.getters.currentOpts.keypair && identity.delegations_to[self.$store.getters.currentOpts.keypair.username]
-			if(delegation) {
-				self.isTrusting = delegation.is_trusting
-				self.weight = delegation.weight * 100
-				self.topics = delegation.topics || []
-			}
-			self.publicName = identity.identifications['name']
-		})
+		this.fetchData(false)
 
 		return {
 			username: username,
@@ -104,6 +105,7 @@ export default {
 			topics: [],
 			allTopics: [
 				{value: 'science', label: 'Science'},
+				{value: 'politics', label: 'Politics'},
 				{value: 'philosophy', label: 'Philosophy'},
 				{value: 'law', label: 'Law'}
 			],
@@ -119,15 +121,41 @@ export default {
 			importData: ''
 		}
 	},
+	watch: {
+		'$route': function(route, previous) {
+			this.fetchData(route.params.username == previous.params.username)
+		}
+	},
 	computed: {
 		identity: function() {
 			let identity = this.$store.getters.getIdentityByUsername(this.username)
 			if(identity)
 				identity.votes_text = identity.votes_text.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
 			return identity
+		},
+		ownDelegation: function() {
+			return this.identity.delegations_to[this.$store.getters.currentOpts.keypair && this.$store.getters.currentOpts.keypair.username]
 		}
 	},
 	methods: {
+		fetchData: function(isSame) {
+			let username = this.$route.params.username
+
+			this.$store.dispatch('fetchIdentity', username).then((identity) => {
+				let delegation = this.$store.getters.currentOpts.keypair && identity.delegations_to[this.$store.getters.currentOpts.keypair.username]
+				if(delegation) {
+					this.isTrusting = delegation.is_trusting
+					this.weight = delegation.weight * 100
+					this.topics = delegation.topics || []
+				}
+				this.publicName = identity.identifications['name']
+				this.username = username
+			})
+		},
+		setTrust: function(v) {
+			this.isTrusting = v
+			this.setDelegation()
+		},
 		setDelegation: function() {
 			let weight = this.weight ? this.weight / 100 : null
 			let topics = this.topics.length > 0 ? this.topics : null
@@ -155,14 +183,14 @@ export default {
 <style scoped lang="less">
 .username {
 	font-weight: normal;
-	font-size: 22px;
+	font-size: 28px;
 	margin: 0px;
 }
 .name {
 	font-weight: normal;
 	font-size: 28px;
 	margin: 0px;
-	margin-top: 10px;
+	margin-top: 30px;
 }
 .website {
 	display: inline-block;
@@ -200,15 +228,9 @@ export default {
 	}
 }
 
-.topics {
-	width: 100%;
-}
-
 .pure {
 	text-align: left;
-	background-color: #f6f6f6;
-	padding: 30px 50px;
-	font-size: 14px;
-	color: #666;
+	font-size: 15px;
+	color: #444;
 }
 </style>

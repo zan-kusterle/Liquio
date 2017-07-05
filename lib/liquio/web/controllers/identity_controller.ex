@@ -11,16 +11,16 @@ defmodule Liquio.Web.IdentityController do
 	end
 
 	def update(conn, params = %{"public_key" => public_key, "signature" => signature, "id" => to_username}) do
-		case Delegation.set(Base.decode64!(public_key), Base.decode64!(signature), to_username, Map.get(params, "is_trusting"), Map.get(params, "weight"), Map.get(params, "topics")) do
-			{:ok, delegation} ->
-				conn
-				|> put_resp_header("location", identity_path(conn, :show, to_username))
-				|> put_status(:created)
-				|> render(Liquio.Web.IdentityView, "show.json", identity: Identity.preload(to_username))
-			{:error, changeset} ->
-				conn
-				|> put_status(:unprocessable_entity)
-				|> render(Liquio.Web.ChangesetView, "error.json", changeset: changeset)
+		delegation = Delegation.set(Base.decode64!(public_key), Base.decode64!(signature), to_username, Map.get(params, "is_trusting"), Map.get(params, "weight"), Map.get(params, "topics"))
+		if delegation do
+			conn
+			|> put_resp_header("location", identity_path(conn, :show, to_username))
+			|> put_status(:created)
+			|> render(Liquio.Web.IdentityView, "show.json", identity: Identity.preload(to_username))
+		else
+			conn
+			|> put_status(:unprocessable_entity)
+			|> render(Liquio.Web.ErrorView, "error.json", message: "Problem setting delegation")
 		end
 	end
 
