@@ -2,9 +2,10 @@
 <div class="faq">
 	<h1 class="title">Frequently Asked Questions</h1>
 
-	<div v-for="item in items" class="item">
+	<div v-for="item in items" :key="item.question" class="item">
 		<p class="question">{{ item.question }}</p>
 		<p class="answer" v-html="item.answer.replace(/\t/g, '&nbsp;').replace(/\n/g, '<br>')"></p>
+		<p v-for="example in item.examples || []" :key="example" class="example">{{ example }}</p>
 	</div>
 </div>
 </template>
@@ -39,39 +40,37 @@ export default {
 					answer: 'Only the owner of the password (13 words) can sign votes and delegations to prove their integrity.'
 				},
 				{
+					question: 'Identifications',
+					answer: 'Used to tie identities with URLs, or to set a public name. '
+				},
+				{
 					question: 'Why use IPFS?',
 					answer: 'This prevents us from being able to remove votes once they are online. Every IPFS message contains starts with datetime and a public key.'
 				},
 				{
 					question: 'IPFS: Identifications',
-					answer: `Used to tie identities with URLs, or to set a public name.
-					%{
-						node => Path,
-						key => String,
-						name => String
-					}`
+					answer: '[URL or <u>name</u>] [<u>true</u> or full name]'
 				},
 				{
 					question: 'IPFS: Delegations',
-					answer: `%{
-						node => Path,
-						unit => X-not X OR Name(Unit),
-						unit => (True-False) OR Length(m),
-						at_date => Grouping by month, set votes on records from the past,
-						choice => Number
-					}`
+					answer: '[To Username] [Weight] [Topics]',
+					examples: [
+						'pxsevdvgbfmfnqlt 1.0 politics,law'
+					]
 				},
 				{
 					question: 'IPFS: Votes',
-					answer: 'Example: Human-activity-is-causing-global-warming True-False 0.20000 30-1-2017.'
+					answer: '[Path] [Unit] [Choice] [Date]?',
+					examples: [
+						'Human-activity-is-causing-global-warming True-False 0.20000 30-1-2017'
+					]
 				},
 				{
 					question: 'IPFS: References',
-					answer: `%{
-						node => Path,
-						reference_node => Path,
-						relevance => Number
-					}`
+					answer: '[Path] [Path] [Relevance]',
+					examples: [
+						'A B 1.0'
+					]
 				},
 				{
 					question: 'Does this mean anyone can build another client using the same data?',
@@ -101,7 +100,7 @@ export default {
 	padding: 0px 50px;
 
 	.title {
-		font-size: 20px;
+		font-size: 30px;
 		font-weight: normal;
 		text-align: left;
 	}
@@ -116,6 +115,10 @@ export default {
 		}
 		.answer {
 			font-size: 20px;
+		}
+		.example {
+			font-size: 16px;
+			color: #444;
 		}
 	}
 }

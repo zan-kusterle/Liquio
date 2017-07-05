@@ -58,7 +58,7 @@
 		<el-row :gutter="20" style="margin-top: 80px;">
 			<el-col :span="12">
 				<div class="feature">
-					<h3 style="margin-bottom: 10px;">See democratic polls anywhere</h3>
+					<h3 style="margin-bottom: 10px;">See and add democratic polls anywhere</h3>
 					<el-button type="primary" size="large" @click="install" v-if="!isInstalled" class="feature-button">
 						<img src="/images/google-chrome-icon.png"></img>
 						<span>Get free extension</span>
@@ -78,7 +78,7 @@
 		</el-row>
 
 		<div class="feature" style="margin-top: 100px;">
-			<h3>For more information check out <a href="/faq"><b>frequently asked questions</b></a>.</h3>
+			<h3>For more information check out <router-link :to="'/faq'"><b>frequently asked questions</b></router-link>.</h3>
 		</div>
 
 		<el-dialog v-model="injectDialogVisible">

@@ -37,11 +37,11 @@
 						</div>
 					</div>
 					<div v-else class="set-delegation">
-						<el-button @click="setTrust(false)" :type="isTrusting === false ? 'danger' : null">I distrust</el-button>
-						<el-button @click="setTrust(true)" :type="isTrusting === true ? 'success' : null">I trust</el-button>
+						<el-button @click="setTrust(false)" :type="isTrusting === false ? 'danger' : null">I don't trust this user</el-button>
+						<el-button @click="setTrust(true)" :type="isTrusting === true ? 'success' : null">I trust this user</el-button>
 						
 						<div v-if="isTrusting === true && ownDelegation">
-							<p style="margin-top: 40px;">You're currently delegating <b>{{ Math.round(ownDelegation.weight * 100) }}%</b> of your voting power to this identity<span v-if="ownDelegation.topics.length > 0"> for topics <b>{{ ownDelegation.topics.join(', ') }}</b></span>.</p>
+							<p style="margin-top: 40px;">You are delegating <b>{{ Math.round(ownDelegation.weight * 100) }}%</b> of your voting power to this identity<span v-if="ownDelegation.topics.length > 0"> for topics <b>{{ ownDelegation.topics.join(', ') }}</b></span>.</p>
 							<el-button @click="clearDelegation()" type="danger" style="margin-top: 20px;">Stop delegating</el-button>
 						</div>
 						<div v-else-if="isTrusting === true">
