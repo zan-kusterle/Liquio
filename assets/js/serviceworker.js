@@ -43,7 +43,7 @@ self.addEventListener('fetch', function(event) {
             if (response)
                 return response
 
-            let is_asset = url.pathname.startsWith('/js/') || url.pathname.startsWith('/css/') || url.pathname.startsWith('/images/') || url.pathname.startsWith('/fonts/')
+            var is_asset = url.pathname.startsWith('/js/') || url.pathname.startsWith('/css/') || url.pathname.startsWith('/images/') || url.pathname.startsWith('/fonts/')
             if (!is_asset)
                 return caches.match('/')
 
