@@ -15,7 +15,7 @@
 						<router-link :to="'/identities/' + delegation.from_username">{{ delegation.from_username }}</router-link>
 						<span v-if="delegation.is_trusting === false"><i class="el-icon-warning"></i> untrusts</span>
 						<span v-if="delegation.is_trusting === true">{{ delegation.weight * 100 }}%</span>
-						<span v-if="delegation.is_trusting === true && delegation.topics.length > 0">({{ delegation.topics.join(', ') }})</span>
+						<span v-if="delegation.is_trusting === true && delegation.topics">({{ delegation.topics.join(', ') }})</span>
 					</div>
 				</el-col>
 				<el-col :sm="24" :md="12">
@@ -41,7 +41,7 @@
 						<el-button @click="setTrust(true)" :type="isTrusting === true ? 'success' : null">I trust this user</el-button>
 						
 						<div v-if="isTrusting === true && ownDelegation">
-							<p style="margin-top: 40px;">You are delegating <b>{{ Math.round(ownDelegation.weight * 100) }}%</b> of your voting power to this identity<span v-if="ownDelegation.topics.length > 0"> for topics <b>{{ ownDelegation.topics.join(', ') }}</b></span>.</p>
+							<p style="margin-top: 40px;">You are delegating <b>{{ Math.round(ownDelegation.weight * 100) }}%</b> of your voting power to this identity<span v-if="ownDelegation.topics"> for topics <b>{{ ownDelegation.topics.join(', ') }}</b></span>.</p>
 							<el-button @click="clearDelegation()" type="danger" style="margin-top: 20px;">Stop delegating</el-button>
 						</div>
 						<div v-else-if="isTrusting === true">
@@ -65,13 +65,13 @@
 						<router-link :to="'/identities/' + delegation.to_username">{{ delegation.to_username }}</router-link>
 						<span v-if="delegation.is_trusting === false"><i class="el-icon-warning"></i> untrusts</span>
 						<span v-if="delegation.is_trusting === true">{{ delegation.weight * 100 }}%</span>
-						<span v-if="delegation.is_trusting === true && delegation.topics.length > 0">({{ delegation.topics.join(', ') }})</span>
+						<span v-if="delegation.is_trusting === true && delegation.topics">({{ delegation.topics.join(', ') }})</span>
 					</div>
 				</el-col>
 			</el-row>
 		</div>
 		<div class="after">
-			<div class="pure" v-html="identity.votes_text" v-if="identity.votes.length > 0"></div>
+			<div class="pure" v-html="identity.votes_text" v-if="identity.votes"></div>
 			<div v-else>This identity has no votes.</div>
 			<el-button v-if="$store.getters.currentOpts.keypair && identity.username == $store.getters.currentOpts.keypair.username" @click="importVisible = true" style="margin-top: 30px;">Import votes</el-button>
 		</div>

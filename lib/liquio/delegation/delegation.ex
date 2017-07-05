@@ -22,7 +22,7 @@ defmodule Liquio.Delegation do
 		weight = weight * 1.0
 		username = Identity.username_from_key(public_key)
 		if username != to_username do
-			topics = if topics do Enum.map(topics, & String.downcase/1) else nil end
+			topics = if topics != nil and not Enum.empty?(topics) do Enum.map(topics, & String.downcase/1) else nil end
 			message = "#{username} #{to_username} #{if is_trusting do "true" else "false" end} #{:erlang.float_to_binary(weight, decimals: 5)} #{if topics do Enum.join(topics, ",") else "" end}"
 			|> String.trim
 
