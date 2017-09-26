@@ -11,6 +11,7 @@
 			<el-row :gutter="50">
 				<el-col :sm="24" :md="6">
 					&nbsp;
+					<i v-if="Object.keys(identity.delegations_to).length > 0" class="el-icon-arrow-right" style="float: right; font-size: 32px; margin-top: 40px; margin-left: 20px;"></i>
 					<div v-for="delegation in identity.delegations_to" :key="delegation.from_username">
 						<router-link :to="'/identities/' + delegation.from_username">{{ delegation.from_username }}</router-link>
 						<span v-if="delegation.is_trusting === false"><i class="el-icon-warning"></i> untrusts</span>
@@ -19,9 +20,12 @@
 					</div>
 				</el-col>
 				<el-col :sm="24" :md="12">
-					<h2 class="username"><i class="el-icon-arrow-right" style="margin-right: 50px;"></i>{{ identity.username }}<i class="el-icon-arrow-right" style="margin-left: 50px;"></i></h2>
+					<h2 class="username">{{ identity.username }}</h2>
 					<h3 v-if="identity.identifications['name']" class="name">{{ identity.identifications['name'] }}</h3>
-					<a v-for="website in identity.websites" :key=website :href=website target="_blank" class="website">{{ website }}</a>
+					<p v-for="website in identity.websites" :key="website" class="website">
+						<a :href="website" target="_blank">{{ website }}</a>
+						<i class="el-icon-close" v-if="$store.getters.currentOpts.keypair && identity.username == $store.getters.currentOpts.keypair.username" @click="removeWebpage(website)"></i>
+					</p>
 
 					<p v-if="identity.is_in_trust_metric === false">Not in trust metric</p>
 
@@ -61,6 +65,7 @@
 				</el-col>
 				<el-col :sm="24" :md="6">
 					&nbsp;
+					<i v-if="Object.keys(identity.delegations).length > 0" class="el-icon-arrow-right" style="float: left; font-size: 32px; margin-top: 40px; margin-right: 20px;"></i>
 					<div v-for="delegation in identity.delegations" :key="delegation.to_username">
 						<router-link :to="'/identities/' + delegation.to_username">{{ delegation.to_username }}</router-link>
 						<span v-if="delegation.is_trusting === false"><i class="el-icon-warning"></i> untrusts</span>
@@ -169,6 +174,9 @@ export default {
 		addWebpage: function() {
 			this.$store.dispatch('setIdentification', {key: this.webpageURL, name: 'true'})
 		},
+		removeWebpage: function(url) {
+			this.$store.dispatch('setIdentification', {key: url, name: 'false'})
+		},
 		setName: function() {
 			this.$store.dispatch('setIdentification', {key: 'name', name: this.publicName})
 		},
@@ -195,6 +203,11 @@ export default {
 .website {
 	display: inline-block;
 	margin-top: 10px;
+
+	i {
+		vertical-align: middle;
+		margin-left: 10px;
+	}
 }
 
 .add-identifications {

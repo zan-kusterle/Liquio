@@ -17,7 +17,7 @@ defmodule Liquio.Identity do
 
 	def set_identification(public_key, signature, key, name) do
 		username = Identity.username_from_key(public_key)
-		message = "#{username} #{key} #{name}"|> String.trim
+		message = "setIdentification #{key} #{name}"|> String.trim
 
 		can_add? = if String.starts_with?(key, "http://") or String.starts_with?(key, "https://") do
 			response = HTTPotion.get(key, follow_redirects: true)

@@ -40,11 +40,11 @@ let parseVotes = (text) => {
                     } else if (words[1] == '<-') {
                         referenceVotes.push({
                             relevance: number,
-                            path: words.slice(2).join(' ').split('/'),
+                            path: words.slice(2).join('-').split('/'),
                             reference_path: current_path
                         })
                     } else {
-                        current_path.push(words.slice(2).join(' '))
+                        current_path.push(words.slice(2).join('-'))
                         votes.push({
                             choice: number,
                             unit: words[1].replace(':', ''),
@@ -54,7 +54,7 @@ let parseVotes = (text) => {
                 } else {
                     if (diff_indents === 0)
                         current_path = []
-                    current_path.push(words.join(' '))
+                    current_path.push(words.join('-'))
                 }
             }
         }
@@ -69,9 +69,9 @@ let formatVotes = (votes, referenceVotes) => {
     let recursive = (votes, currentPath) => {
         let depth = currentPath.length
 
-        let currentReferenceVotes = _.filter(referenceVotes, (rv) => rv.path.join('/') === currentPath.join('/'))
+        let currentReferenceVotes = _.filter(referenceVotes, (rv) => rv.path.join('/').toLowerCase() === currentPath.join('/').toLowerCase())
         _.each(currentReferenceVotes, (referenceVote) => {
-            let referenceVoteText = '<b>' + referenceVote.relevance.toFixed(2) + ' @</b>' + referenceVote.reference_path.join('/')
+            let referenceVoteText = '<b>' + referenceVote.relevance.toFixed(2) + ' -> </b>' + referenceVote.reference_path.join('/').replace(/-/g, ' ')
             for (var i = 0; i < depth; i++)
                 referenceVoteText = '\t' + referenceVoteText
             lines.push(referenceVoteText)
@@ -138,7 +138,6 @@ export default new Vuex.Store({
                 let seedBytes = new Uint8Array(atob(seed).split("").map((c) => c.charCodeAt(0)))
                 if (seedBytes.length >= 32) {
                     let keypair = nacl.sign.keyPair.fromSeed(seedBytes.slice(0, 32))
-
                     let hash = nacl.hash(keypair.publicKey)
                     keypair.username = _.map(hash.slice(0, 16), (byte) => {
                         return String.fromCharCode(97 + byte % 26)
@@ -283,60 +282,21 @@ export default new Vuex.Store({
         setIdentity(state, identity) {
             let existingIndex = _.findIndex(state.identities, (i) => i.username == identity.username)
 
-            let { _votes, referenceVotes } = parseVotes(`# Example Liquio import file
-
-0.85 Lie-Fact: Most modern nations have universal healthcare paid by taxes
-
-Earth
-	0.2 Length(m): Sea level relative to 1900 A.D.
-	0.8 False-True: Glaciers are retreating almost everywhere
-	1.2 Temperature(C): Temperature rise relative to 1950 A.D.
-
-Denmark
-	0.32 Ratio: Median tax rate
-
-The United States
-	0.2 Ratio: Median tax rate
-
-Global warming
-	0.15 False-True: Not enough historical data is available to know the cause
-	0.9 False-True: Is caused by human activity
-		1.0 -> Earth/Sea level relative to 1900 A.D.
-		1.0 -> Global warming/Not enough historical data is available to know the cause
-		1.0 -> Earth/Temperature rise relative to 1950 A.D.
-
-Bernie Sanders
-	1.0 <- https://www.youtube.com/watch?v=kVnO3Ru2N7s
-	Intro
-		0.91 False-True: Bernie Sanders is an american politician on libertarian left of political spectrum.
-	Policies
-		0.98 False-True: Is consistently for single payer healthcare
-		0.99 Lie-Fact: Takes no corporate money
-			1.0 -> URL
-	36 Duration(Year): Political experience
-		1.0 <- https://www.youtube.com/watch?v=kVnO3Ru2N7s/0:10
-
-Donald Trump
-	1.0 False-True: Said the United States is the highest taxed nation in the world
-		1.0 -> The United States/Median tax rate
-		1.0 -> Denmark/Median tax rate
-	1.0 False-True: Said that global warming is a Chinese hoax
-		1.0 -> Global warming/Is caused by human activity
-	1.0 False-True: Said he supports the Iraq War
-		1.0 False-True: In interview with Howard Stern
-			1.0 -> URL
-	0.05 False-True: Consistently opposed the Iraq War
-		1.0 -> Donald Trump/Said he supports the Iraq War
-
-Artificial intelligence
-	2045 Time(Year): General intelligence invention`)
-
             let votes = _.flatMap(identity.votes, (vote) => {
                 return _.map(vote.results.by_units, (results_by_unit, unit) => {
                     return {
                         choice: results_by_unit.average,
                         unit: results_by_unit.value,
                         path: vote.path
+                    }
+                })
+            })
+            let referenceVotes = _.flatMap(identity.votes, (voteNode) => {
+                return _.map(voteNode.references, (referenceVote) => {
+                    return {
+                        relevance: referenceVote.reference_results && referenceVote.reference_results.average,
+                        path: voteNode.path,
+                        reference_path: referenceVote.path
                     }
                 })
             })
@@ -405,7 +365,6 @@ Artificial intelligence
         fetchIdentity({ commit, state }, username) {
             return new Promise((resolve, reject) => {
                 Api.getIdentity(username, (identity) => {
-                    _.each(identity.votes, (node) => commit('setNode', node))
                     commit('setIdentity', identity)
                     resolve(identity)
                 })

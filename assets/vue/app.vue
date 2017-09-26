@@ -7,7 +7,7 @@
 			</el-input>
 
 			<div class="identities">
-				<div class="identity" v-for="(keypair, index) in $store.getters.currentOpts.keypairs">
+				<div class="identity" v-for="(keypair, index) in $store.getters.currentOpts.keypairs" :key="keypair.username">
 					<a @click="setCurrentIndex(index)">{{ keypair.username }}</a>
 					<i @click="removeIndex(index)" class="el-icon-close" aria-hidden="true"></i>
 				</div>
@@ -17,7 +17,7 @@
 				<el-button @click="generate()" size="small">Generate new identity</el-button>
 				<div v-if="randomWords">
 					<p>Use the following words to login: <span>{{ randomWords }}</span></p>
-					<el-button size="small">Download words</el-button>
+					<el-button size="small" @click="downloadIdentity()" style="margin-top: 10px;">Download words</el-button>
 				</div>
 			</div>
 		</div>
@@ -118,6 +118,20 @@ export default {
 			isDone: false,
 			generate: function() {
 				self.randomWords = generateWords()
+			},
+			downloadIdentity: function() {
+				var filename = 'liquio-login'
+				var text = self.randomWords
+				var element = document.createElement('a')
+				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
+				element.setAttribute('download', filename)
+
+				element.style.display = 'none'
+				document.body.appendChild(element)
+
+				element.click()
+
+				document.body.removeChild(element)
 			},
 			login: function(event) {
 				var bip39 = require('bip39')

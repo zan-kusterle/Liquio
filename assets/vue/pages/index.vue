@@ -8,32 +8,32 @@
 		</el-input>
 
 		<el-row :gutter="60" style="margin-top: 100px;">
-			<el-col :span="12">
+			<el-col :sm="24" :md="12">
 				<div class="feature">
-					<h3><i class="fa fa-eye"></i>Easily spot biased or unreliable news</h3>
-					<img src="/images/liquio-bar.svg" width="100%"></img>
-					<img src="/images/link-rating.svg" width="100%" style="margin-top: 50px;"></img>
-					<p>See reliability ratings for any news article, video or a webpage.</p>
+					<h3><i class="fa fa-eye"></i>{{ $t('message.features.news') }}</h3>
+					<img src="/images/liquio-bar-c.svg" width="100%"></img>
+					<img src="/images/link-score.svg" width="100%" style="margin-top: 50px;"></img>
+					<p>{{ $t('message.features.news_subtext') }}</p>
 				</div>
 			</el-col>
-			<el-col :span="12">
+			<el-col :sm="24" :md="12">
 				<div class="feature">
 					<h3><i class="fa fa-pie-chart"></i>Get relevant data at the right time</h3>
-					<img src="/images/inline-links.png"></img>
+					<img src="/images/inline-links.svg"></img>
 					<img src="/images/video-annotations.svg" style="margin-top: 50px; opacity: 1;"></img>
 					<p>See polls for any paragraph or on YouTube.</p>
 				</div>
 			</el-col>
 		</el-row>
 		<el-row :gutter="60" style="margin-top: 40px;">
-			<el-col :span="12">
+			<el-col :sm="24" :md="12">
 				<div class="feature">
 					<h3><i class="fa fa-link"></i>Link polls to content on the web</h3>
 					<img src="/images/reference.png" style="max-width: 800px;"></img>
 				</div>
 			</el-col>
 		
-			<el-col :span="12">
+			<el-col :sm="24" :md="12">
 				<div class="feature">
 					<h3><i class="fa fa-lock"></i>Cryptographically secure</h3>
 					<p>Votes and delegations have a cryptographic signature that proves their integrity. Data is also stored on <a href="https://ipfs.io" target="_blank"><b>IPFS</b></a> to make it impossible for anyone to delete or change.</p>
@@ -41,13 +41,13 @@
 			</el-col>
 		</el-row>
 		<el-row :gutter="60" style="margin-top: 40px;">
-			<el-col :span="12">
+			<el-col :sm="24" :md="12">
 				<div class="feature">
 					<h3><i class="fa fa-comments"></i>No moderation or censorship</h3>
 					<p><a href="/faq#trust-metrics">Trust metrics</a> give you the power to be your own moderator.</p>
 				</div>
 			</el-col>
-			<el-col :span="12">
+			<el-col :sm="24" :md="12">
 				<div class="feature">
 					<h3><i class="fa fa-cog"></i>Open and transparent</h3>
 					<p>All data is publicly available to anyone on <a href="/faq#ipfs">IPFS</a>. Code is also available on <a href="https://github.com/zan-kusterle/Liquio" target="_blank">GitHub <i class="fa fa-github"></i></a>.</p>
@@ -56,7 +56,7 @@
 		</el-row>
 
 		<el-row :gutter="20" style="margin-top: 80px;">
-			<el-col :span="12">
+			<el-col :sm="24" :md="12">
 				<div class="feature">
 					<h3 style="margin-bottom: 10px;">See and add democratic polls anywhere</h3>
 					<el-button type="primary" size="large" @click="install" v-if="!isInstalled" class="feature-button">
@@ -66,7 +66,7 @@
 				</div>
 			</el-col>
 
-			<el-col :span="12">
+			<el-col :sm="24" :md="12">
 				<div class="feature">
 					<h3 style="margin-bottom: 10px;">Let people see democratic data on your website</h3>
 					<el-button type="primary" size="large" @click="injectDialogVisible = !injectDialogVisible" class="feature-button">

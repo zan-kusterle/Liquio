@@ -19,6 +19,7 @@ end
 
 defmodule Liquio.Web.Endpoint do
 	use Phoenix.Endpoint, otp_app: :liquio
+	use ExDebugToolbar.Phoenix
 
 	plug Plug.Static,
 		at: "/",

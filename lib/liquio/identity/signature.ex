@@ -31,10 +31,14 @@ defmodule Liquio.Signature do
 
 		if Ed25519.valid_signature?(signature, data_hash, public_key) do
 			conn = %IpfsConnection{host: "127.0.0.1", base: "api/v0", port: 5001}
-			ipfs_content = [data, Base.encode64(public_key), Base.encode64(signature)]
+			ipfs_content = Poison.encode!(%{
+				"public_key" => Base.encode64(public_key),
+				"data" => data,
+				"signature" => Base.encode64(signature)
+			})
 
 			ipfs_result = if Application.get_env(:liquio, :enable_ipfs) do
-				IpfsApi.add(conn, Enum.join(ipfs_content, "//"))
+				IpfsApi.add(conn, ipfs_content)
 			else
 				{:ok, %{"Hash" => "Development"}}
 			end

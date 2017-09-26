@@ -5,7 +5,7 @@ defmodule Liquio.Mixfile do
 		[
 			app: :liquio,
 			version: "0.0.1",
-			elixir: "~> 1.4.4",
+			elixir: "~> 1.5.0",
 			elixirc_paths: elixirc_paths(Mix.env),
 			compilers: [:phoenix, :gettext] ++ Mix.compilers,
 			build_embedded: Mix.env == :prod,
@@ -19,7 +19,7 @@ defmodule Liquio.Mixfile do
 		[
 			mod: {Liquio, []},
 			extra_applications: [
-				:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
+				:ex_debug_toolbar, :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
 				:phoenix_ecto, :postgrex, :ssl, :edeliver
 			]
 		]
@@ -33,12 +33,12 @@ defmodule Liquio.Mixfile do
 			{:distillery, "~> 1.0", runtime: false},
 			{:phoenix_live_reload, "~> 1.0", only: :dev, runtime: false},
 			{:credo, "~> 0.5", only: [:dev, :test], runtime: false},
-			{:phoenix, "~> 1.3.0-rc", override: true},
+			{:phoenix, "~> 1.3.0", override: true},
 			{:phoenix_pubsub, "~> 1.0"},
 			{:edeliver, "~> 1.4.2"},
 			{:cors_plug, "~> 1.1"},
 			{:postgrex, ">= 0.0.0"},
-			{:phoenix_ecto, "~> 3.0"},
+			{:phoenix_ecto, "~> 3.2.0"},
 			{:phoenix_html, "~> 2.4"},
 			{:gettext, "~> 0.9"},
 			{:cowboy, "~> 1.0"},
@@ -51,7 +51,8 @@ defmodule Liquio.Mixfile do
 			{:secure_random, "~> 0.5"},
 			{:cachex, "~> 2.0"},
 			{:ed25519, "~> 1.0"},
-			{:elixir_ipfs_api, "~> 0.1.0"}
+			{:elixir_ipfs_api, "~> 0.1.0"},
+			{:ex_debug_toolbar, "~> 0.3.0"}
 		]
 	end
 

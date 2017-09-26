@@ -138,7 +138,7 @@ defmodule Liquio.Vote do
 		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
 
 		username = Identity.username_from_key(public_key)
-		message = "#{username} #{Enum.join(node.path, "/")} #{unit.value} #{:erlang.float_to_binary(choice, decimals: 5)}"
+		message = "setVote #{Enum.join(node.path, "/")} #{unit.value} #{:erlang.float_to_binary(choice, decimals: 5)}"
 
 		signature = Signature.add!(public_key, message, signature)
 
@@ -173,7 +173,7 @@ defmodule Liquio.Vote do
 		group_key = Vote.group_key(%{path: node.path, unit: unit, at_date: at_date})
 
 		username = Identity.username_from_key(public_key)
-		message = "#{username} #{Enum.join(node.path, "/")} #{unit.value}"
+		message = "unsetVote #{Enum.join(node.path, "/")} #{unit.value}"
 
 		signature = Signature.add!(public_key, message, signature)
 		

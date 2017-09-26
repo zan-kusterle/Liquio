@@ -23,7 +23,7 @@ defmodule Liquio.Delegation do
 		username = Identity.username_from_key(public_key)
 		if username != to_username do
 			topics = if topics != nil and not Enum.empty?(topics) do Enum.map(topics, & String.downcase/1) else nil end
-			message = "#{username} #{to_username} #{if is_trusting do "true" else "false" end} #{:erlang.float_to_binary(weight, decimals: 5)} #{if topics do Enum.join(topics, ",") else "" end}"
+			message = "setDelegation #{to_username} #{if is_trusting do "true" else "false" end} #{:erlang.float_to_binary(weight, decimals: 5)} #{if topics do Enum.join(topics, ",") else "" end}"
 			|> String.trim
 
 			signature = Signature.add!(public_key, message, signature)
@@ -50,7 +50,7 @@ defmodule Liquio.Delegation do
 
 	def unset(public_key, signature, to_username) do
 		username = Identity.username_from_key(public_key)
-		message = "#{username} #{to_username}"
+		message = "unsetDelegation #{to_username}"
 
 		_signature = Signature.add!(public_key, message, signature)
 

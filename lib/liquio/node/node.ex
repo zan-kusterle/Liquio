@@ -47,7 +47,6 @@ defmodule Liquio.Node do
 			node: nil
 		})
 		
-		
 		node = Node.new([])
 		|> Map.put(:references, references)
 		|> Map.put(:calculation_opts, calculation_opts)

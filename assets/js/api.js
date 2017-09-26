@@ -39,8 +39,8 @@ export function getIdentity(username, cb) {
     }).catch(function(error) {})
 }
 
-export function setIdentification(opts, key, name, cb) {
-    let message = [opts.keypair.username, key, name].join(' ').trim()
+export function setIdentification(opts, key, value, cb) {
+    let message = ['setIdentification', key, value].join(' ').trim()
     let message_hash = nacl.hash(utils.stringToBytes(message))
     let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
 
@@ -49,8 +49,8 @@ export function setIdentification(opts, key, name, cb) {
         signature: utils.encodeBase64(signature),
         key: key
     }
-    if (name)
-        params['value'] = name
+    if (value)
+        params['value'] = value
 
     axios.post('/api/identities/identifications', params).then(function(response) {
         cb(response.data.data)
@@ -59,7 +59,7 @@ export function setIdentification(opts, key, name, cb) {
 
 export function setDelegation(opts, to_identity_username, is_trusted, weight, topics, cb) {
     topics = _.map(topics, (t) => t.toLowerCase())
-    let message = [opts.keypair.username, to_identity_username, is_trusted || false, weight.toFixed(5), topics ? topics.join(',') : ''].join(' ').trim()
+    let message = ['setDelegation', to_identity_username, is_trusted || false, weight.toFixed(5), topics ? topics.join(',') : ''].join(' ').trim()
     let message_hash = nacl.hash(utils.stringToBytes(message))
     let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
 
@@ -76,7 +76,7 @@ export function setDelegation(opts, to_identity_username, is_trusted, weight, to
 }
 
 export function unsetDelegation(opts, to_identity_username, cb) {
-    let message = [opts.keypair.username, to_identity_username].join(' ')
+    let message = ['unsetDelegation', to_identity_username].join(' ')
     let message_hash = nacl.hash(utils.stringToBytes(message))
     let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
 
@@ -90,7 +90,7 @@ export function unsetDelegation(opts, to_identity_username, cb) {
 }
 
 export function setVote(opts, key, unit, at_date, choice, cb) {
-    let message = [opts.keypair.username, key, unit, choice.toFixed(5)].join(' ')
+    let message = ['setVote', key, unit, choice.toFixed(5)].join(' ')
     let message_hash = nacl.hash(utils.stringToBytes(message))
     let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
 
@@ -107,7 +107,7 @@ export function setVote(opts, key, unit, at_date, choice, cb) {
 }
 
 export function unsetVote(opts, key, unit, at_date, cb) {
-    let message = [opts.keypair.username, key, unit].join(' ')
+    let message = ['unsetVote', key, unit].join(' ')
     let message_hash = nacl.hash(utils.stringToBytes(message))
     let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
 
@@ -123,7 +123,7 @@ export function unsetVote(opts, key, unit, at_date, cb) {
 }
 
 export function setReferenceVote(opts, key, reference_key, relevance, cb) {
-    let message = [opts.keypair.username, key, reference_key, relevance.toFixed(5)].join(' ')
+    let message = ['setReferenceVote', key, reference_key, relevance.toFixed(5)].join(' ')
     let message_hash = nacl.hash(utils.stringToBytes(message))
     let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
 
@@ -138,7 +138,7 @@ export function setReferenceVote(opts, key, reference_key, relevance, cb) {
 }
 
 export function unsetReferenceVote(opts, key, reference_key, cb) {
-    let message = [opts.keypair.username, key, reference_key].join(' ')
+    let message = ['unsetReferenceVote', key, reference_key].join(' ')
     let message_hash = nacl.hash(utils.stringToBytes(message))
     let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)
 

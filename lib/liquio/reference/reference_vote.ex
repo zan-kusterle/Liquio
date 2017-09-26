@@ -83,7 +83,7 @@ defmodule Liquio.ReferenceVote do
 	def set(public_key, signature, reference, relevance) do
 		group_key = Reference.group_key(reference)
 		username = Identity.username_from_key(public_key)
-		message = "#{username} #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")} #{:erlang.float_to_binary(relevance, decimals: 5)}"
+		message = "setReferenceVote #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")} #{:erlang.float_to_binary(relevance, decimals: 5)}"
 		signature = Signature.add!(public_key, message, signature)
 
 		now = Timex.now
@@ -112,7 +112,7 @@ defmodule Liquio.ReferenceVote do
 		group_key = Reference.group_key(reference)
 
 		username = Identity.username_from_key(public_key)
-		message = "#{username} #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")}"
+		message = "unsetReferenceVote #{Enum.join(reference.path, "/")} #{Enum.join(reference.reference_path, "/")}"
 
 		signature = Signature.add!(public_key, message, signature)
 

@@ -52,7 +52,7 @@ defmodule Liquio.Web.IndexController do
 			|> send_resp(200, html)
 		else
 			conn
-			|> send_resp(404, "Webpage does not exist")
+			|> send_resp(404, "Webpage <a href=\"#{url}\">#{url}</a> does not exist")
 		end
 	end
 

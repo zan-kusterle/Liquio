@@ -1,0 +1,7 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="200px" height="30px" viewBox="0 0 200 30">
+	<text x="0" y="0" text-anchor="start" alignment-baseline="before-edge" font-size="6" font-family="Arial" fill="#000">Trump has cut the U.S. dept burden by 68$ billion dollars.</text>
+	<rect x="40" y="10" width="50" height="16" fill="#3c0" />
+	<rect x="90" y="10" width="110" height="16" fill="#ccc" />
+	<text x="65" y="18" text-anchor="middle" alignment-baseline="middle" font-size="6" font-family="Arial" fill="#000" font-weight="bold">91%</text>
+	<text x="95" y="18" text-anchor="start" alignment-baseline="middle" font-size="6" font-family="Arial" fill="#000">National dept in the United States</text>
+</svg>
