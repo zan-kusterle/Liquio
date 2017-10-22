@@ -7,6 +7,13 @@ defmodule Liquio.Web.IndexController do
 		|> render(Liquio.Web.LayoutView)
 	end
 
+	def demo(conn, _) do
+		html = Phoenix.View.render_to_string(Liquio.Web.LayoutView, "demo.html", [])
+		conn
+		|> put_resp_header("Cache-Control", "public, max-age=864000")
+		|> send_resp(200, html)
+	end
+
 	def page(conn, %{"url" => url}) do
 		url_data = URI.parse(url)
 		root_url = "#{url_data.scheme}://#{url_data.host}"

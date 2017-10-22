@@ -4,18 +4,18 @@
 		<a :href="'/page/' + encodeURIComponent(node.path.join('/').replace(':', '://'))" target="_blank"><img alt="Visit with Liquio" src="/images/icon.svg" style="width: 20px; vertical-align: middle; margin-right: 20px; -webkit-filter: brightness(0%); opacity: 0.5;"></img></a>
 		<a :href="node.path.join('/').replace(':', '://')" target="_blank">Visit webpage <i class="el-icon-arrow-right"></i></a>
 	</div>
-	<router-link :to="'/' + encodeURIComponent(node.key)" class="link">
+	<router-link :to="'/n/' + encodeURIComponent(node.key)" class="link">
 		<div class="content">
 			<span>{{ node.path.join('/').replace(/-/g, ' ') }}</span>
-			<router-link v-if="referencingNode" :to="'/' + encodeURIComponent(referencingNode.key) + '/references/' + encodeURIComponent(node.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
-			<router-link v-else-if="referencesNode" :to="'/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(referencesNode.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
+			<router-link v-if="referencingNode" :to="'/n/' + encodeURIComponent(referencingNode.key) + '/references/' + encodeURIComponent(node.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
+			<router-link v-else-if="referencesNode" :to="'/n/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(referencesNode.key)" class="reference-link"><i class="el-icon-edit" style="margin-left: 5px;"></i></router-link>
 		</div>
 		<div v-html="this.node.default_unit.embeds.value" v-if="this.node.default_unit && this.node.default_unit.embeds" style="width: 100%; font-size: 0;"></div>
 	</router-link>
 	
 	<div class="references" v-if="node.references">
 		<router-link
-			:to="'/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(reference.key)"
+			:to="'/n/' + encodeURIComponent(node.key) + '/references/' + encodeURIComponent(reference.key)"
 			class="link"
 			v-for="reference in node.references"
 			:key="reference.key"

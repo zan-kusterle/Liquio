@@ -34,7 +34,7 @@
 				<embeds :results="node.default_unit"></embeds>
 			</div>
 
-			<i class="el-icon-caret-bottom" ref="toggle_details" @click="isVoteOpen = !isVoteOpen" style="font-size: 48px;"></i>
+			<i class="el-icon-caret-bottom" ref="toggle_details" v-if="$store.getters.currentOpts.keypair" @click="isVoteOpen = !isVoteOpen" style="font-size: 48px;"></i>
 			
 			<transition v-on:enter="detailsEnter" v-on:leave="detailsLeave" v-bind:css="false">
 				<div v-if="isVoteOpen">
@@ -46,7 +46,7 @@
 						</el-select>
 					</div>
 					
-					<vote ref="votesContainer" v-if="$store.getters.currentOpts.keypair" has-date=true
+					<vote ref="votesContainer" :has-date="true"
 						:unit="node.default_unit.value" :is-spectrum="node.default_unit.type == 'spectrum'"
 						:own-contributions="node.default_unit.contributions_by_identities && node.default_unit.contributions_by_identities[$store.getters.currentOpts.keypair.username] ? node.default_unit.contributions_by_identities[$store.getters.currentOpts.keypair.username].contributions : []"
 						:results="node.default_unit" v-on:set="setVote" v-on:unset="unsetVote"></vote>
@@ -92,14 +92,14 @@ export default {
 			view_reference: (event) => {
 				let clean_key = self.reference_title.trim().replace(/\s+/g, '-')
 				if(clean_key.length >= 3) {
-					let path = '/' + encodeURIComponent(self.node.key) + '/references/' + encodeURIComponent(clean_key)
+					let path = '/n/' + encodeURIComponent(self.node.key) + '/references/' + encodeURIComponent(clean_key)
 					self.$router.push(path)
 				}
 			},
 			view_inverse_reference: (event) => {
 				let clean_key = self.inverse_reference_title.trim().replace(/\s+/g, '-')
 				if(clean_key.length >= 3) {
-					let path = '/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(self.node.key)
+					let path = '/n/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(self.node.key)
 					self.$router.push(path)
 				}
 			},
@@ -108,7 +108,7 @@ export default {
 			pickUnit: function(unit) {
 				let currentNode = self.$store.getters.currentNode
 				if(unit != self.node.default_unit.value) {
-					let path = '/' + encodeURIComponent(currentNode.key) + '/' + unit
+					let path = '/n/' + encodeURIComponent(currentNode.key) + '/' + unit
 					self.$router.push(path)
 				}
 			},

@@ -87,10 +87,10 @@ defmodule Liquio.Node do
 		calculation_opts = calculation_opts |> Map.put(:topics, Map.get(node, :topics))
 
 		votes = Vote.get_at_datetime(node.path, calculation_opts.datetime) |> Repo.preload([:signature])
-		|> Enum.filter(& MapSet.member?(calculation_opts.custom_trust_usernames, &1.username))
+		|> Enum.filter(& MapSet.member?(calculation_opts.trust_usernames, &1.username))
 
 		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
-		|> Enum.filter(fn({username, v}) -> MapSet.member?(calculation_opts.custom_trust_usernames, username) end)
+		|> Enum.filter(fn({username, v}) -> MapSet.member?(calculation_opts.trust_usernames, username) end)
 		|> Enum.into(%{})
 
 		node = if not Enum.empty?(votes) do

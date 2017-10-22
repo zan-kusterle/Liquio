@@ -44,11 +44,11 @@
     <h1 class="title">Is Human Activity the Cause of Global Warming?</h1>
 
     <div style="text-align: center;">
-        <a href="http://localhost:4000/Human-activity-is-causing-global-warming" liquio-view="current" class="main-node">View on Liquio</a>
+        <a href="/n/Human-activity-is-causing-global-warming" class="main-node">View on Liquio</a>
     </div>
 
     <div class="section">
-        <a href="http://localhost:4000/Earth-temperature" liquio-view="graph">Earth temperature is rising</a>
+        <a href="/n/Earth-temperature">Earth temperature is rising</a>
         <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac tempor tellus. Suspendisse non eros eget arcu eleifend ornare. Duis faucibus tempor mi a varius. Quisque sed sapien hendrerit, euismod libero vel, fermentum eros. Maecenas dignissim mi
             sed libero tincidunt dignissim. Phasellus congue erat eu dignissim porta. Nulla iaculis ipsum ac pharetra elementum. Vivamus et semper leo, quis pellentesque nisi. Sed nec bibendum risus. Proin aliquet sagittis dictum. Nunc vel interdum dui.
@@ -56,7 +56,7 @@
     </div>
 
     <div>
-        <h2 liquio-node="Net-dept-in-the-USA" unit="Money(USD)" choice="2016:120B | 2017:52B">
+        <h2>
             Trump has cut the U.S. debt burden by $68 billion dollars.
         </h2>
     </div>
@@ -67,7 +67,7 @@
             script.type = 'text/javascript';
             script.async = true;
             script.onload = function() {};
-            script.src = 'C:/Users/zan/Documents/LiquioInject/inject.js';
+            script.src = '/inject.js';
             d.getElementsByTagName('head')[0].appendChild(script);
         }(document));
     </script>

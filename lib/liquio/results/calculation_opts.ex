@@ -17,12 +17,12 @@ defmodule Liquio.CalculationOpts do
 			else
 				now
 			end
-		{trust_metric_url, trust_usernames} = get_trust_usernames(conn)
-		custom_trust_usernames = if Map.has_key?(conn.params, "trust_usernames") do
+		{trust_metric_url, metric_trust_usernames} = get_trust_usernames(conn)
+		trust_usernames = if Map.has_key?(conn.params, "trust_usernames") do
 			force_usernames = conn.params["trust_usernames"] |> String.split(",") |> Enum.filter(& String.length(&1) > 0)
-			trust_usernames |> MapSet.union(MapSet.new(force_usernames))
+			metric_trust_usernames |> MapSet.union(MapSet.new(force_usernames))
 		else
-			trust_usernames
+			metric_trust_usernames
 		end
 		trust_metric_count = MapSet.size(trust_usernames)
 		
@@ -30,8 +30,8 @@ defmodule Liquio.CalculationOpts do
 			datetime: datetime,
 			depth: depth,
 			trust_metric_url: trust_metric_url,
+			metric_trust_usernames: metric_trust_usernames,
 			trust_usernames: trust_usernames,
-			custom_trust_usernames: custom_trust_usernames,
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days),
 			reference_minimum_agree: 0.5,
 			minimum_voting_power: 0.05 * trust_metric_count,

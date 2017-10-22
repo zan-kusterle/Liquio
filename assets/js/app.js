@@ -31,10 +31,10 @@ const routes = [
     { path: '/faq', component: faqComponent },
     { path: '/identities/:username', component: identityComponent },
     { path: '/search/:query', component: searchComponent, name: 'search' },
-    { path: '/:key/references', component: referenceComponent },
-    { path: '/:key/references/:referenceKey', component: referenceComponent },
-    { path: '/:key/:unit', component: nodeComponent },
-    { path: '/:key', component: nodeComponent }
+    { path: '/n/:key/references', component: referenceComponent },
+    { path: '/n/:key/references/:referenceKey', component: referenceComponent },
+    { path: '/n/:key/:unit', component: nodeComponent },
+    { path: '/n/:key', component: nodeComponent }
 ]
 
 const router = new VueRouter({
@@ -62,6 +62,10 @@ CrossStorageHub._set = function(params) {
     return localStorage.setItem('trustMetricURL', params.value)
 }
 CrossStorageHub._get = function(params) {
+    if(params.keys[0] == 'usernames') {
+        let seeds = store.getters.currentOpts.keypairs
+        return seeds.map((k) => k.username).join(',')
+    }
     return localStorage.getItem('trustMetricURL')
 }
 CrossStorageHub.init([
