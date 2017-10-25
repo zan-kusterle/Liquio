@@ -17,6 +17,7 @@ Vue.use(ElementUI, { locale })
 import { sync } from 'vuex-router-sync'
 import { CrossStorageHub } from 'cross-storage'
 import faqComponent from '../vue/pages/faq.vue'
+import demoComponent from '../vue/pages/demo.vue'
 import identityComponent from '../vue/pages/identity.vue'
 import indexComponent from '../vue/pages/index.vue'
 import searchComponent from '../vue/pages/search.vue'
@@ -28,6 +29,7 @@ let store = require('store.js').default
 
 const routes = [
     { path: '/', component: indexComponent },
+    { path: '/demo', component: demoComponent },
     { path: '/faq', component: faqComponent },
     { path: '/identities/:username', component: identityComponent },
     { path: '/search/:query', component: searchComponent, name: 'search' },

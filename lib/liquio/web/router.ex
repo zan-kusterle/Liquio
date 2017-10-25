@@ -24,10 +24,10 @@ defmodule Liquio.Web.Router do
 	scope "/", Liquio.Web do
 		pipe_through :browser
 
-		get "/demo", IndexController, :demo
 		get "/page/:url", IndexController, :page
 		get "/resource/*path", IndexController, :resource
 		get "/", IndexController, :app
+		get "/demo", IndexController, :app		
 		get "/hub.html", IndexController, :app
 		get "/n/*path", IndexController, :app
 	end

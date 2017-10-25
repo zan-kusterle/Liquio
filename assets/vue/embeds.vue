@@ -1,7 +1,7 @@
 <template>
 <div v-if="this.results && this.results.contributions_by_identities && Object.keys(this.results.contributions_by_identities).length > 0">
-	<div v-html="this.results.embeds.spectrum" v-if="currentResultsView == 'latest' && this.results.embeds.spectrum" class="spectrum-results"></div>
-	<div v-html="this.results.embeds.value" v-if="currentResultsView == 'latest' && !this.results.embeds.spectrum" style="width: 400px; display: block; margin: 0px auto; font-size: 36px;"></div>
+	<div v-html="this.results.embeds.spectrum" v-if="currentResultsView == 'latest' && this.results.embeds.spectrum" class="spectrum-results" style="margin-bottom: -20px;"></div>
+	<div v-html="this.results.embeds.value" v-if="currentResultsView == 'latest'" style="width: 400px; display: block; margin: 0px auto; font-size: 36px; margin-bottom: 20px;"></div>
 	
 	<div v-html="this.results.embeds.distribution" v-if="currentResultsView == 'distribution'" class="distribution-results"></div>
 	<div v-html="this.results.embeds.by_time" v-if="currentResultsView == 'by_time'" style="width: 800px; height: 120px; display: block; margin: 0px auto; font-size: 36px;"></div>

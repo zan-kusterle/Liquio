@@ -18,11 +18,11 @@ function addToCache(cacheName, request, response) {
     })
 }
 
-self.addEventListener('install', function(event) {
+/*self.addEventListener('install', function(event) {
     event.waitUntil(caches.open(coreCacheName).then(function(cache) {
         return cache.addAll(coreCacheUrls)
     }))
-})
+})*/
 
 self.addEventListener('fetch', function(event) {
     var request = event.request

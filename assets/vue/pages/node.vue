@@ -21,7 +21,7 @@
 
 	<div v-if="node && !node.loading" class="main">
 		<h1 class="title" v-if="node.path[0].startsWith('http:') || node.path[0].startsWith('https:')">
-			<a v-for="(segment, index) in node.path_segments" :href="segment.href" target="_blank"><span v-if="index > 0">/</span>{{segment.text}}</a>
+			<a :href="node.path.join('/').replace" target="_blank">{{node.path.join('/')}}</a>
 			<br>
 			<a :href="'/page/' + encodeURIComponent(node.url)" target="_blank" style="font-size: 18px; font-weight: bold;">Visit with Liquio</a>
 		</h1>
@@ -89,37 +89,8 @@ export default {
 			search_title: '',
 			reference_title: '',
 			inverse_reference_title: '',
-			view_reference: (event) => {
-				let clean_key = self.reference_title.trim().replace(/\s+/g, '-')
-				if(clean_key.length >= 3) {
-					let path = '/n/' + encodeURIComponent(self.node.key) + '/references/' + encodeURIComponent(clean_key)
-					self.$router.push(path)
-				}
-			},
-			view_inverse_reference: (event) => {
-				let clean_key = self.inverse_reference_title.trim().replace(/\s+/g, '-')
-				if(clean_key.length >= 3) {
-					let path = '/n/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(self.node.key)
-					self.$router.push(path)
-				}
-			},
-
 			current_unit: null,
-			pickUnit: function(unit) {
-				let currentNode = self.$store.getters.currentNode
-				if(unit != self.node.default_unit.value) {
-					let path = '/n/' + encodeURIComponent(currentNode.key) + '/' + unit
-					self.$router.push(path)
-				}
-			},
-			setVote: function(vote) {
-				vote.key = self.node.key
-				self.$store.dispatch('setVote', vote)
-			},
-			unsetVote: function(vote) {
-				vote.key = self.node.key
-				self.$store.dispatch('unsetVote', vote)
-			}
+
 		}
 	},
 	created: function() {
@@ -131,7 +102,7 @@ export default {
 		}
 	},
 	methods: {
-		fetchData: function(isSameNode) {
+		fetchData(isSameNode) {
 			let self = this
 			let handleNode = (node) => {
 				self.current_unit = node.default_unit.value
@@ -158,109 +129,127 @@ export default {
 				}
 			}
 		},
-		detailsEnter: function (el, done) {
+		view_reference(event) {
+			let clean_key = this.reference_title.trim().replace(/\s+/g, '-')
+			if(clean_key.length >= 3) {
+				let path = '/n/' + encodeURIComponent(this.node.key) + '/references/' + encodeURIComponent(clean_key)
+				this.$router.push(path)
+			}
+		},
+		view_inverse_reference(event) {
+			let clean_key = this.inverse_reference_title.trim().replace(/\s+/g, '-')
+			if(clean_key.length >= 3) {
+				let path = '/n/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(this.node.key)
+				this.$router.push(path)
+			}
+		},
+		pickUnit(unit) {
+			let currentNode = this.$store.getters.currentNode
+			if(unit != this.node.default_unit.value) {
+				let path = '/n/' + encodeURIComponent(currentNode.key) + '/' + unit
+				this.$router.push(path)
+			}
+		},
+		setVote(vote) {
+			vote.key = this.node.key
+			this.$store.dispatch('setVote', vote)
+		},
+		unsetVote(vote) {
+			vote.key = this.node.key
+			this.$store.dispatch('unsetVote', vote)
+		},
+		detailsEnter (el, done) {
 			Velocity(this.$refs.toggle_details, {rotateZ: "+=180"}, {duration: 500})
 			Velocity(el, "slideDown", {duration: 500})
 		},
-		detailsLeave: function (el, done) {
+		detailsLeave (el, done) {
 			Velocity(this.$refs.toggle_details, {rotateZ: "+=180"}, {duration: 500})
 			Velocity(el, "slideUp", {duration: 500})
 		},
-		inverseReferencesEnter: function(el, done) {
+		inverseReferencesEnter(el, done) {
 			Velocity(this.$refs.toggle_inverse_references, {rotateZ: "+=180"}, {duration: 500})
 			Velocity(el, "slideDown", {duration: 500})
 		},
-		inverseReferencesLeave: function (el, done) {
+		inverseReferencesLeave(el, done) {
 			Velocity(this.$refs.toggle_inverse_references, {rotateZ: "+=180"}, {duration: 500})
 			Velocity(el, "slideUp", {duration: 500})
 		},
 	},
 	computed: {
-		node: function() {
-			let node = getNode(this.$store)
+		node() {
+			let node = this.$store.getters.currentNode
+
+			node.loading = true
+			if(this.$store.getters.searchQuery) {
+				let searchNode = this.$store.getters.searchResults(this.$store.getters.searchQuery)
+				if(searchNode) {
+					node = searchNode
+					node.loading = false
+				}
+			} else {
+				let newNode = this.$store.getters.getNodeByKey(node.key)
+				if(newNode) {
+					node = newNode
+					node.loading = false
+				}
+			}
+
+			node.url = node.path.join('/').replace(':', '://')
 			
 			return node
 		}
 	}
 }
 
-let getNode = ($store) => {
-	let node = $store.getters.currentNode
-	node.loading = true
-	if($store.getters.searchQuery) {
-		let searchNode = $store.getters.searchResults($store.getters.searchQuery)
-		if(searchNode) {
-			node = searchNode
-			node.loading = false
-		}
-	} else {
-		let newNode = $store.getters.getNodeByKey(node.key)
-		if(newNode) {
-			node = newNode
-			node.loading = false
-		}
-	}
-
-	node.path_segments = _.map(node.path, (s, index) => {
-		return {
-			href: node.path.slice(0, index + 1).join('/').replace(':', '://'),
-			text: index == 0 ? node.path[index].replace(':', '://') : node.path[index]
-		}
-	})
-
-	node.url = node.path.join('/').replace(':', '://')
-	
-	return node
-}
 </script>
 
 <style scoped lang="less">
 .title {
-	display: block;
-	margin: 10px 0px;
-	font-size: 28px;
-	font-weight: normal;
-	color: #333;
-	opacity: 1;
-	word-wrap: break-word;
-	vertical-align: middle;
+  display: block;
+  margin: 10px 0px;
+  font-size: 28px;
+  font-weight: normal;
+  color: #333;
+  opacity: 1;
+  word-wrap: break-word;
+  vertical-align: middle;
 }
 
 .fake-title {
-	display: block;
-	font-size: 26px;
-	font-weight: normal;
-	color: #333;
-	opacity: 1;
-	word-wrap: break-word;
-	margin: 10px 0px;
+  display: block;
+  font-size: 26px;
+  font-weight: normal;
+  color: #333;
+  opacity: 1;
+  word-wrap: break-word;
+  margin: 10px 0px;
 }
 
 .subtitle {
-	font-size: 20px;
+  font-size: 20px;
 }
 
 .list-simple {
-	column-count: 3;
-	column-gap: 30px;
+  column-count: 3;
+  column-gap: 30px;
 
-	@media only screen and (max-width: 1000px) {
-		column-count: 2;
-	}
+  @media only screen and (max-width: 1000px) {
+    column-count: 2;
+  }
 
-	@media only screen and (max-width: 600px) {
-		column-count: 1;
-	}
+  @media only screen and (max-width: 600px) {
+    column-count: 1;
+  }
 }
 .pick-unit {
-	width: 100%;
-	display: block;
-	margin: 40px 0px;
+  width: 100%;
+  display: block;
+  margin: 40px 0px;
 
-	.el-input {
-		input {
-			text-align: center;
-		}
-	}
+  .el-input {
+    input {
+      text-align: center;
+    }
+  }
 }
 </style>
