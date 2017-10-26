@@ -57,13 +57,6 @@
         </p>
     </div>
 
-    <div>
-        <h2>
-            Trump has cut the U.S. debt burden by $68 billion dollars.
-        </h2>
-    </div>
-
-
 
     <hr style="margin: 300px 0 80px 0; width: 100%; display: block;" />
 
