@@ -1,16 +1,14 @@
-
-
 export function prepareContainer(container, classes) {
     let buttonElement = document.createElement('a')
     buttonElement.className = 'liquio-button ' + classes.button
     buttonElement.innerHTML = '<img src="' + LIQUIO_URL + '/images/icon.svg" width="24" height="24"></img>'
-    
+
     let noteElement = document.createElement('div')
     noteElement.className = 'liquio-note ' + classes.note
 
     container.parentNode.insertBefore(buttonElement, container.nextSibling)
     container.parentNode.insertBefore(noteElement, container.nextSibling)
-    
+
     buttonElement.addEventListener('click', (e) => {
         let isShown = noteElement.style.display === 'block'
 
@@ -20,7 +18,7 @@ export function prepareContainer(container, classes) {
 
         if (!isShown) {
             let buttonPosition = buttonElement.getBoundingClientRect()
-            
+
             noteElement.style.top = (buttonPosition.top - 15) + 'px'
             noteElement.style.left = (buttonPosition.left + 35) + 'px'
             noteElement.style.display = 'block'
@@ -56,15 +54,14 @@ export function addToContainer(container, node) {
     nodeElement.className = 'node'
     nodeElement.innerText
 
-    if(bestUnit && bestUnit.turnout_ratio > 0) {
+    if (bestUnit && bestUnit.turnout_ratio > 0) {
         let valueElement = document.createElement('value')
         valueElement.className = 'value'
         valueElement.innerHTML = bestUnit.embeds.value
         nodeElement.appendChild(valueElement)
     }
-    
+
     nodeElement.appendChild(titleElement)
 
     note.appendChild(nodeElement)
 }
-

@@ -1,4 +1,4 @@
-import * as utils from 'utils'
+import * as utils from 'inject/utils'
 
 const defaultTrustMetricURL = process.env.NODE_ENV === 'production' ? 'https://trust-metric.liqu.io' : 'http://127.0.0.1:8080/dev_trust_metric.html'
 
@@ -43,21 +43,21 @@ export function init(key, trustMetricURL, reliability_results, classes) {
 
     let previousSelection = null
     let currentSelection = null
-    document.addEventListener('keyup', function() {
+    document.addEventListener('keyup', function () {
         previousSelection = currentSelection
         currentSelection = window.getSelection().toString() || null
     })
-    document.addEventListener('mouseup', function() {
+    document.addEventListener('mouseup', function () {
         previousSelection = currentSelection
         currentSelection = window.getSelection().toString() || null
     })
 
-    scoreElement.addEventListener('click', function(e) {
+    scoreElement.addEventListener('click', function (e) {
         let isShown = togglableElement.style.display !== 'none'
         togglableElement.style.display = isShown ? 'none' : 'inline-block'
     })
 
-    viewElement.addEventListener('click', function(e) {
+    viewElement.addEventListener('click', function (e) {
         let time = 0
         var anchor = ''
         if (time > 0) {
@@ -75,9 +75,9 @@ export function init(key, trustMetricURL, reliability_results, classes) {
         win.focus()
     })
 
-    trustMetricInputElement.addEventListener('keyup', function(e) {
+    trustMetricInputElement.addEventListener('keyup', function (e) {
         if (e.keyCode === 13) {
-            storage.onConnect().then(function() {
+            storage.onConnect().then(function () {
                 storage.set('', trustMetricInputElement.value)
             })
         }

@@ -39,7 +39,7 @@ export function getUrl(url, success, error) {
     var request = new XMLHttpRequest()
     request.open('GET', url, true)
 
-    request.onload = function() {
+    request.onload = function () {
         if (request.status >= 200 && request.status < 400) {
             var resp = request.responseText
             success(JSON.parse(resp))
@@ -48,7 +48,7 @@ export function getUrl(url, success, error) {
         }
     }
 
-    request.onerror = function() {
+    request.onerror = function () {
         error()
     }
 

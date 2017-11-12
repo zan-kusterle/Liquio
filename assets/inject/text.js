@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import jss from 'jss'
 import preset from 'jss-preset-default'
-import * as utils from 'utils'
-import * as note from 'note'
-import styles from 'styles'
+import * as utils from 'inject/utils'
+import * as note from 'inject/note'
+import styles from 'inject/styles'
 
 var nodesByText, classes
 
@@ -61,14 +61,14 @@ export function onAnchorInsert(node) {
 
 export function onTextInsert(domNode) {
     let text = domNode.textContent
-    
+
     let nodesToAdd = Object.keys(nodesByText).filter((k) => {
         return text.toLowerCase().indexOf(k) >= 0
     }).reduce((a, k) => a.concat(nodesByText[k]), [])
 
-    if(nodesToAdd.length > 0) {
+    if (nodesToAdd.length > 0) {
         note.prepareContainer(domNode, classes)
-        for(let nodeToAdd of nodesToAdd)
+        for (let nodeToAdd of nodesToAdd)
             note.addToContainer(domNode, nodeToAdd)
     }
 }

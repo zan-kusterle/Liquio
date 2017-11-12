@@ -96,7 +96,7 @@ export default {
 
                 '& > a': {
                     'color': 'white !important',
-                    'vertical-align': 'middle',                    
+                    'vertical-align': 'middle',
                     'font-size': '14px !important',
                     'line-height': '38px',
                     'text-decoration': 'none !important',

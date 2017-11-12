@@ -12,6 +12,7 @@ module.exports = {
         path: __dirname + "/../priv/static",
         filename: "[name].js"
     },
+    devtool: process.env.NODE_ENV === 'production' ? false : 'eval',
     module: {
         loaders: [{
             test: /\.vue$/,
@@ -55,9 +56,10 @@ module.exports = {
         }]
     },
     resolve: {
-        modules: ["node_modules", __dirname + "/js", __dirname + "/inject"],
+        modules: ["node_modules", __dirname + "/js"],
         alias: {
-            'vue$': 'vue/dist/vue.common.js'
+            'vue$': 'vue/dist/vue.common.js',
+            'inject': __dirname + '/inject'
         }
     },
     plugins: [
@@ -65,7 +67,8 @@ module.exports = {
             'process.env': {
                 NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
             },
-            BUILD_TIMESTAMP: Math.floor(Date.now() / 1000)
+            BUILD_TIMESTAMP: Math.floor(Date.now() / 1000),
+            LIQUIO_URL: JSON.stringify(process.env.NODE_ENV === 'production' ? "https://liqu.io" : "http://localhost:4000")            
         }),
         new ServiceWorkerWebpackPlugin({
             entry: __dirname + '/js/serviceworker.js',

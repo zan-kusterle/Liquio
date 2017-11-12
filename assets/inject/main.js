@@ -1,14 +1,16 @@
 import _ from 'lodash'
 import jss from 'jss'
 import preset from 'jss-preset-default'
-import * as utils from 'utils'
-import * as text from 'text'
-import video from 'video'
-import * as bar from 'bar'
-import styles from 'styles'
+import * as utils from 'inject/utils'
+import * as text from 'inject/text'
+import video from 'inject/video'
+import * as bar from 'inject/bar'
+import styles from 'inject/styles'
 import {
     CrossStorageClient
 } from 'cross-storage'
+
+console.log(utils)
 
 jss.setup(preset())
 const {
@@ -68,7 +70,7 @@ let onResultsReady = (node, trustMetricURL) => {
 }
 
 let onDomNodeInsert = (node) => {
-    if(node.nodeType === Node.TEXT_NODE) {
+    if (node.nodeType === Node.TEXT_NODE) {
         text.onTextInsert(node)
     } else if (node.nodeName.toLowerCase() === 'a') {
         text.onAnchorInsert(node)
@@ -77,7 +79,7 @@ let onDomNodeInsert = (node) => {
 
 function initDomListener() {
     let walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, null, false)
-    while(walker.nextNode())
+    while (walker.nextNode())
         onDomNodeInsert(walker.currentNode)
 
     let MutationObserver = window.MutationObserver || window.WebKitMutationObserver
