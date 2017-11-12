@@ -7,25 +7,17 @@
 			<el-button slot="append" icon="search" @click="search"></el-button>
 		</el-input>
 
-		<el-row :gutter="20" style="margin-top: 80px;">
-			<el-col :sm="24" :md="12">
-				<div class="feature">
-					<el-button type="primary" size="large" @click="install" v-if="!isInstalled" class="feature-button">
-						<img src="/images/google-chrome-icon.png"></img>
-						<span>Get free extension</span>
-					</el-button>
-				</div>
-			</el-col>
-
-			<el-col :sm="24" :md="12">
-				<div class="feature">
-					<el-button type="primary" size="large" @click="$router.push('demo')" class="feature-button">
-						<img src="/images/icon.svg"></img>
-						<span>View demo article</span>
-					</el-button>
-				</div>
-			</el-col>
-		</el-row>
+		<div>
+			<el-button type="primary" size="large" @click="install" v-if="!isInstalled" class="feature-button">
+				<img src="/images/google-chrome-icon.png"></img>
+				<span>Get free extension</span>
+			</el-button>
+		
+			<el-button type="primary" size="large" @click="$router.push('demo')" class="feature-button">
+				<img src="/images/icon.svg"></img>
+				<span>View demo article</span>
+			</el-button>
+		</div>
 
 		<div class="list-simple">
 			<liquio-inline v-for="reference in node.references" :key="reference.key" v-bind:node="reference" v-bind:referencing-node="node.title === '' ? null : node" style="text-align: left;"></liquio-inline>
@@ -121,38 +113,36 @@ let getNode = ($store) => {
 	word-wrap: break-word;
 }
 
-
-
-
 .extension {
 	text-align: center;
+}
+
+.feature-button {
+	text-align: center;
+	display: block;
+	display: inline-block;
+	margin: 80px 50px 20px 50px;
+
+	img {
+		display: inline-block;
+		-webkit-filter: brightness(0%);
+		vertical-align: middle;
+		width: 40px;
+		opacity: 0.7;
+		margin: 0;
+	}
+
+	span {
+		display: inline-block;
+		vertical-align: middle;
+		margin-left: 10px;
+		font-size: 22px;
+	}
 }
 
 .feature {
 	margin-top: 80px;
 	text-align: left;
-
-	.feature-button {
-		text-align: center;
-		display: block;
-		margin: 0 auto;
-
-		img {
-			display: inline-block;
-			-webkit-filter: brightness(0%);
-			vertical-align: middle;
-			width: 40px;
-			opacity: 0.7;
-			margin: 0;
-		}
-
-		span {
-			display: inline-block;
-			vertical-align: middle;
-			margin-left: 10px;
-			font-size: 22px;
-		}
-	}
 
 	a {
 		font-weight: bold;

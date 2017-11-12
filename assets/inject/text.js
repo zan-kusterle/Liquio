@@ -59,14 +59,16 @@ export function onAnchorInsert(node) {
     }
 }
 
-export function onNodeInsert(domNode) {
-    let nodesWithText = Object.keys(nodesByText).filter((k) => {
-        return domNode.textContent.toLowerCase().indexOf(k) >= 0
+export function onTextInsert(domNode) {
+    let text = domNode.textContent
+    
+    let nodesToAdd = Object.keys(nodesByText).filter((k) => {
+        return text.toLowerCase().indexOf(k) >= 0
     }).reduce((a, k) => a.concat(nodesByText[k]), [])
 
-    if(nodesWithText.length > 0) {
+    if(nodesToAdd.length > 0) {
         note.prepareContainer(domNode, classes)
-        for(let nodeWithText of nodesWithText)
-            note.addToContainer(domNode, nodeWithText)
+        for(let nodeToAdd of nodesToAdd)
+            note.addToContainer(domNode, nodeToAdd)
     }
 }

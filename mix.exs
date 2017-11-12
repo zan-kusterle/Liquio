@@ -30,7 +30,7 @@ defmodule Liquio.Mixfile do
 
 	defp deps() do
 		[
-			{:distillery, "~> 1.0", runtime: false},
+			{:distillery, "~> 1.5", runtime: false},
 			{:phoenix_live_reload, "~> 1.0", only: :dev, runtime: false},
 			{:credo, "~> 0.5", only: [:dev, :test], runtime: false},
 			{:phoenix, "~> 1.3.0", override: true},
@@ -52,7 +52,7 @@ defmodule Liquio.Mixfile do
 			{:cachex, "~> 2.0"},
 			{:ed25519, "~> 1.0"},
 			{:elixir_ipfs_api, "~> 0.1.0"},
-			{:ex_debug_toolbar, "~> 0.3.0"}
+			{:ex_debug_toolbar, "~> 0.3.0", only: :dev}
 		]
 	end
 

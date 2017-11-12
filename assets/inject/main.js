@@ -3,7 +3,7 @@ import jss from 'jss'
 import preset from 'jss-preset-default'
 import * as utils from 'utils'
 import * as text from 'text'
-import * as video from 'video'
+import video from 'video'
 import * as bar from 'bar'
 import styles from 'styles'
 import {
@@ -68,11 +68,10 @@ let onResultsReady = (node, trustMetricURL) => {
 }
 
 let onDomNodeInsert = (node) => {
-    let name = node.nodeName.toLowerCase()
-    if (name === 'a') {
+    if(node.nodeType === Node.TEXT_NODE) {
+        text.onTextInsert(node)
+    } else if (node.nodeName.toLowerCase() === 'a') {
         text.onAnchorInsert(node)
-    } else {
-        text.onNodeInsert(node)
     }
 }
 
@@ -98,8 +97,7 @@ function initDomListener() {
         })
     } else if (eventListenerSupported) {
         document.addEventListener('DOMNodeInserted', function (e) {
-            if (e.target.nodeName.toLowerCase() == 'a')
-                onAnchorInsert(e.target)
+            onDomNodeInsert(e.target)
         }, false)
     }
 }

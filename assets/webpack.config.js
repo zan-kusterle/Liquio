@@ -4,10 +4,13 @@ var ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
 var webpack = require("webpack");
 
 module.exports = {
-    entry: ["./css/app.less", "./js/app.js"],
+    entry: {
+        inject: "./inject/main.js",
+        app: ["./css/app.less", "./js/app.js"]
+    },
     output: {
         path: __dirname + "/../priv/static",
-        filename: "js/app.js"
+        filename: "[name].js"
     },
     module: {
         loaders: [{
@@ -52,7 +55,7 @@ module.exports = {
         }]
     },
     resolve: {
-        modules: ["node_modules", __dirname + "/js"],
+        modules: ["node_modules", __dirname + "/js", __dirname + "/inject"],
         alias: {
             'vue$': 'vue/dist/vue.common.js'
         }

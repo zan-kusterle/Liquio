@@ -92,6 +92,9 @@ export default {
         script.src = '/inject.js'
         document.getElementsByTagName('head')[0].appendChild(script)
     },
+    beforeDestroy () {
+
+    },
     methods: {
         addToClipboard () {
             let copyTextarea = this.$refs.copyArea

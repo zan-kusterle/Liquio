@@ -9,8 +9,7 @@ config :liquio, Liquio.Web.Endpoint,
 	code_reloader: true,
 	check_origin: false,
 	watchers: [
-		node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin", cd: Path.expand("../assets", __DIR__)],
-		node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin", cd: Path.expand("../assets/inject", __DIR__)]
+		node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin", cd: Path.expand("../assets", __DIR__)]
 	]
 	#instrumenters: [ExDebugToolbar.Collector.InstrumentationCollector]
 
@@ -52,6 +51,6 @@ config :liquio, trust_metric_cache_time_seconds: 5
 config :liquio, results_cache_seconds: 5
 config :liquio, enable_ipfs: false
 config :liquio, infuse_link: "http://localhost:8080/inject.js"
-config :liquio, proxy_host: "http://proxy-liqu.io"
+config :liquio, proxy_host: "http://localhost:4000"
 
 import_config "dev.secret.exs"
