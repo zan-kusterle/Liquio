@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "element-ui": "^2.0.4",
     "font-awesome": "^4.7.0"
   }
 }

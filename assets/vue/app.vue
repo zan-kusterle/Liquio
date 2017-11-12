@@ -14,7 +14,7 @@
 			</div>
 
 			<div class="generate">
-				<el-button @click="generate()" size="small">Generate new identity</el-button>
+				<el-button @click="randomWords = generateWords()" size="small">Generate new identity</el-button>
 				<div v-if="randomWords">
 					<p>Use the following words to login: <span>{{ randomWords }}</span></p>
 					<el-button size="small" @click="downloadIdentity()" style="margin-top: 10px;">Download words</el-button>
@@ -86,28 +86,14 @@
 
 <script>
 import Vue from 'vue'
-
-let generateWords = () => {
-	var bip39 = require('bip39')
-	var nacl = require('tweetnacl')
-
-	var randomBytes = nacl.randomBytes(32)
-	var mnemonic = bip39.entropyToMnemonic(randomBytes)
-	let fixedLength = mnemonic.split(' ').slice(0, 13).join(' ')
-
-	return fixedLength
-}
-
-let utils = require('utils.js')
+import utils from 'utils'
 
 export default {
 	data: function() {
-		let self = this
 		return {
 			language: 'en',
 			dialogVisible: false,
 			datetime: new Date(),
-			trustMetricURL: self.$store.getters.currentOpts.trustMetricURL,
 			vote_weight_halving_days: 1000,
 			soft_quorum_t: 0,
 			minimum_relevance_score: 50,
@@ -115,69 +101,83 @@ export default {
 			sortDirection: 'most',
 			words: '',
 			randomWords: null,
-			isDone: false,
-			generate: function() {
-				self.randomWords = generateWords()
-			},
-			downloadIdentity: function() {
-				var filename = 'liquio-login'
-				var text = self.randomWords
-				var element = document.createElement('a')
-				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
-				element.setAttribute('download', filename)
+			isDone: false
+		}
+	},
+	computed: {
+		trustMetricURL() {
+			return this.$store.getters.currentOpts.trustMetricURL
+		}
+	},
+	methods: {
+		generateWords: function() {
+			var bip39 = require('bip39')
+			var nacl = require('tweetnacl')
 
-				element.style.display = 'none'
-				document.body.appendChild(element)
+			var randomBytes = nacl.randomBytes(32)
+			var mnemonic = bip39.entropyToMnemonic(randomBytes)
+			let fixedLength = mnemonic.split(' ').slice(0, 13).join(' ')
 
-				element.click()
+			return fixedLength
+		},
+		downloadIdentity: function() {
+			var filename = 'liquio-login'
+			var text = this.randomWords
+			var element = document.createElement('a')
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
+			element.setAttribute('download', filename)
 
-				document.body.removeChild(element)
-			},
-			login: function(event) {
-				var bip39 = require('bip39')
+			element.style.display = 'none'
+			document.body.appendChild(element)
 
-				let words = _.filter(_.map(self.words.split(' '), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
+			element.click()
 
-				if(words.length == 13) {
-					let seed = bip39.mnemonicToSeed(words.join(' '))
-					let encoded = utils.encodeBase64(seed)
+			document.body.removeChild(element)
+		},
+		login: function(event) {
+			var bip39 = require('bip39')
 
-					if(self.$store.state.storageSeeds.indexOf(encoded) === -1) {
-						self.$store.state.storageSeeds = self.$store.state.storageSeeds + encoded + ';'
-						localStorage.setItem('seeds', self.$store.state.storageSeeds)
-					} else {
-						self.randomWords = generateWords()
-					}
+			let words = _.filter(_.map(this.words.split(' '), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
+
+			if(words.length == 13) {
+				let seed = bip39.mnemonicToSeed(words.join(' '))
+				let encoded = utils.encodeBase64(seed)
+
+				if(this.$store.state.storageSeeds.indexOf(encoded) === -1) {
+					this.$store.state.storageSeeds = this.$store.state.storageSeeds + encoded + ';'
+					localStorage.setItem('seeds', this.$store.state.storageSeeds)
+				} else {
+					this.randomWords = generateWords()
 				}
-
-				self.words = ''
-			},
-			removeIndex: function(index) {
-				let seeds = _.filter(_.map(self.$store.state.storageSeeds.split(';'), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
-				if(index < seeds.length) {
-					self.$store.state.storageSeeds = self.$store.state.storageSeeds.replace(seeds[index] + ';', '')
-					localStorage.setItem('seeds', self.$store.state.storageSeeds)
-
-					if(index <= self.$store.state.currentKeyPairIndex) {
-						self.$store.state.currentKeyPairIndex -= 1
-					}
-				}
-			},
-			setCurrentIndex: function(index) {
-				if(index !== self.$store.state.currentKeyPairIndex) {
-					self.$store.state.currentKeyPairIndex = index
-					localStorage.setItem('currentIndex', index)
-				}
-			},
-			saveOptions: function() {
-				if(self.$store.state.trustMetricURL !== self.trustMetricURL) {
-					self.$store.state.trustMetricURL = self.trustMetricURL
-					localStorage.setItem('trustMetricURL', self.trustMetricURL)
-				}
-			},
-			setLanguage: function() {
-				self.$i18n.locale = self.language
 			}
+
+			this.words = ''
+		},
+		removeIndex: function(index) {
+			let seeds = _.filter(_.map(this.$store.state.storageSeeds.split(';'), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
+			if(index < seeds.length) {
+				this.$store.state.storageSeeds = this.$store.state.storageSeeds.replace(seeds[index] + ';', '')
+				localStorage.setItem('seeds', this.$store.state.storageSeeds)
+
+				if(index <= this.$store.state.currentKeyPairIndex) {
+					this.$store.state.currentKeyPairIndex -= 1
+				}
+			}
+		},
+		setCurrentIndex: function(index) {
+			if(index !== this.$store.state.currentKeyPairIndex) {
+				this.$store.state.currentKeyPairIndex = index
+				localStorage.setItem('currentIndex', index)
+			}
+		},
+		saveOptions: function() {
+			if(this.$store.state.trustMetricURL !== this.trustMetricURL) {
+				this.$store.state.trustMetricURL = this.trustMetricURL
+				localStorage.setItem('trustMetricURL', this.trustMetricURL)
+			}
+		},
+		setLanguage: function() {
+			this.$i18n.locale = this.language
 		}
 	}
 }

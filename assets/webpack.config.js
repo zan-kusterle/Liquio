@@ -56,7 +56,7 @@ module.exports = {
         }]
     },
     resolve: {
-        modules: ["node_modules", __dirname + "/js"],
+        modules: ["node_modules", __dirname + "/js", __dirname + "/vue"],
         alias: {
             'vue$': 'vue/dist/vue.common.js',
             'inject': __dirname + '/inject'

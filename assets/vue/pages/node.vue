@@ -7,8 +7,8 @@
 					<liquio-inline v-for="inverse_reference in node.inverse_references" :key="inverse_reference.key" v-bind:node="inverse_reference" v-bind:references-node="node"></liquio-inline>
 				</div>
 
-				<el-input v-model="inverse_reference_title" @keyup.native.enter="view_inverse_reference" style="max-width: 800px; margin-top: 20px;">
-					<el-button slot="prepend" icon="caret-left" @click="view_inverse_reference"></el-button>
+				<el-input v-model="inverse_reference_title" @keyup.native.enter="viewInverseReference" style="max-width: 800px; margin-top: 20px;">
+					<el-button slot="prepend" icon="el-icon-caret-left" @click="viewInverseReference"></el-button>
 				</el-input>
 			</div>
 		</transition>
@@ -60,8 +60,8 @@
 	</div>
 
 	<div class="after" v-if="node && !node.loading">
-		<el-input v-if="node.title !== ''" v-model="reference_title" @keyup.native.enter="view_reference" style="max-width: 800px; margin-bottom: 20px;">
-			<el-button slot="append" icon="caret-right" @click="view_reference"></el-button>
+		<el-input v-if="node.title !== ''" v-model="reference_title" @keyup.native.enter="viewReference" style="max-width: 800px; margin-bottom: 20px;">
+			<el-button slot="append" icon="el-icon-caret-right" @click="viewReference"></el-button>
 		</el-input>
 		
 		<div class="list-simple">
@@ -72,16 +72,13 @@
 </template>
 
 <script>
-import App from '../app.vue'
 import Vote from '../vote.vue'
 import Embeds from '../embeds.vue'
 import LiquioInline from '../liquio-inline.vue'
 
 export default {
-	components: {App, Vote, Embeds, LiquioInline},
-	data: function() {
-		let self = this
-
+	components: {Vote, Embeds, LiquioInline},
+	data () {
 		return {
 			isVoteOpen: false,
 			areInverseReferencesOpen: false,
@@ -129,24 +126,24 @@ export default {
 				}
 			}
 		},
-		view_reference(event) {
+		viewReference(event) {
 			let clean_key = this.reference_title.trim().replace(/\s+/g, '-')
 			if(clean_key.length >= 3) {
-				let path = '/n/' + encodeURIComponent(this.node.key) + '/references/' + encodeURIComponent(clean_key)
+				let path = '/v/' + encodeURIComponent(this.node.key) + '/references/' + encodeURIComponent(clean_key)
 				this.$router.push(path)
 			}
 		},
-		view_inverse_reference(event) {
+		viewInverseReference(event) {
 			let clean_key = this.inverse_reference_title.trim().replace(/\s+/g, '-')
 			if(clean_key.length >= 3) {
-				let path = '/n/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(this.node.key)
+				let path = '/v/' + encodeURIComponent(clean_key) + '/references/' + encodeURIComponent(this.node.key)
 				this.$router.push(path)
 			}
 		},
 		pickUnit(unit) {
 			let currentNode = this.$store.getters.currentNode
 			if(unit != this.node.default_unit.value) {
-				let path = '/n/' + encodeURIComponent(currentNode.key) + '/' + unit
+				let path = '/v/' + encodeURIComponent(currentNode.key) + '/' + unit
 				this.$router.push(path)
 			}
 		},

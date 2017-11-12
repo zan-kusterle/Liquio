@@ -4,8 +4,6 @@ import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
 import VueRouter from 'vue-router'
 import VueI18n from 'vue-i18n'
-import 'element-ui/lib/theme-default/index.css'
-import velocity from 'velocity-animate'
 import messages from 'texts'
 
 require("font-awesome-webpack")
@@ -16,27 +14,25 @@ Vue.use(VueRouter)
 Vue.use(ElementUI, { locale })
 import { sync } from 'vuex-router-sync'
 import { CrossStorageHub } from 'cross-storage'
-import faqComponent from '../vue/pages/faq.vue'
-import demoComponent from '../vue/pages/demo.vue'
-import identityComponent from '../vue/pages/identity.vue'
-import indexComponent from '../vue/pages/index.vue'
-import searchComponent from '../vue/pages/search.vue'
-import nodeComponent from '../vue/pages/node.vue'
-import referenceComponent from '../vue/pages/reference.vue'
-import App from '../vue/app.vue'
+import demoComponent from 'pages/demo.vue'
+import identityComponent from 'pages/identity.vue'
+import indexComponent from 'pages/index.vue'
+import searchComponent from 'pages/search.vue'
+import nodeComponent from 'pages/node.vue'
+import referenceComponent from 'pages/reference.vue'
+import App from 'app.vue'
 
 let store = require('store.js').default
 
 const routes = [
     { path: '/', component: indexComponent },
     { path: '/demo', component: demoComponent },
-    { path: '/faq', component: faqComponent },
     { path: '/identities/:username', component: identityComponent },
     { path: '/search/:query', component: searchComponent, name: 'search' },
-    { path: '/n/:key/references', component: referenceComponent },
-    { path: '/n/:key/references/:referenceKey', component: referenceComponent },
-    { path: '/n/:key/:unit', component: nodeComponent },
-    { path: '/n/:key', component: nodeComponent }
+    { path: '/v/:key/references', component: referenceComponent },
+    { path: '/v/:key/references/:referenceKey', component: referenceComponent },
+    { path: '/v/:key/:unit', component: nodeComponent },
+    { path: '/v/:key', component: nodeComponent }
 ]
 
 const router = new VueRouter({

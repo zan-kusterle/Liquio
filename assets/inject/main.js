@@ -3,14 +3,12 @@ import jss from 'jss'
 import preset from 'jss-preset-default'
 import * as utils from 'inject/utils'
 import * as text from 'inject/text'
-import video from 'inject/video'
+import * as video from 'inject/video'
 import * as bar from 'inject/bar'
 import styles from 'inject/styles'
 import {
     CrossStorageClient
 } from 'cross-storage'
-
-console.log(utils)
 
 jss.setup(preset())
 const {
@@ -22,7 +20,7 @@ if (key.startsWith(LIQUIO_URL + '/page/'))
     key = decodeURIComponent(key.replace(LIQUIO_URL + '/page/', ''))
 key = utils.cleanUrl(key)
 
-if (!window.location.href.startsWith(LIQUIO_URL + '/n/') || window.location.href.startsWith(LIQUIO_URL + '/page')) {
+if (!window.location.href.startsWith(LIQUIO_URL + '/v/') || window.location.href.startsWith(LIQUIO_URL + '/page')) {
     let storage = new CrossStorageClient(LIQUIO_URL + '/hub.html')
     let storageUsernames, storageTrustMetricURL
     storage.onConnect().then(function () {
@@ -42,6 +40,10 @@ if (!window.location.href.startsWith(LIQUIO_URL + '/n/') || window.location.href
 }
 
 let onDataReady = (usernames, trustMetricURL) => {
+    window.addEventListener('hashchange', () => {
+        console.log('hash change')
+    })
+
     if (key.startsWith("https:www.youtube.com/watch")) {
         window.onYouTubeIframeAPIReady = video.onYouTubeIframeAPIReady
 
@@ -64,7 +66,7 @@ let onResultsReady = (node, trustMetricURL) => {
     text.init(nodes_by_text, classes)
     video.setData(nodes_by_text)
 
-    if (!key.startsWith(LIQUIO_URL + '/n/')) {
+    if (!key.startsWith(LIQUIO_URL + '/v/')) {
         initDomListener()
     }
 }

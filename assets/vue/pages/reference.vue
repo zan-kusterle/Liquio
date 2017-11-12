@@ -36,13 +36,12 @@
 </template>
 
 <script>
-import App from '../app.vue'
 import LiquioInline from '../liquio-inline.vue'
 import Vote from '../vote.vue'
 import Embeds from '../embeds.vue'
 
 export default {
-	components: {App, LiquioInline, Vote, Embeds},
+	components: {LiquioInline, Vote, Embeds},
 	data: function() {
 		let self = this
 

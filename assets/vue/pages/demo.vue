@@ -46,24 +46,21 @@
     <h1 class="title">Is Human Activity the Cause of Global Warming?</h1>
 
     <div style="text-align: center;">
-        <a href="/n/Human-activity-is-causing-global-warming" class="main-node">View on Liquio</a>
+        <a href="/v/Human-activity-is-causing-global-warming" class="main-node">View on Liquio</a>
     </div>
 
     <div class="section">
-        <a href="/n/Earth-temperature">Earth temperature is rising</a>
+        <a href="/v/Earth-temperature">Earth temperature is rising</a>
         <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi ac tempor tellus. Suspendisse non eros eget arcu eleifend ornare. Duis faucibus tempor mi a varius. Quisque sed sapien hendrerit, euismod libero vel, fermentum eros. Maecenas dignissim mi
             sed libero tincidunt dignissim. Phasellus congue erat eu dignissim porta. Nulla iaculis ipsum ac pharetra elementum. Vivamus et semper leo, quis pellentesque nisi. Sed nec bibendum risus. Proin aliquet sagittis dictum. Nunc vel interdum dui.
         </p>
     </div>
 
-
-    <hr style="margin: 300px 0 80px 0; width: 100%; display: block;" />
-
-    <div>
+    <div style="margin-top: 200px;">
         <h2 class="title">Powered by this code</h2>
         <div style="padding: 20px 50px; background-color: #f5f5f5;">
-<pre ref="copyArea" style="color: #888; text-align: left; width: 100%; opacity: 0.7;">&lt;script&gt;
+<pre style="color: #888; text-align: left; width: 100%; opacity: 0.7;">&lt;script&gt;
     (function(d, script) {
         script = d.createElement('script');
         script.type = 'text/javascript';
@@ -75,8 +72,6 @@
 &lt;/script&gt;
 </pre>
         </div>
-
-        <a @click="addToClipboard">Copy this</a>
     </div>
 
 </div>
@@ -96,19 +91,6 @@ export default {
 
     },
     methods: {
-        addToClipboard () {
-            let copyTextarea = this.$refs.copyArea
-            console.log(copyTextarea)
-            copyTextarea.select()
-
-            try {
-                var successful = document.execCommand('copy');
-                var msg = successful ? 'successful' : 'unsuccessful';
-                console.log('Copying text command was ' + msg);
-            } catch (err) {
-                console.log('Oops, unable to copy');
-            }
-        }
     }
 }
 </script>

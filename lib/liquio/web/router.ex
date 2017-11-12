@@ -29,6 +29,6 @@ defmodule Liquio.Web.Router do
 		get "/", IndexController, :app
 		get "/demo", IndexController, :app		
 		get "/hub.html", IndexController, :app
-		get "/n/*path", IndexController, :app
+		get "/v/*path", IndexController, :app
 	end
 end

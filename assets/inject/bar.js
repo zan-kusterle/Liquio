@@ -70,7 +70,7 @@ export function init(key, trustMetricURL, reliability_results, classes) {
             }
         }
 
-        let url = LIQUIO_URL + '/n/' + encodeURIComponent(key + anchor) + '/Reliable-Unreliable'
+        let url = LIQUIO_URL + '/v/' + encodeURIComponent(key + anchor) + '/Reliable-Unreliable'
         var win = window.open(url, '_blank')
         win.focus()
     })

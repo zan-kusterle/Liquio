@@ -90,41 +90,35 @@
 </template>
 
 <script>
-import App from '../app.vue'
-import LiquioInline from '../liquio-inline.vue'
+import LiquioInline from 'liquio-inline.vue'
 
 export default {
-	components: {App, LiquioInline},
-	data: function() {
-		let self = this
-		let username = this.$route.params.username
-
-		this.fetchData(false)
-
+	components: {LiquioInline},
+	data () {
 		return {
-			username: username,
-
 			identificationType: 'name',
 			identificationName: '',
 			isTrusting: null,
 			topics: [],
-			allTopics: [
-				{value: 'science', label: 'Science'},
-				{value: 'politics', label: 'Politics'},
-				{value: 'philosophy', label: 'Philosophy'},
-				{value: 'law', label: 'Law'}
-			],
 			weight: 100,
         	addingTopic: true,
         	topic: '',
 			hasTopics: false,
-
 			publicName: '',
 			webpageURL: '',
-
 			importVisible: false,
 			importData: ''
 		}
+	},
+	created () {
+		this.allTopics = [
+			{value: 'science', label: 'Science'},
+			{value: 'politics', label: 'Politics'},
+			{value: 'philosophy', label: 'Philosophy'},
+			{value: 'law', label: 'Law'}
+		]
+
+		this.fetchData(false)
 	},
 	watch: {
 		'$route': function(route, previous) {
@@ -133,7 +127,7 @@ export default {
 	},
 	computed: {
 		identity: function() {
-			let identity = this.$store.getters.getIdentityByUsername(this.username)
+			let identity = this.$store.getters.getIdentityByUsername(this.$route.params.username)
 			if(identity)
 				identity.votes_text = identity.votes_text.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
 			return identity
@@ -154,7 +148,6 @@ export default {
 					this.topics = delegation.topics || []
 				}
 				this.publicName = identity.identifications['name']
-				this.username = username
 			})
 		},
 		setTrust: function(v) {
@@ -164,12 +157,12 @@ export default {
 		setDelegation: function() {
 			let weight = this.weight ? this.weight / 100 : null
 			let topics = this.topics.length > 0 ? this.topics : null
-			this.$store.dispatch('setDelegation', {username: this.username, is_trusted: this.isTrusting, weight: weight, topics: topics})
+			this.$store.dispatch('setDelegation', {username: this.$route.params.username, is_trusted: this.isTrusting, weight: weight, topics: topics})
 		},
 		clearDelegation: function() {
 			this.topics = []
 			this.weight = 100
-			this.$store.dispatch('unsetDelegation', {username: this.username})
+			this.$store.dispatch('unsetDelegation', {username: this.$route.params.username})
 		},
 		addWebpage: function() {
 			this.$store.dispatch('setIdentification', {key: this.webpageURL, name: 'true'})
@@ -182,7 +175,6 @@ export default {
 		},
 		importVotes: function(data) {
 			let {votes, referenceVotes} = this.$store.getters.parseVotes(data)
-			console.log(votes)
 		}
 	}
 }
