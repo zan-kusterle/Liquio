@@ -58,7 +58,7 @@
     </div>
 
     <div style="margin-top: 200px;">
-        <h2 class="title">Powered by this code</h2>
+        <h2 class="title">Add this code to your website</h2>
         <div style="padding: 20px 50px; background-color: #f5f5f5;">
 <pre style="color: #888; text-align: left; width: 100%; opacity: 0.7;">&lt;script&gt;
     (function(d, script) {
@@ -88,7 +88,9 @@ export default {
         document.getElementsByTagName('head')[0].appendChild(script)
     },
     beforeDestroy () {
-
+        let bar = document.getElementById('liquio-bar')
+        if (bar)
+            bar.remove()
     },
     methods: {
     }

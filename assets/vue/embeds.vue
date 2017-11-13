@@ -20,7 +20,7 @@
 		</div>
 	</div>
 
-	<span @click="currentResultsView = 'latest'" v-bind:class="{ active: currentResultsView == 'latest' }" class="results-view-button">Current</span>
+	<span @click="currentResultsView = 'latest'" v-bind:class="{ active: currentResultsView == 'latest' }" class="results-view-button">Latest</span>
 	<span @click="currentResultsView = 'distribution'" v-if="this.results.embeds.distribution" v-bind:class="{ active: currentResultsView == 'distribution' }" class="results-view-button">Distribution</span>
 	<span @click="currentResultsView = 'by_time'" v-if="this.results.embeds.by_time" v-bind:class="{ active: currentResultsView == 'by_time' }" class="results-view-button">Graph</span>
 	<span @click="currentResultsView = 'raw'" v-bind:class="{ active: currentResultsView == 'raw' }" class="results-view-button">Votes</span>

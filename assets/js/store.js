@@ -1,4 +1,5 @@
 import Vuex from 'vuex'
+import { keypairFromSeed } from 'identity'
 
 let Api = require('api.js')
 
@@ -135,18 +136,7 @@ export default new Vuex.Store({
             let availableSeeds = state.storageSeeds.split(';')
 
             let availableKeyPairs = _.filter(_.map(availableSeeds, (seed) => {
-                let seedBytes = new Uint8Array(atob(seed).split("").map((c) => c.charCodeAt(0)))
-                if (seedBytes.length >= 32) {
-                    let keypair = nacl.sign.keyPair.fromSeed(seedBytes.slice(0, 32))
-                    let hash = nacl.hash(keypair.publicKey)
-                    keypair.username = _.map(hash.slice(0, 16), (byte) => {
-                        return String.fromCharCode(97 + byte % 26)
-                    }).join('')
-
-                    return keypair
-                }
-
-                return null
+                return keypairFromSeed(seed)
             }), (k) => k)
 
             return {
@@ -196,17 +186,18 @@ export default new Vuex.Store({
             })
             return identity ? JSON.parse(JSON.stringify(identity)) : null
         },
-        getPureNodeByKey: (state, getters) => (key) => {
+        getNodeByKey: (state, getters) => (key, depth = 1) => {
             let node = _.find(state.nodes, (node) => {
                 return node.key.toLowerCase() == key.toLowerCase()
             })
-            return node ? JSON.parse(JSON.stringify(node)) : null
-        },
-        getNodeByKey: (state, getters) => (key) => {
-            let node = getters.getPureNodeByKey(key)
-            if (node) {
+            node = node ? JSON.parse(JSON.stringify(node)) : null
+
+            if (!node)
+                return null
+            
+            if (depth > 0) {
                 node.references = _.filter(_.map(node.references, (n) => {
-                    let referenceNode = getters.getPureNodeByKey(n.path.join('/'))
+                    let referenceNode = getters.getNodeByKey(n.path.join('/'), depth - 1)
 
                     var unit = state.units[0]
                     let units = referenceNode.results ? Object.values(referenceNode.results.by_units) : []
@@ -223,7 +214,7 @@ export default new Vuex.Store({
                 }), (x) => x)
 
                 node.inverse_references = _.filter(_.map(node.inverse_references, (n) => {
-                    let referenceNode = getters.getPureNodeByKey(n.path.join('/'))
+                    let referenceNode = getters.getNodeByKey(n.path.join('/'), depth - 1)
 
                     var unit = state.units[0]
                     let units = referenceNode.results ? Object.values(referenceNode.results.by_units) : []
@@ -237,25 +228,30 @@ export default new Vuex.Store({
                     }
                     return referenceNode
                 }), (x) => x)
-
-                var unit = state.units[0]
-
-                let units = node.results ? Object.values(node.results.by_units) : []
-                let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
-                if (bestUnit) {
-                    unit = bestUnit
-                }
-
-                let currentNode = getters.currentNode
-                if (node.key == currentNode.key && currentNode.unit) {
-                    let activeUnit = _.find(state.units, (u) => u.text == currentNode.unit)
-                    if (activeUnit) {
-                        unit = node.results && node.results.by_units[activeUnit.key] || activeUnit
-                    }
-                }
-
-                node.default_unit = unit
             }
+
+            var unit = state.units[0]
+
+            let units = node.results ? Object.values(node.results.by_units) : []
+            let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
+            if (bestUnit) {
+                unit = bestUnit
+            }
+
+            let currentNode = getters.currentNode
+            if (node.key == currentNode.key && currentNode.unit) {
+                let activeUnit = _.find(state.units, (u) => u.text == currentNode.unit)
+                if (activeUnit) {
+                    unit = node.results && node.results.by_units[activeUnit.key] || activeUnit
+                }
+            }
+
+            node.default_unit = unit
+
+            if (node.path.length > 0 && (node.path[0].startsWith('http:') || node.path[0].startsWith('https:'))) {
+                node.path[0] = node.path[0].replace(':', '://')
+            }
+
             return node
         },
         getNodesByKeys: (state, getters) => (paths) => _.filter(_.map(paths, (path) => getters.getNodeByKey(path)), (n) => n),

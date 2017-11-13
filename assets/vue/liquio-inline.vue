@@ -1,9 +1,5 @@
 <template>
 <div class="node">
-	<div v-if="node.path[0].startsWith('http:') || node.path[0].startsWith('https:')" class="webpage-link">
-		<a :href="'/page/' + encodeURIComponent(node.path.join('/').replace(':', '://'))" target="_blank"><img alt="Visit with Liquio" src="/images/icon.svg" style="width: 20px; vertical-align: middle; margin-right: 20px; -webkit-filter: brightness(0%); opacity: 0.5;"></img></a>
-		<a :href="node.path.join('/').replace(':', '://')" target="_blank">Visit webpage <i class="el-icon-arrow-right"></i></a>
-	</div>
 	<router-link :to="'/v/' + encodeURIComponent(node.key)" class="link">
 		<div class="content">
 			<span>{{ node.path.join('/').replace(/-/g, ' ') }}</span>
@@ -12,6 +8,9 @@
 		</div>
 		<div v-html="this.node.default_unit.embeds.value" v-if="this.node.default_unit && this.node.default_unit.embeds" style="width: 100%; font-size: 0;"></div>
 	</router-link>
+	<div v-if="node.path[0].startsWith('http://') || node.path[0].startsWith('https://')" class="webpage-link">
+		<a :href="node.path.join('/')" target="_blank">Open webpage</a>
+	</div>
 	
 	<div class="references" v-if="node.references">
 		<router-link
@@ -42,6 +41,10 @@ export default {
 </script>
 
 <style scoped lang="less">
+a {
+	color: #333;
+}
+
 .node {
 	display: inline-block;
 	width: 100%;
@@ -58,7 +61,7 @@ export default {
 }
 
 .link:hover {
-	color: #337ab7;
+	color: #000;
 }
 
 .content {
@@ -86,18 +89,15 @@ export default {
 }
 
 .webpage-link {
-	font-size: 16px;
+	font-size: 13px;
 	width: 100%;
-	background-color: #ddd;
+	background-color: #eee;
 	display: block;
 	text-align: center;
-	padding: 10px 0px;
+	padding: 5px 0px;
 
-	i {
+	a {
 		vertical-align: middle;
-		margin-left: 5px;
-		font-size: 20px;
-		color: #555;
 	}
 }
 </style>

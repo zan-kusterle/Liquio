@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import jss from 'jss'
 import preset from 'jss-preset-default'
 import * as utils from 'inject/utils'
@@ -40,10 +39,6 @@ if (!window.location.href.startsWith(LIQUIO_URL + '/v/') || window.location.href
 }
 
 let onDataReady = (usernames, trustMetricURL) => {
-    window.addEventListener('hashchange', () => {
-        console.log('hash change')
-    })
-
     if (key.startsWith("https:www.youtube.com/watch")) {
         window.onYouTubeIframeAPIReady = video.onYouTubeIframeAPIReady
 
@@ -89,8 +84,8 @@ function initDomListener() {
 
     if (MutationObserver) {
         let obs = new MutationObserver(function (mutations, observer) {
-            _.each(mutations, (mutation) => {
-                _.each(mutation.addedNodes, (node) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
                     onDomNodeInsert(node)
                 })
             })

@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import jss from 'jss'
 import preset from 'jss-preset-default'
 import * as utils from 'inject/utils'
@@ -86,7 +85,17 @@ function setup() {
             if (!isOverlayOpen)
                 overlay.style.opacity = 0
         } else {
-            if (currentNode == null || !_.isEqual(newNode.path, currentNode.path)) {
+            let isEqual = newNode.path.length === currentNode.path.length
+            if (isEqual) {
+                for(var i = 0; i < node.path.length; i++) {
+                    if (newNode.path[i] !== currentNode.path[i]) {
+                        isEqual = false
+                        break
+                    }
+                }
+            }
+            
+            if (currentNode == null || !isEqual) {
                 overlay.innerHTML = utils.renderNode(newNode)
                 overlay.style.opacity = 1
             }

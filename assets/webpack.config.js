@@ -1,6 +1,7 @@
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
 var ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin");
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var webpack = require("webpack");
 
 module.exports = {
@@ -75,7 +76,8 @@ module.exports = {
             filename: 'serviceworker.js'
         }),
         new ExtractTextPlugin("css/app.css"),
-        new CopyWebpackPlugin([{ from: "./static" }])
+        new CopyWebpackPlugin([{ from: "./static" }]),
+        new BundleAnalyzerPlugin()
     ].concat(process.env.NODE_ENV === 'production' ? [
         new webpack.optimize.UglifyJsPlugin({ output: { comments: false } })
     ] : [])

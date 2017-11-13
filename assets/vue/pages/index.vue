@@ -8,6 +8,22 @@
 		content="Extension allows you to see votes on any website. To vote select text and right click.">
 	</el-popover>
 
+	<el-popover
+		ref="inject-popover"
+		placement="bottom"
+		width="300"
+		trigger="hover"
+		content="Anyone can add a script to their website to enable their audience to vote on their content.">
+	</el-popover>
+
+	<el-popover
+		ref="trust-metrics-popover"
+		placement="bottom"
+		width="300"
+		trigger="hover"
+		content="A webpage that contains a list of usernames whose votes will be count. You can easily change this list in settings.">
+	</el-popover>
+
 	<div class="after">
 		<h1 class="title">{{ $t('message.tagline') }}</h1>
 
@@ -21,31 +37,38 @@
 				<span>Get free extension</span>
 			</el-button>
 		
-			<el-button type="primary" size="large" @click="$router.push('demo')" class="feature-button">
+			<el-button v-popover:inject-popover type="primary" size="large" @click="$router.push('demo')" class="feature-button">
 				<img src="/images/icon.svg"></img>
 				<span>View demo article</span>
 			</el-button>
 		</div>
 
 		<el-row style="margin-top: 40px;" :gutter="40">
-			<el-col :span="8">
+			<el-col :span="6">
 				<div class="feature">
-					<h3>Cryptographically secure</h3>
-					<p>Every vote has a signature which proves its integrity. Data is also stored on <a href="https://ipfs.io" target="_blank"><b>IPFS</b></a> to make it impossible to modify or delete.</p>
+					<h3>No moderation</h3>
+					<p><a v-popover:trust-metrics-popover>Trust metrics</a> make you your own moderator.</p>
 				</div>
 			</el-col>
 
-			<el-col :span="8">
+			<el-col :span="6">
 				<div class="feature">
-					<h3>Moderation free</h3>
-					<p><a href="/faq#trust-metrics">Trust metrics</a> give you the power to be your own moderator.</p>
+					<h3>Signatures</h3>
+					<p>Each vote has a cryptographic signature which proves who made it.</p>
 				</div>
 			</el-col>
 
-			<el-col :span="8">
+			<el-col :span="6">
+				<div class="feature">
+					<h3>Permament</h3>
+					<p>With <a href="https://ipfs.io" target="_blank">IPFS</a> data is impossible to modify and delete.</p>
+				</div>
+			</el-col>
+
+			<el-col :span="6">
 				<div class="feature">
 					<h3>Open source</h3>
-					<p>Code is available under permissive MIT license on <a href="https://github.com/zan-kusterle/Liquio" target="_blank">GitHub</a>.</p>
+					<p>Available under permissive MIT license on <a href="https://github.com/zan-kusterle/Liquio" target="_blank">GitHub</a>.</p>
 				</div>
 			</el-col>
 		</el-row>
@@ -99,7 +122,7 @@ export default {
 	methods: {
 		search () {
 			if (this.searchText.length > 0) {
-				this.$router.push('/search/' + encodeURIComponent(this.searchText))
+				this.$router.push('/v/' + encodeURIComponent(this.searchText.replace(/\s/, '-')))
 			}
 		},
 		install () {
@@ -151,6 +174,7 @@ export default {
 	text-align: left;
 	background: #f0f9ff;
 	padding: 20px 30px;
+	min-height: 150px;
 
 	a {
 		font-weight: bold;
@@ -161,7 +185,7 @@ export default {
 		margin: 0;
 		margin-bottom: 30px;
 		font-weight: normal;
-		font-size: 22px;
+		font-size: 26px;
 		color: #111;
 		padding-bottom: 10px;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.1);

@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import jss from 'jss'
 import preset from 'jss-preset-default'
 import * as utils from 'inject/utils'

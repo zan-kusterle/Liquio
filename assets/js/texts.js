@@ -1,8 +1,8 @@
 export default {
     en: {
         message: {
-            tagline: 'Open voting platform for the web', // 'Vote on anything, anywhere on the web',
-            search: 'Search votes',
+            tagline: 'Open voting platform for the web',
+            search: 'Vote on anything',
             get_extension: 'Get extension',
             extension_tagline: 'Vote on anything, anywhere on the web',
             features: {

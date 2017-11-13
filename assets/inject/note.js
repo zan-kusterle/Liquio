@@ -39,7 +39,12 @@ export function addToContainer(container, node) {
     let note = container.parentNode.getElementsByClassName('liquio-note')[0]
 
     let units = node.results ? Object.values(node.results.by_units) : []
-    let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
+    let bestUnit = null
+    units.forEach(unit => {
+        if (bestUnit === null || bestUnit.turnout_ratio < unit.turnout_ratio) {
+            bestUnit = unit
+        }
+    })
 
     let anchorElement = document.createElement('a')
     anchorElement.setAttribute('href', LIQUIO_URL + '/' + encodeURIComponent(node.path.join('/')))

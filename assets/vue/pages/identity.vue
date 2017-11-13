@@ -1,6 +1,6 @@
 <template>
 <div>
-	<el-dialog title="Import votes" v-model="importVisible">
+	<el-dialog title="Import votes" :visible.sync="importVisible" width="600px">
 		<el-input type="textarea" :rows="10" v-model="importData"></el-input>
 
 		<el-button type="success" @click="importVotes(importData)" style="margin-top: 20px;">Finish</el-button>
@@ -175,6 +175,8 @@ export default {
 		},
 		importVotes: function(data) {
 			let {votes, referenceVotes} = this.$store.getters.parseVotes(data)
+			console.log(votes)
+			console.log(referenceVotes)
 		}
 	}
 }

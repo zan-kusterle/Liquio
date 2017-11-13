@@ -35,6 +35,7 @@ export function init(key, trustMetricURL, reliability_results, classes) {
     togglableElement.appendChild(viewElement)
 
     let barElement = document.createElement('div')
+    barElement.id = 'liquio-bar'
     barElement.className = classes.liquio
     barElement.appendChild(togglableElement)
     barElement.appendChild(scoreElement)
