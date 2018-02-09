@@ -175,8 +175,23 @@ export default {
 		},
 		importVotes: function(data) {
 			let {votes, referenceVotes} = this.$store.getters.parseVotes(data)
-			console.log(votes)
-			console.log(referenceVotes)
+			
+			for (let vote of votes) {
+				this.$store.dispatch('setVote', {
+					choice: vote.choice,
+					key: vote.path.join('/'),
+					unit: vote.unit,
+					at_date: new Date()
+				})
+			}
+
+			for (let referenceVote of referenceVotes) {
+				this.$store.dispatch('setReferenceVote', {
+					key: referenceVote.path.join('/'),
+					referencingKey: referenceVote.reference_path.join('/'),
+					relevance: referenceVote.relevance
+				})
+			}
 		}
 	}
 }

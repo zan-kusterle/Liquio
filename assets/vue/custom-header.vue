@@ -15,7 +15,7 @@
 
                 <div class="generate">
                     <template v-if="randomWords">
-                        <p>Use the following words to login with username <b>{{ generatedUsername }}</b>: <span>{{ randomWords }}</span></p>
+                        <p>Login with <b>{{ generatedUsername }}</b> the following words : <span>{{ randomWords }}</span></p>
                         <el-button size="small" @click="downloadIdentity()" style="margin-top: 10px;">Download words</el-button>
                     </template>
                     <el-button @click="randomWords = generateWords()" size="small">Generate new identity</el-button>
@@ -24,13 +24,14 @@
         </el-dialog>
 
         <el-dialog title="Options" :visible.sync="dialogVisible" width="600px">
-            <div class="block">
+            <!--<div class="block">
                 <p class="demonstration">Change language</p>
                 <el-select v-model="language" v-on:change="setLanguage()">
                     <el-option label="English" value="en"></el-option>
                     <el-option label="Slovenščina" value="si"></el-option>
                 </el-select>
-            </div>
+            </div>-->
+
             <div class="block">
                 <p class="demonstration">View snapshot at any date</p>
                 <el-date-picker type="date" placeholder="Pick a day" v-model="datetime"></el-date-picker>
@@ -77,7 +78,7 @@
 <script>
 import bip39 from 'bip39'
 import nacl from 'tweetnacl'
-import { keypairFromSeed, wordsToSeed } from 'identity'
+import { keypairFromSeed, wordsToSeed } from 'shared/identity'
 
 export default {
     data () {
@@ -255,7 +256,7 @@ export default {
 
 			span {
                 margin-top: 10px;
-                margin-left: 10px;
+                margin-left: 2px;
                 margin-bottom: 20px;
 				display: block;
 				font-size: 12px;

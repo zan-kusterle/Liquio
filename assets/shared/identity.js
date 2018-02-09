@@ -1,6 +1,6 @@
 import nacl from 'tweetnacl'
 import bip39 from 'bip39'
-import * as utils from 'utils'
+import { encodeBase64 } from 'shared/utils'
 
 export function wordsToSeed (words) {
     let filtered = _.filter(_.map(words.split(' '), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
@@ -9,7 +9,7 @@ export function wordsToSeed (words) {
         return null
 
     let seed = bip39.mnemonicToSeed(filtered.join(' '))
-    return utils.encodeBase64(seed)
+    return encodeBase64(seed)
 }
 
 export function keypairFromSeed (seed) {

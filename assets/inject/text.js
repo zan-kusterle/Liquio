@@ -1,5 +1,3 @@
-import jss from 'jss'
-import preset from 'jss-preset-default'
 import * as utils from 'inject/utils'
 import * as note from 'inject/note'
 import styles from 'inject/styles'
@@ -58,7 +56,7 @@ export function onAnchorInsert(node) {
     }
 }
 
-export function onTextInsert(domNode) {
+export function onTextInsert(nodesByText, domNode, classes) {
     let text = domNode.textContent
 
     let nodesToAdd = Object.keys(nodesByText).filter((k) => {

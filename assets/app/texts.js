@@ -6,8 +6,8 @@ export default {
             get_extension: 'Get extension',
             extension_tagline: 'Vote on anything, anywhere on the web',
             features: {
-                news: 'Instantly spot biased and unreliable articles',
-                news_subtext: 'See reliability ratings for any news article, video or a webpage.'
+                news: 'Instantly spot biased and unreliable sources',
+                news_subtext: 'See reliability for any news article, video or webpage.'
             }
         }
     },
@@ -16,7 +16,7 @@ export default {
             tagline: 'Transparentna demokracija kjer lahko vsak glasuje o vsem',
             search: 'Iskanje',
             get_extension: 'Naloži razširitev',
-            extension_tagline: 'Glasuj kjerkoli na spletu'
+            extension_tagline: 'Glasuj kjerkoli na internetu'
         }
     }
 }

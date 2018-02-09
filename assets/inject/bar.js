@@ -5,9 +5,9 @@ const defaultTrustMetricURL = process.env.NODE_ENV === 'production' ? 'https://t
 export function init(key, trustMetricURL, reliability_results, classes) {
     let rating = reliability_results ? reliability_results.average : null
 
-    let red = 'B51212',
-        yellow = 'FCF119',
-        green = '44DD25'
+    let red = 'ff2b2b',
+        yellow = 'f9e26e',
+        green = '43e643'
     let color = '33bae7'
     if (rating)
         color = rating < 0.5 ? utils.colorOnGradient(yellow, red, rating * 2) : utils.colorOnGradient(green, yellow, (rating - 0.5) * 2)

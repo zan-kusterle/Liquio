@@ -28,7 +28,7 @@
 		<h1 class="title">{{ $t('message.tagline') }}</h1>
 
 		<el-input :placeholder="$t('message.search')" v-model="searchText" @keyup.native.enter="search" style="max-width: 800px;">
-			<el-button slot="append" icon="el-icon-search" @click="search"></el-button>
+			<el-button slot="append" icon="el-icon-more" @click="search"></el-button>
 		</el-input>
 
 		<div>
@@ -122,7 +122,7 @@ export default {
 	methods: {
 		search () {
 			if (this.searchText.length > 0) {
-				this.$router.push('/v/' + encodeURIComponent(this.searchText.replace(/\s/, '-')))
+				this.$router.push('/v/' + encodeURIComponent(this.searchText.replace(/\s/g, '-')))
 			}
 		},
 		install () {

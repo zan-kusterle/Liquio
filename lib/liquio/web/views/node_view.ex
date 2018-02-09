@@ -47,8 +47,19 @@ defmodule Liquio.Web.NodeView do
 			nil
 		end
 
+		first_path = node.path |> Enum.at(0)
+		is_link = first_path == "http:" or node.path == "https:"
+		title = node.path |> Enum.join("/")
+		title = if is_link do
+			title |> String.replace("https:", "https://") |> String.replace("http:", "http://")
+		else
+			title |> String.replace("-", " ")
+		end
+
 		%{
 			:path => node.path,
+			:is_link => is_link,
+			:title => title,
 			:results => render("results.json", %{node: Map.get(node, :results)}),
 			:references => references,
 			:inverse_references => inverse_references,

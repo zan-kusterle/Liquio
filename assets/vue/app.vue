@@ -15,7 +15,7 @@
 <script>
 import Vue from 'vue'
 import CustomHeader from 'custom-header.vue'
-import utils from 'utils'
+import utils from 'shared/utils'
 
 export default {
 	components: {

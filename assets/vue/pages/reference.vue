@@ -49,11 +49,11 @@ export default {
 			referencing_title: '',
 			setVote: function(vote) {
 				if(self.reference)
-					self.$store.dispatch('setReferenceVote', {reference: self.reference, relevance: vote.choice})
+					self.$store.dispatch('setReferenceVote', {key: self.reference.node.key, referencingKey: self.reference.referencing_node.key, relevance: vote.choice})
 			},
 			unsetVote: function(vote) {
 				if(self.reference)
-					self.$store.dispatch('unsetReferenceVote', self.reference)
+					self.$store.dispatch('unsetReferenceVote', {key: self.reference.node.key, referencingKey: self.reference.referencing_node.key})
 			},
 			set_referencing: function(event) {
 				let path = 'references/' + encodeURIComponent(self.referencing_title.replace(/\s+/g, '-'))

@@ -4,7 +4,8 @@ import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
 import VueRouter from 'vue-router'
 import VueI18n from 'vue-i18n'
-import messages from 'texts'
+import messages from 'app/texts'
+import css from 'app/main.less'
 
 require("font-awesome-webpack")
 
@@ -12,6 +13,7 @@ Vue.use(VueI18n)
 Vue.use(Vuex)
 Vue.use(VueRouter)
 Vue.use(ElementUI, { locale })
+
 import { sync } from 'vuex-router-sync'
 import { CrossStorageHub } from 'cross-storage'
 import demoComponent from 'pages/demo.vue'
@@ -21,8 +23,7 @@ import searchComponent from 'pages/search.vue'
 import nodeComponent from 'pages/node.vue'
 import referenceComponent from 'pages/reference.vue'
 import App from 'app.vue'
-
-let store = require('store.js').default
+import store from 'store/store'
 
 const routes = [
     { path: '/', component: indexComponent },

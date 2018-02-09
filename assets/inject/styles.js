@@ -1,5 +1,5 @@
 export default {
-    liquio: {
+    '.liquio': {
         'cursor': 'default',
         'font-family': 'Helvetica Neue, Helvetica, Arial, sans-serif',
         'position': 'fixed',
@@ -8,7 +8,7 @@ export default {
         'z-index': '1000',
         'color': 'black',
 
-        '& > .score': {
+        '.score': {
             'width': '50px',
             'height': '50px',
             'line-height': '50px',
@@ -19,19 +19,19 @@ export default {
             'vertical-align': 'middle'
         },
 
-        '& > .togglable': {
+        '.togglable': {
             'display': 'none',
             'background-color': 'rgba(0, 0, 0, 0.75)',
             'padding': '10px 25px',
             'margin-right': '20px',
             'border-radius': '2px',
 
-            '& > .options': {
+            '.options': {
                 'display': 'inline-block',
                 'vertical-align': 'middle',
                 'margin-right': '30px',
 
-                '& > input': {
+                'input': {
                     'width': '400px',
                     'border': 'none',
                     'outline': 'none',
@@ -44,7 +44,7 @@ export default {
                 }
             },
 
-            '& > .view': {
+            '.view': {
                 'display': 'inline-block',
                 'vertical-align': 'middle',
                 'font-size': '16px',
@@ -57,14 +57,14 @@ export default {
             }
         }
     },
-    button: {
+    '.button': {
         'display': 'inline-block',
         'vertical-align': 'middle',
         'width': '30px',
         'height': '30px',
         'opacity': 0.8
     },
-    note: {
+    '.note': {
         'position': 'absolute',
         'left': '0px',
         'z-index': 100,
@@ -76,10 +76,10 @@ export default {
         'border-radius': '3px',
         'font-size': '14px',
 
-        '& > .node': {
+        '.node': {
             'margin': '5px 0px',
 
-            '& > .value': {
+            '.value': {
                 'width': '150px',
                 'height': '40px',
                 'display': 'inline-block',
@@ -87,18 +87,64 @@ export default {
                 'font-weight': 'bold'
             },
 
-            '& > .title': {
+            '.title': {
                 'display': 'inline-block',
                 'background-color': 'rgba(20, 20, 20, 0.9)',
                 'padding': '0px 20px',
                 'vertical-align': 'top',
                 'height': '40px',
 
-                '& > a': {
+                'a': {
                     'color': 'white !important',
                     'vertical-align': 'middle',
                     'font-size': '14px !important',
                     'line-height': '38px',
+                    'text-decoration': 'none !important',
+            
+                    '&:hover': {
+                        'color': '#ddd !important'
+                    }
+                }
+            }
+        }
+    },
+    '.overlay': {
+        'z-index': 100,
+        'display': 'none',
+        'cursor': 'default',
+        'font-family': 'Helvetica Neue, Helvetica, Arial, sans-serif',
+        'font-weight': 'normal',
+        'border-radius': '3px',
+        'font-size': '14px',
+        'position': 'absolute',
+        'left': '0',
+        'top': '100px',
+
+        '.node': {
+            'margin': '5px 0px',
+            'display': 'table',
+
+            '.value': {
+                'width': '192px',
+                'height': '48px',
+                'display': 'table-cell',
+                'vertical-align': 'middle',
+                'font-weight': 'bold',
+                'font-size': '0'
+            },
+
+            '.title': {
+                'display': 'table-cell',
+                'background-color': 'rgba(20, 20, 20, 0.9)',
+                'padding': '5px 20px',
+                'max-width': '400px',
+                'vertical-align': 'middle',
+
+                'a': {
+                    'color': 'white !important',
+                    'vertical-align': 'middle',
+                    'font-size': '14px !important',
+                    'line-height': '28px',
                     'text-decoration': 'none !important',
 
                     '&:hover': {

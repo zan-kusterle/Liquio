@@ -43,7 +43,7 @@
 
 						<div class="pick-unit">
 							<el-select v-model="current_unit" v-on:change="pickUnit">
-								<el-option v-for="unit in $store.state.units" :key="unit.value" v-bind:value="unit.value" v-bind:label="unit.text"></el-option>
+								<el-option v-for="unit in units" :key="unit.value" v-bind:value="unit.value" v-bind:label="unit.text"></el-option>
 							</el-select>
 						</div>
 						
@@ -78,6 +78,7 @@ import Velocity from 'velocity-animate'
 import Vote from '../vote.vue'
 import Embeds from '../embeds.vue'
 import LiquioInline from '../liquio-inline.vue'
+import { allUnits } from 'shared/data'
 
 export default {
 	components: {Vote, Embeds, LiquioInline},
@@ -197,6 +198,12 @@ export default {
 			node.url = node.path.join('/').replace(':', '://')
 			
 			return node
+		},
+		units () {
+			return allUnits.map((u) => {
+				u.value = u.text.replace(' (', '(')
+				return u
+			})
 		}
 	}
 }

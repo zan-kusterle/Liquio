@@ -1,14 +1,13 @@
-var axios = require('axios')
-var _ = require('lodash')
-var nacl = require('tweetnacl')
-let utils = require('utils.js')
+import nacl from 'tweetnacl'
+import axios from 'axios'
+import * as utils from 'shared/utils'
 
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 function getCommonParams(opts) {
     return {
         trust_metric_url: opts.trust_metric_url,
-        trust_usernames: _.map(opts.keypairs, (k) => k.username).join(',')
+        trust_usernames: opts.keypairs.map((k) => k.username).join(',')
     }
 }
 
@@ -58,7 +57,7 @@ export function setIdentification(opts, key, value, cb) {
 }
 
 export function setDelegation(opts, to_identity_username, is_trusted, weight, topics, cb) {
-    topics = _.map(topics, (t) => t.toLowerCase())
+    topics = topics.map((t) => t.toLowerCase())
     let message = ['setDelegation', to_identity_username, is_trusted || false, weight.toFixed(5), topics ? topics.join(',') : ''].join(' ').trim()
     let message_hash = nacl.hash(utils.stringToBytes(message))
     let signature = nacl.sign.detached(message_hash, opts.keypair.secretKey)

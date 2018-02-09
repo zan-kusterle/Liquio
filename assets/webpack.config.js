@@ -7,7 +7,7 @@ var webpack = require("webpack");
 module.exports = {
     entry: {
         inject: "./inject/main.js",
-        app: ["./css/app.less", "./js/app.js"]
+        app: "./app/main.js"
     },
     output: {
         path: __dirname + "/../priv/static",
@@ -57,10 +57,9 @@ module.exports = {
         }]
     },
     resolve: {
-        modules: ["node_modules", __dirname + "/js", __dirname + "/vue"],
+        modules: ["node_modules", __dirname, __dirname + "/vue"],
         alias: {
-            'vue$': 'vue/dist/vue.common.js',
-            'inject': __dirname + '/inject'
+            'vue$': 'vue/dist/vue.common.js'
         }
     },
     plugins: [
@@ -72,10 +71,10 @@ module.exports = {
             LIQUIO_URL: JSON.stringify(process.env.NODE_ENV === 'production' ? "https://liqu.io" : "http://localhost:4000")            
         }),
         new ServiceWorkerWebpackPlugin({
-            entry: __dirname + '/js/serviceworker.js',
+            entry: __dirname + '/app/serviceworker.js',
             filename: 'serviceworker.js'
         }),
-        new ExtractTextPlugin("css/app.css"),
+        new ExtractTextPlugin("app/main.css"),
         new CopyWebpackPlugin([{ from: "./static" }]),
         new BundleAnalyzerPlugin()
     ].concat(process.env.NODE_ENV === 'production' ? [

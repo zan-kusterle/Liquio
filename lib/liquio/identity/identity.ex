@@ -19,7 +19,7 @@ defmodule Liquio.Identity do
 		username = Identity.username_from_key(public_key)
 		message = "setIdentification #{key} #{name}"|> String.trim
 
-		can_add? = if String.starts_with?(key, "http://") or String.starts_with?(key, "https://") do
+		can_add? = if false and (String.starts_with?(key, "http://") or String.starts_with?(key, "https://")) do
 			response = HTTPotion.get(key, follow_redirects: true)
 			if HTTPotion.Response.success?(response) do
 				String.contains?(response.body, username)
@@ -38,6 +38,8 @@ defmodule Liquio.Identity do
 				where: v.username == ^username and v.key == ^key and is_nil(v.to_datetime),
 				update: [set: [to_datetime: ^now]])
 			|> Repo.update_all([])
+
+			IO.inspect "dsada"
 
 			Repo.insert(%Identity{
 				signature_id: signature.id,
