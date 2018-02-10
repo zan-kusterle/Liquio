@@ -31,17 +31,10 @@
 			<el-button slot="append" icon="el-icon-more" @click="search"></el-button>
 		</el-input>
 
-		<div>
-			<el-button v-popover:extension-popover type="primary" size="large" @click="install" v-if="!isInstalled" class="feature-button">
-				<img src="/images/google-chrome-icon.png"></img>
-				<span>Get free extension</span>
-			</el-button>
-		
-			<el-button v-popover:inject-popover type="primary" size="large" @click="$router.push('demo')" class="feature-button">
-				<img src="/images/icon.svg"></img>
+			<div @click="$router.push('demo')" class="feature-button">
+				<img src="/images/icon.svg" />
 				<span>View demo article</span>
-			</el-button>
-		</div>
+			</div>
 
 		<el-row style="margin-top: 40px;" :gutter="40">
 			<el-col :span="6">
@@ -90,7 +83,6 @@ export default {
 		return {
 			injectDialogVisible: false,
 			searchText: '',
-			isInstalled: chrome.app.isInstalled,
 			currentPage: 1
 		}
 	},
@@ -124,9 +116,6 @@ export default {
 			if (this.searchText.length > 0) {
 				this.$router.push('/v/' + encodeURIComponent(this.searchText.replace(/\s/g, '-')))
 			}
-		},
-		install () {
-			chrome.webstore.install()
 		}
 	}
 }
@@ -148,17 +137,21 @@ export default {
 }
 
 .feature-button {
-	text-align: center;
-	display: block;
-	display: inline-block;
-	margin: 80px 50px 20px 50px;
+	display: flex;
+	margin: 30px auto;
+	opacity: 0.8;
+	cursor: pointer;
+	height: 60px;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #ccc;
+	width: fit-content;
+	padding: 10px 50px;
 
 	img {
 		display: inline-block;
-		-webkit-filter: brightness(0%);
 		vertical-align: middle;
 		width: 40px;
-		opacity: 0.7;
 		margin: 0;
 	}
 
@@ -167,6 +160,10 @@ export default {
 		vertical-align: middle;
 		margin-left: 10px;
 		font-size: 22px;
+	}
+
+	&:hover {
+		opacity: 1;
 	}
 }
 

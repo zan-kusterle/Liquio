@@ -5,10 +5,14 @@ import * as utils from 'shared/utils'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 function getCommonParams(opts) {
-    return {
-        trust_metric_url: opts.trust_metric_url,
-        trust_usernames: opts.keypairs.map((k) => k.username).join(',')
+    if (!opts) {
+        return {}
     }
+    if (opts.keypairs) {
+        opts.trust_usernames = opts.keypairs.map((k) => k.username).join(',')
+        delete opts.keypairs
+    }
+    return opts
 }
 
 export function getNode(key, opts, cb) {

@@ -1,4 +1,4 @@
-import * as utils from 'inject/utils'
+import * as utils from 'shared/votes'
 
 export function init(nodesByText, videoPlayer, classes) {
     let player = document.getElementById('player')

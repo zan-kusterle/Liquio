@@ -58,6 +58,11 @@
     </div>
 
     <div style="margin-top: 200px;">
+        <el-button type="primary" size="large" @click="install" v-if="!isInstalled" class="feature-button">
+            <img src="/images/google-chrome-icon.png"></img>
+            <span>Get free extension</span>
+        </el-button>
+
         <h2 class="title">Add this code to your website</h2>
         <div style="padding: 20px 50px; background-color: #f5f5f5;">
 <pre style="color: #888; text-align: left; width: 100%; opacity: 0.7;">&lt;script&gt;
@@ -79,6 +84,9 @@
 
 <script>
 export default {
+    created () {
+        this.isInstalled = chrome.app.isInstalled
+    },
     mounted () {
         let script = document.createElement('script')
         script.type = 'text/javascript'
@@ -93,6 +101,34 @@ export default {
             bar.remove()
     },
     methods: {
+        install () {
+			chrome.webstore.install()
+		}
     }
 }
 </script>
+
+<style scoped lang="less">
+.feature-button {
+	text-align: center;
+	display: block;
+	display: inline-block;
+	margin: 80px 50px 20px 50px;
+
+	img {
+		display: inline-block;
+		-webkit-filter: brightness(0%);
+		vertical-align: middle;
+		width: 40px;
+		opacity: 0.7;
+		margin: 0;
+	}
+
+	span {
+		display: inline-block;
+		vertical-align: middle;
+		margin-left: 10px;
+		font-size: 22px;
+	}
+}
+</style>

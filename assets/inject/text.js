@@ -1,6 +1,7 @@
-import * as utils from 'inject/utils'
+import * as utils from 'shared/votes'
 import * as note from 'inject/note'
 import styles from 'inject/styles'
+import { updateState } from 'inject/state'
 
 var nodesByText, classes
 
@@ -33,9 +34,9 @@ export function onAnchorInsert(node) {
             url = url.substring(startsWith.length)
         }
 
-        utils.getUrl(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(url), (data) => {
+        Api.getNode(url, null, (node) => {
             let view = tag.getAttribute('liquio-view') || 'default'
-            let defaultUnit = utils.defaultUnit(data.data)
+            let defaultUnit = utils.defaultUnit(node)
 
             if (defaultUnit) {
                 if (view == 'default') {
@@ -57,15 +58,43 @@ export function onAnchorInsert(node) {
 }
 
 export function onTextInsert(nodesByText, domNode, classes) {
-    let text = domNode.textContent
+    let text = domNode.textContent.toLowerCase()
 
     let nodesToAdd = Object.keys(nodesByText).filter((k) => {
-        return text.toLowerCase().indexOf(k) >= 0
-    }).reduce((a, k) => a.concat(nodesByText[k]), [])
+        return text.indexOf(k) >= 0
+    }).map(k => {
+        let start = text.indexOf(k)
+        let end = start + k.length
+
+        let range = document.createRange()
+        range.setStart(domNode, start)
+        range.setEnd(domNode, end)
+        return {
+            text: k,
+            node: nodesByText[k][0],
+            range: range
+        }
+    })
 
     if (nodesToAdd.length > 0) {
-        note.prepareContainer(domNode, classes)
-        for (let nodeToAdd of nodesToAdd)
-            note.addToContainer(domNode, nodeToAdd)
+        nodesToAdd.forEach(({ range, node }) => {
+            let span = document.createElement('span')
+            range.surroundContents(span)
+            span.style.backgroundColor = 'rgba(57, 164, 255, 0.25)'
+            let isClicked = true
+            span.addEventListener('mouseover', (e) => {
+                isClicked = false
+                updateState({ currentNode: node })
+            })
+            span.addEventListener('mouseout', (e) => {
+                if (!isClicked) {
+                    updateState({ currentNode: null })
+                }
+            })
+            span.addEventListener('click', (e) => {
+                isClicked = true
+                updateState({ currentNode: node })
+            })
+        })
     }
 }

@@ -1,11 +1,15 @@
 import j2c from 'j2c'
-import * as utils from 'inject/utils'
+import { cleanUrl } from 'shared/votes'
 import * as text from 'inject/text'
 import * as video from 'inject/video'
 import * as bar from 'inject/bar'
 import styles from 'inject/styles'
 import { CrossStorageClient } from 'cross-storage'
 import * as Api from 'shared/api_client'
+import { state, updateState } from 'inject/state'
+import { init as initBar } from 'inject/bar'
+
+initBar()
 
 let classes = j2c.sheet(styles)
 let style = document.createElement('style')
@@ -15,59 +19,11 @@ document.getElementsByTagName('body')[0].appendChild(style)
 let key = document.location.href
 if (key.startsWith(LIQUIO_URL + '/page/'))
     key = decodeURIComponent(key.replace(LIQUIO_URL + '/page/', ''))
-key = utils.cleanUrl(key)
+key = cleanUrl(key)
 
-let state = {
-    classes: classes,
-    key: key,
-    node: null,
-    videoPlayer: null,
-    textNodeQueue: [],
-    trustMetricURL: null,
-}
+updateState({ classes, key })
 
-let updateState = (newValue) => {
-    for (let key in newValue) {
-        state[key] = newValue[key]
-    }
-
-    if (state.node) {
-        for (let queuedNode of state.textNodeQueue) {
-            console.log(queuedNode)
-            text.onTextInsert(getNodesByText(state.node), queuedNode, state.classes)
-        }
-        state.textNodeQueue = []
-        
-        if (newValue.trustMetricURL !== undefined) {
-            bar.init(state.key, state.trustMetricURL, state.node.results.by_units['reliable'], state.classes)
-        }
-
-        if (state.videoPlayer) {
-            video.init(getNodesByText(state.node), state.videoPlayer, state.classes)
-        }
-    }
-}
-
-let getNodesByText = (node) => {
-    var result = {}
-    node.references.forEach(function (reference) {
-        reference.inverse_references.forEach(function (inverse_reference) {
-            let topic = inverse_reference.path.join('/')
-            if (topic.startsWith(key + '/')) {
-                let remainder = topic.substring(key.length + 1)
-                if (remainder.length > 0) {
-                    let text = remainder.replace(/-/g, ' ')
-                    if (!(text in result)) {
-                        result[text] = []
-                    }
-                    result[text].push(reference)
-                }
-            }
-        })
-    })
-    return result
-}
-
+// TODO: Make this support any HTML5 video
 if (state.key.startsWith("https:www.youtube.com/watch")) {
     window.onYouTubeIframeAPIReady = () => {
         let player = new YT.Player('main-video-frame', {
@@ -90,9 +46,10 @@ if (!window.location.href.startsWith(LIQUIO_URL + '/v/') || window.location.href
     let hasNodeWithUsernames = false
     storage.onConnect().then(function () {
         storage.get('usernames').then((usernames) => {
-            utils.getUrl(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(state.key) + '?depth=2&trust_usernames=' + usernames, (data) => {
+            updateState({ isLoading: true })
+            Api.getNode(state.key, { depth: 2, trust_usernames: usernames }, (node) => {
                 hasNodeWithUsernames = true
-                updateState({ node: data.data })
+                updateState({ node: node, isLoading: false })
             })
         })
         storage.get('').then((value) => {
@@ -100,9 +57,9 @@ if (!window.location.href.startsWith(LIQUIO_URL + '/v/') || window.location.href
         })
     })
 
-    utils.getUrl(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key) + '?depth=2', function (data) {
+    Api.getNode(state.key, { depth: 2 }, function (node) {
         if (!hasNodeWithUsernames) {
-            updateState({ node: data.data })
+            updateState({ node: node, isLoading: false })
         }
     })
 }
@@ -110,11 +67,7 @@ if (!window.location.href.startsWith(LIQUIO_URL + '/v/') || window.location.href
 if (!state.key.startsWith(LIQUIO_URL + '/v/')) {
     let onDomNodeInsert = (node) => {
         if (node.nodeType === Node.TEXT_NODE) {
-            if (state.node) {
-                text.onTextInsert(getNodesByText(state.node), node, state.classes)
-            } else {
-                state.textNodeQueue.push(node)
-            }
+            state.textNodes.push(node)
         } else if (node.nodeName.toLowerCase() === 'a') {
             text.onAnchorInsert(node)
         }
