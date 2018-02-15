@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="padding-top: 50px; padding-bottom: 100px;">
 	<template v-if="node && !node.loading">
 		<template v-if="node.references.length > 0">
 			<div class="main">

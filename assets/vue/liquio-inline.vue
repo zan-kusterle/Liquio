@@ -8,8 +8,8 @@
 		</div>
 		<div v-html="this.node.default_unit.embeds.value" v-if="this.node.default_unit && this.node.default_unit.embeds" style="width: 100%; font-size: 0;"></div>
 	</router-link>
-	<div v-if="node.path[0].startsWith('http://') || node.path[0].startsWith('https://')" class="webpage-link">
-		<a :href="node.path.join('/')" target="_blank">Open webpage</a>
+	<div v-if="node.is_link" class="webpage-link">
+		<a :href="node.title" target="_blank">Open webpage</a>
 	</div>
 	
 	<div class="references" v-if="node.references">

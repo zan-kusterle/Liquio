@@ -39,8 +39,6 @@ defmodule Liquio.Identity do
 				update: [set: [to_datetime: ^now]])
 			|> Repo.update_all([])
 
-			IO.inspect "dsada"
-
 			Repo.insert(%Identity{
 				signature_id: signature.id,
 				username: username,

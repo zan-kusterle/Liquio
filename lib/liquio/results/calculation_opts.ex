@@ -41,18 +41,26 @@ defmodule Liquio.CalculationOpts do
 	end
 
 	defp clean_number(value, opts) do
-		if value == nil or String.length(value) == 0 do
-			nil
-		else
-			if opts[:whole] == true do
-				case Integer.parse(value) do
-					{x, _} -> x
-					:error -> nil
-				end
+		if is_number(value) do
+			if opts[:whole] do
+				round(value)
 			else
-				case Float.parse(value) do
-					{x, _} -> x
-					:error -> nil
+				value
+			end
+		else
+			if value == nil or String.length(value) == 0 do
+				nil
+			else
+				if opts[:whole] == true do
+					case Integer.parse(value) do
+						{x, _} -> x
+						:error -> nil
+					end
+				else
+					case Float.parse(value) do
+						{x, _} -> x
+						:error -> nil
+					end
 				end
 			end
 		end

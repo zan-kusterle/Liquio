@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="padding-top: 50px; padding-bottom: 100px;">
 	<template v-if="node && !node.loading">
 		<div class="before" style="padding-top: 0px;">
 			<transition v-on:enter="inverseReferencesEnter" v-on:leave="inverseReferencesLeave" v-bind:css="false">
@@ -21,10 +21,8 @@
 		</div>
 
 		<div class="main">
-			<h1 class="title" v-if="node.path[0].startsWith('http:') || node.path[0].startsWith('https:')">
-				<a :href="node.path.join('/').replace" target="_blank">{{node.path.join('/')}}</a>
-				<br>
-				<a :href="'/page/' + encodeURIComponent(node.url)" target="_blank" style="font-size: 18px; font-weight: bold;">Visit with Liquio</a>
+			<h1 class="title" v-if="node.is_link">
+				<a :href="node.title" target="_blank">{{ node.title }}</a>
 			</h1>
 			<h1 class="title" v-else>
 				<p>{{ node.title }}</p>

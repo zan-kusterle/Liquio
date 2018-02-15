@@ -128,10 +128,6 @@ export default {
 
         node.default_unit = unit
 
-        if (node.path.length > 0 && (node.path[0].startsWith('http:') || node.path[0].startsWith('https:'))) {
-            node.path[0] = node.path[0].replace(':', '://')
-        }
-
         return node
     },
     getNodesByKeys: (state, getters) => (paths) => _.filter(_.map(paths, (path) => getters.getNodeByKey(path)), (n) => n),

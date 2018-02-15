@@ -100,6 +100,8 @@ export default {
     },
     computed: {
         generatedUsername () {
+            if (!this.randomWords)
+                return null
             return keypairFromSeed(wordsToSeed(this.randomWords)).username
         }
     },

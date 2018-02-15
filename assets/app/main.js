@@ -4,6 +4,8 @@ import ElementUI from 'element-ui';
 import locale from 'element-ui/lib/locale/lang/en'
 import VueRouter from 'vue-router'
 import VueI18n from 'vue-i18n'
+import nacl from 'tweetnacl'
+import { stringToBytes, encodeBase64 } from 'shared/utils'
 import messages from 'app/texts'
 import css from 'app/main.less'
 
@@ -60,18 +62,32 @@ const app = new Vue({
 CrossStorageHub._set = function(params) {
     return localStorage.setItem('trustMetricURL', params.value)
 }
-CrossStorageHub._get = function(params) {
-    if(params.keys[0] == 'usernames') {
-        let seeds = store.getters.currentOpts.keypairs
-        return seeds.map((k) => k.username).join(',')
+CrossStorageHub._get = function({ keys }) {
+    if(keys[0] == 'publicKeys') {
+        let keypairs = store.getters.currentOpts.keypairs
+        return keypairs.map((k) => encodeBase64(k.publicKey)).join(',')
+    } else if (keys[0] === 'signature') {
+        let username = keys[1]
+        let message = keys[2]
+
+        let keypairs = store.getters.currentOpts.keypairs
+        let keypair = keypairs.find(k => k.username === username)
+        if (!keypair)
+            return null
+        
+        let messageHash = nacl.hash(stringToBytes(message))
+        let signature = nacl.sign.detached(messageHash, keypair.secretKey)
+        return encodeBase64(signature)
+    } else if (keys[0] === 'trustMetricURL') {
+        return localStorage.getItem('trustMetricURL')
     }
-    return localStorage.getItem('trustMetricURL')
+    return null
 }
 CrossStorageHub.init([
     { origin: /.*/, allow: ['get', 'set'] }
 ])
 
-if (process.env.NODE_ENV === 'production') {
+/*if (process.env.NODE_ENV === 'production') {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
@@ -81,4 +97,4 @@ if (process.env.NODE_ENV === 'production') {
             })
         })
     }
-}
+}*/

@@ -48,7 +48,7 @@ defmodule Liquio.Web.NodeView do
 		end
 
 		first_path = node.path |> Enum.at(0)
-		is_link = first_path == "http:" or node.path == "https:"
+		is_link = first_path != nil and (String.starts_with?(first_path, "http:") or String.starts_with?(first_path, "https:"))
 		title = node.path |> Enum.join("/")
 		title = if is_link do
 			title |> String.replace("https:", "https://") |> String.replace("http:", "http://")

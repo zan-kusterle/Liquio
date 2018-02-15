@@ -42,7 +42,9 @@
 </style>
 
 <template>
-<div>
+<div style="padding-bottom: 100px;">
+    <div class="demo-message">This is a demo webpage with Liquio bar at the bottom of the screen. You can see average reliability score. Hover over highlighted text to see the attached poll.</div>
+
     <h1 class="title">Is Human Activity the Cause of Global Warming?</h1>
 
     <div style="text-align: center;">
@@ -109,6 +111,12 @@ export default {
 </script>
 
 <style scoped lang="less">
+.demo-message {
+    background-color: #ffbc20;
+    padding: 10px 30px;
+    margin-bottom: 50px;
+}
+
 .feature-button {
 	text-align: center;
 	display: block;

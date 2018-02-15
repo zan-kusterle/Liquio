@@ -4,7 +4,7 @@
 	
 	<div class="main-wrap" id="main-wrap">
 		<div class="scrollable">
-			<div class="main-container" style="padding-top: 50px; padding-bottom: 100px;">
+			<div class="main-container">
 				<slot>There is nothing here.</slot>
 			</div>
 		</div>

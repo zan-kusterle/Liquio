@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="padding-top: 50px; padding-bottom: 100px;">
 	<el-dialog title="Import votes" :visible.sync="importVisible" width="600px">
 		<el-input type="textarea" :rows="10" v-model="importData"></el-input>
 

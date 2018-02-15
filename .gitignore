@@ -13,7 +13,6 @@ erl_crash.dump
 
 # Static artifacts
 /assets/node_modules
-/assets/inject/node_modules
 /assets/static/inject.js
 
 # Since we are building assets from web/static,
@@ -31,10 +30,7 @@ erl_crash.dump
 /config/dev.secret.exs
 
 .DS_Store
-
 /*.data
-dev_trust_metric.html
-
 .idea/*
 Liquio.iml
 npm-debug.log

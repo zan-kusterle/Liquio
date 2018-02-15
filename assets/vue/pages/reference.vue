@@ -1,38 +1,38 @@
 <template>
-	<div>
-		<div v-if="node" class="before" style="padding: 20px 80px;">
-			<el-row :gutter="30">
-				<el-col :span="11">
-					<liquio-inline v-bind:node="node"></liquio-inline>
-				</el-col>
-				<el-col :span="2">
-					<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 25px;"></i>
-				</el-col>
-				<el-col :span="11">
-					<liquio-inline v-if="referencing_node"  v-bind:node="referencing_node"></liquio-inline>
-					<el-input v-else v-model="referencing_title" @keyup.native.enter="set_referencing" placeholder="Reference title" style="margin-top: 20px;">
-						<el-button slot="append" icon="caret-right" @click="set_referencing"></el-button>
-					</el-input>
-				</el-col>
-			</el-row>
-		</div>
-		
-		<div class="main" v-if="reference && reference.results && !reference.loading">
-			<embeds :results="reference.results"></embeds>
+<div style="padding-top: 50px; padding-bottom: 100px;">
+	<div v-if="node" class="before" style="padding: 20px 80px;">
+		<el-row :gutter="30">
+			<el-col :span="11">
+				<liquio-inline v-bind:node="node"></liquio-inline>
+			</el-col>
+			<el-col :span="2">
+				<i class="el-icon-arrow-right" style="color: rgba(0, 0, 0, 0.5); font-size: 32px; margin-top: 25px;"></i>
+			</el-col>
+			<el-col :span="11">
+				<liquio-inline v-if="referencing_node"  v-bind:node="referencing_node"></liquio-inline>
+				<el-input v-else v-model="referencing_title" @keyup.native.enter="set_referencing" placeholder="Reference title" style="margin-top: 20px;">
+					<el-button slot="append" icon="caret-right" @click="set_referencing"></el-button>
+				</el-input>
+			</el-col>
+		</el-row>
+	</div>
+	
+	<div class="main" v-if="reference && reference.results && !reference.loading">
+		<embeds :results="reference.results"></embeds>
 
-			<p style="font-size: 24px; margin-top: 50px;">Your vote</p>
+		<p style="font-size: 24px; margin-top: 50px;">Your vote</p>
 
-			<vote has-date=false unit="Reliable-Unreliable" is-spectrum=true
-				:own-contributions="reference.results.contributions_by_identities[$store.getters.currentOpts.keypair.username] ? reference.results.contributions_by_identities[$store.getters.currentOpts.keypair.username].contributions : []"
-				:results="reference.results"
-				v-on:set="setVote" v-on:unset="unsetVote"></vote>
-		</div>
-		<div v-else class="main">
-			<div class="main-node">
-				<i class="el-icon-loading loading"></i>
-			</div>
+		<vote has-date=false unit="Reliable-Unreliable" is-spectrum=true
+			:own-contributions="reference.results.contributions_by_identities[$store.getters.currentOpts.keypair.username] ? reference.results.contributions_by_identities[$store.getters.currentOpts.keypair.username].contributions : []"
+			:results="reference.results"
+			v-on:set="setVote" v-on:unset="unsetVote"></vote>
+	</div>
+	<div v-else class="main">
+		<div class="main-node">
+			<i class="el-icon-loading loading"></i>
 		</div>
 	</div>
+</div>
 </template>
 
 <script>

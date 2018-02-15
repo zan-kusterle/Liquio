@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="padding-top: 50px; padding-bottom: 100px;">
 	<el-popover
 		ref="extension-popover"
 		placement="bottom"
@@ -21,7 +21,7 @@
 		placement="bottom"
 		width="300"
 		trigger="hover"
-		content="A webpage that contains a list of usernames whose votes will be count. You can easily change this list in settings.">
+		content="A webpage containing a list of usernames, whose votes will be count. You can easily change it in settings.">
 	</el-popover>
 
 	<div class="after">
@@ -40,7 +40,7 @@
 			<el-col :span="6">
 				<div class="feature">
 					<h3>No moderation</h3>
-					<p><a v-popover:trust-metrics-popover>Trust metrics</a> make you your own moderator.</p>
+					<p><a v-popover:trust-metrics-popover>Trust metrics</a> allow you to be your own moderator.</p>
 				</div>
 			</el-col>
 
