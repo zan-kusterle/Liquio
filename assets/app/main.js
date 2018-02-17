@@ -25,7 +25,7 @@ import searchComponent from 'pages/search.vue'
 import nodeComponent from 'pages/node.vue'
 import referenceComponent from 'pages/reference.vue'
 import App from 'app.vue'
-import store from 'store/store'
+import store from 'app/store/store'
 
 const routes = [
     { path: '/', component: indexComponent },

@@ -19,7 +19,7 @@ defmodule Liquio.Mixfile do
 		[
 			mod: {Liquio, []},
 			extra_applications: [
-				:ex_debug_toolbar, :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
+				:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
 				:phoenix_ecto, :postgrex, :ssl, :edeliver
 			]
 		]
@@ -51,8 +51,7 @@ defmodule Liquio.Mixfile do
 			{:secure_random, "~> 0.5"},
 			{:cachex, "~> 2.0"},
 			{:ed25519, "~> 1.0"},
-			{:elixir_ipfs_api, "~> 0.1.0"},
-			{:ex_debug_toolbar, "~> 0.3.0", only: :dev}
+			{:elixir_ipfs_api, "~> 0.1.0"}
 		]
 	end
 

@@ -1,8 +1,5 @@
 use Mix.Config
 
- config :ex_debug_toolbar,
- 	enable: false
-
 config :liquio, Liquio.Web.Endpoint,
 	http: [port: 4000],
 	debug_errors: false,
@@ -41,10 +38,6 @@ config :liquio, Liquio.Repo,
 	hostname: "localhost",
 	pool_size: 10
 	#loggers: [ExDebugToolbar.Collector.EctoCollector, Ecto.LogEntry]
-
-#config :phoenix, :template_engines,
-#	eex: ExDebugToolbar.Template.EExEngine,
-#	exs: ExDebugToolbar.Template.ExsEngine
 
 config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.html"
 config :liquio, trust_metric_cache_time_seconds: 5

@@ -1,23 +1,5 @@
 import transformNode from 'inject/transform_content'
 
-let getNodesByText = (node, key) => {
-    var result = {}
-    node.references.forEach(function (reference) {
-        reference.inverse_references.forEach(function (inverse_reference) {
-            let topic = inverse_reference.path.join('/')
-            if (topic.startsWith(key + '/')) {
-                let text = topic.substring(key.length + 1)
-                if (text.length > 0) {
-                    if (!(text in result)) {
-                        result[text] = []
-                    }
-                    result[text].push(reference)
-                }
-            }
-        })
-    })
-    return result
-}
 
 export let state = {
     app: null,
@@ -38,10 +20,29 @@ export function updateState(newValue) {
     }
     if (state.key) {
         if (newValue.node) {
-            state.nodesByText = getNodesByText(state.node, state.key)
+            let getNodesByText = (node, key) => {
+                var result = {}
+                node.references.forEach(function (reference) {
+                    reference.inverse_references.forEach(function (inverse_reference) {
+                        let topic = inverse_reference.path.join('/')
+                        if (topic.startsWith(key + '/')) {
+                            let text = topic.substring(key.length + 1)
+                            if (text.length > 0) {
+                                if (!(text in result)) {
+                                    result[text] = []
+                                }
+                                result[text].push(reference)
+                            }
+                        }
+                    })
+                })
+                return result
+            }
+
+            let nodesByText = getNodesByText(state.node, state.key)
 
             for (let domNode of state.textNodes) {
-                transformNode(state.nodesByText, domNode)
+                transformNode(nodesByText, domNode)
             }
         }
     }

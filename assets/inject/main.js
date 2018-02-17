@@ -16,7 +16,24 @@ vueElement.appendChild(document.createElement('div'))
 
 const BarConstructor = Vue.extend(Bar)
 const app = new BarConstructor({
-    el: vueElement.childNodes[0]
+    el: vueElement.childNodes[0],
+    data () {
+        return {
+            crossStorage: null,
+
+            isHidden: false,
+
+            key: null,
+            trustMetricUrl: null,
+            publicKeys: null,
+            node: null,
+
+            currentNode: null,
+
+            currentSelection: null,
+            currentVideoTime: null,
+        }
+    }
 })
 
 if (isExtension) {
@@ -35,36 +52,36 @@ function onUrlChange (url) {
 
     updateState({ isHidden, key, app }, app)
 
-    if (isExtension) {
-        
-    } else {
-        // Read local storage
-        let storage = new CrossStorageClient(LIQUIO_URL + '/hub.html')
-        let hasNodeWithUsernames = false
-        storage.onConnect().then(function () {
-            state.app.crossStorage = storage
-            storage.get('publicKeys').then((encodedPublicKeys) => {
-                let publicKeys = encodedPublicKeys.split(',').map(p => decodeBase64(p))
-                let usernames = publicKeys.map(p => usernameFromPublicKey(p))
-                updateState({ publicKeys: publicKeys, isLoading: true })
-                Api.getNode(state.key, { depth: 2, trust_usernames: usernames.join(',') }, (node) => {
-                    hasNodeWithUsernames = true
-                    updateState({ node: node, isLoading: false })
-                })
-            })
-            storage.get('').then((value) => {
-                updateState({ trustMetricURL: value })
-            })
-        })
-
-        Api.getNode(state.key, { depth: 2 }, function (node) {
-            if (!hasNodeWithUsernames) {
-                updateState({ node: node, isLoading: false })
-            }
-        })
-    }
 }
-    
+
+if (isExtension) {
+        
+} else {
+    // Read local storage
+    let storage = new CrossStorageClient(LIQUIO_URL + '/hub.html')
+    let hasNodeWithUsernames = false
+    storage.onConnect().then(function () {
+        state.app.crossStorage = storage
+        storage.get('publicKeys').then((encodedPublicKeys) => {
+            let publicKeys = encodedPublicKeys.split(',').map(p => decodeBase64(p))
+            let usernames = publicKeys.map(p => usernameFromPublicKey(p))
+            updateState({ publicKeys: publicKeys, isLoading: true })
+            Api.getNode(state.key, { depth: 2, trust_usernames: usernames.join(',') }, (node) => {
+                hasNodeWithUsernames = true
+                updateState({ node: node, isLoading: false })
+            })
+        })
+        storage.get('').then((value) => {
+            updateState({ trustMetricURL: value })
+        })
+    })
+
+    Api.getNode(state.key, { depth: 2 }, function (node) {
+        if (!hasNodeWithUsernames) {
+            updateState({ node: node, isLoading: false })
+        }
+    })
+}   
 
 // Set MutationObserver
 let onDomNodeInsert = (node) => {
