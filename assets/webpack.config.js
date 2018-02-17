@@ -6,7 +6,7 @@ var webpack = require("webpack");
 
 module.exports = {
     entry: {
-        app: "./app/main.js",
+        'js/app': "./app/main.js",
         inject: "./inject/main.js",
         'extension/inject': "./inject/main.js"
     },
@@ -71,11 +71,7 @@ module.exports = {
             BUILD_TIMESTAMP: Math.floor(Date.now() / 1000),
             LIQUIO_URL: JSON.stringify(process.env.NODE_ENV === 'production' ? "https://liqu.io" : "http://localhost:4000")            
         }),
-        /*new ServiceWorkerWebpackPlugin({
-            entry: __dirname + '/app/serviceworker.js',
-            filename: 'serviceworker.js'
-        }),*/
-        new ExtractTextPlugin("app/main.css"),
+        new ExtractTextPlugin("css/app.css"),
         new CopyWebpackPlugin([{ from: "./static" }]),
         //new BundleAnalyzerPlugin()
     ].concat(process.env.NODE_ENV === 'production' ? [

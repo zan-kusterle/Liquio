@@ -8,7 +8,6 @@ config :liquio, Liquio.Web.Endpoint,
 	watchers: [
 		node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin", cd: Path.expand("../assets", __DIR__)]
 	]
-	#instrumenters: [ExDebugToolbar.Collector.InstrumentationCollector]
 
 # Watch static and templates for browser reloading.
 config :liquio, Liquio.Web.Endpoint,
