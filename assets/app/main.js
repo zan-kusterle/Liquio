@@ -18,12 +18,12 @@ Vue.use(ElementUI, { locale })
 
 import { sync } from 'vuex-router-sync'
 import { CrossStorageHub } from 'cross-storage'
-import demoComponent from 'pages/demo.vue'
-import identityComponent from 'pages/identity.vue'
-import indexComponent from 'pages/index.vue'
-import searchComponent from 'pages/search.vue'
-import nodeComponent from 'pages/node.vue'
-import referenceComponent from 'pages/reference.vue'
+import demoComponent from 'demo.vue'
+import identityComponent from 'identity.vue'
+import indexComponent from 'index.vue'
+import searchComponent from 'search.vue'
+import nodeComponent from 'node.vue'
+import referenceComponent from 'reference.vue'
 import App from 'app.vue'
 import store from 'app/store/store'
 
@@ -86,15 +86,3 @@ CrossStorageHub._get = function({ keys }) {
 CrossStorageHub.init([
     { origin: /.*/, allow: ['get', 'set'] }
 ])
-
-/*if (process.env.NODE_ENV === 'production') {
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/serviceworker.js').then(function(registration) {
-                // console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }).catch(function(err) {
-                console.log('ServiceWorker registration failed: ', err)
-            })
-        })
-    }
-}*/

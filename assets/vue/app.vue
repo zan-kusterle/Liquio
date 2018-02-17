@@ -13,7 +13,9 @@
 </template>
 
 <script>
-import CustomHeader from 'reusable/custom-header.vue'
+import Vue from 'vue'
+import CustomHeader from 'custom-header.vue'
+import utils from 'shared/utils'
 
 export default {
 	components: {
@@ -23,64 +25,6 @@ export default {
 </script>
 
 <style lang="less">
-@lg: ~"screen and (min-width: 64em)";
-@md: ~"screen and (min-width: 48em)";
-@sm: ~"screen and (min-width: 35.5em)";
-@xs: ~"screen and (max-width: 35.5em)";
-
-html {
-    height: 100%;
-}
-body {
-    height: 100%;
-    margin: 0;
-    background-repeat: repeat;
-	background-color: #fbf8ec;
-    background-attachment: fixed;
-	cursor: default;
-	line-height: 1.4;
-	font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-}
-
-.container {
-	margin: 0 auto;
-	width: 100%;
-	color: #333;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	text-align: center;
-	height: 100%;
-	max-width: none;
-}
-
-.area {
-	width: inherit;
-	height: inherit;
-	position: relative;
-
-	width: 100%;
-	height: inherit;
-}
-
-.bubble {
-	position: absolute;
-	left: 0px;
-	top: 0px;
-	width: inherit;
-	height: inherit;
-	display: table;	
-}
-
-.bubble p {
-	display: table-cell;
-	vertical-align: middle;
-	text-align: center;
-	color: #333;
-
-	line-height: 100%;
-}
-
-
-//ENDMAIN
 .loading {
 	font-size: 48px;
 	color: #2a9fec;
