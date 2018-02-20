@@ -54,7 +54,7 @@ function onUrlChange (url) {
 
 }
 
-if (isExtension) {
+if (false && isExtension) {
         
 } else {
     // Read local storage

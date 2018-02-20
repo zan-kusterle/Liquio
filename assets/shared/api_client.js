@@ -100,7 +100,7 @@ export function setVote(publicKey, signature, key, unit, at_date, choice, cb) {
         signature: utils.encodeBase64(signature),
         unit: unit,
         choice: choice,
-        at_date: at_date.getFullYear() + '-' + (at_date.getMonth() + 1) + '-' + at_date.getDate()
+        at_date: at_date.toISOString().split('T')[0]
     }
     axios.put('/api/nodes/' + encodeURIComponent(key), params).then(function(response) {
         cb(response.data.data)
