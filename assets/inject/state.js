@@ -48,7 +48,7 @@ export function updateState(newValue) {
     }
 
     if (state.app) {
-        state.app.isHidden = state.isHidden
+        state.app.isUnavailable = state.isUnavailable
         state.app.key = state.key
         state.app.publicKeys = state.publicKeys
         state.app.node = state.node

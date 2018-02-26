@@ -21,7 +21,7 @@
         </template>
     </el-dialog>
 
-    <div class="liquio-bar__container" v-if="!isHidden" :style="{ height: `${hasContent ? 60 : 20}`}">
+    <div class="liquio-bar__container" v-if="!isHidden && !isUnavailable" :style="{ height: `${hasContent ? 60 : 20}`}">
         <div class="liquio-bar__wrap">
             <div class="liquio-bar__main">
                 <div class="liquio-bar__anchor" :class="{ 'liquio-bar__anchor--big': !hasContent }">
@@ -86,7 +86,7 @@ export default {
     },
     data () {
         return {
-            isHidden: false,
+            isUnavailable: true,
 
             key: null,
             trustMetricUrl: null,
@@ -105,12 +105,14 @@ export default {
                 spectrum: 50,
                 quantity: 0
             },
-            
+
             dialogVisible: false,
             loginOpen: false,
 
             seeds: [],
-            username: null
+            username: null,
+
+            isHidden: true
         }
     },
     created () {
@@ -132,6 +134,12 @@ export default {
                     this.username = data.username
                 }
             })
+
+            chrome.runtime.onMessage.addListener(request => {
+                if (request.name === 'toggle') {
+                    this.isHidden = !this.isHidden
+                }
+            });
         }
     },
     computed: {

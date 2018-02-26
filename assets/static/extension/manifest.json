@@ -15,7 +15,8 @@
     }
   ],
   "browser_action": {
-    "default_title": "Liquio"
+    "default_title": "Liquio",
+    "default_icon": "icons/off.png"
   },
   "permissions": [
     "https://*/*",

@@ -21,7 +21,7 @@ const app = new BarConstructor({
         return {
             crossStorage: null,
 
-            isHidden: false,
+            isUnavailable: false,
 
             key: null,
             trustMetricUrl: null,
@@ -47,10 +47,10 @@ if (isExtension) {
 function onUrlChange (url) {
     let isLiquio = url.startsWith(LIQUIO_URL + '/page/') || url.startsWith(LIQUIO_URL + '/v/')
     let isInactive = isExtension && document.getElementById('liquio-bar')
-    let isHidden = isLiquio || isInactive
+    let isUnavailable = isLiquio || isInactive
     let key = cleanUrl(decodeURIComponent(url))
 
-    updateState({ isHidden, key, app }, app)
+    updateState({ isUnavailable, key, app }, app)
 
 }
 
