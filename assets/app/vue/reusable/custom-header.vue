@@ -170,7 +170,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style scoped lang="less">
 .logo {
     margin-top: 18px;
     margin-left: 30px;
@@ -233,37 +233,4 @@ export default {
 }
 
 
-.login {
-	.identities {
-		margin-top: 30px;
-
-		.identity {
-			font-size: 16px;
-			margin-top: 10px;
-
-			i {
-				margin-left: 10px;
-				font-size: 10px;
-			}
-		}
-	}
-
-	.generate {
-		margin-top: 30px;
-
-		p {
-			margin-top: 20px;
-			display: block;
-			font-size: 20px;
-
-			span {
-                margin-top: 10px;
-                margin-left: 2px;
-                margin-bottom: 20px;
-				display: block;
-				font-size: 12px;
-			}
-		}
-	}
-}
 </style>

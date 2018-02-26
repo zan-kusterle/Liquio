@@ -1,17 +1,30 @@
 <template>
 <div>
-    <el-dialog v-if="currentVotes" title="Finalize vote" :visible.sync="dialogVisible" width="30%">
-        <span>{{ currentVotes.node.key }} {{ currentVotes.node.unit }} {{ currentVotes.node.choice }}</span>
-        <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="vote">Confirm</el-button>
+    <el-dialog v-if="currentVotes" title="Finalize vote" :visible.sync="dialogVisible" width="60%">
+        <login v-show="loginOpen" :usernames="usernames" :username="username" @login="addSeed" @logout="removeUsername" @switch="switchToUsername"></login>
+
+        <span v-if="loginOpen" slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">Cancel</el-button>
+            <el-button type="primary" @click="loginOpen = false">Choose user</el-button>
         </span>
+
+        <template v-if="!loginOpen">
+            <p><b>{{ currentVotes.node.key }}</b> {{ currentVotes.node.unit }}: {{ currentVotes.node.choice }}</p>
+
+            <p>Voting with user <b>{{ 'mockuser' }}</b></p>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="loginOpen = true">Switch user</el-button>
+                <el-button type="success" @click="vote">Cast vote</el-button>
+            </span>
+        </template>
     </el-dialog>
 
-    <div class="liquio-bar__container" v-if="!isHidden">
+    <div class="liquio-bar__container" v-if="!isHidden" :style="{ height: `${hasContent ? 60 : 20}`}">
         <div class="liquio-bar__wrap">
             <div class="liquio-bar__main">
-                <div class="liquio-bar__anchor">
+                <div class="liquio-bar__anchor" :class="{ 'liquio-bar__anchor--big': !hasContent }">
                     <template v-if="currentAnchor">
                         <p class="liquio-bar__anchor-selection"><b>Voting on</b> {{ currentAnchor }}</p>
                     </template>
@@ -20,25 +33,27 @@
                     </template>
                 </div>
 
-                <div class="liquio-bar__data-wrap">
-                    <div class="liquio-bar__vote" v-if="currentAnchor">
-                        <a @click="currentAnchor = null" style="margin-right: 10px;">&lt;-</a>
-                        <el-input type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
-                        <el-select v-model="currentUnitValue" class="liquio-bar__vote-unit">
-                            <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
-                        </el-select>
-                        <div class="liquio-bar__vote-choice">
-                            <el-slider v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
-                            <el-input v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
+                <template v-if="hasContent">
+                    <div class="liquio-bar__data-wrap">
+                        <div class="liquio-bar__vote" v-if="currentAnchor">
+                            <a @click="currentAnchor = null" style="margin-right: 10px;">&lt;-</a>
+                            <el-input type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
+                            <el-select v-model="currentUnitValue" class="liquio-bar__vote-unit">
+                                <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
+                            </el-select>
+                            <div class="liquio-bar__vote-choice">
+                                <el-slider v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
+                                <el-input v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
+                            </div>
+                            <el-button @click="dialogVisible = true" class="liquio-bar__vote-button">Vote</el-button>
                         </div>
-                        <el-button @click="dialogVisible = true" class="liquio-bar__vote-button">Vote</el-button>
-                    </div>
 
-                    <div class="liquio-bar__current-node" v-else-if="currentNode">
-                        {{ currentNode.title }}
-                        <div class="liquio-bar__embeds" v-html="embedsSvg"></div>
+                        <div class="liquio-bar__current-node" v-else-if="currentNode">
+                            {{ currentNode.title }}
+                            <div class="liquio-bar__embeds" v-html="embedsSvg"></div>
+                        </div>
                     </div>
-                </div>
+                </template>
             </div>
             <a class="liquio-bar__score" :style="{ 'background': `#${color}` }" :href="`${LIQUIO_URL}/v/${encodeURIComponent(key)}`">
                 {{ ratingText }}
@@ -50,13 +65,14 @@
 
 <script>
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
+import Login from '../vue/login.vue'
 import { colorOnGradient, slug } from 'shared/votes'
 import { allUnits } from 'shared/data'
 import { usernameFromPublicKey } from 'shared/identity'
 import { decodeBase64 } from 'shared/utils'
 import * as client from 'shared/api_client'
 import 'element-ui/lib/theme-chalk/index.css'
-
+import { keypairFromSeed } from 'shared/identity'
 
 export default {
     components: {
@@ -66,11 +82,10 @@ export default {
         elOption: Option,
         elInput: Input,
         elDialog: Dialog,
+        login: Login
     },
     data () {
         return {
-            crossStorage: null,
-
             isHidden: false,
 
             key: null,
@@ -84,20 +99,54 @@ export default {
             currentVideoTime: null,
             currentAnchor: null,
         
-            currentTitle: '',
+            currentTitle: null,
             currentUnitValue: 'true',
             currentChoice: {
                 spectrum: 50,
                 quantity: 0
             },
-            dialogVisible: false
+            
+            dialogVisible: false,
+            loginOpen: false,
+
+            seeds: [],
+            username: null
         }
     },
     created () {
         this.LIQUIO_URL = LIQUIO_URL
+        this.isExtension = !!(window.chrome && chrome.runtime && chrome.runtime.id)
         this.allUnits = allUnits
+
+        if (this.isExtension) {
+            chrome.storage.local.get(['seeds', 'username'], (data) => {
+                if (data.seeds && data.seeds.length > 0) {
+                    data.seeds.forEach(s => {
+                        if (s && s.length > 0) {
+                            this.seeds.push(s)
+                        }
+                    })
+                }
+
+                if (data.username) {
+                    this.username = data.username
+                }
+            })
+        }
     },
     computed: {
+        hasContent () {
+            return this.currentAnchor || this.currentNode
+        },
+        keypairs () {
+            return this.seeds.map(keypairFromSeed).filter(k => k)
+        },
+        usernames () {
+            return this.keypairs.map(k => k.username)
+        },
+        currentKeypair () {
+            return this.keypairs.find(k => k.username === this.username)
+        },
         ratingText () {
             return this.rating ? (Math.round(this.rating * 100) / 10).toFixed(1) : '?'
         },
@@ -166,21 +215,42 @@ export default {
         }
     },
     methods: {
+        getSignature (keypair, message) {
+            let messageHash = nacl.hash(stringToBytes(message))
+            return nacl.sign.detached(messageHash, this.currentKeypair.secretKey)
+        },
         vote () {
+            let keypair = this.currentKeypair
+            if (!keypair)
+                return
+            
             let voteMessage = ['setVote', this.currentVotes.node.key, this.currentVotes.node.unit, this.currentVotes.node.choice.toFixed(5)].join(' ')
-            let referenceMessage = ['setReferenceVote', this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currrentVotes.reference.relevance.toFixed(5)].join(' ')
+            let referenceMessage = ['setReferenceVote', this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currentVotes.reference.relevance.toFixed(5)].join(' ')
 
-            this.crossStorage.get('signature', this.currentUsername, voteMessage).then(signature => {
-                client.setVote(this.publicKeys[0], decodeBase64(signature), this.currentVotes.node.key, this.currentVotes.node.unit, new Date(), this.currentVotes.node.choice, (r) => {
-                    this.crossStorage.get('signature', this.currentUsername, referenceMessage).then(signature => {
-                        client.setReferenceVote(this.publicKeys[0], decodeBase64(signature), this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currentVotes.reference.relevance, (r) => {
-                            this.dialogVisible = false
-                            this.currentAnchor = null
-                        })
-                    })
+            client.setVote(this.publicKeys[0], this.getSignature(this.keypair, voteMessage), this.currentVotes.node.key, this.currentVotes.node.unit, new Date(), this.currentVotes.node.choice, (r) => {
+                client.setReferenceVote(this.publicKeys[0], this.getSignature(this.keypair, referenceMessage), this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currentVotes.reference.relevance, (r) => {
+                    this.dialogVisible = false
+                    this.currentAnchor = null
                 })
             })
-        }
+        },
+        addSeed (seed) {
+            this.seeds.push(seed)
+            this.username = this.usernames[this.usernames.length - 1]
+            chrome.storage.local.set({ seeds: this.seeds, username: this.username })
+        },
+        removeUsername (username) {
+            let index = this.usernames.indexOf(username)
+            if (index >= 0) {
+                this.seeds.splice(index, 1)
+                this.username = index > 0 ? this.seeds[index - 1] : null
+                chrome.storage.local.set({ seeds: this.seeds, username: this.username })
+            }
+		},
+		switchToUsername (username) {
+            this.username = username
+            chrome.storage.local.set({ username: this.username })
+		}
     }
 }
 </script>
@@ -194,13 +264,13 @@ export default {
         bottom: 0px;
         z-index: 1000;
         width: 100%;
-        background-color: rgba(255, 255, 255, 0.8);
         user-select: none;
     }
 
     &__wrap {
         display: flex;
         align-items: center;
+        background-color: rgba(255, 255, 255, 0.8);
     }
 
     &__score {
@@ -260,6 +330,10 @@ export default {
         font-size: 12px;
         color: #666;
         position: relative;
+
+        &--big {
+            font-size: 20px;
+        }
     }
 
     &__data-wrap {

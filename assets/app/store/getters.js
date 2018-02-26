@@ -11,8 +11,6 @@ export default {
         return parseVotes(data)
     },
     currentOpts: (state, getters) => {
-        var nacl = require('tweetnacl')
-
         let availableSeeds = state.storageSeeds.split(';')
 
         let availableKeyPairs = _.filter(_.map(availableSeeds, (seed) => {

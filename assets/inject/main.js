@@ -54,8 +54,7 @@ function onUrlChange (url) {
 
 }
 
-if (false && isExtension) {
-        
+if (isExtension) {
 } else {
     // Read local storage
     let storage = new CrossStorageClient(LIQUIO_URL + '/hub.html')
