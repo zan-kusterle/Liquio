@@ -26,20 +26,20 @@ export function getNode(key, opts, cb) {
 
 export function getReference(key, reference_key, opts, cb) {
     let params = getCommonParams(opts)
-    axios.get('/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key), { params: params }).then(function(response) {
+    axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key), { params: params }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
 
 export function search(query, cb) {
-    let url = '/api/search/' + encodeURIComponent(query)
+    let url = LIQUIO_URL + '/api/search/' + encodeURIComponent(query)
     axios.get(url).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
 
 export function getIdentity(username, cb) {
-    axios.get('/api/identities/' + username).then(function(response) {
+    axios.get(LIQUIO_URL + '/api/identities/' + username).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -57,7 +57,7 @@ export function setIdentification(opts, key, value, cb) {
     if (value)
         params['value'] = value
 
-    axios.post('/api/identities/identifications', params).then(function(response) {
+    axios.post(LIQUIO_URL + '/api/identities/identifications', params).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -75,7 +75,7 @@ export function setDelegation(opts, to_identity_username, is_trusted, weight, to
         topics: topics,
         is_trusting: is_trusted
     }
-    axios.put('/api/identities/' + encodeURIComponent(to_identity_username), params).then(function(response) {
+    axios.put(LIQUIO_URL + '/api/identities/' + encodeURIComponent(to_identity_username), params).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -89,7 +89,7 @@ export function unsetDelegation(opts, to_identity_username, cb) {
         public_key: utils.encodeBase64(opts.keypair.publicKey),
         signature: utils.encodeBase64(signature)
     }
-    axios.delete('/api/identities/' + encodeURIComponent(to_identity_username), { params: params }).then(function(response) {
+    axios.delete(LIQUIO_URL + '/api/identities/' + encodeURIComponent(to_identity_username), { params: params }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -102,7 +102,7 @@ export function setVote(publicKey, signature, key, unit, at_date, choice, cb) {
         choice: choice,
         at_date: at_date.toISOString().split('T')[0]
     }
-    axios.put('/api/nodes/' + encodeURIComponent(key), params).then(function(response) {
+    axios.put(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), params).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -122,7 +122,7 @@ export function unsetVote(opts, key, unit, at_date, cb) {
         unit: unit,
         at_date: at_date.getFullYear() + '-' + (at_date.getMonth() + 1) + '-' + at_date.getDate(),
     })
-    axios.delete('/api/nodes/' + encodeURIComponent(key), { params: params }).then(function(response) {
+    axios.delete(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), { params: params }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -137,7 +137,7 @@ export function setReferenceVote(publicKey, signature, key, reference_key, relev
         signature: utils.encodeBase64(signature),
         relevance: relevance
     }
-    axios.put('/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key), params).then(function(response) {
+    axios.put(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key), params).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -151,7 +151,7 @@ export function unsetReferenceVote(opts, key, reference_key, cb) {
         public_key: utils.encodeBase64(opts.keypair.publicKey),
         signature: utils.encodeBase64(signature)
     })
-    axios.delete('/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key), { params: params }).then(function(response) {
+    axios.delete(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key) + '/references/' + encodeURIComponent(reference_key), { params: params }).then(function(response) {
         cb(response.data.data)
     }).catch(function(error) {})
 }
@@ -196,7 +196,7 @@ export default {
             }
 
             return new Promise({ resolve, reject }, function () {
-                axios.put('/api/nodes/' + encodeURIComponent(key), params).then(function(response) {
+                axios.put(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), params).then(function(response) {
                     cb(transforms.node(response.data.data))
                 }).catch(function(error) {})
             })

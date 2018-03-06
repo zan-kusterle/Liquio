@@ -2,10 +2,10 @@ import { cleanUrl } from 'shared/votes'
 import { CrossStorageClient } from 'cross-storage'
 import * as Api from 'shared/api_client'
 import { usernameFromPublicKey } from 'shared/identity'
-import { state, updateState } from 'inject/state'
 import Vue from 'vue'
 import Bar from 'inject/bar.vue'
 import { decodeBase64 } from 'shared/utils';
+import transformNode from 'inject/transform_content'
 
 let isExtension = !!(window.chrome && chrome.runtime && chrome.runtime.id)
 
@@ -14,25 +14,36 @@ vueElement.id = isExtension ? 'liquio-bar-extension' : 'liquio-bar'
 document.getElementsByTagName('body')[0].appendChild(vueElement)
 vueElement.appendChild(document.createElement('div'))
 
-const BarConstructor = Vue.extend(Bar)
-const app = new BarConstructor({
+const vm = new Vue({
     el: vueElement.childNodes[0],
     data () {
         return {
-            crossStorage: null,
-
             isUnavailable: false,
-
-            key: null,
-            trustMetricUrl: null,
-            publicKeys: null,
-            node: null,
-
+            urlKey: null,
             currentNode: null,
-
             currentSelection: null,
             currentVideoTime: null,
         }
+    },
+    render (createElement) {
+        return createElement(Bar, {
+            props: {
+                isUnavailable: this.isUnavailable,
+                urlKey: this.urlKey,
+                currentNode: this.currentNode,
+                currentSelection: this.currentSelection,
+                currentVideoTime: this.currentVideoTime
+            }
+        })
+    }
+})
+
+let textNodes = []
+vm.$on('transform-content', (nodesByText) => {
+    for (let domNode of textNodes) {
+        transformNode(nodesByText, domNode, (activeNode) => {
+            vm.currentNode = activeNode
+        })
     }
 })
 
@@ -50,42 +61,14 @@ function onUrlChange (url) {
     let isUnavailable = isLiquio || isInactive
     let key = cleanUrl(decodeURIComponent(url))
 
-    updateState({ isUnavailable, key, app }, app)
+    vm.isUnavailable = isUnavailable
+    vm.urlKey = key
 
 }
 
-if (isExtension) {
-} else {
-    // Read local storage
-    let storage = new CrossStorageClient(LIQUIO_URL + '/hub.html')
-    let hasNodeWithUsernames = false
-    storage.onConnect().then(function () {
-        state.app.crossStorage = storage
-        storage.get('publicKeys').then((encodedPublicKeys) => {
-            let publicKeys = encodedPublicKeys.split(',').map(p => decodeBase64(p))
-            let usernames = publicKeys.map(p => usernameFromPublicKey(p))
-            updateState({ publicKeys: publicKeys, isLoading: true })
-            Api.getNode(state.key, { depth: 2, trust_usernames: usernames.join(',') }, (node) => {
-                hasNodeWithUsernames = true
-                updateState({ node: node, isLoading: false })
-            })
-        })
-        storage.get('').then((value) => {
-            updateState({ trustMetricURL: value })
-        })
-    })
-
-    Api.getNode(state.key, { depth: 2 }, function (node) {
-        if (!hasNodeWithUsernames) {
-            updateState({ node: node, isLoading: false })
-        }
-    })
-}   
-
-// Set MutationObserver
 let onDomNodeInsert = (node) => {
     if (node.nodeType === Node.TEXT_NODE) {
-        state.textNodes.push(node)
+        textNodes.push(node)
     } else if (node.nodeName.toLowerCase() === 'a') {
     }
 }
@@ -118,7 +101,8 @@ if (MutationObserver) {
 window.addEventListener("hashchange", () => onUrlChange(document.location.href), false)
 onUrlChange(document.location.href)
 
-// Update current selection
-let updateSelection = () => updateState({ selection: (window.getSelection().toString() || null) })
+let updateSelection = () => {
+    vm.currentSelection = window.getSelection().toString() || null
+}
 document.addEventListener('keyup', updateSelection)
 document.addEventListener('mouseup', updateSelection)

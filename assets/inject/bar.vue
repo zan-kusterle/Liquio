@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="liquio-bar">
     <el-dialog v-if="currentVotes" title="Finalize vote" :visible.sync="dialogVisible" width="60%">
         <login v-show="loginOpen" :usernames="usernames" :username="username" @login="addSeed" @logout="removeUsername" @switch="switchToUsername"></login>
 
@@ -11,7 +11,7 @@
         <template v-if="!loginOpen">
             <p><b>{{ currentVotes.node.key }}</b> {{ currentVotes.node.unit }}: {{ currentVotes.node.choice }}</p>
 
-            <p>Voting with user <b>{{ 'mockuser' }}</b></p>
+            <p>Voting with user <b>{{ username }}</b></p>
 
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -21,7 +21,7 @@
         </template>
     </el-dialog>
 
-    <div class="liquio-bar__container" v-if="!isHidden && !isUnavailable" :style="{ height: `${hasContent ? 60 : 20}`}">
+    <div class="liquio-bar__container" v-if="currentNode || !isHidden && !isUnavailable">
         <div class="liquio-bar__wrap">
             <div class="liquio-bar__main">
                 <div class="liquio-bar__anchor" :class="{ 'liquio-bar__anchor--big': !hasContent }">
@@ -55,7 +55,7 @@
                     </div>
                 </template>
             </div>
-            <a class="liquio-bar__score" :style="{ 'background': `#${color}` }" :href="`${LIQUIO_URL}/v/${encodeURIComponent(key)}`">
+            <a class="liquio-bar__score" :style="{ 'background': `#${color}` }" :href="`${LIQUIO_URL}/v/${encodeURIComponent(urlKey)}`">
                 {{ ratingText }}
             </a>
         </div>
@@ -64,15 +64,17 @@
 </template>
 
 <script>
+import * as Api from 'shared/api_client'
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
 import Login from '../vue/login.vue'
 import { colorOnGradient, slug } from 'shared/votes'
 import { allUnits } from 'shared/data'
 import { usernameFromPublicKey } from 'shared/identity'
-import { decodeBase64 } from 'shared/utils'
+import { decodeBase64, stringToBytes } from 'shared/utils'
 import * as client from 'shared/api_client'
 import 'element-ui/lib/theme-chalk/index.css'
 import { keypairFromSeed } from 'shared/identity'
+import nacl from 'tweetnacl'
 
 export default {
     components: {
@@ -84,21 +86,19 @@ export default {
         elDialog: Dialog,
         login: Login
     },
+    props: {
+        urlKey: { type: String },
+        isUnavailable: { type: Boolean },
+        currentNode: { type: Object },
+        currentSelection: { type: String },
+        currentVideoTime: { type: Number }
+    },
     data () {
         return {
-            isUnavailable: true,
-
-            key: null,
-            trustMetricUrl: null,
-            publicKeys: null,
+            trustMetricUrl: process.env.NODE_ENV === 'production' ? 'https://trust-metric.liqu.io' : 'http://127.0.0.1:8080/dev_trust_metric.html',
             node: null,
 
-            currentNode: null,
-
-            currentSelection: null,
-            currentVideoTime: null,
             currentAnchor: null,
-        
             currentTitle: null,
             currentUnitValue: 'true',
             currentChoice: {
@@ -140,6 +140,14 @@ export default {
                     this.isHidden = !this.isHidden
                 }
             });
+        }
+    },
+    watch: {
+        urlKey () {
+            this.updateNode()
+        },
+        usernames () {
+            this.updateNode()
         }
     },
     computed: {
@@ -195,9 +203,6 @@ export default {
             unit.defaultValue = unit.type === 'spectrum' ? 50 : 0   
             return unit
         },
-        currentUsername () {
-            return usernameFromPublicKey(this.publicKeys[0])
-        },
         currentVideoTimeText () {
             return this.currentVideoTime
         },
@@ -215,7 +220,7 @@ export default {
                     choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
                 },
                 reference: {
-                    key: this.key + '/' + slug(this.currentAnchor),
+                    key: this.urlKey + '/' + slug(this.currentAnchor),
                     referenceKey: this.currentTitle.replace(/\s/, '-'),
                     relevance: 1.0
                 }
@@ -223,6 +228,43 @@ export default {
         }
     },
     methods: {
+        updateNode () {
+            let params = { depth: 2 }
+            if (this.usernames.length > 0) {
+                params.trust_usernames = this.usernames.join(',')
+            }
+            return new Promise((resolve, reject) => {
+                Api.getNode(this.urlKey, params, (node) => {
+                    this.node = node
+                    
+                    
+                    let getNodesByText = (node, key) => {
+                        var result = {}
+                        node.references.forEach(function (reference) {
+                            reference.inverse_references.forEach(function (inverse_reference) {
+                                let topic = inverse_reference.path.join('/')
+                                if (topic.startsWith(key + '/')) {
+                                    let text = topic.substring(key.length + 1)
+                                    if (text.length > 0) {
+                                        if (!(text in result)) {
+                                            result[text] = []
+                                        }
+                                        result[text].push(reference)
+                                    }
+                                }
+                            })
+                        })
+                        return result
+                    }
+
+                    let nodesByText = getNodesByText(this.node, this.urlKey)
+
+                    this.$root.$emit('transform-content', nodesByText)
+
+                    resolve()
+                })
+            })
+        },
         getSignature (keypair, message) {
             let messageHash = nacl.hash(stringToBytes(message))
             return nacl.sign.detached(messageHash, this.currentKeypair.secretKey)
@@ -235,10 +277,12 @@ export default {
             let voteMessage = ['setVote', this.currentVotes.node.key, this.currentVotes.node.unit, this.currentVotes.node.choice.toFixed(5)].join(' ')
             let referenceMessage = ['setReferenceVote', this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currentVotes.reference.relevance.toFixed(5)].join(' ')
 
-            client.setVote(this.publicKeys[0], this.getSignature(this.keypair, voteMessage), this.currentVotes.node.key, this.currentVotes.node.unit, new Date(), this.currentVotes.node.choice, (r) => {
-                client.setReferenceVote(this.publicKeys[0], this.getSignature(this.keypair, referenceMessage), this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currentVotes.reference.relevance, (r) => {
+            client.setVote(keypair.publicKey, this.getSignature(this.keypair, voteMessage), this.currentVotes.node.key, this.currentVotes.node.unit, new Date(), this.currentVotes.node.choice, (r) => {
+                client.setReferenceVote(keypair.publicKey, this.getSignature(this.keypair, referenceMessage), this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currentVotes.reference.relevance, (r) => {
                     this.dialogVisible = false
                     this.currentAnchor = null
+
+                    this.updateNode()
                 })
             })
         },
@@ -262,6 +306,16 @@ export default {
     }
 }
 </script>
+
+<style lang="less">
+@import '../node_modules/element-ui/lib/theme-chalk/index.css';
+
+.liquio-bar {
+    * > input {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+}
+</style>
 
 <style scoped lang="less">
 .liquio-bar {
