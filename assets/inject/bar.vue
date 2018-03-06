@@ -72,7 +72,6 @@ import { allUnits } from 'shared/data'
 import { usernameFromPublicKey } from 'shared/identity'
 import { decodeBase64, stringToBytes } from 'shared/utils'
 import * as client from 'shared/api_client'
-import 'element-ui/lib/theme-chalk/index.css'
 import { keypairFromSeed } from 'shared/identity'
 import nacl from 'tweetnacl'
 
@@ -117,11 +116,10 @@ export default {
     },
     created () {
         this.LIQUIO_URL = LIQUIO_URL
-        this.isExtension = !!(window.chrome && chrome.runtime && chrome.runtime.id)
         this.allUnits = allUnits
 
-        if (this.isExtension) {
-            chrome.storage.local.get(['seeds', 'username'], (data) => {
+        if (IS_EXTENSION) {
+            browser.storage.local.get(['seeds', 'username']).then((data) => {
                 if (data.seeds && data.seeds.length > 0) {
                     data.seeds.forEach(s => {
                         if (s && s.length > 0) {
@@ -135,11 +133,11 @@ export default {
                 }
             })
 
-            chrome.runtime.onMessage.addListener(request => {
+            browser.runtime.onMessage.addListener(request => {
                 if (request.name === 'toggle') {
                     this.isHidden = !this.isHidden
                 }
-            });
+            })
         }
     },
     watch: {
@@ -289,19 +287,19 @@ export default {
         addSeed (seed) {
             this.seeds.push(seed)
             this.username = this.usernames[this.usernames.length - 1]
-            chrome.storage.local.set({ seeds: this.seeds, username: this.username })
+            browser.storage.local.set({ seeds: this.seeds, username: this.username })
         },
         removeUsername (username) {
             let index = this.usernames.indexOf(username)
             if (index >= 0) {
                 this.seeds.splice(index, 1)
                 this.username = index > 0 ? this.seeds[index - 1] : null
-                chrome.storage.local.set({ seeds: this.seeds, username: this.username })
+                browser.storage.local.set({ seeds: this.seeds, username: this.username })
             }
 		},
 		switchToUsername (username) {
             this.username = username
-            chrome.storage.local.set({ username: this.username })
+            browser.storage.local.set({ username: this.username })
 		}
     }
 }

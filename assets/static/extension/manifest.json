@@ -2,15 +2,15 @@
   "name": "Liquio",
   "version": "0.1.0",
   "manifest_version": 2,
-  "description": "Open voting platform for the web",
+  "description": "Vote on anything, anywhere on the web",
   "homepage_url": "https://liqu.io",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["browser_polyfill.js", "background_scripts/index.js"]
   },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["inject.js"],
+      "js": ["browser_polyfill.js", "content_scripts/index.js"],
       "run_at": "document_end"
     }
   ],

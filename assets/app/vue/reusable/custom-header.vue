@@ -66,7 +66,7 @@
                 <div class="actions">
                     <router-link v-if="$store.getters.currentOpts.keypair" :to="'/identities/' + $store.getters.currentOpts.keypair.username">{{ $store.getters.currentOpts.keypair.username }}</router-link>
 
-                    <a @click="loginVisible = true"><i class="fa fa-user"></i></a>
+                    <a @click="loginVisible = true"><i class="el-icon-view"></i></a>
 
                     <a @click="dialogVisible = !dialogVisible"><i class="el-icon-setting"></i></a>
                 </div>

@@ -60,7 +60,7 @@
     </div>
 
     <div style="margin-top: 200px;">
-        <el-button type="primary" size="large" @click="install" v-if="!isInstalled" class="feature-button">
+        <el-button type="primary" size="large" @click="install" class="feature-button">
             <img src="/images/google-chrome-icon.png"></img>
             <span>Get free extension</span>
         </el-button>
@@ -86,9 +86,6 @@
 
 <script>
 export default {
-    created () {
-        this.isInstalled = chrome.app.isInstalled
-    },
     mounted () {
         let script = document.createElement('script')
         script.type = 'text/javascript'

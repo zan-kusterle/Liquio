@@ -1,16 +1,13 @@
+import 'webextension-polyfill'
 import { cleanUrl } from 'shared/votes'
-import { CrossStorageClient } from 'cross-storage'
 import * as Api from 'shared/api_client'
 import { usernameFromPublicKey } from 'shared/identity'
 import Vue from 'vue'
 import Bar from 'inject/bar.vue'
 import { decodeBase64 } from 'shared/utils';
 import transformNode from 'inject/transform_content'
-
-let isExtension = !!(window.chrome && chrome.runtime && chrome.runtime.id)
-
 let vueElement = document.createElement('div')
-vueElement.id = isExtension ? 'liquio-bar-extension' : 'liquio-bar'
+vueElement.id = IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar'
 document.getElementsByTagName('body')[0].appendChild(vueElement)
 vueElement.appendChild(document.createElement('div'))
 
@@ -47,8 +44,8 @@ vm.$on('transform-content', (nodesByText) => {
     }
 })
 
-if (isExtension) {
-    chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+if (IS_EXTENSION) {
+    browser.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         if (message === 'update') {
             onUrlChange(document.location.href)
         }
@@ -57,7 +54,7 @@ if (isExtension) {
 
 function onUrlChange (url) {
     let isLiquio = url.startsWith(LIQUIO_URL + '/page/') || url.startsWith(LIQUIO_URL + '/v/')
-    let isInactive = isExtension && document.getElementById('liquio-bar')
+    let isInactive = !IS_EXTENSION && document.getElementById('liquio-bar-extension')
     let isUnavailable = isLiquio || isInactive
     let key = cleanUrl(decodeURIComponent(url))
 
