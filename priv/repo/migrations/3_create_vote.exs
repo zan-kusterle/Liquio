@@ -6,16 +6,16 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :signature_id, references(:signatures, on_delete: :nothing), null: false
 			add :username, :string, null: false
 
-			add :path, {:array, :string}, null: false
+			add :path, {:array, :text}, null: false
 			add :unit, :string, null: false
 			add :at_date, :date, null: false
-			add :group_key, :string, null: false
+			add :group_key, :text, null: false
 
 			add :choice, :float, null: false
 			
 			add :datetime, :utc_datetime, null: false
 			add :to_datetime, :utc_datetime, null: true
-			add :search_text, :string, null: false
+			add :search_text, :text, null: false
 		end
 
 		create index(:votes, [:username])

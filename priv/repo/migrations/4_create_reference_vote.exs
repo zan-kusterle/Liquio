@@ -6,9 +6,9 @@ defmodule Liquio.Repo.Migrations.CreateVote do
 			add :signature_id, references(:signatures, on_delete: :nothing), null: false
 			add :username, :string, null: false
 
-			add :path, {:array, :string}, null: false
-			add :reference_path, {:array, :string}, null: false
-			add :group_key, :string, null: false
+			add :path, {:array, :text}, null: false
+			add :reference_path, {:array, :text}, null: false
+			add :group_key, :text, null: false
 
 			add :relevance, :float, null: false
 

@@ -7,7 +7,7 @@ defmodule Liquio.Repo.Migrations.CreateIdentifications do
 			add :username, :string, null: false
 
 			add :key, :string, null: false
-			add :name, :string, null: false
+			add :name, :text, null: false
 
 			add :datetime, :utc_datetime, null: false
 			add :to_datetime, :utc_datetime, null: true
