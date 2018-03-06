@@ -234,31 +234,7 @@ export default {
             return new Promise((resolve, reject) => {
                 Api.getNode(this.urlKey, params, (node) => {
                     this.node = node
-                    
-                    
-                    let getNodesByText = (node, key) => {
-                        var result = {}
-                        node.references.forEach(function (reference) {
-                            reference.inverse_references.forEach(function (inverse_reference) {
-                                let topic = inverse_reference.path.join('/')
-                                if (topic.startsWith(key + '/')) {
-                                    let text = topic.substring(key.length + 1)
-                                    if (text.length > 0) {
-                                        if (!(text in result)) {
-                                            result[text] = []
-                                        }
-                                        result[text].push(reference)
-                                    }
-                                }
-                            })
-                        })
-                        return result
-                    }
-
-                    let nodesByText = getNodesByText(this.node, this.urlKey)
-
-                    this.$root.$emit('transform-content', nodesByText)
-
+                    this.$root.$emit('update-node', this.node)
                     resolve()
                 })
             })

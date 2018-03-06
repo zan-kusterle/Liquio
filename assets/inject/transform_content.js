@@ -12,17 +12,20 @@ export default function (nodesByText, domNode, setActive) {
     }).map(k => {
         let slugStart = slugText.indexOf(k)
         let start = 0
-        for(var i = 0; i < slugStart; i++) {
+        let end = 0
+        for(var i = 0; i < slugStart + k.length; i++) {
+            if (i === slugStart) {
+                start = end
+            }
             let slugChar = slugText[i]
             while (true) {
-                let textChar = text[start].replace(' ', '-').toLowerCase()
-                start++
+                let textChar = text[end].replace(' ', '-').toLowerCase()
+                end++
                 if (textChar === slugChar) {
                     break
                 }
             }
         }
-        let end = start + k.length
 
         let range = document.createRange()
         range.setStart(domNode, start)

@@ -36,7 +36,28 @@ const vm = new Vue({
 })
 
 let textNodes = []
-vm.$on('transform-content', (nodesByText) => {
+vm.$on('update-node', (node) => {
+    let getNodesByText = (node, key) => {
+        var result = {}
+        node.references.forEach(function (reference) {
+            reference.inverse_references.forEach(function (inverse_reference) {
+                let topic = inverse_reference.path.join('/')
+                if (topic.startsWith(key + '/')) {
+                    let text = topic.substring(key.length + 1)
+                    if (text.length > 0) {
+                        if (!(text in result)) {
+                            result[text] = []
+                        }
+                        result[text].push(reference)
+                    }
+                }
+            })
+        })
+        return result
+    }
+
+    let nodesByText = getNodesByText(node, vm.urlKey)
+
     for (let domNode of textNodes) {
         transformNode(nodesByText, domNode, (activeNode) => {
             vm.currentNode = activeNode
