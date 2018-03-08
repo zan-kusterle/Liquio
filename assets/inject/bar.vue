@@ -9,6 +9,8 @@
         </span>
 
         <template v-if="!loginOpen">
+            <p class="liquio-bar__anchor-selection"><b>Voting on</b> {{ currentAnchor }}</p>
+
             <p><b>{{ currentVotes.node.key }}</b> {{ currentVotes.node.unit }}: {{ currentVotes.node.choice }}</p>
 
             <p>Voting with user <b>{{ username }}</b></p>
@@ -23,41 +25,27 @@
 
     <div class="liquio-bar__container" v-if="currentNode || !isHidden && !isUnavailable">
         <div class="liquio-bar__wrap">
-            <div class="liquio-bar__main">
-                <div class="liquio-bar__anchor" :class="{ 'liquio-bar__anchor--big': !hasContent }">
-                    <template v-if="currentAnchor">
-                        <p class="liquio-bar__anchor-selection"><b>Voting on</b> {{ currentAnchor }}</p>
-                    </template>
-                    <template v-else-if="activeAnchor">
-                        <a @click="currentAnchor = activeAnchor" class="liquio-bar__anchor-selection">{{ activeAnchor }}</a>
-                    </template>
-                </div>
-
-                <template v-if="hasContent">
-                    <div class="liquio-bar__data-wrap">
-                        <div class="liquio-bar__vote" v-if="currentAnchor">
-                            <a @click="currentAnchor = null" style="margin-right: 10px;">&lt;-</a>
-                            <el-input type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
-                            <el-select v-model="currentUnitValue" class="liquio-bar__vote-unit">
-                                <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
-                            </el-select>
-                            <div class="liquio-bar__vote-choice">
-                                <el-slider v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
-                                <el-input v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
-                            </div>
-                            <el-button @click="dialogVisible = true" class="liquio-bar__vote-button">Vote</el-button>
-                        </div>
-
-                        <div class="liquio-bar__current-node" v-else-if="currentNode">
-                            {{ currentNode.title }}
-                            <div class="liquio-bar__embeds" v-html="embedsSvg"></div>
-                        </div>
-                    </div>
-                </template>
-            </div>
             <a class="liquio-bar__score" :style="{ 'background': `#${color}` }" :href="`${LIQUIO_URL}/v/${encodeURIComponent(urlKey)}`">
                 {{ ratingText }}
             </a>
+            <div class="liquio-bar__main" @click="startVoting">
+                <div class="liquio-bar__vote" v-show="activeAnchor">
+                    <el-input size="small" type="text" @mousedown="startVoting" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
+                    <el-select size="small" @mousedown="startVoting" v-model="currentUnitValue" class="liquio-bar__vote-unit">
+                        <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
+                    </el-select>
+                    <div class="liquio-bar__vote-choice">
+                        <el-slider size="small" @mousedown="startVoting" @click="startVoting" v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
+                        <el-input size="small" @mousedown="startVoting" v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
+                    </div>
+                    <el-button size="small" @click="dialogVisible = true" class="liquio-bar__vote-button">Vote</el-button>
+                </div>
+
+                <div class="liquio-bar__current-node" v-if="currentNode && !activeAnchor">
+                    <span style="vertical-align: middle;">{{ currentNode.title }}</span>
+                    <div class="liquio-bar__embeds" v-html="embedsSvg"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -149,9 +137,6 @@ export default {
         }
     },
     computed: {
-        hasContent () {
-            return this.currentAnchor || this.currentNode
-        },
         keypairs () {
             return this.seeds.map(keypairFromSeed).filter(k => k)
         },
@@ -276,7 +261,12 @@ export default {
 		switchToUsername (username) {
             this.username = username
             browser.storage.local.set({ username: this.username })
-		}
+        },
+        startVoting () {
+            console.log('aaaaa')
+            console.log(this.activeAnchor)
+            this.currentAnchor = this.activeAnchor
+        }
     }
 }
 </script>
@@ -292,13 +282,16 @@ export default {
 </style>
 
 <style scoped lang="less">
+@height: 45px;
+
 .liquio-bar {
     &__container {
         cursor: default;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         position: fixed;
-        bottom: 0px;
-        z-index: 1000;
+        left: 0;
+        bottom: 0;
+        z-index: 2147483647;
         width: 100%;
         user-select: none;
     }
@@ -306,14 +299,13 @@ export default {
     &__wrap {
         display: flex;
         align-items: center;
-        background-color: rgba(255, 255, 255, 0.8);
+        background-color: #fff;
     }
 
     &__score {
-        @size: 90px;
-        width: @size;
-        height: @size;
-        line-height: @size;
+        width: @height;
+        height: @height;
+        line-height: @height;
         text-align: center;
         font-size: 24px;
         color: white;
@@ -326,8 +318,9 @@ export default {
 
     &__main {
         flex: 1;
-        padding: 5px 20px;
-        width: calc(100% - 130px);
+        padding: 0px 20px;
+        width: calc(100% - @height);
+        height: @height;
     }
 
     &__embeds {
@@ -341,47 +334,25 @@ export default {
     &__vote {
         display: flex;
         align-items: center;
+        height: 100%;
     }
 
     &__vote-title {
         flex: 3;
-        margin-right: 20px;
+        margin-right: 10px;
     }
 
     &__vote-unit {
         flex: 1;
-        margin-right: 20px;
+        margin-right: 10px;
     }
 
     &__vote-choice {
         flex: 1;
-        margin-right: 20px;
+        margin-right: 10px;
     }
 
     &__vote-button {
-        margin-right: 40px;
-    }
-
-    &__anchor {
-        font-size: 12px;
-        color: #666;
-        position: relative;
-
-        &--big {
-            font-size: 20px;
-        }
-    }
-
-    &__data-wrap {
-        height: 36px;
-        margin-top: 10px;
-    }
-
-    &__anchor-selection {
-        text-overflow: ellipsis;
-        white-space:nowrap;
-        overflow:hidden;
-        display: block;
     }
 }
 </style>
