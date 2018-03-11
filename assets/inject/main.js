@@ -22,6 +22,11 @@ const vm = new Vue({
             currentVideoTime: null,
         }
     },
+    methods: {
+        startVoting () {
+            this.$children[0].startVoting()
+        }
+    },
     render (createElement) {
         return createElement(Bar, {
             props: {
@@ -119,8 +124,58 @@ if (MutationObserver) {
 window.addEventListener("hashchange", () => onUrlChange(document.location.href), false)
 onUrlChange(document.location.href)
 
+const voteIconSvg = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100">
+<line x1="14" y1="14" x2="30" y2="82" style="stroke: #00a9e1; stroke-width: 8;"></line>
+<line x1="78" y1="45" x2="30" y2="82" style="stroke: #00a9e1; stroke-width: 8;"></line>
+
+<circle cx="14" cy="14" r="14" fill="#00a9e1"></circle>
+<circle cx="30" cy="82" r="18" fill="#00a9e1"></circle>
+<circle cx="78" cy="45" r="22" fill="#00a9e1"></circle>
+</svg>`
+
+let icon = document.createElement('div')
+icon.innerHTML = voteIconSvg
+icon.style.display = 'inline-block'
+icon.style.position = 'fixed'
+icon.style.paddingTop = '20px'
+icon.style.color = 'red'
+icon.style.width = '30px'
+icon.style.height = '30px'
+icon.addEventListener('mousedown', (e) => {
+    vm.startVoting()
+    window.getSelection().removeAllRanges()
+    icon.remove()
+})
+
+let getValidSelection = () => {
+    let selection = window.getSelection()
+    if (selection.anchorNode) {
+        if (selection.isCollapsed)
+            return null
+        if (vueElement.contains(selection.anchorNode))
+            return null
+
+        return selection
+    } else {
+        return null
+    }
+}
+
 let updateSelection = () => {
-    vm.currentSelection = window.getSelection().toString() || null
+    icon.remove()
+    
+    let selection = getValidSelection()
+    if (selection) {
+        let range = selection.getRangeAt(0)
+
+        let replacementNode = selection.anchorNode.splitText(Math.min(range.startOffset, range.endOffset))
+
+        selection.anchorNode.parentNode.insertBefore(icon, replacementNode)
+
+        vm.currentSelection = selection.toString()
+    } else {
+        vm.currentSelection = null
+    }
 }
 document.addEventListener('keyup', updateSelection)
 document.addEventListener('mouseup', updateSelection)

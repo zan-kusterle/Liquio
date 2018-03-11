@@ -5,6 +5,8 @@ var ZipPlugin = require("zip-webpack-plugin")
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 var webpack = require("webpack")
 
+let publicUrl = process.env.NODE_ENV === 'production' ? "https://liqu.io" : "http://localhost:4000"
+
 module.exports = [{
     mode: 'development',
     entry: {
@@ -13,7 +15,8 @@ module.exports = [{
     },
     output: {
         path: path.resolve(__dirname, "../priv/static/extension"),
-        filename: "[name]/index.js"
+        filename: "[name]/index.js",
+        publicPath: publicUrl
     },
     devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',
     module: {
@@ -53,7 +56,7 @@ module.exports = [{
                 NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
             },
             BUILD_TIMESTAMP: Math.floor(Date.now() / 1000),
-            LIQUIO_URL: JSON.stringify(process.env.NODE_ENV === 'production' ? "https://liqu.io" : "http://localhost:4000"),
+            LIQUIO_URL: JSON.stringify(publicUrl),
             IS_EXTENSION: JSON.stringify(true)
         }),
         new CopyWebpackPlugin([{ from: "./static/extension" }]),

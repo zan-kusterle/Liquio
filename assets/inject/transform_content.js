@@ -1,8 +1,5 @@
 import { slug } from 'shared/votes'
 
-export function onAnchorInsert(node) {
-}
-
 export default function (nodesByText, domNode, setActive) {
     let text = domNode.textContent.toLowerCase()
     let slugText = slug(text)
@@ -18,7 +15,7 @@ export default function (nodesByText, domNode, setActive) {
                 start = end
             }
             let slugChar = slugText[i]
-            while (true) {
+            while (end < text.length) {
                 let textChar = text[end].replace(' ', '-').toLowerCase()
                 end++
                 if (textChar === slugChar) {

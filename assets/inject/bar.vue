@@ -1,5 +1,5 @@
 <template>
-<div class="liquio-bar">
+<div class="liquio-bar" @mouseup="isHovered = true" @mouseover="isHovered = true" @mouseout="isHovered = false">
     <el-dialog v-if="currentVotes" title="Finalize vote" :visible.sync="dialogVisible" width="60%">
         <login v-show="loginOpen" :usernames="usernames" :username="username" @login="addSeed" @logout="removeUsername" @switch="switchToUsername"></login>
 
@@ -23,25 +23,28 @@
         </template>
     </el-dialog>
 
-    <div class="liquio-bar__container" v-if="currentNode || !isHidden && !isUnavailable">
+    <div class="liquio-bar__container" v-if="currentNode || currentAnchor || isHovered || !isHidden && !isUnavailable">
         <div class="liquio-bar__wrap">
             <a class="liquio-bar__score" :style="{ 'background': `#${color}` }" :href="`${LIQUIO_URL}/v/${encodeURIComponent(urlKey)}`">
                 {{ ratingText }}
             </a>
-            <div class="liquio-bar__main" @click="startVoting">
-                <div class="liquio-bar__vote" v-show="activeAnchor">
-                    <el-input size="small" type="text" @mousedown="startVoting" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
-                    <el-select size="small" @mousedown="startVoting" v-model="currentUnitValue" class="liquio-bar__vote-unit">
-                        <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
-                    </el-select>
-                    <div class="liquio-bar__vote-choice">
-                        <el-slider size="small" @mousedown="startVoting" @click="startVoting" v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
-                        <el-input size="small" @mousedown="startVoting" v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
+            <div class="liquio-bar__main">
+                <div class="liquio-bar__vote" v-if="currentAnchor">
+                    <div class="liquio-bar__vote-anchor">sds</div>
+                    <div class="liquio-bar__vote-node">
+                        <el-input size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
+                        <el-select size="small" v-model="currentUnitValue" class="liquio-bar__vote-unit">
+                            <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
+                        </el-select>
+                        <div class="liquio-bar__vote-choice">
+                            <el-slider size="small" v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
+                            <el-input size="small" v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
+                        </div>
+                        <el-button size="small" @click="dialogVisible = true" class="liquio-bar__vote-button">Vote</el-button>
                     </div>
-                    <el-button size="small" @click="dialogVisible = true" class="liquio-bar__vote-button">Vote</el-button>
                 </div>
 
-                <div class="liquio-bar__current-node" v-if="currentNode && !activeAnchor">
+                <div class="liquio-bar__current-node" v-else-if="currentNode">
                     <span style="vertical-align: middle;">{{ currentNode.title }}</span>
                     <div class="liquio-bar__embeds" v-html="embedsSvg"></div>
                 </div>
@@ -99,7 +102,8 @@ export default {
             seeds: [],
             username: null,
 
-            isHidden: true
+            isHidden: true,
+            isHovered: false
         }
     },
     created () {
@@ -263,8 +267,6 @@ export default {
             browser.storage.local.set({ username: this.username })
         },
         startVoting () {
-            console.log('aaaaa')
-            console.log(this.activeAnchor)
             this.currentAnchor = this.activeAnchor
         }
     }
@@ -282,7 +284,7 @@ export default {
 </style>
 
 <style scoped lang="less">
-@height: 45px;
+@height: 50px;
 
 .liquio-bar {
     &__container {
@@ -333,8 +335,21 @@ export default {
 
     &__vote {
         display: flex;
+        flex-direction: column;
         align-items: center;
         height: 100%;
+    }
+
+    &__vote-anchor {
+        display: flex;
+        width: 100%;
+        font-size: 10px;
+        margin: 2px 0px 2px 10px;
+    }
+
+    &__vote-node {
+        display: flex;
+        width: 100%;
     }
 
     &__vote-title {
