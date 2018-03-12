@@ -52,6 +52,7 @@ const vm = new Vue({
     }
 })
 
+let nodesByText = {}
 let textNodes = []
 vm.$on('update-node', (node) => {
     let getNodesByText = (node, key) => {
@@ -73,7 +74,9 @@ vm.$on('update-node', (node) => {
         return result
     }
 
-    let nodesByText = getNodesByText(node, vm.urlKey)
+    nodesByText = getNodesByText(node, vm.urlKey)
+
+    console.log(nodesByText)
 
     let overrideByClickOnlyTimeoutId = null
     let onClickOnlyTime
@@ -202,14 +205,39 @@ let updateSelection = () => {
 document.addEventListener('keyup', updateSelection)
 document.addEventListener('mouseup', updateSelection)
 
+const VIDEO_NODE_SHOW_DURATION = 10
+let isCurrentVideoNode = false
+
 setTimeout(() => {
     let videos = document.getElementsByTagName('video')
     if (videos.length > 0) {
         let video = videos[0]
 
         setInterval(() => {
+            let closestTime = null
+            let closestNode = null
+            for (let text in nodesByText) {
+                let parts = text.split(':')
+                if (parts.length === 2) {
+                    let minutes = parseInt(parts[0])
+                    let seconds = parseInt(parts[1])
+                    let time = isNaN(minutes) || isNaN(seconds) ? null : minutes * 60 + seconds
+
+                    let delta = video.currentTime - time
+                    if (delta >= 0 && delta < VIDEO_NODE_SHOW_DURATION && (closestTime === null || delta < closestTime)) {
+                        closestTime = delta
+                        closestNode = nodesByText[text][0]
+                    }
+                }
+            }
+
             vm.currentVideoTime = video.currentTime
-            // vm.startVoting()
+            if (closestNode) {
+                vm.currentNode = closestNode
+                isCurrentVideoNode = true
+            } else if (isCurrentVideoNode) {
+                vm.currentNode = null
+            }
         }, 100)
     }
-})
+}, 500)

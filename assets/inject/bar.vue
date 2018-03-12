@@ -28,6 +28,12 @@
             <a class="liquio-bar__score" :style="{ 'background': `#${color}` }" :href="`${LIQUIO_URL}/v/${encodeURIComponent(urlKey)}`">
                 {{ ratingText }}
             </a>
+            <div class="liquio-bar__toggle-voting" v-if="currentAnchor">
+                <el-button size="small" @click="currentAnchor = null">Close</el-button>
+            </div>
+            <div class="liquio-bar__toggle-voting" v-else-if="currentVideoTime">
+                <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
+            </div>
             <div class="liquio-bar__main">
                 <div class="liquio-bar__vote" v-if="currentAnchor">
                     <div class="liquio-bar__vote-anchor">{{ currentAnchor }}</div>
@@ -209,6 +215,11 @@ export default {
                     relevance: 1.0
                 }
             }
+        },
+        currentVideoTimeText () {
+            let minutes = Math.floor(this.currentVideoTime / 60)
+            let seconds = Math.floor(this.currentVideoTime - minutes * 60)
+            return `${('00' + minutes).slice(-2)}:${('00' + seconds).slice(-2)}`
         }
     },
     methods: {
@@ -267,9 +278,7 @@ export default {
             if (this.currentSelection) {
                 this.currentAnchor = this.currentSelection
             } else {
-                let minutes = Math.floor(this.currentVideoTime / 60)
-                let seconds = Math.floor(this.currentVideoTime - minutes * 60)
-                this.currentAnchor = `${('00' + minutes).slice(-2)}:${('00' + seconds).slice(-2)}`
+                this.currentAnchor = this.currentVideoTimeText
             }
         }
     }
