@@ -31,6 +31,13 @@ module.exports = [{
                 presets: ["es2015"]
             }
         }, {
+            test: /\.less$/,
+            use: [{
+                loader: "css-loader"
+            }, {
+                loader: "less-loader"
+            }]
+        }, {
             test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
             loader: 'file-loader',
             query: {

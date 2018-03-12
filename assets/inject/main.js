@@ -6,13 +6,25 @@ import Vue from 'vue'
 import Bar from 'inject/bar.vue'
 import { decodeBase64 } from 'shared/utils';
 import transformNode from 'inject/transform_content'
-let vueElement = document.createElement('div')
-vueElement.id = IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar'
-document.getElementsByTagName('body')[0].appendChild(vueElement)
-vueElement.appendChild(document.createElement('div'))
+import css from 'inject/main.less'
+
+let getElement = () => {
+    let vueElement = document.createElement('div')
+    vueElement.id = IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar'
+    vueElement.attachShadow({mode: 'open'})
+    document.getElementsByTagName('body')[0].appendChild(vueElement)
+    vueElement.shadowRoot.appendChild(document.createElement('div'))
+    for (let file of css) {
+        let content = file[1]
+        let style = document.createElement('style')
+        style.innerHTML = content
+        vueElement.shadowRoot.appendChild(style)
+    }
+    return vueElement.shadowRoot.firstChild
+}
 
 const vm = new Vue({
-    el: vueElement.childNodes[0],
+    el: getElement(),
     data () {
         return {
             isUnavailable: false,
@@ -63,9 +75,19 @@ vm.$on('update-node', (node) => {
 
     let nodesByText = getNodesByText(node, vm.urlKey)
 
+    let overrideByClickOnlyTimeoutId = null
+    let onClickOnlyTime
     for (let domNode of textNodes) {
-        transformNode(nodesByText, domNode, (activeNode) => {
-            vm.currentNode = activeNode
+        transformNode(nodesByText, domNode, (activeNode, isClicked) => {
+            if (overrideByClickOnlyTimeoutId === null || isClicked) {
+                vm.currentNode = activeNode
+            }
+            if (isClicked) {
+                overrideByClickOnlyTimeoutId = setTimeout(() => {
+                    clearTimeout(overrideByClickOnlyTimeoutId)
+                    overrideByClickOnlyTimeoutId = null
+                }, 3 * 1000)
+            }
         })
     }
 })
@@ -152,7 +174,7 @@ let getValidSelection = () => {
     if (selection.anchorNode) {
         if (selection.isCollapsed)
             return null
-        if (vueElement.contains(selection.anchorNode))
+        if (vm.$el.contains(selection.anchorNode))
             return null
 
         return selection
@@ -179,3 +201,15 @@ let updateSelection = () => {
 }
 document.addEventListener('keyup', updateSelection)
 document.addEventListener('mouseup', updateSelection)
+
+setTimeout(() => {
+    let videos = document.getElementsByTagName('video')
+    if (videos.length > 0) {
+        let video = videos[0]
+
+        setInterval(() => {
+            vm.currentVideoTime = video.currentTime
+            // vm.startVoting()
+        }, 100)
+    }
+})

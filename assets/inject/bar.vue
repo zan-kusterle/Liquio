@@ -30,7 +30,7 @@
             </a>
             <div class="liquio-bar__main">
                 <div class="liquio-bar__vote" v-if="currentAnchor">
-                    <div class="liquio-bar__vote-anchor">sds</div>
+                    <div class="liquio-bar__vote-anchor">{{ currentAnchor }}</div>
                     <div class="liquio-bar__vote-node">
                         <el-input size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
                         <el-select size="small" v-model="currentUnitValue" class="liquio-bar__vote-unit">
@@ -190,9 +190,6 @@ export default {
             unit.defaultValue = unit.type === 'spectrum' ? 50 : 0   
             return unit
         },
-        currentVideoTimeText () {
-            return this.currentVideoTime
-        },
         activeAnchor () {
             return this.currentSelection || this.currentVideoTime
         },
@@ -267,107 +264,14 @@ export default {
             browser.storage.local.set({ username: this.username })
         },
         startVoting () {
-            this.currentAnchor = this.activeAnchor
+            if (this.currentSelection) {
+                this.currentAnchor = this.currentSelection
+            } else {
+                let minutes = Math.floor(this.currentVideoTime / 60)
+                let seconds = Math.floor(this.currentVideoTime - minutes * 60)
+                this.currentAnchor = `${('00' + minutes).slice(-2)}:${('00' + seconds).slice(-2)}`
+            }
         }
     }
 }
 </script>
-
-<style lang="less">
-@import '../node_modules/element-ui/lib/theme-chalk/index.css';
-
-.liquio-bar {
-    * > input {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
-}
-</style>
-
-<style scoped lang="less">
-@height: 50px;
-
-.liquio-bar {
-    &__container {
-        cursor: default;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        z-index: 2147483647;
-        width: 100%;
-        user-select: none;
-    }
-
-    &__wrap {
-        display: flex;
-        align-items: center;
-        background-color: #fff;
-    }
-
-    &__score {
-        width: @height;
-        height: @height;
-        line-height: @height;
-        text-align: center;
-        font-size: 24px;
-        color: white;
-        cursor: pointer;
-
-        &:hover {
-            color: white;
-        }
-    }
-
-    &__main {
-        flex: 1;
-        padding: 0px 20px;
-        width: calc(100% - @height);
-        height: @height;
-    }
-
-    &__embeds {
-        font-size: 0;
-        width: 140px;
-        display: inline-block;
-        vertical-align: middle;
-        margin-left: 10px;
-    }
-
-    &__vote {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100%;
-    }
-
-    &__vote-anchor {
-        display: flex;
-        width: 100%;
-        font-size: 10px;
-        margin: 2px 0px 2px 10px;
-    }
-
-    &__vote-node {
-        display: flex;
-        width: 100%;
-    }
-
-    &__vote-title {
-        flex: 3;
-        margin-right: 10px;
-    }
-
-    &__vote-unit {
-        flex: 1;
-        margin-right: 10px;
-    }
-
-    &__vote-choice {
-        flex: 1;
-        margin-right: 10px;
-    }
-
-    &__vote-button {
-    }
-}
-</style>

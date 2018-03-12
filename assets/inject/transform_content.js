@@ -40,19 +40,14 @@ export default function (nodesByText, domNode, setActive) {
             range.surroundContents(span)
             span.style.backgroundColor = 'rgba(57, 164, 255, 0.25)'
             span.style.cursor = 'pointer'
-            let isClicked = true
             span.addEventListener('mouseover', (e) => {
-                isClicked = false
-                setActive(node)
+                setActive(node, false)
             })
             span.addEventListener('mouseout', (e) => {
-                if (!isClicked) {
-                    setActive(null)
-                }
+                setActive(null, false)
             })
             span.addEventListener('click', (e) => {
-                isClicked = true
-                setActive(node)
+                setActive(node, true)
             })
         })
     }
