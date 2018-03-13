@@ -6,20 +6,31 @@ import Vue from 'vue'
 import Bar from 'inject/bar.vue'
 import { decodeBase64 } from 'shared/utils';
 import transformNode from 'inject/transform_content'
-import css from 'inject/main.less'
+import mainCss from 'inject/main.less'
+import shadowCss from 'inject/shadow.less'
 
 let getElement = () => {
+    let bodyElement = document.getElementsByTagName('body')[0]
     let vueElement = document.createElement('div')
     vueElement.id = IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar'
     vueElement.attachShadow({mode: 'open'})
-    document.getElementsByTagName('body')[0].appendChild(vueElement)
+    bodyElement.appendChild(vueElement)
     vueElement.shadowRoot.appendChild(document.createElement('div'))
-    for (let file of css) {
+    
+    for (let file of shadowCss) {
         let content = file[1]
         let style = document.createElement('style')
         style.innerHTML = content
         vueElement.shadowRoot.appendChild(style)
     }
+
+    for (let file of mainCss) {
+        let content = file[1]
+        let style = document.createElement('style')
+        style.innerHTML = content
+        bodyElement.appendChild(style)
+    }
+
     return vueElement.shadowRoot.firstChild
 }
 
@@ -147,26 +158,6 @@ if (MutationObserver) {
 window.addEventListener("hashchange", () => onUrlChange(document.location.href), false)
 onUrlChange(document.location.href)
 
-const voteIconSvg = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 40">
-<line x1="0" y1="20" x2="100" y2="20" style="stroke: #00a9e1; stroke-width: 6;"></line>
-
-<circle cx="20" cy="20" r="20" fill="#00a9e1"></circle>
-<circle cx="80" cy="20" r="20" fill="#00a9e1"></circle>
-</svg>`
-
-let icon = document.createElement('div')
-icon.innerHTML = voteIconSvg
-icon.style.display = 'inline-block'
-icon.style.position = 'fixed'
-icon.style.paddingTop = '20px'
-icon.style.color = 'red'
-icon.style.width = '30px'
-icon.style.height = '30px'
-icon.addEventListener('mousedown', (e) => {
-    vm.startVoting()
-    window.getSelection().removeAllRanges()
-    icon.remove()
-})
 
 let getValidSelection = () => {
     let selection = window.getSelection()
@@ -182,17 +173,9 @@ let getValidSelection = () => {
     }
 }
 
-let updateSelection = () => {
-    icon.remove()
-    
+let updateSelection = () => {    
     let selection = getValidSelection()
     if (selection) {
-        let range = selection.getRangeAt(0)
-
-        let replacementNode = selection.anchorNode.splitText(Math.min(range.startOffset, range.endOffset))
-
-        selection.anchorNode.parentNode.insertBefore(icon, replacementNode)
-
         vm.currentSelection = selection.toString()
     } else {
         vm.currentSelection = null

@@ -1,0 +1,101 @@
+@import '../node_modules/element-ui/lib/theme-chalk/index.css';
+
+@height: 50px;
+
+.liquio-bar {
+    overflow: auto;
+
+    * > input {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    &__container {
+        cursor: default;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        width: 100%;
+        user-select: none;
+    }
+
+    &__button-container {
+        padding: 8px 10px;
+    }
+
+    &__wrap {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+    }
+
+    &__score {
+        width: @height;
+        height: @height;
+        line-height: @height;
+        text-align: center;
+        font-size: 24px;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+
+        &:hover {
+            color: white;
+        }
+    }
+
+    &__toggle-voting {
+        flex: 1;
+        padding: 0px 20px;
+        width: 100px;
+        height: @height;
+    }
+
+    &__main {
+        flex: 1;
+        padding: 0px 20px;
+        width: calc(100% - @height - 100px);
+        height: @height;
+    }
+
+    &__embeds {
+        font-size: 0;
+        width: 140px;
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 10px;
+    }
+
+    &__vote-button {
+        margin-right: 10px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    &__vote {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    &__vote-title {
+        flex: 3;
+        margin-right: 10px;
+    }
+
+    &__vote-unit {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    &__vote-choice {
+        flex: 1;
+        margin-right: 20px;
+    }
+
+    &__vote-button {
+    }
+}

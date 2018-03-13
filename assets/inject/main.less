@@ -1,100 +1,16 @@
 @import '../node_modules/element-ui/lib/theme-chalk/index.css';
 
-@height: 50px;
-
 .liquio-bar {
-    * > input {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    &__tooltip {
+        z-index: 200;
     }
 
-    &__container {
-        cursor: default;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        z-index: 2147483647;
-        width: 100%;
-        user-select: none;
-    }
+    &__dropdown {
+        transform: rotate(180deg);
+        margin-top: -40px !important;
 
-    &__wrap {
-        display: flex;
-        align-items: center;
-        background-color: #fff;
-    }
-
-    &__score {
-        width: @height;
-        height: @height;
-        line-height: @height;
-        text-align: center;
-        font-size: 24px;
-        color: white;
-        cursor: pointer;
-        text-decoration: none;
-
-        &:hover {
-            color: white;
+        .el-select-dropdown__item {
+            transform: rotate(180deg);
         }
-    }
-
-    &__toggle-voting {
-        flex: 1;
-        padding: 0px 20px;
-        width: 100px;
-        height: @height;
-    }
-
-    &__main {
-        flex: 1;
-        padding: 0px 20px;
-        width: calc(100% - @height - 100px);
-        height: @height;
-    }
-
-    &__embeds {
-        font-size: 0;
-        width: 140px;
-        display: inline-block;
-        vertical-align: middle;
-        margin-left: 10px;
-    }
-
-    &__vote {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        height: 100%;
-    }
-
-    &__vote-anchor {
-        display: flex;
-        width: 100%;
-        font-size: 10px;
-        margin: 2px 0px 2px 10px;
-    }
-
-    &__vote-node {
-        display: flex;
-        width: 100%;
-    }
-
-    &__vote-title {
-        flex: 3;
-        margin-right: 10px;
-    }
-
-    &__vote-unit {
-        flex: 1;
-        margin-right: 10px;
-    }
-
-    &__vote-choice {
-        flex: 1;
-        margin-right: 10px;
-    }
-
-    &__vote-button {
     }
 }

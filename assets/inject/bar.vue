@@ -3,30 +3,42 @@
     <el-dialog title="Finalize vote" width="60%" v-if="currentVotes" :visible.sync="dialogVisible">
         <finalize-vote :votes="currentVotes" @close="dialogVisible = false" @vote="onVote"></finalize-vote>
     </el-dialog>
-    <div class="liquio-bar__container" v-if="currentNode || currentAnchor || isHovered || !isHidden && !isUnavailable">
+
+    <div class="liquio-bar__container" v-if="currentNode || currentAnchor || isHovered && !(currentSelection || currentVideoTime) || !isHidden && !isUnavailable">
         <div class="liquio-bar__wrap">
-            <a class="liquio-bar__score" :style="{ 'background': `#${color}` }" :href="`${LIQUIO_URL}/v/${encodeURIComponent(urlKey)}`">
+            <div class="liquio-bar__score" :style="{ 'background': `#${color}` }" @click="reliabilityVoting = true">
                 {{ ratingText }}
-            </a>
-            <div class="liquio-bar__toggle-voting" v-if="currentAnchor">
-                <el-button size="small" @click="currentAnchor = null">Close</el-button>
-            </div>
-            <div class="liquio-bar__toggle-voting" v-else-if="currentVideoTime">
-                <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
             </div>
             <div class="liquio-bar__main">
-                <div class="liquio-bar__vote" v-if="currentAnchor">
-                    <div class="liquio-bar__vote-anchor">{{ currentAnchor }}</div>
-                    <div class="liquio-bar__vote-node">
-                        <el-input size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
-                        <el-select size="small" v-model="currentUnitValue" class="liquio-bar__vote-unit">
-                            <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
-                        </el-select>
-                        <div class="liquio-bar__vote-choice">
-                            <el-slider size="small" v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
-                            <el-input size="small" v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
-                        </div>
-                        <el-button size="small" @click="dialogVisible = true" class="liquio-bar__vote-button">Vote</el-button>
+                <div class="liquio-bar__vote" v-if="reliabilityVoting">
+                    <div class="liquio-bar__vote-button">
+                        <el-button size="small" @click="reliabilityVoting = false">Close</el-button>
+                    </div>
+
+                    <div class="liquio-bar__vote-choice">
+                        <el-slider size="small" tooltip-class="liquio-bar__tooltip" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
+                    </div>
+
+                    <div class="liquio-bar__vote-button">
+                        <el-button size="small" type="primary" @click="finalizeVote">Vote</el-button>
+                    </div>
+
+                    <a :href="`${LIQUIO_URL}/v/${encodeURIComponent(urlKey)}`" target="_blank">View on Liquio</a>
+                </div>
+                <div class="liquio-bar__vote" v-else-if="currentAnchor">
+                    <div style="margin-right: 10px;">
+                        <el-button size="small" @click="currentAnchor = null">Close</el-button>
+                    </div>
+                    <el-input size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
+                    <el-select size="small" popper-class="liquio-bar__dropdown" v-model="currentUnitValue" class="liquio-bar__vote-unit">
+                        <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
+                    </el-select>
+                    <div class="liquio-bar__vote-choice">
+                        <el-slider size="small" tooltip-class="liquio-bar__tooltip" v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
+                        <el-input size="small" v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
+                    </div>
+                    <div>
+                        <el-button size="small" type="primary" @click="finalizeVote">Vote</el-button>
                     </div>
                 </div>
 
@@ -36,6 +48,12 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="liquio-bar__container liquio-bar__button-container" v-else-if="currentSelection">
+        <el-button size="small" @click="startVoting">Vote on selection</el-button>
+    </div>
+    <div class="liquio-bar__container liquio-bar__button-container" v-else-if="currentVideoTime">
+        <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
     </div>
 </div>
 </template>
@@ -80,6 +98,7 @@ export default {
                 quantity: 0
             },
 
+            reliabilityVoting: false,
             dialogVisible: false,            
             isHidden: true,
             isHovered: false
@@ -200,6 +219,11 @@ export default {
                 this.currentAnchor = this.currentSelection
             } else {
                 this.currentAnchor = this.currentVideoTimeText
+            }
+        },
+        finalizeVote () {
+            if (this.currentTitle) {
+                this.dialogVisible = true
             }
         }
     }

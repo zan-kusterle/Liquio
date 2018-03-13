@@ -39,16 +39,7 @@ module.exports = [{
             }]
         }, {
             test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-            loader: 'file-loader',
-            query: {
-                name: '/fonts/[name].[ext]?[hash]'
-            }
-        }, {
-            test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/,
-            loader: 'file-loader',
-            query: {
-                name: '/images/[name].[ext]?[hash]'
-            }
+            use: 'base64-inline-loader?limit=1000&name=[name].[ext]'
         }]
     },
     resolve: {
