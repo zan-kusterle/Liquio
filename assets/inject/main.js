@@ -76,8 +76,6 @@ vm.$on('update-node', (node) => {
 
     nodesByText = getNodesByText(node, vm.urlKey)
 
-    console.log(nodesByText)
-
     let overrideByClickOnlyTimeoutId = null
     let onClickOnlyTime
     for (let domNode of textNodes) {
@@ -149,13 +147,11 @@ if (MutationObserver) {
 window.addEventListener("hashchange", () => onUrlChange(document.location.href), false)
 onUrlChange(document.location.href)
 
-const voteIconSvg = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100">
-<line x1="14" y1="14" x2="30" y2="82" style="stroke: #00a9e1; stroke-width: 8;"></line>
-<line x1="78" y1="45" x2="30" y2="82" style="stroke: #00a9e1; stroke-width: 8;"></line>
+const voteIconSvg = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 40">
+<line x1="0" y1="20" x2="100" y2="20" style="stroke: #00a9e1; stroke-width: 6;"></line>
 
-<circle cx="14" cy="14" r="14" fill="#00a9e1"></circle>
-<circle cx="30" cy="82" r="18" fill="#00a9e1"></circle>
-<circle cx="78" cy="45" r="22" fill="#00a9e1"></circle>
+<circle cx="20" cy="20" r="20" fill="#00a9e1"></circle>
+<circle cx="80" cy="20" r="20" fill="#00a9e1"></circle>
 </svg>`
 
 let icon = document.createElement('div')

@@ -35,20 +35,23 @@ export default function (nodesByText, domNode, setActive) {
     })
 
     if (nodesToAdd.length > 0) {
-        nodesToAdd.forEach(({ range, node }) => {
-            let span = document.createElement('span')
-            range.surroundContents(span)
-            span.style.backgroundColor = 'rgba(57, 164, 255, 0.25)'
-            span.style.cursor = 'pointer'
-            span.addEventListener('mouseover', (e) => {
-                setActive(node, false)
-            })
-            span.addEventListener('mouseout', (e) => {
-                setActive(null, false)
-            })
-            span.addEventListener('click', (e) => {
-                setActive(node, true)
-            })
+        nodesToAdd.forEach(({ range, node }) => {            
+            if (range.commonAncestorContainer.nodeType === Node.TEXT_NODE && range.commonAncestorContainer.parentNode.className !== 'liquio-highlight') {
+                let span = document.createElement('span')
+                range.surroundContents(span)
+                span.className = 'liquio-highlight'
+                span.style.backgroundColor = 'rgba(57, 164, 255, 0.25)'
+                span.style.cursor = 'pointer'
+                span.addEventListener('mouseover', (e) => {
+                    setActive(node, false)
+                })
+                span.addEventListener('mouseout', (e) => {
+                    setActive(null, false)
+                })
+                span.addEventListener('click', (e) => {
+                    setActive(node, true)
+                })
+            }
         })
     }
 }

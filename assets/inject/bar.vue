@@ -1,28 +1,8 @@
 <template>
 <div class="liquio-bar" @mouseup="isHovered = true" @mouseover="isHovered = true" @mouseout="isHovered = false">
-    <el-dialog v-if="currentVotes" title="Finalize vote" :visible.sync="dialogVisible" width="60%">
-        <login v-show="loginOpen" :usernames="usernames" :username="username" @login="addSeed" @logout="removeUsername" @switch="switchToUsername"></login>
-
-        <span v-if="loginOpen" slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="loginOpen = false">Choose user</el-button>
-        </span>
-
-        <template v-if="!loginOpen">
-            <p class="liquio-bar__anchor-selection"><b>Voting on</b> {{ currentAnchor }}</p>
-
-            <p><b>{{ currentVotes.node.key }}</b> {{ currentVotes.node.unit }}: {{ currentVotes.node.choice }}</p>
-
-            <p>Voting with user <b>{{ username }}</b></p>
-
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">Cancel</el-button>
-                <el-button type="primary" @click="loginOpen = true">Switch user</el-button>
-                <el-button type="success" @click="vote">Cast vote</el-button>
-            </span>
-        </template>
+    <el-dialog title="Finalize vote" width="60%" v-if="currentVotes" :visible.sync="dialogVisible">
+        <finalize-vote :votes="currentVotes" @close="dialogVisible = false" @vote="onVote"></finalize-vote>
     </el-dialog>
-
     <div class="liquio-bar__container" v-if="currentNode || currentAnchor || isHovered || !isHidden && !isUnavailable">
         <div class="liquio-bar__wrap">
             <a class="liquio-bar__score" :style="{ 'background': `#${color}` }" :href="`${LIQUIO_URL}/v/${encodeURIComponent(urlKey)}`">
@@ -63,14 +43,11 @@
 <script>
 import * as Api from 'shared/api_client'
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
-import Login from '../vue/login.vue'
+import FinalizeVote from '../vue/finalize_vote.vue'
 import { colorOnGradient, slug } from 'shared/votes'
 import { allUnits } from 'shared/data'
 import { usernameFromPublicKey } from 'shared/identity'
-import { decodeBase64, stringToBytes } from 'shared/utils'
-import * as client from 'shared/api_client'
-import { keypairFromSeed } from 'shared/identity'
-import nacl from 'tweetnacl'
+import storage from 'shared/storage'
 
 export default {
     components: {
@@ -80,7 +57,7 @@ export default {
         elOption: Option,
         elInput: Input,
         elDialog: Dialog,
-        login: Login
+        finalizeVote: FinalizeVote
     },
     props: {
         urlKey: { type: String },
@@ -91,6 +68,7 @@ export default {
     },
     data () {
         return {
+            username: null,
             trustMetricUrl: process.env.NODE_ENV === 'production' ? 'https://trust-metric.liqu.io' : 'http://127.0.0.1:8080/dev_trust_metric.html',
             node: null,
 
@@ -102,12 +80,7 @@ export default {
                 quantity: 0
             },
 
-            dialogVisible: false,
-            loginOpen: false,
-
-            seeds: [],
-            username: null,
-
+            dialogVisible: false,            
             isHidden: true,
             isHovered: false
         }
@@ -117,18 +90,8 @@ export default {
         this.allUnits = allUnits
 
         if (IS_EXTENSION) {
-            browser.storage.local.get(['seeds', 'username']).then((data) => {
-                if (data.seeds && data.seeds.length > 0) {
-                    data.seeds.forEach(s => {
-                        if (s && s.length > 0) {
-                            this.seeds.push(s)
-                        }
-                    })
-                }
-
-                if (data.username) {
-                    this.username = data.username
-                }
+            storage.getUsername().then(username => {
+                this.username = username
             })
 
             browser.runtime.onMessage.addListener(request => {
@@ -142,20 +105,11 @@ export default {
         urlKey () {
             this.updateNode()
         },
-        usernames () {
+        username () {
             this.updateNode()
         }
     },
     computed: {
-        keypairs () {
-            return this.seeds.map(keypairFromSeed).filter(k => k)
-        },
-        usernames () {
-            return this.keypairs.map(k => k.username)
-        },
-        currentKeypair () {
-            return this.keypairs.find(k => k.username === this.username)
-        },
         ratingText () {
             return this.rating ? (Math.round(this.rating * 100) / 10).toFixed(1) : '?'
         },
@@ -210,6 +164,7 @@ export default {
                     choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
                 },
                 reference: {
+                    anchor: this.currentAnchor,
                     key: this.urlKey + '/' + slug(this.currentAnchor),
                     referenceKey: this.currentTitle.replace(/\s/, '-'),
                     relevance: 1.0
@@ -225,8 +180,8 @@ export default {
     methods: {
         updateNode () {
             let params = { depth: 2 }
-            if (this.usernames.length > 0) {
-                params.trust_usernames = this.usernames.join(',')
+            if (this.username) {
+                params.trust_usernames = this.username
             }
             return new Promise((resolve, reject) => {
                 Api.getNode(this.urlKey, params, (node) => {
@@ -236,43 +191,9 @@ export default {
                 })
             })
         },
-        getSignature (keypair, message) {
-            let messageHash = nacl.hash(stringToBytes(message))
-            return nacl.sign.detached(messageHash, this.currentKeypair.secretKey)
-        },
-        vote () {
-            let keypair = this.currentKeypair
-            if (!keypair)
-                return
-            
-            let voteMessage = ['setVote', this.currentVotes.node.key, this.currentVotes.node.unit, this.currentVotes.node.choice.toFixed(5)].join(' ')
-            let referenceMessage = ['setReferenceVote', this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currentVotes.reference.relevance.toFixed(5)].join(' ')
-
-            client.setVote(keypair.publicKey, this.getSignature(this.keypair, voteMessage), this.currentVotes.node.key, this.currentVotes.node.unit, new Date(), this.currentVotes.node.choice, (r) => {
-                client.setReferenceVote(keypair.publicKey, this.getSignature(this.keypair, referenceMessage), this.currentVotes.reference.key, this.currentVotes.reference.referenceKey, this.currentVotes.reference.relevance, (r) => {
-                    this.dialogVisible = false
-                    this.currentAnchor = null
-
-                    this.updateNode()
-                })
-            })
-        },
-        addSeed (seed) {
-            this.seeds.push(seed)
-            this.username = this.usernames[this.usernames.length - 1]
-            browser.storage.local.set({ seeds: this.seeds, username: this.username })
-        },
-        removeUsername (username) {
-            let index = this.usernames.indexOf(username)
-            if (index >= 0) {
-                this.seeds.splice(index, 1)
-                this.username = index > 0 ? this.seeds[index - 1] : null
-                browser.storage.local.set({ seeds: this.seeds, username: this.username })
-            }
-		},
-		switchToUsername (username) {
-            this.username = username
-            browser.storage.local.set({ username: this.username })
+        onVote () {
+            this.currentAnchor = null
+            this.updateNode()
         },
         startVoting () {
             if (this.currentSelection) {
