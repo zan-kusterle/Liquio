@@ -48,6 +48,9 @@ module.exports = [{
             'vue$': 'vue/dist/vue.common.js'
         }
     },
+    optimization: {
+        minimize: process.env.NODE_ENV === 'production'
+    },
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
@@ -62,9 +65,7 @@ module.exports = [{
             filename: 'liquio.zip',
             pathPrefix: 'extension'
         })
-    ].concat(process.env.NODE_ENV === 'production' ? [
-        new webpack.optimize.UglifyJsPlugin({ output: { comments: false } })
-    ] : [])
+    ]
 },
 {
     mode: 'development',
@@ -129,6 +130,9 @@ module.exports = [{
             'vue$': 'vue/dist/vue.common.js'
         }
     },
+    optimization: {
+        minimize: process.env.NODE_ENV === 'production'
+    },
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
@@ -140,7 +144,5 @@ module.exports = [{
         }),
         new CopyWebpackPlugin([{ from: "./static" }]),
         //new BundleAnalyzerPlugin()
-    ].concat(process.env.NODE_ENV === 'production' ? [
-        new webpack.optimize.UglifyJsPlugin({ output: { comments: false } })
-    ] : [])
+    ]
 }]
