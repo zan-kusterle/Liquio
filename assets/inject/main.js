@@ -5,7 +5,7 @@ import { usernameFromPublicKey } from 'shared/identity'
 import Vue from 'vue'
 import Bar from 'inject/bar.vue'
 import { decodeBase64 } from 'shared/utils';
-import transformNode from 'inject/transform_content'
+import transformContent from 'inject/transform_content'
 import mainCss from 'inject/main.less'
 import shadowCss from 'inject/shadow.less'
 
@@ -20,7 +20,6 @@ let getElement = () => {
         vueElement.attachShadow({mode: 'open'})
         container = vueElement.shadowRoot
     }
-    container.appendChild(document.createElement('div'))
     
     for (let file of shadowCss) {
         let content = file[1]
@@ -36,7 +35,10 @@ let getElement = () => {
         bodyElement.appendChild(style)
     }
 
-    return container.firstChild
+    let innerElement = document.createElement('div')
+    container.appendChild(innerElement)
+
+    return innerElement
 }
 
 const vm = new Vue({
@@ -93,7 +95,6 @@ vm.$on('update-node', (node) => {
     if (IS_EXTENSION) {
         let reliabilityResults = node.results.by_units.reliability
         let score = reliabilityResults ? reliabilityResults.average : null
-        console.log(score)
         browser.runtime.sendMessage({ name: 'score', score: score })
     }
 
@@ -101,8 +102,9 @@ vm.$on('update-node', (node) => {
 
     let overrideByClickOnlyTimeoutId = null
     let onClickOnlyTime
+    transformContent.resetTransforms()
     for (let domNode of textNodes) {
-        transformNode(nodesByText, domNode, (activeNode, isClicked) => {
+        transformContent.transformNode(nodesByText, domNode, (activeNode, isClicked) => {
             if (overrideByClickOnlyTimeoutId === null || isClicked) {
                 vm.currentNode = activeNode
             }

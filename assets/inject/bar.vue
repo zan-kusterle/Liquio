@@ -1,7 +1,7 @@
 <template>
-<div class="liquio-bar" @mouseup="isHovered = true" @mouseover="isHovered = true" @mouseout="isHovered = false">
-    <el-dialog title="Finalize vote" width="60%" v-if="currentVotes" :visible.sync="dialogVisible">
-        <finalize-vote :votes="currentVotes" @close="dialogVisible = false" @vote="onVote"></finalize-vote>
+<div class="liquio-bar" @mouseup="isHovered = true" @mouseover="isHovered = true" @mouseout="isHovered = false" :style="isLoading ? { visibility: 'hidden' } : {}">
+    <el-dialog title="Finalize vote" width="800px" v-if="currentVotes" :visible.sync="dialogVisible">
+        <finalize-vote :votes="currentVotes" @close="dialogVisible = false" @vote="onVote" @set-username="setUsername"></finalize-vote>
     </el-dialog>
 
     <div class="liquio-bar__container" v-if="currentNode || currentAnchor || isHovered && !(currentSelection || currentVideoTime) || !isHidden && !isUnavailable">
@@ -16,7 +16,7 @@
                     </div>
 
                     <div class="liquio-bar__vote-choice">
-                        <el-slider size="small" tooltip-class="liquio-bar__tooltip" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
+                        <el-slider size="small" tooltip-class="liquio-bar__tooltip" v-model="reliabilityChoice" class="liquio-bar__vote-spectrum"></el-slider>
                     </div>
 
                     <div class="liquio-bar__vote-button">
@@ -86,6 +86,8 @@ export default {
     },
     data () {
         return {
+            isLoading: true,
+
             username: null,
             trustMetricUrl: process.env.NODE_ENV === 'production' ? 'https://trust-metric.liqu.io' : 'http://127.0.0.1:8080/dev_trust_metric.html',
             node: null,
@@ -93,6 +95,7 @@ export default {
             currentAnchor: null,
             currentTitle: null,
             currentUnitValue: 'true',
+            reliabilityChoice: 50,
             currentChoice: {
                 spectrum: 50,
                 quantity: 0
@@ -119,6 +122,9 @@ export default {
                 }
             })
         }
+    },
+    mounted () {
+        setTimeout(() => this.isLoading = false, 50)
     },
     watch: {
         urlKey () {
@@ -173,6 +179,16 @@ export default {
             return this.currentSelection || this.currentVideoTime
         },
         currentVotes () {
+            if (this.reliabilityVoting) {
+                return {
+                    node: {
+                        key: this.urlKey,
+                        unit: 'Reliable-Unreliable',
+                        choice: this.reliabilityChoice / 100
+                    }
+                }
+            }
+
             if (!this.currentTitle || !this.currentUnit || !this.currentAnchor)
                 return null
             
@@ -223,7 +239,7 @@ export default {
             }
         },
         finalizeVote () {
-            if (this.currentTitle) {
+            if (this.currentTitle || this.reliabilityVoting) {
                 this.dialogVisible = true
             }
         },
@@ -235,6 +251,9 @@ export default {
                 spectrum: 50,
                 quantity: 0
             }
+        },
+        setUsername (username) {
+            this.username = username
         }
     }
 }
