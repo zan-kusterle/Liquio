@@ -205,9 +205,11 @@ document.addEventListener('mouseup', updateSelection)
 const VIDEO_NODE_SHOW_DURATION = 10
 let isCurrentVideoNode = false
 
-setTimeout(() => {
+let intervalId = setInterval(() => {
     let videos = document.getElementsByTagName('video')
     if (videos.length > 0) {
+        clearInterval(intervalId)
+
         let video = videos[0]
 
         setInterval(() => {
@@ -237,4 +239,4 @@ setTimeout(() => {
             }
         }, 100)
     }
-}, 500)
+}, 100)

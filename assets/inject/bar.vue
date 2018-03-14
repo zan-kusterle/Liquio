@@ -9,7 +9,7 @@
     </el-dialog>
 
     <template v-if="!isUnavailable">
-        <div class="liquio-bar__container" v-if="currentAnchor || reliabilityVoting || (currentNode || isHovered || !isHidden) && !(currentSelection && currentSelection.length >= 10 || currentVideoTime)">
+        <div class="liquio-bar__container" v-if="currentAnchor || reliabilityVoting || currentNode || !isHidden">
             <div class="liquio-bar__wrap">
                 <div class="liquio-bar__score" :style="{ 'background': `#${color}` }" @click="reliabilityVoting = true">
                     {{ ratingText }}
@@ -54,8 +54,22 @@
                         <div class="liquio-bar__vote-button" style="margin-left: 10px;">
                             <a :href="`${LIQUIO_URL}/v/${encodeURIComponent(currentNode.path.join('/'))}`" target="_blank"><el-button type="small">View on Liquio</el-button></a>
                         </div>
+                        
+                        <div class="liquio-bar__vote-button" v-if="currentSelection && currentSelection.length >= 10">
+                            <el-button size="small" @click="startVoting">Vote on selection</el-button>
+                        </div>
+                        <div class="liquio-bar__vote-button" v-else-if="currentVideoTime">
+                            <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
+                        </div>
                     </div>
                     <div class="liquio-bar__vote" v-else>
+                        <div class="liquio-bar__vote-button" v-if="currentSelection && currentSelection.length >= 10">
+                            <el-button size="small" @click="startVoting">Vote on selection</el-button>
+                        </div>
+                        <div class="liquio-bar__vote-button" v-else-if="currentVideoTime">
+                            <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
+                        </div>
+
                         <div class="liquio-bar__vote-button">
                             <el-button size="small" @click="trustMetricOpen = true">Change whitelist</el-button>
                             <a style="margin-left: 10px;" :href="trustMetricUrl" target="_blank">{{ trustMetricUrl }}</a>

@@ -4,7 +4,6 @@
 
         <span v-if="loginOpen" slot="footer" class="dialog-footer">
             <el-button type="primary" @click="loginOpen = false">Choose user</el-button>
-            <el-button @click="$emit('close')">Cancel</el-button>
         </span>
 
         <template v-if="!loginOpen">

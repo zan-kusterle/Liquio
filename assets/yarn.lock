@@ -948,7 +948,7 @@ balanced-match@^1.0.0:
 
 base64-inline-loader@^1.1.1:
   version "1.1.1"
-  resolved "http://npm.celtra.com/base64-inline-loader/-/base64-inline-loader-1.1.1.tgz#2b8b2841e7848292519ea3a3d8dfc6a6c141791a"
+  resolved "https://registry.yarnpkg.com/base64-inline-loader/-/base64-inline-loader-1.1.1.tgz#2b8b2841e7848292519ea3a3d8dfc6a6c141791a"
   dependencies:
     file-loader "^1.1.11"
     loader-utils "^1.1.0"
