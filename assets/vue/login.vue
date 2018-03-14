@@ -1,7 +1,7 @@
 <template>
 <div class="login">
 	<div class="vote-section" v-if="usernames.length > 0">
-		<p class="vote-title">You are voting as</p>
+		<p class="login-title" style="margin-bottom: 15px;">Current user</p>
 
 		<el-select class="select-user" v-model="currentUsername" placeholder="Select user">
 			<el-option v-for="username in usernames" :key="username" :label="username" :value="username" />
@@ -10,25 +10,29 @@
 		<el-button class="main-button" size="small" type="danger" @click="$emit('logout')">Logout {{ currentUsername }}</el-button>
 	</div>
 
-	<el-row :gutter="40" class="vote-section" v-if="randomWords">
+	<el-row :gutter="40" v-if="randomWords">
 		<el-col :span="12">
-			<p class="vote-title">Login</p>
+			<div class="vote-section">
+				<p class="login-title">Login</p>
 
-			<el-input class="login-field" v-model="words" @keyup.native.enter="login" placeholder="Enter a list of 13 words">
-				<el-button slot="append" icon="el-icon-caret-right" @click="login"></el-button>
-			</el-input>
+				<el-input class="login-field" v-model="words" @keyup.native.enter="login" placeholder="Login with 13 words">
+					<el-button slot="append" icon="el-icon-caret-right" @click="login"></el-button>
+				</el-input>
+			</div>
 		</el-col>
 		<el-col :span="12">
-			<p class="vote-title">New user</p>
+			<div class="vote-section">
+				<p class="login-title">New user</p>
 
-			<p class="login-title">Login with username <b>{{ generatedUsername }}</b></p>
+				<p class="login-titlee">Login with username <b>{{ generatedUsername }}</b></p>
 
-			<div class="login-words">{{ randomWords }}</div>
+				<div class="login-words">{{ randomWords }}</div>
 
-			<div class="login-extra">
-				<p>This data is never sent to our servers</p>
+				<div class="login-extra">
+					<p>This data is never sent to our servers</p>
 
-				<el-button size="small" @click="downloadIdentity()" :disabled="wordsDownloaded">Download words</el-button>
+					<el-button size="small" @click="downloadIdentity()" :disabled="wordsDownloaded" style="margin-top: 10px;">Download words</el-button>
+				</div>
 			</div>
 		</el-col>
 	</el-row>

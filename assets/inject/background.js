@@ -4,20 +4,20 @@ browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     }
 })
 
-var off = true
+var isHidden = true
 browser.browserAction.onClicked.addListener(function(tab) {
-    off = !off
+    isHidden = !isHidden
 
-    browser.tabs.sendMessage(tab.id, { name: 'toggle' })
+    browser.tabs.sendMessage(tab.id, { name: 'hidden', value: isHidden })
 
-    if (off) {
+    if (isHidden) {
         browser.browserAction.setIcon({ path: "icons/off.png", tabId: tab.id })
     } else {
         browser.browserAction.setIcon({ path: "icons/on.png", tabId: tab.id })
     }
 })
 
-chrome.runtime.onMessage.addListener(function(request, sender) {
+browser.runtime.onMessage.addListener(function(request, sender) {
     if (request.name == 'score') {
         let score = request.score
 

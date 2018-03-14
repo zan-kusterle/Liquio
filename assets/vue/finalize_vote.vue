@@ -13,29 +13,28 @@
             </div>
 
             <div class="vote-section">
-                <p class="vote-title">Poll vote</p>
+                <p class="vote-title">Vote</p>
 
-                <p class="node">{{ votes.node.key }}</p>
-                <div class="score" :style="{ backgroundColor: getColor(votes.node.choice) }">
-                    <p class="choice">{{ votes.node.choice }}</p>
+                <div class="score" :style="{ backgroundColor: getColor(votes.node.type === 'spectrum' ? votes.node.choice : null) }">
+                    <p class="choice">{{ votes.node.type === 'spectrum' ? `${Math.round(votes.node.choice * 100)}%` : votes.node.choice }}</p>
                     <p class="unit">{{ votes.node.unit }}</p>
                 </div>
+                <p class="node">{{ votes.node.key }}</p>
             </div>
 
             <div class="vote-section" v-if="votes.reference">
-                <p class="vote-title">Reference vote</p>
-
-                <p class="node">{{ votes.reference.key }}</p>
-                <i class="el-icon-caret-right"></i>
-                <p class="node">{{ votes.reference.referenceKey }}</p>
+                <p class="vote-title">Reference</p>
 
                 <div class="score" :style="{ backgroundColor: getColor(votes.reference.relevance) }">
                     <p class="choice">{{ Math.round(votes.reference.relevance * 100) }}%</p>
                 </div>
+                <p class="node">{{ votes.reference.key }}</p>
+                <i class="el-icon-caret-right reference-arrow"></i>
+                <p class="node">{{ votes.reference.referenceKey }}</p>
             </div>
 
             <span slot="footer" class="dialog-footer">
-                <el-button type="success" @click="vote">Cast vote</el-button>
+                <el-button type="success" @click="vote">Confirm</el-button>
                 <el-button type="primary" @click="loginOpen = true">Switch user</el-button>
                 <el-button @click="$emit('close')">Cancel</el-button>
             </span>

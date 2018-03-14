@@ -3,6 +3,13 @@
 @height: 50px;
 
 .liquio-bar {
+    &__finalize-dialog {
+        .el-dialog__header {
+            background-color: #dff0d8;
+            padding: 15px;
+        }
+    }
+
     overflow: auto;
 
     * > input {
@@ -104,24 +111,37 @@ p {
     margin: 0;
 }
 
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
 .vote-section {
     margin-bottom: 40px;
+    background-color: #f5f5f5;
+    padding: 12px 16px;
+    border-radius: 3px;
 }
 
 .vote-title {
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 
     &:last-child {
         margin-bottom: 0;
     }
 }
 
+.login-title {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
 .node {
     display: inline;
     background-color: #c3e0ec;
     padding: 5px 10px;
-    border-radius: 4px;
+    border-radius: 2px;
     line-height: 40px;
     word-break: break-all;
     vertical-align: middle;
@@ -133,7 +153,6 @@ p {
     text-align: center;
     padding: 5px 20px;
     vertical-align: middle;
-    margin-left: 10px;
 
     .choice {
         font-size: 18px;
@@ -144,26 +163,27 @@ p {
     }
 }
 
+.reference-arrow {
+    font-size: 30px;
+    vertical-align: middle;
+}
+
 
 .select-user {
 	vertical-align: middle;
 }
 
 .main-button {
-	margin-left: 30px;
-	vertical-align: middle;
+    display: block;
+    margin-top: 15px;
 }
 
 .login-words {
 	margin-top: 10px;
 	font-size: 12px;
-	background-color: #eee;
-	padding: 10px 15px;
-
-	> span {
-		margin-left: 2px;
-		font-weight: bold;
-	}
+	background-color: white;
+	padding: 8px 16px;
+    font-weight: bold;
 }
 
 .login-extra {
@@ -174,6 +194,5 @@ p {
         margin-top: 10px;
 		color: #ea1c1c;
         font-size: 13px;
-        font-weight: bold;
 	}
 }

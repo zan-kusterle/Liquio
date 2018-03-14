@@ -45,6 +45,7 @@ const vm = new Vue({
     el: getElement(),
     data () {
         return {
+            isHidden: true,
             isUnavailable: false,
             urlKey: null,
             currentNode: null,
@@ -60,6 +61,7 @@ const vm = new Vue({
     render (createElement) {
         return createElement(Bar, {
             props: {
+                isHidden: this.isHidden,
                 isUnavailable: this.isUnavailable,
                 urlKey: this.urlKey,
                 currentNode: this.currentNode,
@@ -120,10 +122,12 @@ vm.$on('update-node', (node) => {
 
 if (IS_EXTENSION) {
     browser.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-        if (message === 'update') {
+        if (message.name === 'update') {
             onUrlChange(document.location.href)
+        } else if (message.name === 'hidden') {
+            vm.isHidden = message.value
         }
-    });    
+    })
 }
 
 function onUrlChange (url) {
