@@ -13,15 +13,20 @@ let getElement = () => {
     let bodyElement = document.getElementsByTagName('body')[0]
     let vueElement = document.createElement('div')
     vueElement.id = IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar'
-    vueElement.attachShadow({mode: 'open'})
     bodyElement.appendChild(vueElement)
-    vueElement.shadowRoot.appendChild(document.createElement('div'))
+
+    let container = vueElement
+    if (document.head.createShadowRoot || document.head.attachShadow) {
+        vueElement.attachShadow({mode: 'open'})
+        container = vueElement.shadowRoot
+    }
+    container.appendChild(document.createElement('div'))
     
     for (let file of shadowCss) {
         let content = file[1]
         let style = document.createElement('style')
         style.innerHTML = content
-        vueElement.shadowRoot.appendChild(style)
+        container.appendChild(style)
     }
 
     for (let file of mainCss) {
@@ -31,7 +36,7 @@ let getElement = () => {
         bodyElement.appendChild(style)
     }
 
-    return vueElement.shadowRoot.firstChild
+    return container.firstChild
 }
 
 const vm = new Vue({
@@ -85,6 +90,13 @@ vm.$on('update-node', (node) => {
         return result
     }
 
+    if (IS_EXTENSION) {
+        let reliabilityResults = node.results.by_units.reliability
+        let score = reliabilityResults ? reliabilityResults.average : null
+        console.log(score)
+        browser.runtime.sendMessage({ name: 'score', score: score })
+    }
+
     nodesByText = getNodesByText(node, vm.urlKey)
 
     let overrideByClickOnlyTimeoutId = null
@@ -98,7 +110,7 @@ vm.$on('update-node', (node) => {
                 overrideByClickOnlyTimeoutId = setTimeout(() => {
                     clearTimeout(overrideByClickOnlyTimeoutId)
                     overrideByClickOnlyTimeoutId = null
-                }, 3 * 1000)
+                }, 1000)
             }
         })
     }

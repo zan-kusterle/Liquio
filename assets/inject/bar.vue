@@ -27,9 +27,9 @@
                 </div>
                 <div class="liquio-bar__vote" v-else-if="currentAnchor">
                     <div style="margin-right: 10px;">
-                        <el-button size="small" @click="currentAnchor = null">Close</el-button>
+                        <el-button size="small" @click="resetState">Close</el-button>
                     </div>
-                    <el-input size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
+                    <el-input @keyup.stop.prevent @keydown.stop.prevent size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
                     <el-select size="small" popper-class="liquio-bar__dropdown" v-model="currentUnitValue" class="liquio-bar__vote-unit">
                         <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
                     </el-select>
@@ -49,7 +49,7 @@
             </div>
         </div>
     </div>
-    <div class="liquio-bar__container liquio-bar__button-container" v-else-if="currentSelection">
+    <div class="liquio-bar__container liquio-bar__button-container" v-else-if="currentSelection && currentSelection.length >= 10">
         <el-button size="small" @click="startVoting">Vote on selection</el-button>
     </div>
     <div class="liquio-bar__container liquio-bar__button-container" v-else-if="currentVideoTime">
@@ -211,7 +211,8 @@ export default {
             })
         },
         onVote () {
-            this.currentAnchor = null
+            this.resetState()
+            this.dialogVisible = false
             this.updateNode()
         },
         startVoting () {
@@ -224,6 +225,15 @@ export default {
         finalizeVote () {
             if (this.currentTitle) {
                 this.dialogVisible = true
+            }
+        },
+        resetState () {
+            this.currentAnchor = null
+            this.currentTitle = null
+            this.currentUnitValue = 'true'
+            this.currentChoice = {
+                spectrum: 50,
+                quantity: 0
             }
         }
     }

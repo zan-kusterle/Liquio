@@ -46,9 +46,15 @@ export default {
     },
     data () {
         return {
-            loginOpen: false,
+            loginOpen: true,
             seeds: [],
             username: null
+        }
+    },
+    watch: {
+        username (newVal, oldVal) {
+            if (newVal && !oldVal)
+                this.loginOpen = false
         }
     },
     created () {
