@@ -70,8 +70,8 @@ module.exports = [{
 {
     mode: 'development',
     entry: {
-        'main.js': "./app/main.js",
-        'main.css': './app/main.less',
+        'app/main.js': "./app/main.js",
+        'app/main.css': './app/main.less',
         'inject.js': "./inject/main.js"
     },
     output: {
