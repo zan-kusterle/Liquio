@@ -1,11 +1,10 @@
 import nacl from 'tweetnacl'
 import { encodeBase64 } from 'shared/utils'
-import _ from 'lodash'
 
 export function wordsToSeed (words) {
     let bip39 = require('bip39')
 
-    let filtered = _.filter(_.map(words.split(' '), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
+    let filtered = words.split(' ').map(w => w.replace(/\s/g, '')).filter(w => w.length > 0)
     
     if(filtered.length !== 13)
         return null
@@ -26,7 +25,7 @@ export function keypairFromSeed (seed) {
 
 export function usernameFromPublicKey (key) {
     let hash = nacl.hash(key)
-    return _.map(hash.slice(0, 16), (byte) => {
+    return Array.from(hash.slice(0, 16)).map(byte => {
         return String.fromCharCode(97 + byte % 26)
     }).join('')
 }

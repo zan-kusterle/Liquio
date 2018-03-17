@@ -277,6 +277,7 @@ export default {
             this.currentAnchor = null
             this.currentTitle = null
             this.currentUnitValue = 'true'
+            this.reliabilityChoice = 50
             this.currentChoice = {
                 spectrum: 50,
                 quantity: 0

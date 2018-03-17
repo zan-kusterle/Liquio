@@ -3,7 +3,7 @@ export function parseVotes(text) {
     var current_path = []
     var votes = []
     var referenceVotes = []
-    _.each(lines, (line) => {
+    lines.forEach((line) => {
         line = line.replace(/\s\s\s\s/g, '\t')
         let num_indents = 0
         while (line[num_indents] == '\t') {
@@ -58,19 +58,30 @@ export function formatVotes(votes, referenceVotes) {
     let recursive = (votes, currentPath) => {
         let depth = currentPath.length
 
-        let currentReferenceVotes = _.filter(referenceVotes, (rv) => rv.path.join('/').toLowerCase() === currentPath.join('/').toLowerCase())
-        _.each(currentReferenceVotes, (referenceVote) => {
+        let currentReferenceVotes = referenceVotes.filter((rv) => rv.path.join('/').toLowerCase() === currentPath.join('/').toLowerCase())
+        currentReferenceVotes.forEach((referenceVote) => {
             let referenceVoteText = '<b>' + referenceVote.relevance.toFixed(2) + ' -> </b>' + referenceVote.reference_path.join('/').replace(/-/g, ' ')
             for (var i = 0; i < depth; i++)
                 referenceVoteText = '\t' + referenceVoteText
             lines.push(referenceVoteText)
         })
 
-        let availableVotes = _.filter(votes, (v) => v.path.length > depth)
-        let byPrefix = _.groupBy(availableVotes, (v) => v.path[depth])
-        _.each(_.sortBy(Object.keys(byPrefix), (k) => -byPrefix[k].length), (prefix) => {
+        let availableVotes = votes.filter((v) => v.path.length > depth)
+        let byPrefix = {}
+        availableVotes.forEach(v => {
+            let prefix = v.path[depth]
+            if (!byPrefix[prefix])
+                byPrefix[prefix] = []
+            byPrefix[prefix].push(v)
+        })
+        let sortedKeys = Object.keys(byPrefix).sort((a, b) => {
+            let av = byPrefix[a].length
+            let bv = byPrefix[b].length
+            return av > bv ? 1 : av < bv ? -1 : 0
+        })
+        sortedKeys.forEach((prefix) => {
             let prefixVotes = byPrefix[prefix]
-            let vote = _.find(prefixVotes, (v) => v.path.length - 1 === depth && v.path[depth] === prefix)
+            let vote = prefixVotes.find((v) => v.path.length - 1 === depth && v.path[depth] === prefix)
             let segment = prefix.replace(/-/g, ' ')
             if (vote)
                 segment = '<b>' + vote.choice + ' ' + vote.unit + ': </b>' + segment

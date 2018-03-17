@@ -141,7 +141,7 @@ export default {
 			this.words = ''
 		},
 		removeIndex (index) {
-			let seeds = _.filter(_.map(this.$store.state.storageSeeds.split(';'), (w) => w.replace(/\s/g, '')), (w) => w.length > 0)
+			let seeds = this.$store.state.storageSeeds.split(';').map((w) => w.replace(/\s/g, '')).filter((w) => w.length > 0)
 			if(index < seeds.length) {
 				this.$store.state.storageSeeds = this.$store.state.storageSeeds.replace(seeds[index] + ';', '')
 				localStorage.setItem('seeds', this.$store.state.storageSeeds)

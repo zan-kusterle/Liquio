@@ -42,7 +42,7 @@ export default {
 				node.loading = false
 			}
 
-			node.path_segments = _.map(node.path, (s, index) => {
+			node.path_segments = node.path.map((s, index) => {
 				return {
 					href: node.path.slice(0, index + 1).join('/').replace(':', '://'),
 					text: index == 0 ? node.path[index].replace(':', '://') : node.path[index]

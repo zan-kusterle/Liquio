@@ -6,7 +6,6 @@
         "bip39": "^2.5.0",
         "element-ui": "^2.2.1",
         "j2c": "^0.11.3",
-        "lodash": "^4.17.5",
         "moment": "^2.21.0",
         "phoenix": "file:../deps/phoenix",
         "tweetnacl": "^1.0.0",

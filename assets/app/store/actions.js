@@ -28,8 +28,8 @@ export default {
     fetchNode({ commit, state, getters }, key) {
         return new Promise((resolve, reject) => {
             Api.getNode(key, prepareOpts(getters.currentOpts), (node) => {
-                _.each(node.references, (reference) => commit('setNode', reference))
-                _.each(node.inverse_references, (reference) => commit('setNode', reference))
+                node.references.forEach((reference) => commit('setNode', reference))
+                node.inverse_references.forEach((reference) => commit('setNode', reference))
                 commit('setNode', node)
                 resolve(node)
             })
@@ -39,7 +39,7 @@ export default {
         return new Promise((resolve, reject) => {
             Api.search(query, (node) => {
                 node.path = ['Search', query]
-                _.each(node.references, (reference) => commit('setNode', reference))
+                node.references.forEach((reference) => commit('setNode', reference))
                 commit('setNode', node)
                 resolve(node)
             })

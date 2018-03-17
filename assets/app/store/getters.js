@@ -13,9 +13,9 @@ export default {
     currentOpts: (state, getters) => {
         let availableSeeds = state.storageSeeds.split(';')
 
-        let availableKeyPairs = _.filter(_.map(availableSeeds, (seed) => {
+        let availableKeyPairs = availableSeeds.map((seed) => {
             return keypairFromSeed(seed)
-        }), (k) => k)
+        }).filter((k) => k)
 
         return {
             keypairs: availableKeyPairs,
@@ -59,13 +59,13 @@ export default {
         return node
     },
     getIdentityByUsername: (state, getters) => (username) => {
-        let identity = _.find(state.identities, (identity) => {
+        let identity = state.identities.find((identity) => {
             return identity.username.toLowerCase() == username.toLowerCase()
         })
         return identity ? JSON.parse(JSON.stringify(identity)) : null
     },
     getNodeByKey: (state, getters) => (key, depth = 1) => {
-        let node = _.find(state.nodes, (node) => {
+        let node = state.nodes.find((node) => {
             return node.key.toLowerCase() == key.toLowerCase()
         })
         node = node ? JSON.parse(JSON.stringify(node)) : null
@@ -74,12 +74,13 @@ export default {
             return null
         
         if (depth > 0) {
-            node.references = _.filter(_.map(node.references, (n) => {
+            node.references = node.references.map((n) => {
                 let referenceNode = getters.getNodeByKey(n.path.join('/'), depth - 1)
 
                 var unit = allUnits[0]
                 let units = referenceNode.results ? Object.values(referenceNode.results.by_units) : []
-                let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
+                let turnoutRatios = units.map(u => u.turnout_ratio)
+                let bestUnit = units[turnoutRatios.indexOf(Math.max(turnoutRatios))]
                 if (bestUnit)
                     unit = bestUnit
 
@@ -89,14 +90,15 @@ export default {
                 }
 
                 return referenceNode
-            }), (x) => x)
+            }).filter((x) => x)
 
-            node.inverse_references = _.filter(_.map(node.inverse_references, (n) => {
+            node.inverse_references = node.inverse_references.map((n) => {
                 let referenceNode = getters.getNodeByKey(n.path.join('/'), depth - 1)
 
                 var unit = allUnits[0]
                 let units = referenceNode.results ? Object.values(referenceNode.results.by_units) : []
-                let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
+                let turnoutRatios = units.map(u => u.turnout_ratio)
+                let bestUnit = units[turnoutRatios.indexOf(Math.max(turnoutRatios))]
                 if (bestUnit)
                     unit = bestUnit
 
@@ -105,20 +107,21 @@ export default {
                     referenceNode.reference_result = n.reference_result
                 }
                 return referenceNode
-            }), (x) => x)
+            }).filter((x) => x)
         }
 
         var unit = allUnits[0]
 
         let units = node.results ? Object.values(node.results.by_units) : []
-        let bestUnit = _.maxBy(units, (u) => u.turnout_ratio)
+        let turnoutRatios = units.map(u => u.turnout_ratio)
+        let bestUnit = units[turnoutRatios.indexOf(Math.max(turnoutRatios))]
         if (bestUnit) {
             unit = bestUnit
         }
 
         let currentNode = getters.currentNode
         if (node.key == currentNode.key && currentNode.unit) {
-            let activeUnit = _.find(allUnits, (u) => u.text == currentNode.unit)
+            let activeUnit = allUnits.find((u) => u.text == currentNode.unit)
             if (activeUnit) {
                 unit = node.results && node.results.by_units[activeUnit.key] || activeUnit
             }
@@ -128,9 +131,9 @@ export default {
 
         return node
     },
-    getNodesByKeys: (state, getters) => (paths) => _.filter(_.map(paths, (path) => getters.getNodeByKey(path)), (n) => n),
+    getNodesByKeys: (state, getters) => (paths) => paths.map((path) => getters.getNodeByKey(path)).filter((n) => n),
     getReference: (state, getters) => (key, reference_key) => {
-        let reference = _.find(state.references, (reference) => {
+        let reference = state.references.find((reference) => {
             return reference.key.toLowerCase() == key.toLowerCase() && reference.reference_key.toLowerCase() == reference_key.toLowerCase()
         })
         if (!reference)
