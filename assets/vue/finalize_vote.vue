@@ -79,7 +79,7 @@ export default {
     created () {
         if (IS_EXTENSION) {
             storage.getSeeds().then(seeds => {
-                if (seeds.length > 0) {
+                if (seeds && seeds.length > 0) {
                     seeds.forEach(seed => {
                         if (seed.length > 0) {
                             this.seeds.push(seed)

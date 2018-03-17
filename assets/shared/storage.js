@@ -43,14 +43,18 @@ export default {
     },
     addSeed (seed) {
         storage.get('seeds', Array).then(seeds => {
+            if (!seeds)
+                seeds = []
             seeds.push(seed)
             storage.set('seeds', seeds)
         })
     },
     removeSeed (index) {
         storage.get('seeds', Array).then(seeds => {
-            seeds.splice(index, 1)
-            storage.set('seeds', seeds)
+            if (seeds && seeds.length >= index) {
+                seeds.splice(index, 1)
+                storage.set('seeds', seeds)
+            }
         })
     },
     setUsername (username) {

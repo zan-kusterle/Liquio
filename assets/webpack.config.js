@@ -10,12 +10,12 @@ let publicUrl = process.env.NODE_ENV === 'production' ? "https://liqu.io" : "htt
 module.exports = [{
     mode: 'development',
     entry: {
-        background_scripts: "./inject/background.js",
-        content_scripts: "./inject/main.js"
+        background: './inject/background.js',
+        content: './inject/main.js'
     },
     output: {
         path: path.resolve(__dirname, "../priv/static/extension"),
-        filename: "[name]/index.js",
+        filename: "[name].js",
         publicPath: publicUrl
     },
     devtool: process.env.NODE_ENV === 'production' ? false : 'inline-source-map',

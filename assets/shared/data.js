@@ -9,5 +9,6 @@ export let allUnits = [
     { key: 'euro', text: 'Money(EUR)', value: 'eur', type: 'quantity' },
     { key: 'length', text: 'Length(m)', value: 'length', type: 'quantity' },
     { key: 'approve', text: 'Approve-Disapprove', value: 'approve', type: 'spectrum' },
-    { key: 'agree', text: 'Agree-Disagree', value: 'agree', type: 'spectrum' }
+    { key: 'agree', text: 'Agree-Disagree', value: 'agree', type: 'spectrum' },
+    { key: 'ratio', text: 'Ratio', value: 'ratio', type: 'spectrum' }
 ]

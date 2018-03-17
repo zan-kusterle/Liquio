@@ -148,10 +148,6 @@ let onDomNodeInsert = (node) => {
     }
 }
 
-let walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, null, false)
-while (walker.nextNode())
-    onDomNodeInsert(walker.currentNode)
-
 let MutationObserver = window.MutationObserver || window.WebKitMutationObserver
 let eventListenerSupported = window.addEventListener
 
@@ -173,9 +169,12 @@ if (MutationObserver) {
     }, false)
 }
 
+let walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, null, false)
+while (walker.nextNode())
+    onDomNodeInsert(walker.currentNode)
+
 window.addEventListener("hashchange", () => onUrlChange(document.location.href), false)
 onUrlChange(document.location.href)
-
 
 let getValidSelection = () => {
     let selection = window.getSelection()
@@ -191,12 +190,16 @@ let getValidSelection = () => {
     }
 }
 
-let updateSelection = () => {    
+let updateSelection = (e) => {    
     let selection = getValidSelection()
     if (selection) {
         vm.currentSelection = selection.toString()
     } else {
         vm.currentSelection = null
+    }
+    
+    if (e) {
+        setTimeout(updateSelection, 100)
     }
 }
 document.addEventListener('keyup', updateSelection)
