@@ -13,7 +13,7 @@ export default {
         }
     },
     transformNode (nodesByText, domNode, setActive) {
-        let text = domNode.textContent.toLowerCase()
+        let text = domNode.textContent.toLowerCase().replace(/[^\x00-\x7F]/g, '')
         let slugText = slug(text)
 
         let nodesToAdd = Object.keys(nodesByText).filter((k) => {
