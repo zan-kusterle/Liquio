@@ -3,12 +3,11 @@ defmodule Liquio.Results do
 
 	def from_votes(votes) do from_votes(votes, %{}) end
 	def from_votes(votes, inverse_delegations) do
-		trust_usernames = votes |> Enum.map(& &1.username) |> MapSet.new
-		from_votes(votes, inverse_delegations, %{:datetime => Timex.now, :trust_usernames => trust_usernames, :topics => nil})
+		from_votes(votes, inverse_delegations, %{:datetime => Timex.now, :topics => nil})
 	end
-	def from_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_usernames => trust_usernames, :topics => topics}) do
+	def from_votes(votes, inverse_delegations, %{:datetime => datetime, :topics => topics}) do
 		by_units = votes |> Enum.group_by(& &1.unit) |> Enum.map(fn({unit_value, votes_for_unit}) ->
-			unit = Vote.decode_unit!(unit_value)
+			unit = %{:type => :quantity, :key => unit_value, :measurement => unit_value, :unit => unit_value}
 
 			votes_for_unit = if unit.type == :spectrum do
 				Enum.filter(votes_for_unit, & &1.choice >= 0.0 and &1.choice <= 1.0)
@@ -16,14 +15,10 @@ defmodule Liquio.Results do
 				votes_for_unit
 			end
 
-			active_trust_usernames = votes_for_unit
-			|> Enum.filter(& MapSet.member?(trust_usernames, &1.username))
-			|> Enum.map(& &1.username)
-			|> MapSet.new
+			active_trust_usernames = votes_for_unit |> Enum.map(& &1.username) |> MapSet.new
 
 			topics = if is_list(topics) do MapSet.new(topics) else topics end
 			inverse_delegations = inverse_delegations |> Enum.filter(fn({from_identity_username, _}) ->
-				MapSet.member?(trust_usernames, from_identity_username) and
 				not MapSet.member?(active_trust_usernames, from_identity_username) and
 				(topics == nil or not MapSet.disjoint?(topics, MapSet.new))
 			end) |> Enum.into(%{})
@@ -36,7 +31,7 @@ defmodule Liquio.Results do
 				|> Map.put(:weight, if total_voting_power > 0 do power / total_voting_power else 0 end)
 			end)
 
-			unit_results = from_contributions(contributions, datetime, MapSet.size(trust_usernames), unit)
+			unit_results = from_contributions(contributions, datetime, unit)
 			|> Map.put(:unit, unit)
 			
 			{unit.key, unit_results}
@@ -44,7 +39,6 @@ defmodule Liquio.Results do
 
 		%{
 			:voting_power => by_units |> Enum.map(fn({_, v}) -> v.voting_power end) |> Enum.sum,
-			:turnout_ratio => by_units |> Enum.map(fn({_, v}) -> v.turnout_ratio end) |> Enum.sum,
 			:by_units => by_units,
 			:votes => votes
 		}
@@ -52,21 +46,16 @@ defmodule Liquio.Results do
 
 	def from_reference_votes(votes) do from_reference_votes(votes, %{}) end
 	def from_reference_votes(votes, inverse_delegations) do
-		trust_usernames = votes |> Enum.map(& &1.username) |> MapSet.new
-		from_reference_votes(votes, inverse_delegations, %{:datetime => Timex.now, :trust_usernames => trust_usernames, :topics => nil})
+		from_reference_votes(votes, inverse_delegations, %{:datetime => Timex.now, :topics => nil})
 	end
-	def from_reference_votes(votes, inverse_delegations, %{:datetime => datetime, :trust_usernames => trust_usernames}) do
+	def from_reference_votes(votes, inverse_delegations, %{:datetime => datetime}) do
 		votes = votes
 		|> Enum.map(& &1 |> Map.put(:choice, &1.relevance) |> Map.put(:at_date, &1.datetime))
 		|> Enum.filter(& &1.choice >= 0.0 and &1.choice <= 1.0)
 		
-		active_trust_usernames = votes
-		|> Enum.filter(& MapSet.member?(trust_usernames, &1.username))
-		|> Enum.map(& &1.username)
-		|> MapSet.new
+		active_trust_usernames = votes |> Enum.map(& &1.username) |> MapSet.new
 
 		inverse_delegations = inverse_delegations |> Enum.filter(fn({from_identity_username, _}) ->
-			MapSet.member?(trust_usernames, from_identity_username) and
 			not MapSet.member?(active_trust_usernames, from_identity_username)
 		end) |> Enum.into(%{})
 		power_by_usernames = VotingPower.get(active_trust_usernames, inverse_delegations)
@@ -80,11 +69,11 @@ defmodule Liquio.Results do
 		end)
 
 		unit = %{:type => :spectrum, :positive => "Relevant", :negative => "Irrelevant"}
-		from_contributions(contributions, datetime, MapSet.size(trust_usernames), unit)
+		from_contributions(contributions, datetime, unit)
 		|> Map.put(:votes, votes)
 	end
 
-	defp from_contributions(contributions, datetime, trust_metric_size, unit) do
+	defp from_contributions(contributions, datetime, unit) do
 		contributions = contributions |> Enum.sort_by(& Timex.to_unix(&1.at_date))
 		contributions_by_identities = contributions |> Enum.group_by(& &1.username)
 		latest_contributions = contributions_by_identities |> Enum.map(fn({_, cs}) -> cs |> List.last end)
@@ -105,7 +94,6 @@ defmodule Liquio.Results do
 
 		%{
 			:voting_power => total_power,
-			:turnout_ratio => if trust_metric_size == 0 do 0 else total_power / trust_metric_size end,
 			:count => Enum.count(latest_contributions),
 			:average => average,
 			:latest_contributions => latest_contributions,

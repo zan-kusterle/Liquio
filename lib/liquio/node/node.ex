@@ -170,4 +170,68 @@ defmodule Liquio.Node do
 		node
 		|> Map.put(:results, Results.from_votes(votes, inverse_delegations, calculation_opts))
 	end
+
+
+
+
+	def get_references(node, calculation_opts) do
+		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+
+		ReferenceVote.get_at_datetime(node.path, nil, calculation_opts.datetime)
+		|> Repo.preload([:signature])
+		|> Enum.group_by(& &1.reference_path)
+		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
+		|> Enum.map(fn({reference_path, result}) ->
+			Reference.new(node.path, reference_path)
+			|> Map.put(:results, result)
+			|> Map.put(:node, node)
+		end)
+		|> Enum.sort_by(& -&1.results.average)
+	end
+	
+	def get_inverse_references(node, calculation_opts) do
+		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+
+		ReferenceVote.get_at_datetime(nil, node.path, calculation_opts.datetime)
+		|> Repo.preload([:signature])
+		|> Enum.group_by(& &1.path)
+		|> prepare_reference_nodes(inverse_delegations, calculation_opts)
+		|> Enum.map(fn({path, result}) ->
+			Reference.new(path, node.path)
+			|> Map.put(:results, result)
+			|> Map.put(:reference_node, node)
+		end)
+		|> Enum.sort_by(& -&1.results.average)
+	end
+
+	defp prepare_reference_nodes(keys_with_votes, inverse_delegations, calculation_opts) do
+		keys_with_votes
+		|> Enum.map(fn({k, votes}) ->
+			{k, Results.from_reference_votes(votes, inverse_delegations, calculation_opts)}
+		end)
+		|> Enum.filter(fn({_k, result}) ->
+			result.voting_power > 0 and result.turnout_ratio >= calculation_opts[:reference_minimum_turnout]
+		end)
+	end
+
+	#Reference
+	def load(reference, calculation_opts) do
+		reference
+		|> Map.put(:node, Node.new(reference.path) |> Node.load(calculation_opts, 0))
+		|> Map.put(:reference_node, Node.new(reference.reference_path) |> Node.load(calculation_opts, 0))
+		|> load_results(calculation_opts)
+		|> Map.put(:calculation_opts, calculation_opts)
+	end
+	
+	defp load_results(reference, calculation_opts) do
+		votes = ReferenceVote.get_at_datetime(reference.path, reference.reference_path, calculation_opts.datetime) |> Repo.preload([:signature])
+		inverse_delegations = Delegation.get_inverse_delegations(calculation_opts.datetime)
+		results = Results.from_reference_votes(votes, inverse_delegations, calculation_opts)
+
+		reference
+		|> Map.put(:results, results)
+	end
+
+
+
 end

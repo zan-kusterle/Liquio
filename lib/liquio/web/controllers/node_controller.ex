@@ -14,10 +14,32 @@ defmodule Liquio.Web.NodeController do
 	end
 
 	def show(conn, %{"id" => id}) do
+		slug = fn(x) ->
+			x |> String.replace(" ", "-") |> String.downcase
+		end
+
+		case Liquio.GetData.get(nil, ["xszztdkfpyptpyzgd"]) do
+			{:ok, data} ->
+				votes = data.votes |> Enum.filter(& slug.(&1.title) === slug.(id))
+				inverse_delegations = data.delegations |> Enum.map(& {&1.to_username, &1}) |> Enum.into(%{})
+				results = Liquio.Results.from_votes(data.votes, inverse_delegations)
+				IO.inspect results
+
+				node = %{
+					:results => results,
+					:references => [],
+					:inverse_references => []
+				}
+
+				conn
+				|> render("show.json", node: node)
+			{:error, message} ->
+				conn
+				|> render("show.json", node: nil)
+		end
+
 		node = Node.decode(id)
 		calculation_opts = CalculationOpts.get_from_conn(conn)
-		conn
-		|> render("show.json", node: Node.load(node, calculation_opts))
 	end
 
 	def update(conn, %{"id" => id, "public_key" => public_key, "choice" => choice, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do

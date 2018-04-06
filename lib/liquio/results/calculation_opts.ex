@@ -17,7 +17,7 @@ defmodule Liquio.CalculationOpts do
 			else
 				now
 			end
-		{trust_metric_url, metric_trust_usernames} = get_trust_usernames(conn)
+		metric_trust_usernames = MapSet.new []
 		trust_usernames = if Map.has_key?(conn.params, "trust_usernames") do
 			force_usernames = conn.params["trust_usernames"] |> String.split(",") |> Enum.filter(& String.length(&1) > 0)
 			metric_trust_usernames |> MapSet.union(MapSet.new(force_usernames))
@@ -29,7 +29,7 @@ defmodule Liquio.CalculationOpts do
 		%{
 			datetime: datetime,
 			depth: depth,
-			trust_metric_url: trust_metric_url,
+			trust_metric_url: "",
 			metric_trust_usernames: metric_trust_usernames,
 			trust_usernames: trust_usernames,
 			vote_weight_halving_days: Map.get(conn.params, :vote_weight_halving_days),
@@ -63,24 +63,6 @@ defmodule Liquio.CalculationOpts do
 					end
 				end
 			end
-		end
-	end
-
-	defp get_trust_usernames(conn) do
-		url = Map.get(conn.params, :trust_metric_url)
-		url =
-			if url == nil or not (String.starts_with?(url, "http://") or String.starts_with?(url, "https://")) do
-				TrustMetric.default_trust_metric_url()
-			else
-				url
-			end
-
-		case TrustMetric.get(url) do
-			{:ok, trust_identity_ids} ->
-				{url, trust_identity_ids}
-			{:error, _reason} ->
-				url = TrustMetric.default_trust_metric_url()
-				{url, TrustMetric.get!(url)}
 		end
 	end
 end

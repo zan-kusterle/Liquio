@@ -12,6 +12,13 @@ defmodule Liquio.Web.NodeView do
 	end
 
 	def render("node.json", %{node: node}) do
+		%{
+			:results => node.results
+		}
+	end
+
+	"""
+	def render("node.json", %{node: node}) do
 		references = if Map.get(node, :references) do
 			node.references |> Enum.map(fn(reference) ->
 				reference_results = render_one(reference, Liquio.Web.ReferenceView, "results.json")
@@ -57,13 +64,9 @@ defmodule Liquio.Web.NodeView do
 		end
 
 		%{
-			:path => node.path,
-			:is_link => is_link,
-			:title => title,
 			:results => render("results.json", %{node: Map.get(node, :results)}),
 			:references => references,
-			:inverse_references => inverse_references,
-			:calculation_opts => Map.get(node, :calculation_opts)
+			:inverse_references => inverse_references
 		}
 	end
 
@@ -103,4 +106,45 @@ defmodule Liquio.Web.NodeView do
 			:embeds => Map.get(vote, :embeds)
 		}
 	end
+
+
+	@results_keys [:average, :count, :total, :turnout_ratio, :embeds, :contributions_by_identities]
+	def render("reference.json", %{reference: reference}) do
+		%{
+			node: render_one(reference.node, Liquio.Web.NodeView, "node.json") |> Map.drop([:calculation_opts]),
+			referencing_node: render_one(reference.reference_node, Liquio.Web.NodeView, "node.json") |> Map.drop([:calculation_opts]),
+			results: render("results.json", %{:reference => reference})
+		}
+	end
+
+	def render("results.json", %{:reference => %{:results => results}}) do
+		results = if Map.has_key?(results, :contributions_by_identities) do
+			contributions_by_identities = results.contributions_by_identities |> Enum.map(fn({k, data}) ->
+				{k, %{
+					:contributions => render_many(data.contributions, Liquio.Web.ReferenceView, "reference_vote.json"),
+					:embeds => data.embeds
+				}}
+			end) |> Enum.into(%{})
+
+			Map.put(results, :contributions_by_identities, contributions_by_identities)
+		else
+			results
+		end
+
+		results
+		|> Map.take(@results_keys)
+		|> Map.put(:contributions, render_many(Map.get(results, :latest_contributions, []), Liquio.Web.ReferenceView, "reference_vote.json"))
+	end
+	
+	def render("reference_vote.json", %{reference: vote}) do
+		%{
+			:identity_username => vote.username,
+			:datetime => Timex.format!(vote.datetime, "{ISO:Extended:Z}"),
+			:relevance => vote.relevance,
+			:voting_power => Map.get(vote, :voting_power),
+			:weight => Map.get(vote, :weight),
+			:embeds => Map.get(vote, :embeds)
+		}
+	end
+	"""
 end
