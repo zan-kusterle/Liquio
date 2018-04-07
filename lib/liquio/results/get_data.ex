@@ -8,7 +8,6 @@ defmodule Liquio.GetData do
             messages_by_name = Enum.group_by(messages, & &1["data"]["name"])
 
             data = %{
-                :identifications => get_identifications(Map.get(messages_by_name, "identification", [])),
                 :delegations => get_delegations(Map.get(messages_by_name, "delegation", [])),
                 :votes => get_votes(Map.get(messages_by_name, "vote", [])),
                 :reference_votes => get_reference_votes(Map.get(messages_by_name, "reference_vote", [])),
@@ -56,7 +55,13 @@ defmodule Liquio.GetData do
 
     defp get_reference_votes(messages) do
         Enum.map(messages, fn(message) ->
-            %{}
+            data = message["data"]
+            %{
+                :username => message["username"],
+                :title => data["title"],
+                :reference_title => data["reference_title"],
+                :choice => data["relevance"]
+            }
         end)
     end
 end

@@ -18,17 +18,46 @@ defmodule Liquio.Web.NodeController do
 			x |> String.replace(" ", "-") |> String.downcase
 		end
 
-		case Liquio.GetData.get(nil, ["xszztdkfpyptpyzgd"]) do
+		case Liquio.GetData.get(nil, ["xszztdkfpyptpyzg"]) do
 			{:ok, data} ->
-				votes = data.votes |> Enum.filter(& slug.(&1.title) === slug.(id))
 				inverse_delegations = data.delegations |> Enum.map(& {&1.to_username, &1}) |> Enum.into(%{})
-				results = Liquio.Results.from_votes(data.votes, inverse_delegations)
-				IO.inspect results
+
+				votes = data.votes |> Enum.filter(& slug.(&1.title) === slug.(id))
+
+				results_by_units = votes
+				|> Enum.group_by(& &1.unit)
+				|> Enum.map(fn({unit_value, votes_for_unit}) ->
+					is_spectrum = false
+					votes_for_unit = if is_spectrum do
+						Enum.filter(votes_for_unit, & &1.choice >= 0.0 and &1.choice <= 1.0)
+					else
+						votes_for_unit
+					end
+
+					{unit_value, Liquio.Results.from_votes(votes_for_unit, inverse_delegations)}
+				end)
+				|> Enum.into(%{})
+
+				reference_votes = data.reference_votes |> Enum.filter(& slug.(&1.title) === slug.(id))
+				references = reference_votes
+				|> Enum.group_by(& slug.(&1.reference_title))
+				|> Enum.map(fn({_key, votes}) ->
+					best_title = Enum.at(votes, 0).reference_title
+					Liquio.Results.from_votes(votes, inverse_delegations)
+					|> Map.put(:title, best_title)
+				end)
+
+				inverse_reference_votes = data.reference_votes |> Enum.filter(& slug.(&1.reference_title) === slug.(id))
+				inverse_references = inverse_reference_votes
+				|> Enum.group_by(& slug.(&1.title))
+				|> Enum.map(fn({_key, votes}) ->
+					Liquio.Results.from_votes(votes, inverse_delegations)
+				end)
 
 				node = %{
-					:results => results,
-					:references => [],
-					:inverse_references => []
+					:results => results_by_units,
+					:references => references,
+					:inverse_references => inverse_references
 				}
 
 				conn

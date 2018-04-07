@@ -13,7 +13,9 @@ defmodule Liquio.Web.NodeView do
 
 	def render("node.json", %{node: node}) do
 		%{
-			:results => node.results
+			:results => node.results,
+			:references => node.references,
+			:inverse_references => node.inverse_references
 		}
 	end
 
