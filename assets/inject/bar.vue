@@ -190,41 +190,6 @@ export default {
         activeAnchor () {
             return this.currentSelection || this.currentVideoTime
         },
-        currentMessages () {
-            if (this.reliabilityVoting) {
-                return [
-                    {
-                        key: this.urlKey,
-                        name: 'vote',
-                        unit: 'Reliable-Unreliable',
-                        type: 'spectrum',
-                        choice: this.reliabilityChoice / 100
-                    }
-                ]
-            }
-
-            if (!this.currentTitle || !this.currentUnit || !this.currentAnchor)
-                return null
-            
-            return [
-                {
-                    key: `vote ${this.currentTitle.trim(' ')}`,
-                    name: 'vote',
-                    title: this.currentTitle.trim(' '),
-                    unit: this.currentUnit.text,
-                    type: this.currentUnit.type,
-                    choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
-                },
-                {
-                    key: `reference_vote ${this.urlKey + '/' + slug(this.currentAnchor.trim(' '))} -> ${this.currentTitle.trim(' ')}`,
-                    name: 'reference_vote',
-                    anchor: this.currentAnchor.trim(' '),
-                    title: this.urlKey + '/' + slug(this.currentAnchor.trim(' ')),
-                    reference_title: this.currentTitle.trim(' '),
-                    relevance: 1.0
-                }
-            ]
-        },
         currentVideoTimeText () {
             let minutes = Math.floor(this.currentVideoTime / 60)
             let seconds = Math.floor(this.currentVideoTime - minutes * 60)
@@ -254,9 +219,39 @@ export default {
         },
         finalizeVote () {
             if (this.currentTitle || this.reliabilityVoting) {
+                let messages = []
+                if (this.reliabilityVoting) {
+                    messages.push([
+                        {
+                            name: 'vote',
+                            key: ['title', 'unit'],
+                            title: this.urlKey,
+                            unit: 'Reliable-Unreliable',
+                            choice: this.reliabilityChoice / 100
+                        }
+                    ])
+                }
+
+                if (this.currentTitle && this.currentUnit && this.currentAnchor) {
+                    messages.push({
+                        name: 'vote',
+                        key: ['title', 'unit', 'choice'],
+                        title: this.currentTitle.trim(' '),
+                        unit: this.currentUnit.text,
+                        choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
+                    })
+                    messages.push({
+                        name: 'reference_vote',
+                        key: ['title', 'reference_title'],
+                        title: this.urlKey + '/' + slug(this.currentAnchor.trim(' ')),
+                        reference_title: this.currentTitle.trim(' '),
+                        relevance: 1.0
+                    })
+                }
+
                 let data = {
-                    messages: this.currentMessages,
-                    keyOrder: ['name', 'key', 'unit', 'choice', 'value']
+                    messages: messages,
+                    keyOrder: ['title', 'reference title', 'relevance', 'unit', 'choice']
                 }
                 let event = new CustomEvent('liquio-sign', { detail: data })
                 window.dispatchEvent(event)

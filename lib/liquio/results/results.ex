@@ -1,5 +1,6 @@
 defmodule Liquio.Results do
 	alias Liquio.VotingPower
+	alias Liquio.Average
 
 	def from_votes(votes) do from_votes(votes, %{}) end
 	def from_votes(votes, inverse_delegations) do
@@ -46,45 +47,10 @@ defmodule Liquio.Results do
 
 		%{
 			:voting_power => Enum.sum(Enum.map(latest_contributions, & &1.voting_power)),
-			:mean => mean(latest_contributions),
-			:median => median(latest_contributions),
-			:latest_contributions => latest_contributions,
-			:contributions_by_identities => contributions_by_identities |> Enum.map(fn({key, contributions_for_identity}) ->
-				contributions_for_identity = contributions_for_identity |> Enum.sort_by(& Timex.to_unix(&1.at_date))
-				{key, contributions_for_identity}
-			end) |> Enum.into(%{})
+			:mean => Average.mean(latest_contributions),
+			:median => Average.median(latest_contributions),
+			:contributions => contributions
 		}
-	end
-
-	defp mean(contributions) do
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		total_power = if total_power > 0 do total_power else Enum.count(contributions) end
-		total_score = Enum.sum(Enum.map(contributions, fn(contribution) ->
-			contribution.choice * contribution.voting_power
-		end))
-		if total_power == 0 do
-			nil
-		else
-			1.0 * total_score / total_power
-		end
-	end
-
-	defp median(contributions) do
-		contributions = contributions |> Enum.sort(&(&1.choice > &2.choice))
-		total_power = Enum.sum(Enum.map(contributions, & &1.voting_power))
-		total_power = if total_power > 0 do total_power else Enum.count(contributions) end
-
-		if total_power == 0 do
-			nil
-		else
-			Enum.reduce_while(contributions, 0.0, fn(contribution, current_power) ->
-				if current_power + contribution.voting_power > total_power / 2 do
-					{:halt, 1.0 * contribution.choice}
-				else
-					{:cont, current_power + contribution.voting_power}
-				end
-			end)
-		end
 	end
 
 	defp moving_average_weight(contribution, reference_datetime, vote_weight_halving_days) do

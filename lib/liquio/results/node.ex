@@ -1,9 +1,11 @@
 defmodule Liquio.Node do
     alias Liquio.Node
+    alias Liquio.Average
 
     def new(title) do
         %{
             :key => slug(title),
+            :title => title,
             :results => %{},
 		    :references => [],
 			:inverse_references => []
@@ -37,13 +39,15 @@ defmodule Liquio.Node do
         end)
         |> Enum.into(%{})
 
-        reference_votes = reference_votes |> Enum.filter(& slug(&1.title) === node.key)
+        reference_votes = reference_votes |> Enum.filter(fn(vote) ->
+            key = slug(vote.title)
+            key === node.key or String.starts_with?(key, "#{String.trim_trailing(node.key, "/")}/")
+        end)
         references = reference_votes
         |> Enum.group_by(& slug(&1.reference_title))
-        |> Enum.map(fn({_key, votes}) ->
-            best_title = Enum.at(votes, 0).reference_title
-            
-            Node.new(best_title)
+        |> Enum.map(fn({_key, votes}) ->            
+            Node.new(votes |> Enum.map(& &1.reference_title) |> Average.mode)
+            |> Map.put(:referenced_by_title, votes |> Enum.map(& &1.title) |> Average.mode)
             |> Map.put(:reference_results, Liquio.Results.from_votes(votes, inverse_delegations))
             |> Node.load(data, depth - 1)
         end)
@@ -52,9 +56,8 @@ defmodule Liquio.Node do
         inverse_references = inverse_reference_votes
         |> Enum.group_by(& slug(&1.title))
         |> Enum.map(fn({_key, votes}) ->
-            best_title = Enum.at(votes, 0).title
-
-            Node.new(best_title)
+            Node.new(votes |> Enum.map(& &1.title) |> Average.mode)
+            |> Map.put(:referencing_title, votes |> Enum.map(& &1.reference_title) |> Average.mode)
             |> Map.put(:reference_results, Liquio.Results.from_votes(votes, inverse_delegations))
             |> Node.load(data, depth - 1)
         end)
