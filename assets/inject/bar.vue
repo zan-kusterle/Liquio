@@ -132,6 +132,28 @@ export default {
                 this.updateNode()
             }
         })
+
+        if (process.env.NODE_ENV === 'development') {
+            let messages = [
+                {
+                    name: 'vote',
+                    key: ['title', 'unit'],
+                    title: 'asd',
+                    unit: 'Reliable-Unreliable',
+                    choice: 0.9
+                }
+            ]
+            let data = {
+                name: 'sign',
+                messages: messages,
+                messageKeys: ['title', 'reference_title', 'relevance', 'unit', 'choice']
+            }
+
+            setTimeout(() => {
+                let event = new CustomEvent('sign-anything', { detail: data })
+                window.dispatchEvent(event)
+            }, 2000)
+        }
     },
     mounted () {
         setTimeout(() => this.isLoading = false, 50)
@@ -197,21 +219,23 @@ export default {
     },
     methods: {
         updateNode () {
-            let params = { depth: 2 }
-            if (this.whitelistUrl) {
-                params.whitelist_url = this.whitelistUrl
-            }
-            if (this.username) {
-                params.whitelist_usernames = this.username
-            }
+            if (this.whitelistUrl || this.username) {
+                let params = { depth: 2 }
+                if (this.whitelistUrl) {
+                    params.whitelist_url = this.whitelistUrl
+                }
+                if (this.username) {
+                    params.whitelist_usernames = this.username
+                }
 
-            return new Promise((resolve, reject) => {
-                axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(this.urlKey), { params: params }).then((response) => {
-                    this.node = response.data.data
-                    this.$root.$emit('update-node', this.node)
-                    resolve()
+                return new Promise((resolve, reject) => {
+                    axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(this.urlKey), { params: params }).then((response) => {
+                        this.node = response.data.data
+                        this.$root.$emit('update-node', this.node)
+                        resolve()
+                    })
                 })
-            })
+            }
         },
         startVoting () {
             if (this.currentSelection) {
@@ -255,7 +279,7 @@ export default {
                 let data = {
                     name: 'sign',
                     messages: messages,
-                    keyOrder: ['title', 'reference_title', 'relevance', 'unit', 'choice']
+                    messageKeys: ['title', 'reference_title', 'relevance', 'unit', 'choice']
                 }
                 let event = new CustomEvent('sign-anything', { detail: data })
                 window.dispatchEvent(event)

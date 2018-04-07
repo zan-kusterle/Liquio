@@ -20,9 +20,89 @@
 		<link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#5bbad5">
 		<meta name="theme-color" content="#1f8dd6">
 
+
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/blpabffilmeojmnklhnglhnflfedfkkd">
 
-		<link rel="stylesheet" href="<%= static_path(@conn, "/app/main.css") %>">
+		<style>
+			html {
+				height: 100%;
+			}
+			body {
+				height: 100%;
+				margin: 0;
+				background-color: #fff;
+				cursor: default;
+				line-height: 1.4;
+				font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+			}
+
+			.container {
+				margin: 0 auto;
+				width: 100%;
+				color: #333;
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+				text-align: center;
+				height: 100%;
+				max-width: none;
+			}
+
+			.features {
+				display: flex;
+				width: 70%;
+				margin: 50px auto;
+				flex-flow: row wrap;
+			}
+
+			.feature {
+				flex: 1;
+				flex-basis: 30%;
+				background-color: #eee;
+				margin: 20px 50px;
+				padding: 10px 20px;
+			}
+
+			.demo {
+				width: 70%;
+				margin: 50px auto;
+			}
+
+			img {
+				display: block;
+				width: 100%;
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="container">
+			<div class="features">
+				<div class="feature">
+					<h3>No moderation</h3>
+					<p><a v-popover:trust-metrics-popover>Trust metrics</a> allow you to be your own moderator.</p>
+				</div>
+
+				<div class="feature">
+					<h3>Signatures</h3>
+					<p>Each vote has a cryptographic signature which proves who made it.</p>
+				</div>
+
+				<div class="feature">
+					<h3>Permament</h3>
+					<p>With <a href="https://ipfs.io" target="_blank">IPFS</a> data is impossible to modify and delete.</p>
+				</div>
+
+				<div class="feature">
+					<h3>Open source</h3>
+					<p>Available under permissive MIT license on <a href="https://github.com/zan-kusterle/Liquio" target="_blank">GitHub</a>.</p>
+				</div>
+			</div>
+
+			<div class="demo">
+				<img src="/images/gifs/sign-demo.gif" width="60%"></img>
+			</div>
+		</div>
+
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -32,15 +112,5 @@
 			ga('create', 'UA-82378646-1', 'auto');
 			ga('send', 'pageview');
 		</script>
-	</head>
-
-	<body>
-		<div id="app" class="container">
-			<app>
-				<router-view></router-view>
-			</app>
-		</div>
-		
-		<script src="<%= static_path(@conn, "/app/main.js") %>"></script>
 	</body>
 </html>
