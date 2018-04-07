@@ -9,8 +9,6 @@ defmodule Liquio do
 		children = [
 			# Start the endpoint when the application starts
 			supervisor(Liquio.Web.Endpoint, []),
-			# Start the Ecto repository
-			supervisor(Liquio.Repo, []),
 			# Here you could define other workers and supervisors as children
 			# worker(Liquio.Worker, [arg1, arg2, arg3]),
 			worker(Cachex, [:voting_power, []], [id: "voting_power_cache"]),
