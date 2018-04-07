@@ -78,18 +78,13 @@ vm.$on('update-node', (node) => {
     let getNodesByText = (node, key) => {
         var result = {}
         node.references.forEach(function (reference) {
-            reference.inverse_references.forEach(function (inverse_reference) {
-                let topic = inverse_reference.path.join('/')
-                if (topic.startsWith(key + '/')) {
-                    let text = topic.substring(key.length + 1)
-                    if (text.length > 0) {
-                        if (!(text in result)) {
-                            result[text] = []
-                        }
-                        result[text].push(reference)
-                    }
-                }
-            })
+            if (reference.referenced_by_title.startsWith(key + '/')) {
+                let text = reference.referenced_by_title.substring(key.length + 1)
+                
+                if (!(text in result))
+                    result[text] = []
+                result[text].push(reference)
+            }
         })
         return result
     }

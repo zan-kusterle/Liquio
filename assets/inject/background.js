@@ -31,11 +31,11 @@ browser.runtime.onMessage.addListener(function(request, sender) {
                 color = [38, 188, 28, 255]
         }
         
-        chrome.browserAction.setBadgeText({
+        browser.browserAction.setBadgeText({
             text: score ? Math.floor(100 * score) + '' : '?',
             tabId: sender.tab.id
         })
-        chrome.browserAction.setBadgeBackgroundColor({
+        browser.browserAction.setBadgeBackgroundColor({
             color: color,
             tabId: sender.tab.id
         })

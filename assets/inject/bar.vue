@@ -44,7 +44,7 @@
                         <span style="vertical-align: middle;">{{ currentNode.title }}</span>
                         <div class="liquio-bar__embeds" v-html="embedsSvg"></div>
                         <div class="liquio-bar__vote-button" style="margin-left: 10px;">
-                            <a :href="`${LIQUIO_URL}/v/${encodeURIComponent(currentNode.path.join('/'))}`" target="_blank"><el-button type="small">View on Liquio</el-button></a>
+                            <a :href="`${LIQUIO_URL}/v/${encodeURIComponent(currentNode.title)}`" target="_blank"><el-button type="small">View on Liquio</el-button></a>
                         </div>
                         
                         <div class="liquio-bar__vote-button" v-if="currentSelection && currentSelection.length >= 10">
@@ -160,6 +160,7 @@ export default {
             return this.rating < 0.5 ? colorOnGradient(yellow, red, this.rating * 2) : colorOnGradient(green, yellow, (this.rating - 0.5) * 2)
         },
         embedsSvg () {
+            return null
             if (!this.currentNode)
                 return null
             let byUnits = this.currentNode.results.by_units
