@@ -1,5 +1,5 @@
 defmodule Liquio.Results do
-	alias Liquio.{Node, VotingPower, Repo, Vote, ResultsEmbeds}
+	alias Liquio.VotingPower
 
 	def from_votes(votes) do from_votes(votes, %{}) end
 	def from_votes(votes, inverse_delegations) do
