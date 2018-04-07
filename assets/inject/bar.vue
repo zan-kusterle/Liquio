@@ -125,19 +125,13 @@ export default {
 
         window.addEventListener('sign-anything-response', (e) => {
             let data = e.detail
-            if (data.request.name === 'whitelist') {
-                this.username = data.response.username
-                this.whitelistUrl = data.response.url
+            if (data.request_name === 'whitelist') {
+                this.username = data.username
+                this.whitelistUrl = data.url
+            } else if (data.request_name === 'sign') {
+                this.updateNode()
             }
         })
-
-        let data = {
-            name: 'whitelist'
-        }
-        let event = new CustomEvent('sign-anything', { detail: data })
-        setInterval(() => {
-            window.dispatchEvent(event)
-        }, 1000)
     },
     mounted () {
         setTimeout(() => this.isLoading = false, 50)
