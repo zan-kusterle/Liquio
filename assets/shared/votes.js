@@ -111,10 +111,6 @@ export function getColor(mean) {
         return "rgb(140, 232, 140)"
 }
 
-export function slug(x) {
-    return x.replace(/-|–|\./g, '').replace(/[^a-zA-Z\d\s:\-]/g, '').replace(/^[^a-zA-Z\d]+|\[^a-zA-Z\d]+$/g, '').trim().replace(/\s+/g, '-').toLowerCase()
-}
-
 export function colorOnGradient(color_a, color_b, ratio) {
     let hex = (x) => {
         x = x.toString(16)

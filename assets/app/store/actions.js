@@ -1,6 +1,3 @@
-import * as Api from 'shared/api_client'
-
-
 let prepareOpts = (opts) => {
     return {
         ...opts,

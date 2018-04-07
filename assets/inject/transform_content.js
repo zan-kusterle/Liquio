@@ -1,4 +1,4 @@
-import { slug } from 'shared/votes'
+import slug from 'shared/slug'
 
 export default {
     resetTransforms () {

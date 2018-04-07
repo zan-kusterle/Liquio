@@ -1,5 +1,4 @@
 import { parseVotes } from 'shared/votes'
-import { keypairFromSeed } from 'shared/identity'
 import { allUnits } from 'shared/data'
 
 let getTitle = (path) => {
@@ -10,19 +9,7 @@ export default {
     parseVotes: () => (data) => {
         return parseVotes(data)
     },
-    currentOpts: (state, getters) => {
-        let availableSeeds = state.storageSeeds.split(';')
-
-        let availableKeyPairs = availableSeeds.map((seed) => {
-            return keypairFromSeed(seed)
-        }).filter((k) => k)
-
-        return {
-            keypairs: availableKeyPairs,
-            keypair: state.currentKeyPairIndex < availableKeyPairs.length ? availableKeyPairs[state.currentKeyPairIndex] : null,
-            trustMetricURL: state.trustMetricURL
-        }
-    },
+    
     currentNode: (state) => {
         if (state.route.params.query) {
             let path = ['search', state.route.params.query]

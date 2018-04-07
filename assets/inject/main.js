@@ -1,10 +1,7 @@
 import 'webextension-polyfill'
 import { cleanUrl } from 'shared/votes'
-import * as Api from 'shared/api_client'
-import { usernameFromPublicKey } from 'shared/identity'
 import Vue from 'vue'
 import Bar from 'inject/bar.vue'
-import { decodeBase64 } from 'shared/utils';
 import transformContent from 'inject/transform_content'
 import mainCss from 'inject/main.less'
 import shadowCss from 'inject/shadow.less'

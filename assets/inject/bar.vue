@@ -80,12 +80,10 @@
 </template>
 
 <script>
-import * as Api from 'shared/api_client'
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
-import { colorOnGradient, slug } from 'shared/votes'
+import axios from 'axios'
+import slug from 'shared/slug'
 import { allUnits } from 'shared/data'
-import { usernameFromPublicKey } from 'shared/identity'
-import storage from 'shared/storage'
 
 export default {
     components: {
@@ -130,9 +128,7 @@ export default {
         this.allUnits = allUnits
 
         if (IS_EXTENSION) {
-            storage.getUsername().then(username => {
-                this.username = username
-            })
+            this.usernames = ['xoviuqpdmtzqmfkw']
         }
     },
     mounted () {
@@ -151,7 +147,7 @@ export default {
             return this.rating ? (Math.round(this.rating * 100) / 10).toFixed(1) : '?'
         },
         color () {
-            if (!this.rating)
+            //if (!this.rating)
                 return '33bae7'
             
             let red = 'ff2b2b',
@@ -200,12 +196,16 @@ export default {
     methods: {
         updateNode () {
             let params = { depth: 2 }
-            if (this.username) {
-                params.trust_usernames = this.username
+            if (this.trustMetricUrl) {
+                params.whitelist_url = this.trustMetricUrl
             }
+            if (this.usernames) {
+                params.whitelist_usernames = this.usernames.join(',')
+            }
+
             return new Promise((resolve, reject) => {
-                Api.getNode(this.urlKey, params, (node) => {
-                    this.node = node
+                axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(this.urlKey), { params: params }).then((response) => {
+                    this.node = response.data.data
                     this.$root.$emit('update-node', this.node)
                     resolve()
                 })
@@ -252,7 +252,7 @@ export default {
 
                 let data = {
                     messages: messages,
-                    keyOrder: ['title', 'reference title', 'relevance', 'unit', 'choice']
+                    keyOrder: ['title', 'reference_title', 'relevance', 'unit', 'choice']
                 }
                 let event = new CustomEvent('liquio-sign', { detail: data })
                 window.dispatchEvent(event)
@@ -268,9 +268,6 @@ export default {
                 spectrum: 50,
                 quantity: 0
             }
-        },
-        setUsername (username) {
-            this.username = username
         }
     }
 }

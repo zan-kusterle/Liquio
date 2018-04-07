@@ -78,7 +78,6 @@
 <script>
 import bip39 from 'bip39'
 import nacl from 'tweetnacl'
-import { keypairFromSeed, wordsToSeed } from 'shared/identity'
 
 export default {
     data () {
@@ -97,76 +96,7 @@ export default {
 			isDone: false,
 			trustMetricURL: this.$store.getters.currentOpts.trustMetricURL
 		}
-    },
-    computed: {
-        generatedUsername () {
-            if (!this.randomWords)
-                return null
-            return keypairFromSeed(wordsToSeed(this.randomWords)).username
-        }
-    },
-    methods: {
-		generateWords () {
-			var randomBytes = nacl.randomBytes(32)
-			var mnemonic = bip39.entropyToMnemonic(randomBytes)
-            let fixedLength = mnemonic.split(' ').slice(0, 13).join(' ')
-            
-			return fixedLength
-        },
-		downloadIdentity () {
-			var filename = `${this.generatedUsername}-login.txt`
-			var text = this.randomWords
-			var element = document.createElement('a')
-			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
-			element.setAttribute('download', filename)
-
-			element.style.display = 'none'
-			document.body.appendChild(element)
-
-			element.click()
-
-			document.body.removeChild(element)
-		},
-		login (event) {
-			let seed = wordsToSeed(this.words)
-            if (seed) {
-				if(this.$store.state.storageSeeds.indexOf(seed) === -1) {
-					this.$store.state.storageSeeds = this.$store.state.storageSeeds + seed + ';'
-					localStorage.setItem('seeds', this.$store.state.storageSeeds)
-				} else {
-					this.randomWords = generateWords()
-				}
-			}
-
-			this.words = ''
-		},
-		removeIndex (index) {
-			let seeds = this.$store.state.storageSeeds.split(';').map((w) => w.replace(/\s/g, '')).filter((w) => w.length > 0)
-			if(index < seeds.length) {
-				this.$store.state.storageSeeds = this.$store.state.storageSeeds.replace(seeds[index] + ';', '')
-				localStorage.setItem('seeds', this.$store.state.storageSeeds)
-
-				if(index <= this.$store.state.currentKeyPairIndex) {
-					this.$store.state.currentKeyPairIndex -= 1
-				}
-			}
-		},
-		setCurrentIndex (index) {
-			if(index !== this.$store.state.currentKeyPairIndex) {
-				this.$store.state.currentKeyPairIndex = index
-				localStorage.setItem('currentIndex', index)
-			}
-		},
-		saveOptions () {
-			if(this.$store.state.trustMetricURL !== this.trustMetricURL) {
-				this.$store.state.trustMetricURL = this.trustMetricURL
-				localStorage.setItem('trustMetricURL', this.trustMetricURL)
-			}
-		},
-		setLanguage () {
-			this.$i18n.locale = this.language
-		}
-	}
+    }
 }
 </script>
 
