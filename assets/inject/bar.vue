@@ -1,13 +1,5 @@
 <template>
 <div class="liquio-bar" @mouseup="isHovered = true" @mouseover="isHovered = true" @mouseout="isHovered = false" :style="isLoading ? { visibility: 'hidden' } : {}">
-    <el-dialog title="Finalize voting" custom-class="liquio-bar__finalize-dialog" center width="800px" v-if="currentVotes" :visible.sync="dialogVisible">
-        <finalize-vote :votes="currentVotes" @close="dialogVisible = false" @vote="onVote" @set-username="setUsername"></finalize-vote>
-    </el-dialog>
-
-    <el-dialog title="Choose which votes to count" center width="800px" :visible.sync="trustMetricOpen">
-        <trust-metric :trust-metric-url="trustMetricUrl" @close="trustMetricOpen = false" @set-trust-metric="trustMetricUrl = $event"></trust-metric>
-    </el-dialog>
-
     <template v-if="!isUnavailable">
         <div class="liquio-bar__container" v-if="currentAnchor || reliabilityVoting || currentNode || !isHidden">
             <div class="liquio-bar__wrap">
@@ -71,7 +63,6 @@
                         </div>
 
                         <div class="liquio-bar__vote-button">
-                            <el-button size="small" @click="trustMetricOpen = true">Change whitelist</el-button>
                             <a style="margin-left: 10px;" :href="trustMetricUrl" target="_blank">{{ trustMetricUrl }}</a>
                         </div>
                     </div>
@@ -91,8 +82,6 @@
 <script>
 import * as Api from 'shared/api_client'
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
-import FinalizeVote from '../vue/finalize_vote.vue'
-import TrustMetric from '../vue/trust_metric.vue'
 import { colorOnGradient, slug } from 'shared/votes'
 import { allUnits } from 'shared/data'
 import { usernameFromPublicKey } from 'shared/identity'
@@ -105,9 +94,7 @@ export default {
         elSelect: Select,
         elOption: Option,
         elInput: Input,
-        elDialog: Dialog,
-        finalizeVote: FinalizeVote,
-        trustMetric: TrustMetric
+        elDialog: Dialog
     },
     props: {
         urlKey: { type: String },
@@ -135,8 +122,6 @@ export default {
             },
 
             reliabilityVoting: false,
-            dialogVisible: false,
-            trustMetricOpen: false,
             isHovered: false
         }
     },
@@ -185,12 +170,12 @@ export default {
             if (!this.node)
                 return null
             
-            let units = this.node.results.by_units
+            let units = this.node.results
             let spectrumUnitKeys = Object.keys(units).filter(k => units[k].type === 'spectrum')
             if (spectrumUnitKeys.length === 0)
                 return null
             
-            let bestUnitKey = spectrumUnitKeys.sort(k => units[k].turnout_ratio)[0]
+            let bestUnitKey = spectrumUnitKeys[0]
             let reliabilityResults = units[bestUnitKey]
             if (!reliabilityResults)
                 return null
@@ -205,35 +190,40 @@ export default {
         activeAnchor () {
             return this.currentSelection || this.currentVideoTime
         },
-        currentVotes () {
+        currentMessages () {
             if (this.reliabilityVoting) {
-                return {
-                    node: {
+                return [
+                    {
                         key: this.urlKey,
+                        name: 'vote',
                         unit: 'Reliable-Unreliable',
                         type: 'spectrum',
                         choice: this.reliabilityChoice / 100
                     }
-                }
+                ]
             }
 
             if (!this.currentTitle || !this.currentUnit || !this.currentAnchor)
                 return null
             
-            return {
-                node: {
-                    key: this.currentTitle.trim(' ').replace(/\s/, '-'),
+            return [
+                {
+                    key: `vote ${this.currentTitle.trim(' ')}`,
+                    name: 'vote',
+                    title: this.currentTitle.trim(' '),
                     unit: this.currentUnit.text,
                     type: this.currentUnit.type,
                     choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
                 },
-                reference: {
+                {
+                    key: `reference_vote ${this.urlKey + '/' + slug(this.currentAnchor.trim(' '))} -> ${this.currentTitle.trim(' ')}`,
+                    name: 'reference_vote',
                     anchor: this.currentAnchor.trim(' '),
-                    key: this.urlKey + '/' + slug(this.currentAnchor.trim(' ')),
-                    referenceKey: this.currentTitle.trim(' ').replace(/\s/, '-'),
+                    title: this.urlKey + '/' + slug(this.currentAnchor.trim(' ')),
+                    reference_title: this.currentTitle.trim(' '),
                     relevance: 1.0
                 }
-            }
+            ]
         },
         currentVideoTimeText () {
             let minutes = Math.floor(this.currentVideoTime / 60)
@@ -255,11 +245,6 @@ export default {
                 })
             })
         },
-        onVote () {
-            this.resetState()
-            this.dialogVisible = false
-            this.updateNode()
-        },
         startVoting () {
             if (this.currentSelection) {
                 this.currentAnchor = this.currentSelection
@@ -269,7 +254,12 @@ export default {
         },
         finalizeVote () {
             if (this.currentTitle || this.reliabilityVoting) {
-                this.dialogVisible = true
+                let data = {
+                    messages: this.currentMessages,
+                    keyOrder: ['name', 'key', 'unit', 'choice', 'value']
+                }
+                let event = new CustomEvent('liquio-sign', { detail: data })
+                window.dispatchEvent(event)
             }
         },
         resetState () {

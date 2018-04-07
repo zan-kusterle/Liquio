@@ -95,7 +95,7 @@ vm.$on('update-node', (node) => {
     }
 
     if (IS_EXTENSION) {
-        let reliabilityResults = node.results.by_units.reliability
+        let reliabilityResults = node.results["reliability"]
         let score = reliabilityResults ? reliabilityResults.average : null
         browser.runtime.sendMessage({ name: 'score', score: score })
     }
