@@ -1,9 +1,20 @@
 defmodule Liquio.GetData do
-    def get(trust_metric_url, trust_usernames) do
-        url = "http://localhost:5000/?usernames=#{Enum.join(trust_usernames, ",")}"
+    def get(whitelist_url, trust_usernames) do
+        url = "http://localhost:5000/"
+        url = if whitelist_url do
+            "#{url}?whitelist_url=#{whitelist_url}&"
+        else
+            url
+        end
+        url = if trust_usernames do
+            "#{url}#{if whitelist_url do "&" else "?" end}usernames=#{Enum.join(trust_usernames, ",")}"
+        else
+            url
+        end
+
         response = HTTPotion.get url
         if HTTPotion.Response.success?(response) do
-            messages = Poison.decode!(response.body)
+            messages = Poison.decode!(response.body)["data"]
 
             messages_by_name = Enum.group_by(messages, & &1["data"]["name"])
 

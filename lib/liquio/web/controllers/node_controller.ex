@@ -9,9 +9,14 @@ defmodule Liquio.Web.NodeController do
 		|> render("show.json", node: Node.search(query, calculation_opts))
 	end
 
-	def show(conn, %{"title" => title, "whitelist_url" => whitelist_url, "whitelist_usernames" => whitelist_usernames}) do
+	def show(conn, params = %{"title" => title}) do
+		whitelist_url = Map.get(params, "whitelist_url")
+		whitelist_usernames =  Map.get(params, "whitelist_usernames", "")
+		|> String.split(",")
+		|> Enum.filter(& String.length(&1) > 0)
+
 		node = Node.new(title)
-		node = case Liquio.GetData.get(whitelist_url, String.split(whitelist_usernames, ",")) do
+		node = case Liquio.GetData.get(whitelist_url, whitelist_usernames) do
 			{:ok, data} ->
 				Node.load(node, data)
 			{:error, message} ->

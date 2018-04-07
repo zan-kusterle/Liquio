@@ -61,10 +61,6 @@
                         <div class="liquio-bar__vote-button" v-else-if="currentVideoTime">
                             <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
                         </div>
-
-                        <div class="liquio-bar__vote-button">
-                            <a style="margin-left: 10px;" :href="trustMetricUrl" target="_blank">{{ trustMetricUrl }}</a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -106,8 +102,8 @@ export default {
         return {
             isLoading: true,
 
+            whitelistUrl: null,
             username: null,
-            trustMetricUrl: process.env.NODE_ENV === 'production' ? 'https://trust-metric.liqu.io' : 'http://127.0.0.1:8080/dev_trust_metric.html',
             node: null,
 
             currentAnchor: null,
@@ -127,9 +123,21 @@ export default {
         this.LIQUIO_URL = LIQUIO_URL
         this.allUnits = allUnits
 
-        if (IS_EXTENSION) {
-            this.usernames = ['xoviuqpdmtzqmfkw']
+        window.addEventListener('sign-anything-response', (e) => {
+            let data = e.detail
+            if (data.request.name === 'whitelist') {
+                this.username = data.response.username
+                this.whitelistUrl = data.response.url
+            }
+        })
+
+        let data = {
+            name: 'whitelist'
         }
+        let event = new CustomEvent('sign-anything', { detail: data })
+        setInterval(() => {
+            window.dispatchEvent(event)
+        }, 1000)
     },
     mounted () {
         setTimeout(() => this.isLoading = false, 50)
@@ -196,11 +204,11 @@ export default {
     methods: {
         updateNode () {
             let params = { depth: 2 }
-            if (this.trustMetricUrl) {
-                params.whitelist_url = this.trustMetricUrl
+            if (this.whitelistUrl) {
+                params.whitelist_url = this.whitelistUrl
             }
-            if (this.usernames) {
-                params.whitelist_usernames = this.usernames.join(',')
+            if (this.username) {
+                params.whitelist_usernames = this.username
             }
 
             return new Promise((resolve, reject) => {
@@ -251,10 +259,11 @@ export default {
                 }
 
                 let data = {
+                    name: 'sign',
                     messages: messages,
                     keyOrder: ['title', 'reference_title', 'relevance', 'unit', 'choice']
                 }
-                let event = new CustomEvent('liquio-sign', { detail: data })
+                let event = new CustomEvent('sign-anything', { detail: data })
                 window.dispatchEvent(event)
             }
         },
