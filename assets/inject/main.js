@@ -1,10 +1,11 @@
 import 'webextension-polyfill'
 import Vue from 'vue'
+import Vuex from 'vuex'
 import Root from 'inject/root.vue'
 import transformContent from 'inject/transform_content'
 import mainCss from 'inject/main.less'
 import shadowCss from 'inject/shadow.less'
-
+import storeObject from 'inject/store/index.js'
 
 function cleanUrl(url) {
     let clean = url.replace('://', ':')
@@ -45,7 +46,12 @@ let getElement = () => {
     return innerElement
 }
 
+Vue.use(Vuex)
+
+const store = new Vuex.Store(storeObject)
+
 const vm = new Vue({
+    store: store,
     el: getElement(),
     data () {
         return {

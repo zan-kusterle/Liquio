@@ -286,7 +286,7 @@ export default {
                 if (this.currentTitle && this.currentUnit && this.currentAnchor) {
                     messages.push({
                         name: 'vote',
-                        key: ['title', 'unit', 'choice'],
+                        key: ['title', 'unit'],
                         title: this.currentTitle.trim(' '),
                         unit: this.currentUnit.text,
                         choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)

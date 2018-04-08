@@ -16,7 +16,7 @@ defmodule Liquio.Web.NodeController do
 		|> Enum.filter(& String.length(&1) > 0)
 
 		node = Node.new(title)
-		node = case Liquio.GetData.get(whitelist_url, whitelist_usernames) do
+		node = case Liquio.GetData.get_using_cache(whitelist_url, whitelist_usernames) do
 			{:ok, data} ->
 				Node.load(node, data)
 			{:error, message} ->

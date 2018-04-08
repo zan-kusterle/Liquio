@@ -1,4 +1,8 @@
 defmodule Liquio.GetData do
+    def get_using_cache(whitelist_url, trust_usernames) do
+        get(whitelist_url, trust_usernames)    
+    end
+
     def get(whitelist_url, trust_usernames) do
         url = "http://localhost:5000/"
         url = if whitelist_url do
@@ -19,7 +23,7 @@ defmodule Liquio.GetData do
             messages_by_name = Enum.group_by(messages, & &1["data"]["name"])
 
             data = %{
-                :delegations => get_delegations(Map.get(messages_by_name, "delegation", [])),
+                :delegations => get_delegations(Map.get(messages_by_name, "trust", [])),
                 :votes => get_votes(Map.get(messages_by_name, "vote", [])),
                 :reference_votes => get_reference_votes(Map.get(messages_by_name, "reference_vote", [])),
             }
@@ -46,7 +50,8 @@ defmodule Liquio.GetData do
             data = message["data"]
             %{
                 :username => message["username"],
-                :to_username => data["to_username"]
+                :to_username => data["username"],
+                :weight => data["ratio"]
             }
         end)
     end
