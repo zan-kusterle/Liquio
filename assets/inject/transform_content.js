@@ -1,4 +1,4 @@
-import slug from 'shared/slug'
+import slug from './slug'
 
 export default {
     resetTransforms () {

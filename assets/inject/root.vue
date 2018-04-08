@@ -21,7 +21,7 @@
                         </div>
 
                         <div class="liquio-bar__vote-button">
-                            <a :href="`${LIQUIO_URL}/v/${encodeURIComponent(urlKey)}`" target="_blank"><el-button type="small">View on Liquio</el-button></a>
+                            <el-button @click="openNode = urlKey; dialogVisible = true;">View</el-button>
                         </div>
                     </div>
                     <div class="liquio-bar__vote" v-else-if="currentAnchor">
@@ -42,9 +42,11 @@
                     </div>
                     <div class="liquio-bar__vote" v-else-if="currentNode">
                         <span style="vertical-align: middle;">{{ currentNode.title }}</span>
-                        <div class="liquio-bar__embeds" v-html="embedsSvg"></div>
+                        <div class="liquio-bar__embeds">
+                            <embeds v-if="unitResults" :unit-results="unitResults" width="100%" height="100%"></embeds>
+                        </div>
                         <div class="liquio-bar__vote-button" style="margin-left: 10px;">
-                            <a :href="`${LIQUIO_URL}/v/${encodeURIComponent(currentNode.title)}`" target="_blank"><el-button type="small">View on Liquio</el-button></a>
+                            <el-button @click="openNode = currentNode.title; dialogVisible = true;">View</el-button>
                         </div>
                         
                         <div class="liquio-bar__vote-button" v-if="currentSelection && currentSelection.length >= 10">
@@ -72,14 +74,20 @@
             <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
         </div>
     </template>
+
+    <el-dialog v-if="openNode" :title="openNode" :visible.sync="dialogVisible" width="60%">
+        <simple-node></simple-node>
+    </el-dialog>
 </div>
 </template>
 
 <script>
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
+import Embeds from './embeds.vue'
 import axios from 'axios'
-import slug from 'shared/slug'
-import { allUnits } from 'shared/data'
+import slug from './slug'
+import { allUnits } from './data'
+import SimpleNode from './simple_node.vue'
 
 export default {
     components: {
@@ -88,7 +96,9 @@ export default {
         elSelect: Select,
         elOption: Option,
         elInput: Input,
-        elDialog: Dialog
+        elDialog: Dialog,
+        embeds: Embeds,
+        simpleNode: SimpleNode
     },
     props: {
         urlKey: { type: String },
@@ -116,7 +126,9 @@ export default {
             },
 
             reliabilityVoting: false,
-            isHovered: false
+            isHovered: false,
+            dialogVisible: false,
+            openNode: null
         }
     },
     created () {
@@ -130,6 +142,7 @@ export default {
                 this.whitelistUrl = data.url
             } else if (data.request_name === 'sign') {
                 this.updateNode()
+                this.currentAnchor = null
             }
         })
 
@@ -179,13 +192,24 @@ export default {
                 green = '43e643'
             return this.rating < 0.5 ? colorOnGradient(yellow, red, this.rating * 2) : colorOnGradient(green, yellow, (this.rating - 0.5) * 2)
         },
-        embedsSvg () {
-            return null
+        unitResults () {
+            return {
+                voting_power: 1,
+                median: 1,
+                mean: 0.79,
+                unit: 'True-False'
+            }
+
             if (!this.currentNode)
                 return null
-            let byUnits = this.currentNode.results.by_units
-            let unitResults = byUnits[Object.keys(byUnits)[0]]
-            return unitResults.embeds.value
+            let byUnits = this.currentNode.results
+            let units = Object.keys(byUnits)
+            if (units.length === 0)
+                return null
+            return {
+                ...byUnits[units[0]],
+                unit: units[0]
+            }
         },
         rating () {
             if (!this.node)

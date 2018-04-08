@@ -1,10 +1,17 @@
 import 'webextension-polyfill'
-import { cleanUrl } from 'shared/votes'
 import Vue from 'vue'
-import Bar from 'inject/bar.vue'
+import Root from 'inject/root.vue'
 import transformContent from 'inject/transform_content'
 import mainCss from 'inject/main.less'
 import shadowCss from 'inject/shadow.less'
+
+
+function cleanUrl(url) {
+    let clean = url.replace('://', ':')
+    if (clean.endsWith('/'))
+        clean = clean.substring(0, clean.length - 1)
+    return clean
+}
 
 let getElement = () => {
     let bodyElement = document.getElementsByTagName('body')[0]
@@ -56,7 +63,7 @@ const vm = new Vue({
         }
     },
     render (createElement) {
-        return createElement(Bar, {
+        return createElement(Root, {
             props: {
                 isHidden: this.isHidden,
                 isUnavailable: this.isUnavailable,
