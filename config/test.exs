@@ -8,15 +8,6 @@ config :liquio, Liquio.Web.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
-# Configure your database
-config :liquio, Liquio.Repo,
-	adapter: Ecto.Adapters.Postgres,
-	username: "postgres",
-	password: "postgres",
-	database: "liquio_test",
-	hostname: "localhost",
-	pool: Ecto.Adapters.SQL.Sandbox
-
 config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.txt"
 config :liquio, trust_metric_cache_time_seconds: 5 * 60
 config :liquio, results_cache_seconds: 5

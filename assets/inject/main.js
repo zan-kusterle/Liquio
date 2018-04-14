@@ -1,13 +1,18 @@
 import 'webextension-polyfill'
-import { cleanUrl } from 'shared/votes'
-import * as Api from 'shared/api_client'
-import { usernameFromPublicKey } from 'shared/identity'
 import Vue from 'vue'
-import Bar from 'inject/bar.vue'
-import { decodeBase64 } from 'shared/utils';
+import Vuex from 'vuex'
+import Root from 'inject/root.vue'
 import transformContent from 'inject/transform_content'
 import mainCss from 'inject/main.less'
 import shadowCss from 'inject/shadow.less'
+import storeObject from 'inject/store/index.js'
+
+function cleanUrl(url) {
+    let clean = url.replace('://', ':')
+    if (clean.endsWith('/'))
+        clean = clean.substring(0, clean.length - 1)
+    return clean
+}
 
 let getElement = () => {
     let bodyElement = document.getElementsByTagName('body')[0]
@@ -41,7 +46,12 @@ let getElement = () => {
     return innerElement
 }
 
+Vue.use(Vuex)
+
+const store = new Vuex.Store(storeObject)
+
 const vm = new Vue({
+    store: store,
     el: getElement(),
     data () {
         return {
@@ -59,7 +69,7 @@ const vm = new Vue({
         }
     },
     render (createElement) {
-        return createElement(Bar, {
+        return createElement(Root, {
             props: {
                 isHidden: this.isHidden,
                 isUnavailable: this.isUnavailable,
@@ -78,24 +88,19 @@ vm.$on('update-node', (node) => {
     let getNodesByText = (node, key) => {
         var result = {}
         node.references.forEach(function (reference) {
-            reference.inverse_references.forEach(function (inverse_reference) {
-                let topic = inverse_reference.path.join('/')
-                if (topic.startsWith(key + '/')) {
-                    let text = topic.substring(key.length + 1)
-                    if (text.length > 0) {
-                        if (!(text in result)) {
-                            result[text] = []
-                        }
-                        result[text].push(reference)
-                    }
-                }
-            })
+            if (reference.referenced_by_title.startsWith(key + '/')) {
+                let text = reference.referenced_by_title.substring(key.length + 1)
+                
+                if (!(text in result))
+                    result[text] = []
+                result[text].push(reference)
+            }
         })
         return result
     }
 
     if (IS_EXTENSION) {
-        let reliabilityResults = node.results.by_units.reliability
+        let reliabilityResults = node.results["reliability"]
         let score = reliabilityResults ? reliabilityResults.average : null
         browser.runtime.sendMessage({ name: 'score', score: score })
     }

@@ -18,12 +18,6 @@ defmodule Liquio.Web do
 
 	def model do
 		quote do
-			use Ecto.Schema
-			use Timex.Ecto.Timestamps, usec: true
-
-			import Ecto
-			import Ecto.Changeset
-			import Ecto.Query, only: [from: 1, from: 2]
 		end
 	end
 
@@ -31,13 +25,9 @@ defmodule Liquio.Web do
 		quote do
 			use Phoenix.Controller, namespace: Liquio.Web
 
-			import Ecto
-			import Ecto.Query, only: [from: 1, from: 2]
-
 			import Liquio.Web.Router.Helpers
 			import Liquio.Web.Gettext
 
-			alias Liquio.Repo
 			alias Liquio.CalculationOpts
 			alias Liquio.Identity
 			alias Liquio.Delegation
@@ -72,11 +62,7 @@ defmodule Liquio.Web do
 		quote do
 			use Phoenix.Channel
 
-			import Ecto
-			import Ecto.Query, only: [from: 1, from: 2]
 			import Liquio.Web.Gettext
-
-			alias Liquio.Repo
 		end
 	end
 

@@ -1,70 +1,29 @@
 defmodule Liquio.Web.NodeController do
 	use Liquio.Web, :controller
 	
-	def index(conn, _params) do
-		calculation_opts = CalculationOpts.get_from_conn(conn)
-		conn
-		|> render("show.json", node: Node.all(calculation_opts))
-	end
+	alias Liquio.Node
 
-	def search(conn, %{"id" => query}) do
+	def search(conn, %{"query" => query}) do
 		calculation_opts = CalculationOpts.get_from_conn(conn)
 		conn
 		|> render("show.json", node: Node.search(query, calculation_opts))
 	end
 
-	def show(conn, %{"id" => id}) do
-		node = Node.decode(id)
-		calculation_opts = CalculationOpts.get_from_conn(conn)
-		conn
-		|> render("show.json", node: Node.load(node, calculation_opts))
-	end
+	def show(conn, params = %{"title" => title}) do
+		whitelist_url = Map.get(params, "whitelist_url")
+		whitelist_usernames =  Map.get(params, "whitelist_usernames", "")
+		|> String.split(",")
+		|> Enum.filter(& String.length(&1) > 0)
 
-	def update(conn, %{"id" => id, "public_key" => public_key, "choice" => choice, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do
-		node = Node.decode(id)
-		at_date = case Timex.parse(at_date_string, "{YYYY}-{0M}-{0D}") do
-			{:ok, x} -> x
-			{:err, _} -> Timex.today()
+		node = Node.new(title)
+		node = case Liquio.GetData.get_using_cache(whitelist_url, whitelist_usernames) do
+			{:ok, data} ->
+				Node.load(node, data)
+			{:error, message} ->
+				node
 		end
-		calculation_opts = CalculationOpts.get_from_conn(conn)
 
-		Vote.set(node, Base.decode64!(public_key), Base.decode64!(signature), Vote.decode_unit!(unit_value), at_date, get_choice(choice))
-
-		calculation_opts = Map.put(calculation_opts, :datetime, Timex.now)
 		conn
-		|> put_status(:created)
-		|> put_resp_header("location", node_path(conn, :show, Enum.join(node.path, "_")))
-		|> render(Liquio.Web.NodeView, "show.json", node: Node.load(node, calculation_opts))
-	end
-
-	def delete(conn, %{"id" => id, "public_key" => public_key, "unit" => unit_value, "at_date" => at_date_string, "signature" => signature}) do
-		node = Node.decode(id)
-		at_date = case Timex.parse(at_date_string, "{YYYY}-{0M}-{0D}") do
-			{:ok, x} -> x
-			{:err, _} -> Timex.today()
-		end
-		Vote.delete(node, Base.decode64!(public_key), Base.decode64!(signature), Vote.decode_unit!(unit_value), at_date)
-
-		calculation_opts = CalculationOpts.get_from_conn(conn)
-		conn
-		|> put_status(:created)
-		|> put_resp_header("location", node_path(conn, :show, node.path |> Enum.join("/")))
-		|> render(Liquio.Web.NodeView, "show.json", node: Node.load(node, calculation_opts))
-	end
-
-	defp get_choice(v) do
-		if is_binary(v) do
-			case Float.parse(v) do
-				{x, _} -> x
-				:error -> nil
-			end
-			v
-		else
-			if is_integer(v) do
-				v * 1.0
-			else
-				v
-			end
-		end
+		|> render("show.json", node: node)
 	end
 end

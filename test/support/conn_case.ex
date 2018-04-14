@@ -20,11 +20,6 @@ defmodule Liquio.Web.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias Liquio.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query, only: [from: 1, from: 2]
-
       import Liquio.Web.Router.Helpers
 
       # The default endpoint for testing
@@ -33,12 +28,6 @@ defmodule Liquio.Web.ConnCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Liquio.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Liquio.Repo, {:shared, self()})
-    end
-
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end
