@@ -4,7 +4,7 @@ defmodule Liquio.GetData do
     end
 
     def get(whitelist_url, trust_usernames) do
-        url = "http://localhost:5000/"
+        url = "http://localhost:5000/messages/"
         url = if whitelist_url do
             "#{url}?whitelist_url=#{whitelist_url}&"
         else

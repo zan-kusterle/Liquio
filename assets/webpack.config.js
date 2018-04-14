@@ -64,6 +64,7 @@ module.exports = {
         new ZipPlugin({
             filename: 'liquio.zip',
             pathPrefix: 'extension'
-        })
+        }),
+        //new BundleAnalyzerPlugin()
     ]
 }

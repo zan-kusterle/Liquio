@@ -146,7 +146,7 @@ export default {
             }
         })
 
-        if (process.env.NODE_ENV === 'development') {
+        if (false && process.env.NODE_ENV === 'development') {
             let messages = [
                 {
                     name: 'vote',
