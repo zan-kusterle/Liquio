@@ -3,6 +3,9 @@
 @height: 50px;
 
 .liquio-bar {
+    cursor: default;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
     &__finalize-dialog {
         .el-dialog__header {
             background-color: #dff0d8;
@@ -17,8 +20,6 @@
     }
 
     &__container {
-        cursor: default;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         position: fixed;
         left: 0;
         bottom: 0;
@@ -79,6 +80,7 @@
     &__items {
         display: flex;
         justify-content: space-between;
+        height: 100%;
     }
 
     &__vote {

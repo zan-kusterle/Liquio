@@ -1,14 +1,17 @@
 import axios from 'axios'
 
-let fetchNode = (state, key) => {
+let fetchNode = (key, whitelist, depth) => {
     return new Promise((resolve, reject) => {
-        if (state.whitelist && (state.whitelist.url || state.whitelist.username)) {
-            let params = { depth: 2 }
-            if (state.whitelist.url) {
-                params.whitelist_url = state.whitelist.url
+        if (whitelist && (whitelist.url || whitelist.username)) {
+            let params = {}
+            if (depth) {
+                params.depth = depth
             }
-            if (state.whitelist.username) {
-                params.whitelist_usernames = state.whitelist.username
+            if (whitelist.url) {
+                params.whitelist_url = whitelist.url
+            }
+            if (whitelist.username) {
+                params.whitelist_usernames = whitelist.username
             }
 
             axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), { params: params }).then((response) => {
@@ -53,7 +56,7 @@ export default {
         }
     },
     updateNodes ({ state, commit }) {
-        let promises = state.refreshKeys.map(key => fetchNode(state, key))
+        let promises = state.refreshKeys.map(key => fetchNode(key, state.whitelist, 2))
         axios.all(promises).then(response => {
             for (let node of response) {
                 commit('SET_NODE', node)
@@ -85,7 +88,7 @@ export default {
             if (refresh) {
                 commit('ADD_REFRESH_KEY', key)
             }
-            fetchNode(state, key).then(node => {
+            fetchNode(key, state.whitelist, 2).then(node => {
                 commit('SET_NODE', node)
                 resolve(node)
             }).catch(() => {})

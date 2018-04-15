@@ -133,7 +133,7 @@ if (IS_EXTENSION) {
 
 function onUrlChange (url) {
     vm.isUnavailable = !IS_EXTENSION && document.getElementById('liquio-bar-extension')
-    vm.urlKey = decodeURIComponent(url)
+    vm.urlKey = decodeURIComponent(url).replace(/\/$/, '');
     store.dispatch('loadNode', { key: vm.urlKey, refresh: true })
 }
 
