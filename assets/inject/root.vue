@@ -12,14 +12,6 @@
                             <el-button size="small" @click="resetState">Close</el-button>
                         </div>
 
-                        <div class="liquio-bar__vote-choice">
-                            <el-slider size="small" tooltip-class="liquio-bar__tooltip" v-model="reliabilityChoice" class="liquio-bar__vote-spectrum"></el-slider>
-                        </div>
-
-                        <div class="liquio-bar__vote-button">
-                            <el-button size="small" type="primary" @click="finalizeVote">Vote</el-button>
-                        </div>
-
                         <div class="liquio-bar__vote-button">
                             <el-button @click="openNode = urlKey; dialogVisible = true;">View</el-button>
                         </div>
@@ -29,13 +21,6 @@
                             <el-button size="small" @click="resetState">Close</el-button>
                         </div>
                         <el-input @keyup.stop.prevent @keydown.stop.prevent size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
-                        <el-select size="small" popper-class="liquio-bar__dropdown" v-model="currentUnitValue" class="liquio-bar__vote-unit">
-                            <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
-                        </el-select>
-                        <div class="liquio-bar__vote-choice">
-                            <el-slider size="small" tooltip-class="liquio-bar__tooltip" v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="liquio-bar__vote-spectrum"></el-slider>
-                            <el-input size="small" v-else v-model="currentChoice.quantity" type="number" class="liquio-bar__vote-quantity" />
-                        </div>
                         <div>
                             <el-button size="small" type="primary" @click="finalizeVote">Vote</el-button>
                         </div>
@@ -84,7 +69,6 @@
 <script>
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
 import Embeds from './embeds.vue'
-import axios from 'axios'
 import slug from './slug'
 import { allUnits } from './data'
 import SimpleNode from './simple_node.vue'
@@ -114,7 +98,6 @@ export default {
 
             whitelistUrl: null,
             username: null,
-            node: null,
 
             currentAnchor: null,
             currentTitle: null,
@@ -135,38 +118,8 @@ export default {
         this.LIQUIO_URL = LIQUIO_URL
         this.allUnits = allUnits
 
-        window.addEventListener('sign-anything-response', (e) => {
-            let data = e.detail
-            if (data.request_name === 'whitelist') {
-                this.username = data.username
-                this.whitelistUrl = data.url
-            } else if (data.request_name === 'sign') {
-                this.updateNode()
-                this.currentAnchor = null
-            }
-        })
-
-        if (false && process.env.NODE_ENV === 'development') {
-            let messages = [
-                {
-                    name: 'vote',
-                    key: ['title', 'unit'],
-                    title: 'asd',
-                    unit: 'Reliable-Unreliable',
-                    choice: 0.9
-                }
-            ]
-            let data = {
-                name: 'sign',
-                messages: messages,
-                messageKeys: ['title', 'reference_title', 'relevance', 'unit', 'choice']
-            }
-
-            setTimeout(() => {
-                let event = new CustomEvent('sign-anything', { detail: data })
-                window.dispatchEvent(event)
-            }, 2000)
-        }
+        this.$store.dispatch('initialize')
+        this.updateNode()
     },
     mounted () {
         setTimeout(() => this.isLoading = false, 50)
@@ -174,12 +127,12 @@ export default {
     watch: {
         urlKey () {
             this.updateNode()
-        },
-        username () {
-            this.updateNode()
         }
     },
     computed: {
+        node () {
+            return this.$store.state.nodesByKey[this.urlKey]
+        },
         ratingText () {
             return this.rating ? (Math.round(this.rating * 100) / 10).toFixed(1) : '?'
         },
@@ -243,22 +196,8 @@ export default {
     },
     methods: {
         updateNode () {
-            if (this.whitelistUrl || this.username) {
-                let params = { depth: 2 }
-                if (this.whitelistUrl) {
-                    params.whitelist_url = this.whitelistUrl
-                }
-                if (this.username) {
-                    params.whitelist_usernames = this.username
-                }
-
-                return new Promise((resolve, reject) => {
-                    axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(this.urlKey), { params: params }).then((response) => {
-                        this.node = response.data.data
-                        this.$root.$emit('update-node', this.node)
-                        resolve()
-                    })
-                })
+            if (this.urlKey) {
+                this.$store.dispatch('loadNode', { key: this.urlKey, refresh: true })
             }
         },
         startVoting () {
@@ -269,44 +208,21 @@ export default {
             }
         },
         finalizeVote () {
-            if (this.currentTitle || this.reliabilityVoting) {
-                let messages = []
-                if (this.reliabilityVoting) {
-                    messages.push([
-                        {
-                            name: 'vote',
-                            key: ['title', 'unit'],
-                            title: this.urlKey,
-                            unit: 'Reliable-Unreliable',
-                            choice: this.reliabilityChoice / 100
-                        }
-                    ])
-                }
-
-                if (this.currentTitle && this.currentUnit && this.currentAnchor) {
-                    messages.push({
-                        name: 'vote',
-                        key: ['title', 'unit'],
-                        title: this.currentTitle.trim(' '),
-                        unit: this.currentUnit.text,
-                        choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
-                    })
-                    messages.push({
+            if (this.currentAnchor && this.currentTitle) {
+                this.$store.dispatch('vote', {
+                    messages: [{
                         name: 'reference_vote',
                         key: ['title', 'reference_title'],
                         title: this.urlKey + '/' + slug(this.currentAnchor.trim(' ')),
                         reference_title: this.currentTitle.trim(' '),
                         relevance: 1.0
-                    })
-                }
-
-                let data = {
-                    name: 'sign',
-                    messages: messages,
+                    }],
                     messageKeys: ['title', 'reference_title', 'relevance', 'unit', 'choice']
-                }
-                let event = new CustomEvent('sign-anything', { detail: data })
-                window.dispatchEvent(event)
+                }).then(c => {
+                    this.$store.dispatch('updateNodes')
+                    this.currentAnchor = null
+                    this.currentTitle = null
+                })
             }
         },
         resetState () {

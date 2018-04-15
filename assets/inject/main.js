@@ -84,46 +84,50 @@ const vm = new Vue({
 
 let nodesByText = {}
 let textNodes = []
-vm.$on('update-node', (node) => {
-    let getNodesByText = (node, key) => {
-        var result = {}
-        node.references.forEach(function (reference) {
-            if (reference.referenced_by_title.startsWith(key + '/')) {
-                let text = reference.referenced_by_title.substring(key.length + 1)
-                
-                if (!(text in result))
-                    result[text] = []
-                result[text].push(reference)
-            }
-        })
-        return result
-    }
+store.subscribe((mutation, state) => {
+    if (mutation.type === 'SET_NODE' && mutation.payload.title === vm.urlKey) {
+        let node = mutation.payload
+        let getNodesByText = (node, key) => {
+            var result = {}
+            node.references.forEach(function (reference) {
+                if (reference.referenced_by_title.startsWith(key + '/')) {
+                    let text = reference.referenced_by_title.substring(key.length + 1)
+                    
+                    if (!(text in result))
+                        result[text] = []
+                    result[text].push(reference)
+                }
+            })
+            return result
+        }
 
-    if (IS_EXTENSION) {
-        let reliabilityResults = node.results["reliability"]
-        let score = reliabilityResults ? reliabilityResults.average : null
-        browser.runtime.sendMessage({ name: 'score', score: score })
-    }
+        if (IS_EXTENSION) {
+            let reliabilityResults = node.results["reliability"]
+            let score = reliabilityResults ? reliabilityResults.average : null
+            browser.runtime.sendMessage({ name: 'score', score: score })
+        }
 
-    nodesByText = getNodesByText(node, vm.urlKey)
+        nodesByText = getNodesByText(node, vm.urlKey)
 
-    let overrideByClickOnlyTimeoutId = null
-    let onClickOnlyTime
-    transformContent.resetTransforms()
-    for (let domNode of textNodes) {
-        transformContent.transformNode(nodesByText, domNode, (activeNode, isClicked) => {
-            if (overrideByClickOnlyTimeoutId === null || isClicked) {
-                vm.currentNode = activeNode
-            }
-            if (isClicked) {
-                overrideByClickOnlyTimeoutId = setTimeout(() => {
-                    clearTimeout(overrideByClickOnlyTimeoutId)
-                    overrideByClickOnlyTimeoutId = null
-                }, 1000)
-            }
-        })
+        let overrideByClickOnlyTimeoutId = null
+        let onClickOnlyTime
+        transformContent.resetTransforms()
+        for (let domNode of textNodes) {
+            transformContent.transformNode(nodesByText, domNode, (activeNode, isClicked) => {
+                if (overrideByClickOnlyTimeoutId === null || isClicked) {
+                    vm.currentNode = activeNode
+                }
+                if (isClicked) {
+                    overrideByClickOnlyTimeoutId = setTimeout(() => {
+                        clearTimeout(overrideByClickOnlyTimeoutId)
+                        overrideByClickOnlyTimeoutId = null
+                    }, 1000)
+                }
+            })
+        }
     }
 })
+    
 
 if (IS_EXTENSION) {
     browser.runtime.onMessage.addListener(function(message, sender, sendResponse) {
