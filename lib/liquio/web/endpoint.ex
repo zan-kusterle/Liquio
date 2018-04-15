@@ -53,12 +53,6 @@ defmodule Liquio.Web.Endpoint do
 	plug Plug.MethodOverride
 	plug Plug.Head
 
-	plug Plug.Session,
-		store: :cookie,
-		key: "_liquio_key",
-		signing_salt: "widKJvj0",
-		max_age: 60 * 60 * 24 * 30
-
 	plug CORSPlug, [origin: "*"]
 
 	plug Liquio.Web.Router
