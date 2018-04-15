@@ -26,7 +26,6 @@
         width: 100%;
         user-select: none;
         z-index: 1000000;
-        border-top: 1px solid rgba(200, 200, 200, 0.2);
     }
 
     &__button-container {
@@ -77,15 +76,19 @@
         margin-left: 10px;
     }
 
-    &__vote-button {
-        margin-right: 10px;
-
-        &:last-child {
-            margin-right: 0;
-        }
+    &__items {
+        display: flex;
+        justify-content: space-between;
     }
 
     &__vote {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+    }
+
+    &__buttons {
         display: flex;
         align-items: center;
         height: 100%;
@@ -201,8 +204,19 @@ a {
 }
 
 .liquio-node {
+    &__main {
+        text-align: center;
+    }
+
+    &__title {
+        font-weight: normal;
+        font-size: 28px;
+        margin: -10px 0px 10px 0px;
+        line-height: 42px;
+    }
+
     &__vote {
-        margin-top: 30px;
+        margin: 60px auto 0px auto;
         width: 300px;
         text-align: center;
 
@@ -218,5 +232,9 @@ a {
             width: 100%;
             margin-top: 10px;
         }
+    }
+
+    &__references {
+
     }
 }

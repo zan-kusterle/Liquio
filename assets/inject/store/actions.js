@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-let loadNode = (state, key) => {
+let fetchNode = (state, key) => {
     return new Promise((resolve, reject) => {
         if (state.whitelist && (state.whitelist.url || state.whitelist.username)) {
             let params = { depth: 2 }
@@ -11,11 +11,12 @@ let loadNode = (state, key) => {
                 params.whitelist_usernames = state.whitelist.username
             }
 
+            console.log(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key))
             axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), { params: params }).then((response) => {
                 resolve(response.data.data)
-            })
+            }).catch(e => reject(e))
         } else {
-            reject()
+            reject('No whitelist set')
         }
     })
 }
@@ -53,12 +54,12 @@ export default {
         }
     },
     updateNodes ({ state, commit }) {
-        let promises = state.refreshKeys.map(key => loadNode(state, key))
+        let promises = state.refreshKeys.map(key => fetchNode(state, key))
         axios.all(promises).then(response => {
             for (let node of response) {
                 commit('SET_NODE', node)
             }
-        })
+        }).catch(() => {})
 
         let clearKeys = Object.keys(state.nodesByKey).filter(k => !state.refreshKeys.includes(k))
         clearKeys.forEach(key => commit('REMOVE_NODE', key))
@@ -88,10 +89,10 @@ export default {
             if (refresh) {
                 commit('ADD_REFRESH_KEY', key)
             }
-            loadNode(state, key).then(node => {
+            fetchNode(state, key).then(node => {
                 commit('SET_NODE', node)
                 resolve(node)
-            }).catch(e => reject(e))
+            }).catch(() => {})
         })
     }
 }

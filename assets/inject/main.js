@@ -7,13 +7,6 @@ import mainCss from 'inject/main.less'
 import shadowCss from 'inject/shadow.less'
 import storeObject from 'inject/store/index.js'
 
-function cleanUrl(url) {
-    let clean = url.replace('://', ':')
-    if (clean.endsWith('/'))
-        clean = clean.substring(0, clean.length - 1)
-    return clean
-}
-
 let getElement = () => {
     let bodyElement = document.getElementsByTagName('body')[0]
     let vueElement = document.createElement('div')
@@ -66,6 +59,9 @@ const vm = new Vue({
     methods: {
         startVoting () {
             this.$children[0].startVoting()
+        },
+        viewNode (key) {
+            this.$children[0].viewNode(key)
         }
     },
     render (createElement) {
@@ -102,8 +98,8 @@ store.subscribe((mutation, state) => {
         }
 
         if (IS_EXTENSION) {
-            let reliabilityResults = node.results["reliability"]
-            let score = reliabilityResults ? reliabilityResults.average : null
+            let reliabilityResults = node.results["Reliable-Unreliable"]
+            let score = reliabilityResults ? reliabilityResults.mean : null
             browser.runtime.sendMessage({ name: 'score', score: score })
         }
 
@@ -133,20 +129,15 @@ if (IS_EXTENSION) {
     browser.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         if (message.name === 'update') {
             onUrlChange(document.location.href)
-        } else if (message.name === 'hidden') {
-            vm.isHidden = message.value
+        } else if (message.name === 'open') {
+            vm.viewNode(vm.urlKey)
         }
     })
 }
 
 function onUrlChange (url) {
-    let isLiquio = url.startsWith(LIQUIO_URL + '/page/') || url.startsWith(LIQUIO_URL + '/v/')
-    let isInactive = !IS_EXTENSION && document.getElementById('liquio-bar-extension')
-    let isUnavailable = isLiquio || isInactive
-    let key = cleanUrl(decodeURIComponent(url))
-
-    vm.isUnavailable = isUnavailable
-    vm.urlKey = key
+    vm.isUnavailable = !IS_EXTENSION && document.getElementById('liquio-bar-extension')
+    vm.urlKey = decodeURIComponent(url)
 
 }
 

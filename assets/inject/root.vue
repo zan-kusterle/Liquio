@@ -3,50 +3,47 @@
     <template v-if="!isUnavailable">
         <div class="liquio-bar__container" v-if="currentAnchor || reliabilityVoting || currentNode || !isHidden">
             <div class="liquio-bar__wrap">
-                <div class="liquio-bar__score" :style="{ 'background': `#${color}` }" @click="reliabilityVoting = true">
-                    {{ ratingText }}
+                <div class="liquio-bar__main" v-if="signInstruction">
+                    <div class="liquio-bar__items">
+                        <div class="liquio-bar__vote">
+                            Check you sign extension
+                        </div>
+                        <div class="liquio-bar__buttons">
+                            <el-button size="small" type="success" @click="signInstruction = false">Close</el-button>
+                        </div>
+                    </div>
                 </div>
-                <div class="liquio-bar__main">
-                    <div class="liquio-bar__vote" v-if="reliabilityVoting">
-                        <div class="liquio-bar__vote-button">
-                            <el-button size="small" @click="resetState">Close</el-button>
+                <div class="liquio-bar__main" v-else-if="currentAnchor">
+                    <div class="liquio-bar__items">
+                        <div class="liquio-bar__vote">
+                            <el-input @keyup.stop.prevent @keydown.stop.prevent size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
                         </div>
-
-                        <div class="liquio-bar__vote-button">
-                            <el-button @click="openNode = urlKey; dialogVisible = true;">View</el-button>
-                        </div>
-                    </div>
-                    <div class="liquio-bar__vote" v-else-if="currentAnchor">
-                        <div style="margin-right: 10px;">
-                            <el-button size="small" @click="resetState">Close</el-button>
-                        </div>
-                        <el-input @keyup.stop.prevent @keydown.stop.prevent size="small" type="text" v-model="currentTitle" placeholder="Poll title" class="liquio-bar__vote-title" />
-                        <div>
+                        <div class="liquio-bar__buttons">
                             <el-button size="small" type="primary" @click="finalizeVote">Vote</el-button>
+                            <el-button size="small" @click="resetState">Close</el-button>
                         </div>
                     </div>
-                    <div class="liquio-bar__vote" v-else-if="currentNode">
-                        <span style="vertical-align: middle;">{{ currentNode.title }}</span>
-                        <div class="liquio-bar__results">
-                            <results :unit-results="unitResults" width="100%" height="100%"></results>
+                </div>
+                <div class="liquio-bar__main" v-else-if="currentNode">
+                    <div class="liquio-bar__items">
+                        <div class="liquio-bar__vote">
+                            <span style="vertical-align: middle;">{{ currentNode.title }}</span>
+                            <div class="liquio-bar__results">
+                                <results :unit-results="unitResults" width="100%" height="100%"></results>
+                            </div>
                         </div>
-                        <div class="liquio-bar__vote-button" style="margin-left: 10px;">
-                            <el-button @click="viewCurrentNode">View</el-button>
-                        </div>
-                        
-                        <div class="liquio-bar__vote-button" v-if="currentSelection && currentSelection.length >= 10">
-                            <el-button size="small" @click="startVoting">Vote on selection</el-button>
-                        </div>
-                        <div class="liquio-bar__vote-button" v-else-if="currentVideoTime">
-                            <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
+                        <div class="liquio-bar__buttons">
+                            <el-button size="small" v-if="currentSelection && currentSelection.length >= 10" @click="startVoting">Vote on selection</el-button>
+                            <el-button size="small" v-else-if="currentVideoTime" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
+                            <el-button size="small" @click="viewNode(this.currentNode.title)">View</el-button>
                         </div>
                     </div>
-                    <div class="liquio-bar__vote" v-else>
-                        <div class="liquio-bar__vote-button" v-if="currentSelection && currentSelection.length >= 10">
-                            <el-button size="small" @click="startVoting">Vote on selection</el-button>
-                        </div>
-                        <div class="liquio-bar__vote-button" v-else-if="currentVideoTime">
-                            <el-button size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
+                </div>
+                <div class="liquio-bar__main" v-else>
+                    <div class="liquio-bar__items">
+                        <div class="liquio-bar__buttons">
+                            <el-button v-if="currentSelection && currentSelection.length >= 10" size="small" @click="startVoting">Vote on selection</el-button>
+                            <el-button v-else-if="currentVideoTime" size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
                         </div>
                     </div>
                 </div>
@@ -60,7 +57,7 @@
         </div>
     </template>
 
-    <el-dialog v-if="openNode" :title="openNode" :visible.sync="dialogVisible" width="60%">
+    <el-dialog v-if="openNode" :visible.sync="dialogVisible" width="60%">
         <simple-node :title="openNode"></simple-node>
     </el-dialog>
 </div>
@@ -111,7 +108,8 @@ export default {
             reliabilityVoting: false,
             isHovered: false,
             dialogVisible: false,
-            openNode: null
+            openNode: null,
+            signInstruction: false
         }
     },
     created () {
@@ -200,13 +198,14 @@ export default {
                 this.currentAnchor = this.currentVideoTimeText
             }
         },
-        viewCurrentNode () {
-            this.openNode = this.currentNode.title
+        viewNode (key) {
+            this.openNode = key
             this.dialogVisible = true
             this.$store.dispatch('loadNode', { key: this.openNode })
         },
         finalizeVote () {
             if (this.currentAnchor && this.currentTitle) {
+                this.signInstruction = true
                 this.$store.dispatch('vote', {
                     messages: [{
                         name: 'reference_vote',

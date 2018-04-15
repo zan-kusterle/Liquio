@@ -6,15 +6,7 @@ browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 var isHidden = true
 browser.browserAction.onClicked.addListener(function(tab) {
-    isHidden = !isHidden
-
-    browser.tabs.sendMessage(tab.id, { name: 'hidden', value: isHidden })
-
-    if (isHidden) {
-        browser.browserAction.setIcon({ path: "icons/off.png", tabId: tab.id })
-    } else {
-        browser.browserAction.setIcon({ path: "icons/on.png", tabId: tab.id })
-    }
+    browser.tabs.sendMessage(tab.id, { name: 'open' })
 })
 
 browser.runtime.onMessage.addListener(function(request, sender) {

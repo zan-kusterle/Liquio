@@ -1,7 +1,10 @@
 <template>
-    <div>
+    <div class="liquio-node">
         <template v-if="node">
-            <results :unit-results="unitResults"  width="200px"></results>
+            <div class="liquio-node__main">
+                <h1 class="liquio-node__title">{{ node.title }}</h1>
+                <results :unit-results="unitResults"  width="200px"></results>
+            </div>
 
             <div class="liquio-node__vote">
                 <el-select v-model="currentUnitValue" class="unit">
@@ -15,6 +18,12 @@
 
                 <div>
                     <el-button type="success" @click="finalizeVote" class="vote-button">Vote</el-button>
+                </div>
+            </div>
+
+            <div class="liquio-node__references">
+                <div v-for="reference in node.references" :key="reference.title">
+                    <p>{{ reference.title }}</p>
                 </div>
             </div>
         </template>
