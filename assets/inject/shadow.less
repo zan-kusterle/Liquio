@@ -237,6 +237,30 @@ a {
     }
 
     &__references {
+        margin-top: 50px;
+    }
 
+    &__reference {
+        margin: 10px 0px;
+
+        p {
+            display: inline;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        svg {
+            width: 100px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    }
+
+    &__reference-title {
+        width: 100%;
+
+        .el-input {
+            width: calc(~'100% - 64px');
+        }
     }
 }

@@ -2,7 +2,7 @@
     <div class="liquio-node">
         <div class="liquio-node__main">
             <h1 class="liquio-node__title">{{ title }}</h1>
-            <results :unit-results="unitResults" width="200px"></results>
+            <results :unit-results="getUnitResults(node)" width="200px"></results>
         </div>
 
         <template v-if="node">
@@ -22,9 +22,15 @@
             </div>
 
             <div class="liquio-node__references">
-                <div v-for="reference in node.references" :key="reference.title">
+                <div class="liquio-node__reference" v-for="reference in node.references" :key="reference.title">
+                    <results :unit-results="getUnitResults(reference)" width="200px"></results>
                     <p>{{ reference.title }}</p>
                 </div>
+            </div>
+
+            <div class="liquio-node__reference-title">
+                <el-input size="small" v-model="referenceTitle" placeholder="Reference title"></el-input>
+                <el-button size="small" @click="openReferenceTitle = referenceTitle">View</el-button>
             </div>
         </template>
         <div v-else>Loading...</div>
@@ -56,7 +62,9 @@ export default {
             currentChoice: {
                 spectrum: 50,
                 quantity: 0
-            }
+            },
+            referenceTitle: '',
+            openReferenceTitle: ''
         }
     },
     created () {
@@ -66,11 +74,19 @@ export default {
         node () {
             return this.$store.state.nodesByKey[this.title]
         },
-        unitResults () {
-            if (!this.node)
+        
+        currentUnit () {
+            let unit = this.allUnits.find(u => u.value === this.currentUnitValue)
+            unit.defaultValue = unit.type === 'spectrum' ? 50 : 0
+            return unit
+        }
+    },
+    methods: {
+        getUnitResults (node) {
+            if (!node)
                 return null
             
-            let byUnits = this.node.results
+            let byUnits = node.results
             let units = Object.keys(byUnits)
             if (units.length === 0)
                 return null
@@ -80,13 +96,6 @@ export default {
                 unit: units[0]
             }
         },
-        currentUnit () {
-            let unit = this.allUnits.find(u => u.value === this.currentUnitValue)
-            unit.defaultValue = unit.type === 'spectrum' ? 50 : 0
-            return unit
-        }
-    },
-    methods: {
         finalizeVote () {
             if (this.node.title) {
                 let data = {
