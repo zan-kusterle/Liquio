@@ -10,15 +10,17 @@ import { allUnits } from './data'
 
 export default {
     props: {
-        unitResults: { type: Object, required: true }
+        unitResults: { type: Object }
     },
     computed: {
         unit () {
+            if (!this.unitResults)
+                return null
             return allUnits.find(u => u.text === this.unitResults.unit)
         },
         color () {
-            let mean = this.unitResults.mean
-            if (mean == null) return "#ddd"
+            let mean = this.unitResults && this.unitResults.mean
+            if (!mean) return "#ddd"
             if (mean < 0.25)
                 return "rgb(255, 164, 164)"
             else if (mean < 0.75)
@@ -27,6 +29,8 @@ export default {
                 return "rgb(140, 232, 140)"
         },
         text () {
+            if (!this.unitResults)
+                return '?'
             if (this.unit.type === 'spectrum') {
                 return Math.round(this.unitResults.mean * 100) + '%'
             } else {

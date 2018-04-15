@@ -28,10 +28,10 @@
                     <div class="liquio-bar__vote" v-else-if="currentNode">
                         <span style="vertical-align: middle;">{{ currentNode.title }}</span>
                         <div class="liquio-bar__embeds">
-                            <embeds v-if="unitResults" :unit-results="unitResults" width="100%" height="100%"></embeds>
+                            <embeds :unit-results="unitResults" width="100%" height="100%"></embeds>
                         </div>
                         <div class="liquio-bar__vote-button" style="margin-left: 10px;">
-                            <el-button @click="openNode = currentNode.title; dialogVisible = true;">View</el-button>
+                            <el-button @click="viewCurrentNode">View</el-button>
                         </div>
                         
                         <div class="liquio-bar__vote-button" v-if="currentSelection && currentSelection.length >= 10">
@@ -61,7 +61,7 @@
     </template>
 
     <el-dialog v-if="openNode" :title="openNode" :visible.sync="dialogVisible" width="60%">
-        <simple-node></simple-node>
+        <simple-node :title="openNode"></simple-node>
     </el-dialog>
 </div>
 </template>
@@ -146,13 +146,6 @@ export default {
             return this.rating < 0.5 ? colorOnGradient(yellow, red, this.rating * 2) : colorOnGradient(green, yellow, (this.rating - 0.5) * 2)
         },
         unitResults () {
-            return {
-                voting_power: 1,
-                median: 1,
-                mean: 0.79,
-                unit: 'True-False'
-            }
-
             if (!this.currentNode)
                 return null
             let byUnits = this.currentNode.results
@@ -206,6 +199,11 @@ export default {
             } else {
                 this.currentAnchor = this.currentVideoTimeText
             }
+        },
+        viewCurrentNode () {
+            this.openNode = this.currentNode.title
+            this.dialogVisible = true
+            this.$store.dispatch('loadNode', { key: this.openNode })
         },
         finalizeVote () {
             if (this.currentAnchor && this.currentTitle) {
