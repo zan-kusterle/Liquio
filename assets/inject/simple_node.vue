@@ -1,7 +1,7 @@
 <template>
     <div>
         <template v-if="node">
-            <embeds :unit-results="unitResults"  width="200px"></embeds>
+            <results :unit-results="unitResults"  width="200px"></results>
 
             <div class="liquio-node__vote">
                 <el-select v-model="currentUnitValue" class="unit">
@@ -24,7 +24,7 @@
 
 <script>
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
-import Embeds from './embeds.vue'
+import Results from './results.vue'
 import { allUnits } from './data'
 
 
@@ -36,7 +36,7 @@ export default {
         elOption: Option,
         elInput: Input,
         elDialog: Dialog,
-        embeds: Embeds
+        results: Results
     },
     props: {
         title: { type: String, required: true }

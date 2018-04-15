@@ -27,8 +27,8 @@
                     </div>
                     <div class="liquio-bar__vote" v-else-if="currentNode">
                         <span style="vertical-align: middle;">{{ currentNode.title }}</span>
-                        <div class="liquio-bar__embeds">
-                            <embeds :unit-results="unitResults" width="100%" height="100%"></embeds>
+                        <div class="liquio-bar__results">
+                            <results :unit-results="unitResults" width="100%" height="100%"></results>
                         </div>
                         <div class="liquio-bar__vote-button" style="margin-left: 10px;">
                             <el-button @click="viewCurrentNode">View</el-button>
@@ -68,7 +68,7 @@
 
 <script>
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
-import Embeds from './embeds.vue'
+import Results from './results.vue'
 import slug from './slug'
 import { allUnits } from './data'
 import SimpleNode from './simple_node.vue'
@@ -81,7 +81,7 @@ export default {
         elOption: Option,
         elInput: Input,
         elDialog: Dialog,
-        embeds: Embeds,
+        results: Results,
         simpleNode: SimpleNode
     },
     props: {
