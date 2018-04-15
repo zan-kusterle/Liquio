@@ -105,19 +105,13 @@ store.subscribe((mutation, state) => {
 
         nodesByText = getNodesByText(node, vm.urlKey)
 
-        let overrideByClickOnlyTimeoutId = null
-        let onClickOnlyTime
         transformContent.resetTransforms()
         for (let domNode of textNodes) {
             transformContent.transformNode(nodesByText, domNode, (activeNode, isClicked) => {
-                if (overrideByClickOnlyTimeoutId === null || isClicked) {
-                    vm.currentNode = activeNode
-                }
+                vm.currentNode = activeNode
+
                 if (isClicked) {
-                    overrideByClickOnlyTimeoutId = setTimeout(() => {
-                        clearTimeout(overrideByClickOnlyTimeoutId)
-                        overrideByClickOnlyTimeoutId = null
-                    }, 1000)
+                    vm.viewNode(vm.currentNode.title)
                 }
             })
         }

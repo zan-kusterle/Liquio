@@ -11,7 +11,6 @@ let fetchNode = (state, key) => {
                 params.whitelist_usernames = state.whitelist.username
             }
 
-            console.log(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key))
             axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), { params: params }).then((response) => {
                 resolve(response.data.data)
             }).catch(e => reject(e))
@@ -60,9 +59,6 @@ export default {
                 commit('SET_NODE', node)
             }
         }).catch(() => {})
-
-        let clearKeys = Object.keys(state.nodesByKey).filter(k => !state.refreshKeys.includes(k))
-        clearKeys.forEach(key => commit('REMOVE_NODE', key))
     },
     vote ({}, { messages, messageKeys }) {
         let data = {

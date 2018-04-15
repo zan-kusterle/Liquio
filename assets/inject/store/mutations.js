@@ -8,7 +8,7 @@ export default {
         Vue.set(state.nodesByKey, payload.title, payload)
     },
     REMOVE_NODE (state, payload) {
-        Vue.remove(state.nodesByKey, payload)
+        Vue.set(state.nodesByKey, payload, null)
     },
     ADD_REFRESH_KEY (state, key) {
         state.refreshKeys.push(key)

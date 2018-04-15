@@ -35,7 +35,6 @@
                         <div class="liquio-bar__buttons">
                             <el-button size="small" v-if="currentSelection && currentSelection.length >= 10" @click="startVoting">Vote on selection</el-button>
                             <el-button size="small" v-else-if="currentVideoTime" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
-                            <el-button size="small" @click="viewNode(this.currentNode.title)">View</el-button>
                         </div>
                     </div>
                 </div>

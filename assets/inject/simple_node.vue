@@ -1,11 +1,11 @@
 <template>
     <div class="liquio-node">
-        <template v-if="node">
-            <div class="liquio-node__main">
-                <h1 class="liquio-node__title">{{ node.title }}</h1>
-                <results :unit-results="unitResults"  width="200px"></results>
-            </div>
+        <div class="liquio-node__main">
+            <h1 class="liquio-node__title">{{ title }}</h1>
+            <results :unit-results="unitResults" width="200px"></results>
+        </div>
 
+        <template v-if="node">
             <div class="liquio-node__vote">
                 <el-select v-model="currentUnitValue" class="unit">
                     <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
@@ -98,10 +98,23 @@ export default {
                         unit: this.currentUnit.text,
                         choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
                     }],
-                    messageKeys: ['title', 'relevance', 'unit', 'choice']
+                    messageKeys: ['title', 'unit', 'choice']
                 }
                 let event = new CustomEvent('sign-anything', { detail: data })
                 window.dispatchEvent(event)
+
+                this.$store.dispatch('vote', {
+                    messages: [{
+                        name: 'vote',
+                        key: ['title', 'unit'],
+                        title: this.node.title.trim(' '),
+                        unit: this.currentUnit.text,
+                        choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
+                    }],
+                    messageKeys: ['title', 'unit', 'choice']
+                }).then(() => {
+                    this.$store.dispatch('loadNode', { key: this.title })
+                })
             }
         }
     }
