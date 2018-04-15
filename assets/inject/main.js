@@ -43,6 +43,8 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store(storeObject)
 
+store.dispatch('initialize')
+
 const vm = new Vue({
     store: store,
     el: getElement(),
@@ -132,7 +134,7 @@ if (IS_EXTENSION) {
 function onUrlChange (url) {
     vm.isUnavailable = !IS_EXTENSION && document.getElementById('liquio-bar-extension')
     vm.urlKey = decodeURIComponent(url)
-
+    store.dispatch('loadNode', { key: vm.urlKey, refresh: true })
 }
 
 let onDomNodeInsert = (node) => {

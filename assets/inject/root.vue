@@ -32,18 +32,6 @@
                                 <results :unit-results="unitResults" width="100%" height="100%"></results>
                             </div>
                         </div>
-                        <div class="liquio-bar__buttons">
-                            <el-button size="small" v-if="currentSelection && currentSelection.length >= 10" @click="startVoting">Vote on selection</el-button>
-                            <el-button size="small" v-else-if="currentVideoTime" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
-                        </div>
-                    </div>
-                </div>
-                <div class="liquio-bar__main" v-else>
-                    <div class="liquio-bar__items">
-                        <div class="liquio-bar__buttons">
-                            <el-button v-if="currentSelection && currentSelection.length >= 10" size="small" @click="startVoting">Vote on selection</el-button>
-                            <el-button v-else-if="currentVideoTime" size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -114,17 +102,9 @@ export default {
     created () {
         this.LIQUIO_URL = LIQUIO_URL
         this.allUnits = allUnits
-
-        this.$store.dispatch('initialize')
-        this.updateNode()
     },
     mounted () {
         setTimeout(() => this.isLoading = false, 50)
-    },
-    watch: {
-        urlKey () {
-            this.updateNode()
-        }
     },
     computed: {
         node () {
@@ -185,11 +165,6 @@ export default {
         }
     },
     methods: {
-        updateNode () {
-            if (this.urlKey) {
-                this.$store.dispatch('loadNode', { key: this.urlKey, refresh: true })
-            }
-        },
         startVoting () {
             if (this.currentSelection) {
                 this.currentAnchor = this.currentSelection
@@ -205,17 +180,19 @@ export default {
         finalizeVote () {
             if (this.currentAnchor && this.currentTitle) {
                 this.signInstruction = true
+                let referenceTitle = this.currentTitle.trim(' ')
                 this.$store.dispatch('vote', {
                     messages: [{
                         name: 'reference_vote',
                         key: ['title', 'reference_title'],
                         title: this.urlKey + '/' + slug(this.currentAnchor.trim(' ')),
-                        reference_title: this.currentTitle.trim(' '),
+                        reference_title: referenceTitle,
                         relevance: 1.0
                     }],
-                    messageKeys: ['title', 'reference_title', 'relevance', 'unit', 'choice']
-                }).then(c => {
-                    this.$store.dispatch('updateNodes')
+                    messageKeys: ['title', 'reference_title', 'relevance']
+                }).then(() => {
+                    this.$store.dispatch('loadNode', { key: this.urlKey })
+                    this.$store.dispatch('loadNode', { key: referenceTitle })
                     this.currentAnchor = null
                     this.currentTitle = null
                 })
