@@ -1,6 +1,6 @@
 @import '../node_modules/element-ui/lib/theme-chalk/index.css';
 
-@height: 50px;
+@height: 42px;
 
 .liquio-bar {
     cursor: default;
@@ -23,8 +23,6 @@
         position: fixed;
         left: 0;
         bottom: 0;
-        z-index: 100;
-        width: 100%;
         user-select: none;
         z-index: 1000000;
     }
@@ -37,7 +35,6 @@
     &__wrap {
         display: flex;
         align-items: center;
-        background-color: #fff;
     }
 
     &__score {
@@ -64,8 +61,7 @@
 
     &__main {
         flex: 1;
-        padding: 0px 20px;
-        width: calc(100% - @height - 100px);
+        width: 100%;
         height: @height;
     }
 
@@ -87,7 +83,8 @@
         display: flex;
         align-items: center;
         height: 100%;
-        width: 100%;
+        background-color: #fff;
+        padding-left: 30px;
     }
 
     &__buttons {
@@ -143,6 +140,12 @@ a {
 .login-title {
     font-size: 18px;
     margin-bottom: 30px;
+}
+
+.dialog {
+    .el-dialog__header {
+        display: none;
+    }
 }
 
 .node {
@@ -205,18 +208,22 @@ a {
 	}
 }
 
+
+.search {
+    width: 100%;
+    padding: 0px 20px 14px 20px;
+    margin: -16px -20px 40px -20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.search-reference {
+    width: 100%;
+    padding: 14px 20px 0px 20px;
+    margin: 0px -20px -16px -20px;
+    border-top: 1px solid #ddd;
+}
+
 .liquio-node {
-    &__main {
-        text-align: center;
-    }
-
-    &__title {
-        font-weight: normal;
-        font-size: 28px;
-        margin: -10px 0px 10px 0px;
-        line-height: 42px;
-    }
-
     &__vote {
         margin: 60px auto 0px auto;
         width: 300px;
@@ -242,18 +249,6 @@ a {
 
     &__reference {
         margin: 10px 0px;
-
-        p {
-            display: inline;
-            vertical-align: middle;
-            margin-left: 10px;
-        }
-
-        svg {
-            width: 100px;
-            display: inline-block;
-            vertical-align: middle;
-        }
     }
 
     &__reference-title {
@@ -262,5 +257,30 @@ a {
         .el-input {
             width: calc(~'100% - 64px');
         }
+    }
+}
+
+.inline-node[size="large"] {
+    text-align: center;
+    
+    p {
+        font-weight: normal;
+        font-size: 28px;
+        margin: -10px 0px 10px 0px;
+        line-height: 42px;
+    }
+}
+
+.inline-node[size="small"] {
+    p {
+        display: inline;
+        vertical-align: middle;
+        margin-left: 10px;
+    }
+
+    svg {
+        width: 100px;
+        display: inline-block;
+        vertical-align: middle;
     }
 }

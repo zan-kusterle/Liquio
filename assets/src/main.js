@@ -1,11 +1,11 @@
 import 'webextension-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import Root from 'inject/root.vue'
-import transformContent from 'inject/transform_content'
-import mainCss from 'inject/main.less'
-import shadowCss from 'inject/shadow.less'
-import storeObject from 'inject/store/index.js'
+import Root from 'vue/root.vue'
+import transformContent from 'transform_content'
+import mainCss from 'main.less'
+import shadowCss from 'shadow.less'
+import storeObject from 'store/index.js'
 
 let getElement = () => {
     let bodyElement = document.getElementsByTagName('body')[0]
@@ -52,18 +52,14 @@ const vm = new Vue({
         return {
             isHidden: true,
             isUnavailable: false,
-            urlKey: null,
             currentNode: null,
             currentSelection: null,
             currentVideoTime: null,
         }
     },
     methods: {
-        startVoting () {
-            this.$children[0].startVoting()
-        },
-        viewNode (key) {
-            this.$children[0].viewNode(key)
+        open () {
+            this.$children[0].open()
         }
     },
     render (createElement) {
@@ -71,7 +67,6 @@ const vm = new Vue({
             props: {
                 isHidden: this.isHidden,
                 isUnavailable: this.isUnavailable,
-                urlKey: this.urlKey,
                 currentNode: this.currentNode,
                 currentSelection: this.currentSelection,
                 currentVideoTime: this.currentVideoTime
@@ -83,7 +78,7 @@ const vm = new Vue({
 let nodesByText = {}
 let textNodes = []
 store.subscribe((mutation, state) => {
-    if (mutation.type === 'SET_NODE' && mutation.payload.title === vm.urlKey) {
+    if (mutation.type === 'SET_NODE' && mutation.payload.title === state.currentPage) {
         let node = mutation.payload
         let getNodesByText = (node, key) => {
             var result = {}
@@ -105,15 +100,20 @@ store.subscribe((mutation, state) => {
             browser.runtime.sendMessage({ name: 'score', score: score })
         }
 
-        nodesByText = getNodesByText(node, vm.urlKey)
+        nodesByText = getNodesByText(node, store.state.currentPage)
 
         transformContent.resetTransforms()
         for (let domNode of textNodes) {
             transformContent.transformNode(nodesByText, domNode, (activeNode, isClicked) => {
-                vm.currentNode = activeNode
+                if (activeNode) {
+                    vm.currentNode = activeNode
 
-                if (isClicked) {
-                    vm.viewNode(vm.currentNode.title)
+                    if (isClicked) {
+                        store.dispatch('setCurrentTitle', activeNode.title)
+                        vm.open()
+                    }
+                } else {
+                    vm.currentNode = null
                 }
             })
         }
@@ -126,15 +126,15 @@ if (IS_EXTENSION) {
         if (message.name === 'update') {
             onUrlChange(document.location.href)
         } else if (message.name === 'open') {
-            vm.viewNode(vm.urlKey)
+            store.dispatch('setCurrentTitle', store.state.currentPage)
+            vm.open()
         }
     })
 }
 
 function onUrlChange (url) {
     vm.isUnavailable = !IS_EXTENSION && document.getElementById('liquio-bar-extension')
-    vm.urlKey = decodeURIComponent(url).replace(/\/$/, '');
-    store.dispatch('loadNode', { key: vm.urlKey, refresh: true })
+    store.dispatch('setCurrentPage', decodeURIComponent(url).replace(/\/$/, ''))
 }
 
 let onDomNodeInsert = (node) => {

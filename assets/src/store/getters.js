@@ -1,4 +1,7 @@
 export default {
+    currentTitle (state) {
+        return state.currentTitle || state.currentPage
+    },
     colorOnSpectrum() {
         let colorOnGradient = (colorA, colorB, ratio) => {
             let hex = (x) => {

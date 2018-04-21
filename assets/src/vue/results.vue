@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { allUnits } from './data'
+import { allUnits } from 'store/constants'
 
 export default {
     props: {

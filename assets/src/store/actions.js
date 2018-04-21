@@ -55,6 +55,14 @@ export default {
             }, 2000)
         }
     },
+    setCurrentPage ({state, commit, dispatch }, payload) {
+        commit('SET_CURRENT_PAGE', payload)
+        dispatch('loadNode', { key: payload, refresh: true })
+    },
+    setCurrentTitle ({state, commit, dispatch }, payload) {
+        commit('SET_CURRENT_TITLE', payload)
+        dispatch('loadNode', { key: payload, refresh: true })
+    },
     updateNodes ({ state, commit }) {
         let promises = state.refreshKeys.map(key => fetchNode(key, state.whitelist, 2))
         axios.all(promises).then(response => {
@@ -63,7 +71,9 @@ export default {
             }
         }).catch(() => {})
     },
-    vote ({}, { messages, messageKeys }) {
+    vote ({ commit }, { messages, messageKeys }) {
+        commit('SET_IS_SIGN_WINDOW_OPEN', true)
+
         let data = {
             name: 'sign',
             messages: messages,

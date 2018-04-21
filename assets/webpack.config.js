@@ -10,8 +10,8 @@ let publicUrl = process.env.NODE_ENV === 'production' ? "https://liqu.io" : "htt
 module.exports = {
     mode: 'development',
     entry: {
-        background: './inject/background.js',
-        content: './inject/main.js'
+        background: './src/background.js',
+        content: './src/main.js'
     },
     output: {
         path: path.resolve(__dirname, "../priv/static/extension"),
@@ -43,7 +43,7 @@ module.exports = {
         }]
     },
     resolve: {
-        modules: ["node_modules", __dirname, __dirname + "/vue"],
+        modules: ["node_modules", __dirname, __dirname + "/src"],
         alias: {
             'vue$': 'vue/dist/vue.common.js'
         }
