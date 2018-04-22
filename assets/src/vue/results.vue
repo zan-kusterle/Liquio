@@ -10,13 +10,14 @@ import { allUnits } from 'store/constants'
 
 export default {
     props: {
-        unitResults: { type: Object }
+        unitResults: { type: Object },
+        unitKey: { type: String }
     },
     computed: {
         unit () {
-            if (!this.unitResults)
+            if (!this.unitKey)
                 return null
-            return allUnits.find(u => u.text === this.unitResults.unit)
+            return allUnits.find(u => u.key === this.unitKey)
         },
         color () {
             let mean = this.unitResults && this.unitResults.mean
@@ -29,7 +30,7 @@ export default {
                 return "rgb(140, 232, 140)"
         },
         text () {
-            if (!this.unitResults)
+            if (!this.unitResults || !this.unitResults.mean)
                 return '?'
             if (this.unit.type === 'spectrum') {
                 return Math.round(this.unitResults.mean * 100) + '%'

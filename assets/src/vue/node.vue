@@ -1,14 +1,14 @@
 <template>
     <div class="liquio-node" v-if="node">
-        <inline-node ref="node" :node="node" :force-unit="currentUnitValueData" size="large" class="liquio-node__main"></inline-node>
+        <inline-node :node="node" :force-unit="currentUnitValueData" size="large" class="liquio-node__main"></inline-node>
 
-        <div class="liquio-node__vote">
+        <div class="vote">
             <el-select v-model="currentUnitValue" class="unit">
                 <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
             </el-select>
 
             <div class="choice">
-                <el-slider v-if="isCurrentUnitSpectrum" v-model="currentChoice.spectrum" class="spectrum"></el-slider>
+                <el-slider v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="spectrum"></el-slider>
                 <el-input v-else v-model="currentChoice.quantity" type="number" class="quantity" />
             </div>
 
@@ -18,7 +18,7 @@
         </div>
 
         <div class="liquio-node__references">
-            <inline-node v-for="reference in node.references" :key="reference.title" :node="reference" size="small" class="liquio-node__reference"></inline-node>
+            <inline-node v-for="reference in node.references" :key="reference.title" :node="reference" @click="viewNode(reference)" size="small" class="liquio-node__reference"></inline-node>
         </div>
     </div>
     <div v-else>Loading...</div>
@@ -54,6 +54,15 @@ export default {
     created () {
         this.allUnits = allUnits
     },
+    watch: {
+        title () {
+            this.currentUnitValue = null
+            this.currentChoice = {
+                spectrum: 50,
+                quantity: 0
+            }
+        }
+    },
     computed: {
         node () {
             return this.$store.state.nodesByKey[this.title]
@@ -66,21 +75,19 @@ export default {
                 this.currentUnitValueData = v
             }
         },
-        isCurrentUnitSpectrum () {
-            let unit = allUnits.find(u => u.value === this.currentUnitValue)
-            return unit && unit.type === 'spectrum'
+        currentUnit () {
+            return allUnits.find(u => u.value === this.currentUnitValue)
         }
     },
     methods: {
         vote () {
             if (this.node.title) {
-                let unit = this.$refs.node.currentUnit
                 this.$store.dispatch('vote', {
                     messages: [{
                         name: 'vote',
                         key: ['title', 'unit'],
                         title: this.node.title.trim(' '),
-                        unit: unit.text,
+                        unit: this.currentUnit.text,
                         choice: unit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
                     }],
                     messageKeys: ['title', 'unit', 'choice']
@@ -88,6 +95,9 @@ export default {
                     this.$store.dispatch('loadNode', { key: this.title })
                 })
             }
+        },
+        viewNode (reference) {
+            this.$store.dispatch('setCurrentTitle', reference.title)
         }
     }
 }

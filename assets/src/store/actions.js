@@ -63,6 +63,10 @@ export default {
         commit('SET_CURRENT_TITLE', payload)
         dispatch('loadNode', { key: payload, refresh: true })
     },
+    setCurrentReferenceTitle ({state, commit, dispatch }, payload) {
+        commit('SET_CURRENT_REFERENCE_TITLE', payload)
+        dispatch('loadNode', { key: payload, refresh: true })
+    },
     updateNodes ({ state, commit }) {
         let promises = state.refreshKeys.map(key => fetchNode(key, state.whitelist, 2))
         axios.all(promises).then(response => {
@@ -87,6 +91,7 @@ export default {
                 let data = e.detail
                 if (data.request_name === 'sign') {
                     window.removeEventListener('sign-anything-response', onSignResponse)
+                    commit('SET_IS_SIGN_WINDOW_OPEN', false)
                     resolve()
                 }
             }

@@ -19,6 +19,9 @@ export default {
     SET_CURRENT_TITLE (state, title) {
         state.currentTitle = title
     },
+    SET_CURRENT_REFERENCE_TITLE (state, title) {
+        state.currentReferenceTitle = title
+    },
     SET_IS_SIGN_WINDOW_OPEN (state, isOpen) {
         state.isSignWindowOpen = isOpen
     }

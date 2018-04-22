@@ -32,17 +32,17 @@
             <i @click="viewSearch" slot="suffix" class="el-input__icon el-icon-search"></i>
         </el-autocomplete>
 
-        <reference v-if="referenceTitle" :title="currentTitle" :reference-title="referenceTitle"></reference>
+        <reference v-if="currentReferenceTitle" :title="currentTitle" :reference-title="currentReferenceTitle"></reference>
         <node v-else :title="currentTitle"></node>
 
         <el-autocomplete
-            v-model="referenceTitle"
+            v-model="referenceQuery"
             :fetch-suggestions="querySearchAsync"
             @keyup="viewReference"
             placeholder="Add reference"
             class="search-reference">
 
-            <i @click="viewSearch" slot="suffix" class="el-input__icon el-icon-share"></i>
+            <i @click="viewReference" slot="suffix" class="el-input__icon el-icon-share"></i>
         </el-autocomplete>
     </el-dialog>
 
@@ -61,7 +61,8 @@ import { Slider, Button, Select, Option, Input, Autocomplete, Dialog } from 'ele
 import Results from 'vue/results.vue'
 import { allUnits } from 'store/constants'
 import NodeElement from 'vue/node.vue'
-import { mapGetters } from 'vuex'
+import Reference from 'vue/reference.vue'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
     components: {
@@ -73,7 +74,8 @@ export default {
         elAutocomplete: Autocomplete,
         elDialog: Dialog,
         results: Results,
-        node: NodeElement
+        node: NodeElement,
+        reference: Reference
     },
     props: {
         isHidden: { type: Boolean },
@@ -88,7 +90,7 @@ export default {
             dialogVisible: false,
             results: [],
             searchQuery: '',
-            referenceTitle: null
+            referenceQuery: ''
         }
     },
     created () {
@@ -100,6 +102,7 @@ export default {
         this.results = this.loadResults()
     },
     computed: {
+        ...mapState(['currentReferenceTitle']),
         ...mapGetters(['currentTitle']),
         isSignWindowOpen: {
             get () {
@@ -165,9 +168,11 @@ export default {
         },
         viewSearch () {
             this.$store.dispatch('setCurrentTitle', this.searchQuery)
+            this.searchQuery = ''
         },
-        viewReference () {
-
+        viewReference (e) {
+            this.$store.dispatch('setCurrentReferenceTitle', this.referenceQuery)
+            this.referenceQuery = ''
         }
     }
 }

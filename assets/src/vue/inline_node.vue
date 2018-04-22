@@ -1,11 +1,11 @@
 <template>
-    <div :size="size" class="inline-node">
+    <div :size="size" class="inline-node" @click="$emit('click')">
         <template v-if="size === 'large'">
             <p>{{ node.title }}</p>
-            <results :unit-results="unitResults" width="200px"></results>
+            <results :unit-results="unitResults" :unit-key="this.currentUnit.key" width="200px"></results>
         </template>
         <template v-else>
-            <results :unit-results="unitResults" width="200px"></results>
+            <results :unit-results="unitResults" :unit-key="this.currentUnit.key" width="200px"></results>
             <p>{{ node.title }}</p>
         </template>
     </div>
@@ -42,10 +42,7 @@ export default {
         unitResults () {
             if (!this.node)
                 return null
-            return {
-                ...this.node.results[this.currentUnit.text],
-                unit: this.currentUnit.text
-            }
+            return this.node.results[this.currentUnit.text]
         }
     }
 }
