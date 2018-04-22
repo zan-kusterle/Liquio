@@ -10,6 +10,7 @@ export default {
                 parent.insertBefore(element.firstChild, element)
 
             parent.removeChild(element)
+            parent.normalize()
         }
     },
     transformNode (nodesByText, domNode, setActive) {
@@ -38,7 +39,7 @@ export default {
 
             let range = document.createRange()
             range.setStart(domNode, start)
-            range.setEnd(domNode, end)
+            range.setEnd(domNode, end + 1)
             return {
                 text: k,
                 node: nodesByText[k][0],
@@ -47,7 +48,7 @@ export default {
         })
 
         if (nodesToAdd.length > 0) {
-            nodesToAdd.forEach(({ range, node }) => {            
+            nodesToAdd.forEach(({ range, node }) => {
                 if (range.commonAncestorContainer.nodeType === Node.TEXT_NODE && range.commonAncestorContainer.parentNode.className !== 'liquio-highlight') {
                     let span = document.createElement('span')
                     range.surroundContents(span)

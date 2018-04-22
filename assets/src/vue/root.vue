@@ -48,6 +48,7 @@
 
     <el-dialog
         width="500px"
+        style="margin-top: 10vh;"
         title="Sign your data"
         :visible.sync="isSignWindowOpen"
         append-to-body>

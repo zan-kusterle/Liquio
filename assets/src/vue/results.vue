@@ -21,7 +21,8 @@ export default {
         },
         color () {
             let mean = this.unitResults && this.unitResults.mean
-            if (!mean) return "#ddd"
+            if (this.unit.type === 'quantity' || !mean)
+                return "#ddd"
             if (mean < 0.25)
                 return "rgb(255, 164, 164)"
             else if (mean < 0.75)
