@@ -1,5 +1,5 @@
 <template>
-    <div class="liquio-node" v-if="node">
+    <div v-if="node" class="liquio-node">
         <inline-node :node="node" :force-unit="currentUnitValueData" size="large" class="liquio-node__main"></inline-node>
 
         <div class="vote">
@@ -24,7 +24,9 @@
             </div>
         </div>
     </div>
-    <div v-else>Loading...</div>
+    <div v-else class="liquio-loading">
+        <i class="el-icon-loading"></i>
+    </div>
 </template>
 
 <script>

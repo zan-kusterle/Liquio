@@ -38,6 +38,7 @@
             v-model="referenceQuery"
             :fetch-suggestions="querySearchAsync"
             @keyup="viewReference"
+            placement="top-start"
             placeholder="Add reference"
             class="search-reference">
 
@@ -71,6 +72,23 @@ import { allUnits } from 'store/constants'
 import NodeElement from 'vue/node.vue'
 import Reference from 'vue/reference.vue'
 import { mapState, mapGetters, mapActions } from 'vuex'
+
+// Hack to make autocomplete work with shadow DOM
+let handleFocus = Autocomplete.methods.handleFocus
+Autocomplete.methods.handleFocus = function (event) {
+    this.lastFocusTime = Date.now()
+    handleFocus.bind(this)(event)
+}
+
+let close = Autocomplete.methods.close
+Autocomplete.methods.close = function (event) {
+    let canClose = true
+    if (this.lastFocusTime && Date.now() - this.lastFocusTime < 500)
+        canClose = false
+
+    if (canClose)
+        close.bind(this)(event)
+}
 
 export default {
     components: {

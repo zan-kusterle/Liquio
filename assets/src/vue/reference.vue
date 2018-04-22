@@ -1,5 +1,5 @@
 <template>
-    <div class="liquio-reference" v-if="node && referenceNode">
+    <div v-if="node && referenceNode" class="liquio-reference">
         <inline-node :node="node" @click="viewNode(node)" size="medium"></inline-node>
         <i class="el-icon-arrow-down"></i>
         <inline-node :node="referenceNode" @click="viewNode(referenceNode)" size="medium"></inline-node>
@@ -15,19 +15,19 @@
             </div>
         </div>
     </div>
-    <div v-else>Loading...</div>
+    <div v-else class="liquio-loading">
+        <i class="el-icon-loading"></i>
+    </div>
 </template>
 
 <script>
 import { Slider, Button } from 'element-ui'
-import Results from 'vue/results.vue'
 import InlineNode from 'vue/inline_node.vue'
 
 export default {
     components: {
         elSlider: Slider,
         elButton: Button,
-        results: Results,
         inlineNode: InlineNode
     },
     props: {
