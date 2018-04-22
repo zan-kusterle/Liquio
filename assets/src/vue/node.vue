@@ -18,7 +18,10 @@
         </div>
 
         <div class="liquio-node__references">
-            <inline-node v-for="reference in node.references" :key="reference.title" :node="reference" @click="viewNode(reference)" size="small" class="liquio-node__reference"></inline-node>
+            <div v-for="reference in node.references" :key="reference.title" class="liquio-node__reference">
+                <inline-node :node="reference" @click="viewNode(reference)" size="small"></inline-node>
+                <i @click="viewReference(reference)" class="el-icon-caret-right" style="cursor: pointer; vertical-align: middle;"></i>
+            </div>
         </div>
     </div>
     <div v-else>Loading...</div>
@@ -88,7 +91,7 @@ export default {
                         key: ['title', 'unit'],
                         title: this.node.title.trim(' '),
                         unit: this.currentUnit.text,
-                        choice: unit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
+                        choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
                     }],
                     messageKeys: ['title', 'unit', 'choice']
                 }).then(() => {
@@ -98,6 +101,9 @@ export default {
         },
         viewNode (node) {
             this.$store.dispatch('setCurrentTitle', node.title)
+        },
+        viewReference (node) {
+            this.$store.dispatch('setCurrentReferenceTitle', node.title)
         }
     }
 }

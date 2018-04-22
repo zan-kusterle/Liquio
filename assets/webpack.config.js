@@ -14,7 +14,7 @@ module.exports = {
         content: './src/main.js'
     },
     output: {
-        path: path.resolve(__dirname, "../priv/static/extension"),
+        path: path.resolve(__dirname, "../priv/static"),
         filename: "[name].js",
         publicPath: publicUrl
     },
@@ -38,7 +38,7 @@ module.exports = {
                 loader: "less-loader"
             }]
         }, {
-            test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+            test: /\.(eot|svg|ttf|woff|woff2|png)(\?\S*)?$/,
             use: 'base64-inline-loader?limit=1000&name=[name].[ext]'
         }]
     },
@@ -60,10 +60,9 @@ module.exports = {
             LIQUIO_URL: JSON.stringify(publicUrl),
             IS_EXTENSION: JSON.stringify(true)
         }),
-        new CopyWebpackPlugin([{ from: "./static/extension" }]),
+        new CopyWebpackPlugin([{ from: "./static" }]),
         new ZipPlugin({
-            filename: 'liquio.zip',
-            pathPrefix: 'extension'
+            filename: 'liquio.zip'
         }),
         //new BundleAnalyzerPlugin()
     ]

@@ -9,11 +9,9 @@
         <p>{{ node.title }}</p>
     </div>
 
-    <div v-else-if="size === 'small'" size="small" class="inline-node">
-        <div style="display: inline;" @click="$emit('click')">
-            <results :unit-results="unitResults" :unit-key="this.currentUnit.key" width="200px"></results>
-            <p>{{ node.title }}</p>
-        </div>
+    <div v-else-if="size === 'small'" @click="$emit('click')" size="small" class="inline-node">
+        <results :unit-results="unitResults" :unit-key="this.currentUnit.key" width="200px"></results>
+        <p>{{ node.title }}</p>
     </div>
 </template>
 

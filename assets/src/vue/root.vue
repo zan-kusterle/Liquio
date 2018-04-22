@@ -5,10 +5,7 @@
             <div class="liquio-bar__main">
                 <div class="liquio-bar__items">
                     <div class="liquio-bar__vote">
-                        <span>{{ currentNode.title }}</span>
-                        <div class="liquio-bar__results">
-                            <results :unit-results="unitResults" width="100%" height="100%"></results>
-                        </div>
+                        <inline-node :node="currentNode" size="small"></inline-node>
                     </div>
                 </div>
             </div>
@@ -44,23 +41,32 @@
             placeholder="Add reference"
             class="search-reference">
 
-            <i @click="viewReference" slot="suffix" class="el-input__icon el-icon-share"></i>
+            <i @click="viewReference" slot="suffix" class="el-input__icon el-icon-arrow-right"></i>
         </el-autocomplete>
     </el-dialog>
 
     <el-dialog
-        width="30%"
+        width="500px"
         title="Sign your data"
         :visible.sync="isSignWindowOpen"
         append-to-body>
-        Use sign extension. If it's not installed download it here.
+
+        <div class="sign-alert">
+            <p>Click the lock icon next to your address bar to continue.</p>
+
+            <div class="sign-alert__images">
+                <img class="sign-alert__sign-icon" :src="LIQUIO_URL + '/icons/sign-icon.png'" />
+                <div class="sign-alert__toolbar-image" :style="{ backgroundImage: `url(${LIQUIO_URL}/icons/toolbar.png)` }"></div>
+            </div>
+        </div>
     </el-dialog>
 </div>
 </template>
 
 <script>
 import { Slider, Button, Select, Option, Input, Autocomplete, Dialog } from 'element-ui'
-import Results from 'vue/results.vue'
+import slug from 'slug'
+import InlineNode from 'vue/inline_node.vue'
 import { allUnits } from 'store/constants'
 import NodeElement from 'vue/node.vue'
 import Reference from 'vue/reference.vue'
@@ -75,7 +81,7 @@ export default {
         elInput: Input,
         elAutocomplete: Autocomplete,
         elDialog: Dialog,
-        results: Results,
+        inlineNode: InlineNode,
         node: NodeElement,
         reference: Reference
     },
@@ -117,18 +123,6 @@ export default {
         node () {
             return this.$store.state.nodesByKey[this.currentTitle]
         },
-        unitResults () {
-            if (!this.currentNode)
-                return null
-            let byUnits = this.currentNode.results
-            let units = Object.keys(byUnits)
-            if (units.length === 0)
-                return null
-            return {
-                ...byUnits[units[0]],
-                unit: units[0]
-            }
-        },
         activeAnchor () {
             return this.currentSelection || this.currentVideoTime
         },
@@ -141,8 +135,9 @@ export default {
     methods: {
         ...mapActions(['navigateBack']),
         startVoting () {
-            let title = this.currentSelection || this.currentVideoTimeText
-            this.$store.dispatch('setCurrentTitle', title)
+            let anchor = slug(this.currentSelection || this.currentVideoTimeText)
+            this.$store.dispatch('setCurrentReferenceTitle', null)
+            this.$store.dispatch('setCurrentTitle', this.$store.state.currentPage + '/' + anchor)
             this.open()
         },
         open () {
