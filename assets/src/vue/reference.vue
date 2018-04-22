@@ -1,12 +1,12 @@
 <template>
     <div class="liquio-reference" v-if="node && referenceNode">
-        <inline-node :node="node" size="medium"></inline-node>
+        <inline-node :node="node" @click="viewNode(node)" size="medium"></inline-node>
         <i class="el-icon-arrow-down"></i>
-        <inline-node :node="referenceNode" size="medium"></inline-node>
+        <inline-node :node="referenceNode" @click="viewNode(referenceNode)" size="medium"></inline-node>
 
         <inline-node :node="resultsNode" size="large" style="margin-top: 100px;"></inline-node>
 
-        <div class="vote">
+        <div class="vote" style="margin-top: 40px;">
             <div class="choice">
                 <el-slider v-model="currentRelevance" class="spectrum"></el-slider>
             </div>
@@ -83,6 +83,10 @@ export default {
                 this.$store.dispatch('loadNode', { key: this.title })
                 this.$store.dispatch('loadNode', { key: this.referenceTitle })
             })
+        },
+        viewNode (node) {
+            this.$store.dispatch('setCurrentReferenceTitle', null)
+            this.$store.dispatch('setCurrentTitle', node.title)
         }
     }
 }

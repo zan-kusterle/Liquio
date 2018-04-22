@@ -55,17 +55,26 @@ export default {
             }, 2000)
         }
     },
-    setCurrentPage ({state, commit, dispatch }, payload) {
+    setCurrentPage ({ state, commit, dispatch }, payload) {
         commit('SET_CURRENT_PAGE', payload)
         dispatch('loadNode', { key: payload, refresh: true })
     },
-    setCurrentTitle ({state, commit, dispatch }, payload) {
+    setCurrentTitle ({ state, commit, dispatch }, payload) {
         commit('SET_CURRENT_TITLE', payload)
+        commit('ADD_TO_HISTORY')
         dispatch('loadNode', { key: payload, refresh: true })
     },
-    setCurrentReferenceTitle ({state, commit, dispatch }, payload) {
+    setCurrentReferenceTitle ({ state, commit, dispatch }, payload) {
         commit('SET_CURRENT_REFERENCE_TITLE', payload)
+        if (payload) {
+            commit('ADD_TO_HISTORY')
+        }
         dispatch('loadNode', { key: payload, refresh: true })
+    },
+    navigateBack ({ state, commit }) {
+        if (state.historyIndex > 0) {
+            commit('GO_TO_HISTORY_INDEX', state.historyIndex - 1)
+        }
     },
     updateNodes ({ state, commit }) {
         let promises = state.refreshKeys.map(key => fetchNode(key, state.whitelist, 2))

@@ -29,6 +29,7 @@
             placeholder="Search anything"
             class="search">
 
+            <i v-if="canNavigateBack" @click="navigateBack" slot="prefix" class="el-input__icon el-icon-arrow-left"></i>
             <i @click="viewSearch" slot="suffix" class="el-input__icon el-icon-search"></i>
         </el-autocomplete>
 
@@ -36,6 +37,7 @@
         <node v-else :title="currentTitle"></node>
 
         <el-autocomplete
+            v-if="!currentReferenceTitle"
             v-model="referenceQuery"
             :fetch-suggestions="querySearchAsync"
             @keyup="viewReference"
@@ -62,7 +64,7 @@ import Results from 'vue/results.vue'
 import { allUnits } from 'store/constants'
 import NodeElement from 'vue/node.vue'
 import Reference from 'vue/reference.vue'
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
     components: {
@@ -103,7 +105,7 @@ export default {
     },
     computed: {
         ...mapState(['currentReferenceTitle']),
-        ...mapGetters(['currentTitle']),
+        ...mapGetters(['currentTitle', 'canNavigateBack']),
         isSignWindowOpen: {
             get () {
                 return this.$store.state.isSignWindowOpen
@@ -137,6 +139,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['navigateBack']),
         startVoting () {
             let title = this.currentSelection || this.currentVideoTimeText
             this.$store.dispatch('setCurrentTitle', title)

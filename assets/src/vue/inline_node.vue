@@ -1,13 +1,19 @@
 <template>
-    <div :size="size" class="inline-node" @click="$emit('click')">
-        <template v-if="size === 'large'">
-            <p>{{ node.title }}</p>
+    <div v-if="size === 'large'" @click="$emit('click')" size="large" class="inline-node">
+        <p>{{ node.title }}</p>
+        <results :unit-results="unitResults" :unit-key="this.currentUnit.key" width="200px"></results>
+    </div>
+
+    <div v-else-if="size === 'medium'" @click="$emit('click')" size="medium" class="inline-node">
+        <results :unit-results="unitResults" :unit-key="this.currentUnit.key" width="200px"></results>
+        <p>{{ node.title }}</p>
+    </div>
+
+    <div v-else-if="size === 'small'" size="small" class="inline-node">
+        <div style="display: inline;" @click="$emit('click')">
             <results :unit-results="unitResults" :unit-key="this.currentUnit.key" width="200px"></results>
-        </template>
-        <template v-else>
-            <results :unit-results="unitResults" :unit-key="this.currentUnit.key" width="200px"></results>
             <p>{{ node.title }}</p>
-        </template>
+        </div>
     </div>
 </template>
 

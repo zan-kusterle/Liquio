@@ -96,8 +96,8 @@ export default {
                 })
             }
         },
-        viewNode (reference) {
-            this.$store.dispatch('setCurrentTitle', reference.title)
+        viewNode (node) {
+            this.$store.dispatch('setCurrentTitle', node.title)
         }
     }
 }

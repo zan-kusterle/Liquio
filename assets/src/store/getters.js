@@ -2,6 +2,9 @@ export default {
     currentTitle (state) {
         return state.currentTitle || state.currentPage
     },
+    canNavigateBack (state) {
+        return state.historyIndex > 0
+    },
     colorOnSpectrum() {
         let colorOnGradient = (colorA, colorB, ratio) => {
             let hex = (x) => {
