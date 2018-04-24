@@ -2,44 +2,36 @@ import axios from 'axios'
 
 let fetchNode = (key, whitelist, depth) => {
     return new Promise((resolve, reject) => {
-        if (whitelist && (whitelist.url || whitelist.username)) {
-            let params = {}
-            if (depth) {
-                params.depth = depth
-            }
-            if (whitelist.url) {
-                params.whitelist_url = whitelist.url
-            }
-            if (whitelist.username) {
-                params.whitelist_usernames = whitelist.username
-            }
-
-            axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), { params: params }).then((response) => {
-                resolve(response.data.data)
-            }).catch(e => reject(e))
-        } else {
-            reject('No whitelist set')
+        let params = {}
+        if (depth) {
+            params.depth = depth
         }
+        if (whitelist.url) {
+            params.whitelist_url = whitelist.url
+        }
+        if (whitelist.username) {
+            params.whitelist_usernames = whitelist.username
+        }
+
+        axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), { params: params }).then((response) => {
+            resolve(response.data.data)
+        }).catch(e => reject(e))
     })
 }
 
 let fetchSearch = (query, whitelist) => {
     return new Promise((resolve, reject) => {
-        if (whitelist && (whitelist.url || whitelist.username)) {
-            let params = {}
-            if (whitelist.url) {
-                params.whitelist_url = whitelist.url
-            }
-            if (whitelist.username) {
-                params.whitelist_usernames = whitelist.username
-            }
-
-            axios.get(LIQUIO_URL + '/api/search/' + encodeURIComponent(query), { params: params }).then((response) => {
-                resolve(response.data.data)
-            }).catch(e => reject(e))
-        } else {
-            reject('No whitelist set')
+        let params = {}
+        if (whitelist.url) {
+            params.whitelist_url = whitelist.url
         }
+        if (whitelist.username) {
+            params.whitelist_usernames = whitelist.username
+        }
+
+        axios.get(LIQUIO_URL + '/api/search/' + encodeURIComponent(query), { params: params }).then((response) => {
+            resolve(response.data.data)
+        }).catch(e => reject(e))
     })
 }
 

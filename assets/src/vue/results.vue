@@ -1,7 +1,7 @@
 <template>
     <svg viewBox="0 0 100 30">
         <rect x="0" y="0" width="100" height="30" :fill="color"></rect>
-        <text x="50" y="16.5" text-anchor="middle" alignment-baseline="middle" font-family="Helvetica" font-size="15">{{ text }}</text>
+        <text x="50" y="16.5" text-anchor="middle" dominant-baseline="middle" font-family="Helvetica" font-size="15">{{ text }}</text>
     </svg>
 </template>
 
