@@ -2,7 +2,7 @@
     <div v-if="node" class="liquio-node">
         <inline-node :node="node" :force-unit="currentUnitValueData" size="large" class="liquio-node__main"></inline-node>
 
-        <div class="vote">
+        <div class="vote" v-if="!isVotingDisabled">
             <el-select v-model="currentUnitValue" class="unit">
                 <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
             </el-select>
@@ -22,6 +22,10 @@
                 <inline-node :node="reference" @click="viewNode(reference)" size="small"></inline-node>
                 <i @click="viewReference(reference)" class="el-icon-caret-right" style="cursor: pointer; vertical-align: middle;"></i>
             </div>
+            <div v-for="reference in node.inverse_references" :key="reference.title" class="liquio-node__reference">
+                <inline-node :node="reference" @click="viewNode(reference)" size="small"></inline-node>
+                <i @click="viewInverseReference(reference)" class="el-icon-caret-left" style="cursor: pointer; vertical-align: middle;"></i>
+            </div>
         </div>
     </div>
     <div v-else class="liquio-loading">
@@ -33,6 +37,7 @@
 import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
 import InlineNode from 'vue/inline_node.vue'
 import { allUnits } from 'store/constants'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
     components: {
@@ -69,6 +74,7 @@ export default {
         }
     },
     computed: {
+        ...mapState(['isVotingDisabled']),
         node () {
             return this.$store.state.nodesByKey[this.title]
         },
@@ -106,6 +112,10 @@ export default {
         },
         viewReference (node) {
             this.$store.dispatch('setCurrentReferenceTitle', node.title)
+        },
+        viewInverseReference (node) {
+            this.$store.dispatch('setCurrentReferenceTitle', this.node.title)
+            this.$store.dispatch('setCurrentTitle', node.title)
         }
     }
 }

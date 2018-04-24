@@ -157,6 +157,7 @@ export default {
             let anchor = slug(this.currentSelection || this.currentVideoTimeText)
             this.$store.dispatch('setCurrentReferenceTitle', null)
             this.$store.dispatch('setCurrentTitle', this.$store.state.currentPage + '/' + anchor)
+            this.$store.dispatch('disableVoting')
             this.open()
         },
         open () {

@@ -60,6 +60,7 @@ export default {
         dispatch('loadNode', { key: payload, refresh: true })
     },
     setCurrentTitle ({ state, commit, dispatch }, payload) {
+        commit('SET_IS_VOTING_DISABLED', false)
         commit('SET_CURRENT_TITLE', payload)
         commit('ADD_TO_HISTORY')
         dispatch('loadNode', { key: payload, refresh: true })
@@ -70,6 +71,10 @@ export default {
             commit('ADD_TO_HISTORY')
         }
         dispatch('loadNode', { key: payload, refresh: true })
+    },
+    disableVoting ({ state, commit }) {
+        console.log('setting disabled')
+        commit('SET_IS_VOTING_DISABLED', true)
     },
     navigateBack ({ state, commit }) {
         if (state.historyIndex > 0) {

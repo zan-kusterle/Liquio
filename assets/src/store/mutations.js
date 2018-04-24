@@ -22,6 +22,9 @@ export default {
     SET_CURRENT_REFERENCE_TITLE (state, title) {
         state.currentReferenceTitle = title
     },
+    SET_IS_VOTING_DISABLED (state, value) {
+        state.isVotingDisabled = value
+    },
     ADD_TO_HISTORY (state) {
         state.history.splice(state.historyIndex + 1, state.history.length - state.historyIndex)
         state.history.push({

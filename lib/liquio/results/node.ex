@@ -20,7 +20,7 @@ defmodule Liquio.Node do
         node
     end
 
-    def load(node, data = %{:delegations => delegations, :votes => votes, :reference_votes => reference_votes}, depth) do
+    def load(node, data = %{:delegations => delegations, :votes => votes, :reference_votes => all_reference_votes}, depth) do
         inverse_delegations = delegations |> Enum.map(& {&1.to_username, &1}) |> Enum.into(%{})
 
         votes = votes |> Enum.filter(& slug(&1.title) === node.key)
@@ -39,7 +39,7 @@ defmodule Liquio.Node do
         end)
         |> Enum.into(%{})
 
-        reference_votes = reference_votes |> Enum.filter(fn(vote) ->
+        reference_votes = all_reference_votes |> Enum.filter(fn(vote) ->
             key = slug(vote.title)
             key === node.key or String.starts_with?(key, "#{String.trim_trailing(node.key, "/")}/")
         end)
@@ -52,7 +52,10 @@ defmodule Liquio.Node do
             |> Node.load(data, depth - 1)
         end)
 
-        inverse_reference_votes = reference_votes |> Enum.filter(& slug(&1.reference_title) === node.key)
+        inverse_reference_votes = all_reference_votes |> Enum.filter(fn(vote) ->
+            key = slug(vote.reference_title)
+            key === node.key or String.starts_with?(key, "#{String.trim_trailing(node.key, "/")}/")
+        end)
         inverse_references = inverse_reference_votes
         |> Enum.group_by(& slug(&1.title))
         |> Enum.map(fn({_key, votes}) ->

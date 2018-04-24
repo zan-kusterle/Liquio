@@ -36,8 +36,42 @@ export default {
             if (this.unit.type === 'spectrum') {
                 return Math.round(this.unitResults.mean * 100) + '%'
             } else {
-                return Math.round(this.unitResults.median * 10) / 10
+                return this.formatNumber(this.unitResults.median)
             }
+        }
+    },
+    methods: {
+        formatNumber (number) {
+            let trimZeros = (s) => s.replace(/^0+|\.?0+$/g, '')
+
+            let absolute = Math.abs(number)
+            let numDigits = Math.max(0, Math.ceil(Math.log10(number)))
+            let maxFractionDigits = 3
+
+            if (numDigits < maxFractionDigits) {
+                return trimZeros(number.toFixed(maxFractionDigits - numDigits))
+            }
+
+            if (numDigits >= 5) {
+                let superscriptDigits = {
+                    '0': '⁰',
+                    '1': '¹',
+                    '2': '²',
+                    '3': '³',
+                    '4': '⁴',
+                    '5': '⁵',
+                    '6': '⁶',
+                    '7': '⁷',
+                    '8': '⁸',
+                    '9': '⁹',
+                }
+                let exponent = numDigits - 1
+                let whole = number / Math.pow(10, exponent)
+                let superscriptExponent = exponent.toString().split('').map(c => superscriptDigits[c]).join('')
+                return trimZeros(whole.toFixed(maxFractionDigits)) + ' × 10' + superscriptExponent
+            }
+
+            return Math.round(number)
         }
     }
 }

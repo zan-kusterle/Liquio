@@ -2,21 +2,30 @@ defmodule Liquio.VotingPower do
 	alias Liquio.CalculateMemoServer
 
 	def get(usernames, inverse_delegations) do
-		get(usernames, inverse_delegations, :timer.seconds(Application.get_env(:liquio, :results_cache_seconds)))
+		cache_time = if Application.get_env(:liquio, :results_cache_seconds) do
+			:timer.seconds(Application.get_env(:liquio, :results_cache_seconds))
+		else
+			nil
+		end
+		get(usernames, inverse_delegations, cache_time)
 	end
 	def get(usernames, inverse_delegations, cache_time) do
-		key = {usernames, inverse_delegations}
+		if cache_time do
+			key = {usernames, inverse_delegations}
 
-		power = Cachex.get!(:voting_power, key)
-		power = if power do
+			power = Cachex.get!(:voting_power, key)
+			power = if power do
+				power
+			else
+				data = calculate(usernames, inverse_delegations)
+				Cachex.set(:voting_power, key, data, ttl: cache_time)
+				data
+			end
+
 			power
 		else
-			data = calculate(usernames, inverse_delegations)
-			Cachex.set(:voting_power, key, data, ttl: cache_time)
-			data
+			calculate(usernames, inverse_delegations)
 		end
-
-		power
 	end
 
 	def calculate(usernames, inverse_delegations) do
