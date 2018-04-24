@@ -62,7 +62,7 @@ defmodule Liquio.Node do
 		|> Enum.group_by(& slug(&1.title))
 		|> Enum.map(fn({_key, votes}) ->
 			best_title = votes |> Enum.map(& &1.title) |> Average.mode
-			node = best_title
+			best_title
 			|> Node.new
 			|> Map.put(:referencing_title, votes |> Enum.map(& &1.reference_title) |> Average.mode)
 			|> Map.put(:reference_results, Liquio.Results.from_votes(votes, inverse_delegations))

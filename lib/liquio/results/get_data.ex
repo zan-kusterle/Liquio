@@ -34,17 +34,6 @@ defmodule Liquio.GetData do
 		end
 	end
 
-	defp get_identifications(messages) do
-		Enum.map(messages, fn(message) ->
-			data = message["data"]
-			%{
-				:username => message["username"],
-				:type => data["type"],
-				:value => data["value"]
-			}
-		end)
-	end
-
 	defp get_delegations(messages) do
 		Enum.map(messages, fn(message) ->
 			data = message["data"]
