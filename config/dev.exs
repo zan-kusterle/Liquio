@@ -28,11 +28,7 @@ config :logger, :console, format: "[$level] $message\n"
 # and calculating stacktraces is usually expensive.
 config :phoenix, :stacktrace_depth, 20
 
-config :liquio, default_trust_metric_url: "http://127.0.0.1:8080/dev_trust_metric.html"
-config :liquio, trust_metric_cache_time_seconds: 5
-config :liquio, results_cache_seconds: 5
-config :liquio, enable_ipfs: false
-config :liquio, infuse_link: "http://localhost:8080/inject.js"
-config :liquio, proxy_host: "http://localhost:4000"
+config :liquio, results_cache_seconds: nil
+config :liquio, messages_url: "http://localhost:5000/messages"
 
 import_config "dev.secret.exs"

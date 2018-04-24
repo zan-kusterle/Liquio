@@ -8,11 +8,7 @@ config :liquio, Liquio.Web.Endpoint,
 
 config :logger, level: :info
 
-config :liquio, default_trust_metric_url: "https://trust-metric.liqu.io"
-config :liquio, trust_metric_cache_time_seconds: 30
 config :liquio, results_cache_seconds: 10
-config :liquio, enable_ipfs: true
-config :liquio, infuse_link: "https://storage.googleapis.com/liquio/inject.js"
-config :liquio, proxy_host: "https://proxy.liqu.io"
+config :liquio, messages_url: "https://sign.liqu.io/messages"
 
 import_config "prod.secret.exs"
