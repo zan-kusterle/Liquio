@@ -22,7 +22,8 @@
         <el-autocomplete
             v-model="searchQuery"
             :fetch-suggestions="querySearchAsync"
-            @keyup="viewSearch"
+            @keyup.enter.native="viewSearch"
+            @select="viewSearch"
             placeholder="Search anything"
             class="search">
 
@@ -37,7 +38,8 @@
             v-if="!currentReferenceTitle"
             v-model="referenceQuery"
             :fetch-suggestions="querySearchAsync"
-            @keyup="viewReference"
+            @keyup.enter.native="viewReference"
+            @select="viewReference"
             placement="top-start"
             placeholder="Add reference"
             class="search-reference">
@@ -152,7 +154,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['navigateBack']),
+        ...mapActions(['navigateBack', 'search']),
         startVoting () {
             let anchor = slug(this.currentSelection || this.currentVideoTimeText)
             this.$store.dispatch('setCurrentReferenceTitle', null)
@@ -175,9 +177,10 @@ export default {
             ]
         },
         querySearchAsync(queryString, cb) {
-            var results = this.results
-            var results = queryString ? results.filter(this.createFilter(queryString)) : results
-            cb(results)
+            this.search(queryString).then(results => {
+                let items = results ? results.map(r => ({ value: r.title })) : []
+                cb(items)
+            })
         },
         createFilter(queryString) {
             return (link) => {

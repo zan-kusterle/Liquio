@@ -36,7 +36,7 @@ defmodule Liquio.Results do
 
 		vote_weight_halving_days = nil
 
-		time_weighted_contributions =
+		_contributions =
 			if vote_weight_halving_days == nil do
 				contributions
 			else

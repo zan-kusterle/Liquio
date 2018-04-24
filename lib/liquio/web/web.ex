@@ -28,7 +28,6 @@ defmodule Liquio.Web do
 			import Liquio.Web.Router.Helpers
 			import Liquio.Web.Gettext
 
-			alias Liquio.CalculationOpts
 			alias Liquio.Identity
 			alias Liquio.Delegation
 			alias Liquio.Vote

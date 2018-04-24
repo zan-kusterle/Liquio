@@ -13,7 +13,7 @@ defmodule Liquio.Web.Router do
 		pipe_through :api
 
 		get "/nodes/:title", NodeController, :show
-		get "/search/:query", NodeController, :search
+		get "/search/:query", SearchController, :show
 	end
 
 	scope "/", Liquio.Web do

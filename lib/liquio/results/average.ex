@@ -28,12 +28,12 @@ defmodule Liquio.Average do
 				end
 			end)
 		end
-    end
+	end
 
-    def mode(list) do
-        gb = Enum.group_by(list, &(&1))
-        max_count = Enum.map(gb, fn {_,val} -> length(val) end) |> Enum.max
-		max_items =for {key,val} <- gb, length(val)==max_count, do: key
+	def mode(list) do
+		gb = Enum.group_by(list, &(&1))
+		max_count = gb |> Enum.map(fn {_, val} -> length(val) end) |> Enum.max
+		max_items = for {key, val} <- gb, length(val) == max_count, do: key
 		Enum.at(max_items, 0)
-    end
+	end
 end
