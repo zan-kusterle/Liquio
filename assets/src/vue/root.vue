@@ -24,7 +24,7 @@
             :fetch-suggestions="querySearchAsync"
             @keyup.enter.native="viewSearch"
             @select="viewSearch"
-            placeholder="Search anything"
+            placeholder="Vote on anything"
             class="search">
 
             <i v-if="canNavigateBack" @click="navigateBack" slot="prefix" class="el-input__icon el-icon-arrow-left"></i>
@@ -56,7 +56,7 @@
         append-to-body>
 
         <div class="sign-alert">
-            <p>Click the lock icon next to your address bar to continue.</p>
+            <p>Click the lock icon next to your address bar to finalize your vote.</p>
 
             <div class="sign-alert__images">
                 <img class="sign-alert__sign-icon" :src="LIQUIO_URL + '/icons/sign-icon.png'" />

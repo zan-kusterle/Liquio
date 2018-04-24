@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <div class="liquio-node__references">
+        <div class="liquio-node__references" v-if="node.references.length > 0 || node.inverse_references.length > 0">
             <div v-for="reference in node.references" :key="reference.title" class="liquio-node__reference">
                 <inline-node :node="reference" @click="viewNode(reference)" size="small"></inline-node>
                 <i @click="viewReference(reference)" class="el-icon-caret-right" style="cursor: pointer; vertical-align: middle;"></i>

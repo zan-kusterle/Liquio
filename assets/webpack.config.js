@@ -1,7 +1,6 @@
 var path = require('path')
 var CopyWebpackPlugin = require("copy-webpack-plugin")
 var ServiceWorkerWebpackPlugin = require("serviceworker-webpack-plugin")
-var ZipPlugin = require("zip-webpack-plugin")
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 var webpack = require("webpack")
 
@@ -61,9 +60,6 @@ module.exports = {
             IS_EXTENSION: JSON.stringify(true)
         }),
         new CopyWebpackPlugin([{ from: "./static" }]),
-        new ZipPlugin({
-            filename: 'liquio.zip'
-        }),
         //new BundleAnalyzerPlugin()
     ]
 }
