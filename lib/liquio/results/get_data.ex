@@ -43,6 +43,7 @@ defmodule Liquio.GetData do
 				:weight => data["ratio"]
 			}
 		end)
+		|> Enum.filter(& &1.weight != nil)
 	end
 
 	defp get_votes(messages) do
@@ -56,6 +57,7 @@ defmodule Liquio.GetData do
 				:at_date => Map.get(data, "at_date", message["datetime"])
 			}
 		end)
+		|> Enum.filter(& &1.choice != nil)
 	end
 
 	defp get_reference_votes(messages) do
@@ -68,5 +70,6 @@ defmodule Liquio.GetData do
 				:choice => data["relevance"]
 			}
 		end)
+		|> Enum.filter(& &1.choice != nil)
 	end
 end
