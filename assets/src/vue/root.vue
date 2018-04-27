@@ -169,6 +169,9 @@ export default {
         open () {
             this.dialogVisible = true
         },
+        close () {
+            this.dialogVisible = false
+        },
         loadResults() {
             return [
                 { "value": "vue", "link": "https://github.com/vuejs/vue" },

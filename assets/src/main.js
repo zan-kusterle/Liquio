@@ -58,8 +58,9 @@ const vm = new Vue({
         }
     },
     methods: {
-        open () {
-            this.$children[0].open()
+        toggle () {
+            let root = this.$children[0]
+            root.dialogVisible ? root.close () : root.open()
         }
     },
     render (createElement) {
@@ -85,7 +86,7 @@ let transformDomNode = (domNode) => {
 
             if (isClicked) {
                 store.dispatch('setCurrentTitle', activeNode.title)
-                vm.open()
+                vm.toggle()
             }
         } else {
             vm.currentNode = null
@@ -156,7 +157,7 @@ if (IS_EXTENSION) {
             onUrlChange(document.location.href)
         } else if (message.name === 'open') {
             store.dispatch('setCurrentTitle', store.state.currentPage)
-            vm.open()
+            vm.toggle()
         }
         return false
     })
