@@ -47,6 +47,8 @@ export default {
                     url: data.url
                 })
                 dispatch('updateNodes')
+            } else if (data.request_name === 'sign') {
+                commit('SET_IS_SIGN_WINDOW_OPEN', false)
             }
         })
     },
@@ -68,7 +70,6 @@ export default {
         dispatch('loadNode', { key: payload, refresh: true })
     },
     disableVoting ({ state, commit }) {
-        console.log('setting disabled')
         commit('SET_IS_VOTING_DISABLED', true)
     },
     navigateBack ({ state, commit }) {
@@ -97,18 +98,6 @@ export default {
         }
         let event = new CustomEvent('sign-anything', { detail: data })
         window.dispatchEvent(event)
-
-        return new Promise((resolve, reject) => {
-            let onSignResponse = (e) => {
-                let data = e.detail
-                if (data.request_name === 'sign') {
-                    window.removeEventListener('sign-anything-response', onSignResponse)
-                    commit('SET_IS_SIGN_WINDOW_OPEN', false)
-                    resolve()
-                }
-            }
-            window.addEventListener('sign-anything-response', onSignResponse)
-        })
     },
     loadNode ({ state, commit }, { key, refresh }) {
         return new Promise((resolve, reject) => {

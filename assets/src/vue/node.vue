@@ -102,8 +102,6 @@ export default {
                         choice: this.currentUnit.type === 'spectrum' ? this.currentChoice.spectrum / 100 : parseFloat(this.currentChoice.quantity)
                     }],
                     messageKeys: ['title', 'unit', 'choice']
-                }).then(() => {
-                    this.$store.dispatch('loadNode', { key: this.title })
                 })
             }
         },

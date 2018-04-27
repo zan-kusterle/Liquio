@@ -77,7 +77,23 @@ const vm = new Vue({
 
 let nodesByText = {}
 let textNodes = []
-store.subscribe((mutation, state) => {
+
+let transformDomNode = (domNode) => {
+    transformContent.transformNode(nodesByText, domNode, (activeNode, isClicked) => {
+        if (activeNode) {
+            vm.currentNode = activeNode
+
+            if (isClicked) {
+                store.dispatch('setCurrentTitle', activeNode.title)
+                vm.open()
+            }
+        } else {
+            vm.currentNode = null
+        }
+    })
+}
+
+store.subscribe((mutation, state, dispatch) => {
     if (mutation.type === 'SET_NODE' && mutation.payload.title === state.currentPage) {
         let node = mutation.payload
         let getNodesByText = (node, key) => {
@@ -97,51 +113,51 @@ store.subscribe((mutation, state) => {
         if (IS_EXTENSION) {
             let reliabilityResults = node.results["Reliable-Unreliable"]
             let score = reliabilityResults ? reliabilityResults.mean : null
-            browser.runtime.sendMessage({ name: 'score', score: score })
+            if (IS_EXTENSION) {
+                (chrome && chrome.runtime || browser.runtime).sendMessage({ name: 'score', score: score })
+            }
         }
 
         nodesByText = getNodesByText(node, store.state.currentPage)
 
         transformContent.resetTransforms()
         for (let domNode of textNodes) {
-            transformContent.transformNode(nodesByText, domNode, (activeNode, isClicked) => {
-                if (activeNode) {
-                    vm.currentNode = activeNode
+            let didChange = transformDomNode(domNode)
 
-                    if (isClicked) {
-                        store.dispatch('setCurrentTitle', activeNode.title)
-                        vm.open()
-                    }
-                } else {
-                    vm.currentNode = null
-                }
-            })
         }
+
+        let index = textNodes.length - 1
+        let transformWithTimeouts = () => {
+            while (index >= 0 && index < textNodes.length) {
+                transformDomNode(textNodes[index])
+                index --
+            }
+            index --
+        }
+        transformWithTimeouts()
+    } else if (mutation.type === 'SET_IS_SIGN_WINDOW_OPEN' && mutation.payload === false) {
+        setTimeout(() => {
+            store.dispatch('loadNode', { key: state.currentPage })
+        }, 500)
     }
 })
     
 
 if (IS_EXTENSION) {
-    browser.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+    browser.runtime.onMessage.addListener(function(message) {
         if (message.name === 'update') {
             onUrlChange(document.location.href)
         } else if (message.name === 'open') {
             store.dispatch('setCurrentTitle', store.state.currentPage)
             vm.open()
         }
+        return false
     })
 }
 
 function onUrlChange (url) {
     vm.isUnavailable = !IS_EXTENSION && document.getElementById('liquio-bar-extension')
     store.dispatch('setCurrentPage', decodeURIComponent(url).replace(/\/$/, ''))
-}
-
-let onDomNodeInsert = (node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
-        textNodes.push(node)
-    } else if (node.nodeName.toLowerCase() === 'a') {
-    }
 }
 
 let MutationObserver = window.MutationObserver || window.WebKitMutationObserver
@@ -151,7 +167,15 @@ if (MutationObserver) {
     let obs = new MutationObserver(function (mutations, observer) {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
-                onDomNodeInsert(node)
+                if (node.nodeType === Node.TEXT_NODE) {
+                    textNodes.push(node)
+                    transformDomNode(node)
+                }
+            })
+            mutation.removedNodes.forEach((node) => {
+                let index = textNodes.indexOf(node)
+                if (index >= 0)
+                    textNodes.splice(index, 1)
             })
         })
     })
@@ -161,13 +185,20 @@ if (MutationObserver) {
     })
 } else if (eventListenerSupported) {
     document.addEventListener('DOMNodeInserted', function (e) {
-        onDomNodeInsert(e.target)
+        if (e.target.nodeType === Node.TEXT_NODE) {
+            textNodes.push(e.target)
+            transformDomNode(e.target)
+        }
     }, false)
 }
 
 let walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, null, false)
-while (walker.nextNode())
-    onDomNodeInsert(walker.currentNode)
+while (walker.nextNode()) {
+    if (walker.currentNode.nodeType === Node.TEXT_NODE) {
+        textNodes.push(walker.currentNode)
+        transformDomNode(walker.currentNode)
+    }
+}
 
 window.addEventListener("hashchange", () => onUrlChange(document.location.href), false)
 onUrlChange(document.location.href)

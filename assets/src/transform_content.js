@@ -14,58 +14,42 @@ export default {
         }
     },
     transformNode (nodesByText, domNode, setActive) {
-        let text = domNode.textContent.toLowerCase().replace(/[^\x00-\x7F]/g, '')
-        let slugText = slug(text)
+        let slugData = slug(domNode.textContent)
+        if (slugData) {
+            for (let k in nodesByText) {
+                let index = slugData.value.indexOf(k)
 
-        let nodesToAdd = Object.keys(nodesByText).filter((k) => {
-            return slugText.indexOf(k) >= 0
-        }).map(k => {
-            let slugStart = slugText.indexOf(k)
-            let start = 0
-            let end = 0
-            for(var i = 0; i < slugStart + k.length; i++) {
-                if (i === slugStart) {
-                    start = end
-                }
-                let slugChar = slugText[i]
-                while (end < text.length) {
-                    let textChar = text[end].replace(' ', '-').toLowerCase()
-                    end++
-                    if (textChar === slugChar) {
-                        break
+                if (index >= 0) {
+                    let start = slugData.mappings[index]
+                    let end = slugData.mappings[index + k.length - 1]
+
+                    let range = document.createRange()
+                    range.setStart(domNode, start)
+                    range.setEnd(domNode, end + 1)
+
+                    let node = nodesByText[k][0]
+
+                    let commonParent = range.commonAncestorContainer.parentNode
+                    if (range.commonAncestorContainer.nodeType === Node.TEXT_NODE && commonParent && commonParent.className !== 'liquio-highlight') {
+                        let span = document.createElement('span')
+                        range.surroundContents(span)
+                        span.className = 'liquio-highlight'
+                        span.style.backgroundColor = 'rgba(57, 164, 255, 0.25)'
+                        span.style.cursor = 'pointer'
+                        span.addEventListener('mouseover', (e) => {
+                            setActive(node, false)
+                        })
+                        span.addEventListener('mouseout', (e) => {
+                            setActive(null, false)
+                        })
+                        span.addEventListener('click', (e) => {
+                            setActive(node, true)
+                        })
+
+                        return true
                     }
                 }
             }
-
-            let range = document.createRange()
-            range.setStart(domNode, start)
-            range.setEnd(domNode, end + 1)
-            return {
-                text: k,
-                node: nodesByText[k][0],
-                range: range
-            }
-        })
-
-        if (nodesToAdd.length > 0) {
-            nodesToAdd.forEach(({ range, node }) => {
-                if (range.commonAncestorContainer.nodeType === Node.TEXT_NODE && range.commonAncestorContainer.parentNode.className !== 'liquio-highlight') {
-                    let span = document.createElement('span')
-                    range.surroundContents(span)
-                    span.className = 'liquio-highlight'
-                    span.style.backgroundColor = 'rgba(57, 164, 255, 0.25)'
-                    span.style.cursor = 'pointer'
-                    span.addEventListener('mouseover', (e) => {
-                        setActive(node, false)
-                    })
-                    span.addEventListener('mouseout', (e) => {
-                        setActive(null, false)
-                    })
-                    span.addEventListener('click', (e) => {
-                        setActive(node, true)
-                    })
-                }
-            })
         }
     }
 }

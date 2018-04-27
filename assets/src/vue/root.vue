@@ -156,7 +156,7 @@ export default {
     methods: {
         ...mapActions(['navigateBack', 'search']),
         startVoting () {
-            let anchor = slug(this.currentSelection || this.currentVideoTimeText)
+            let anchor = slug(this.currentSelection || this.currentVideoTimeText).value
             this.$store.dispatch('setCurrentReferenceTitle', null)
             this.$store.dispatch('setCurrentTitle', this.$store.state.currentPage + '/' + anchor)
             this.$store.dispatch('disableVoting')
