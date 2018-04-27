@@ -45,13 +45,16 @@ defmodule Liquio.Node do
 		end)
 		references = reference_votes
 		|> Enum.group_by(& slug(&1.reference_title))
-		|> Enum.map(fn({_key, votes}) ->
-			best_title = votes |> Enum.map(& &1.reference_title) |> Average.mode
-			best_title
-			|> Node.new
-			|> Map.put(:referenced_by_title, votes |> Enum.map(& &1.title) |> Average.mode)
-			|> Map.put(:reference_results, Liquio.Results.from_votes(votes, inverse_delegations))
-			|> Node.load(data, depth - 1)
+		|> Enum.flat_map(fn({_key, votes}) ->
+			votes
+			|> Enum.group_by(& slug(&1.title))
+			|> Enum.map(fn({_title, title_votes}) ->
+				Average.mode(Enum.map(title_votes, & &1.reference_title))
+				|> Node.new
+				|> Map.put(:referenced_by_title, Average.mode(Enum.map(title_votes, & &1.title)))
+				|> Map.put(:reference_results, Liquio.Results.from_votes(title_votes, inverse_delegations))
+				|> Node.load(data, depth - 1)
+			end)
 		end)
 
 		inverse_reference_votes = all_reference_votes |> Enum.filter(fn(vote) ->
@@ -60,13 +63,16 @@ defmodule Liquio.Node do
 		end)
 		inverse_references = inverse_reference_votes
 		|> Enum.group_by(& slug(&1.title))
-		|> Enum.map(fn({_key, votes}) ->
-			best_title = votes |> Enum.map(& &1.title) |> Average.mode
-			best_title
-			|> Node.new
-			|> Map.put(:referencing_title, votes |> Enum.map(& &1.reference_title) |> Average.mode)
-			|> Map.put(:reference_results, Liquio.Results.from_votes(votes, inverse_delegations))
-			|> Node.load(data, depth - 1)
+		|> Enum.flat_map(fn({_key, votes}) ->
+			votes
+			|> Enum.group_by(& slug(&1.reference_title))
+			|> Enum.map(fn({_title, title_votes}) ->
+				Average.mode(Enum.map(title_votes, & &1.title))
+				|> Node.new
+				|> Map.put(:referencing_title, Average.mode(Enum.map(title_votes, & &1.reference_title)))
+				|> Map.put(:reference_results, Liquio.Results.from_votes(title_votes, inverse_delegations))
+				|> Node.load(data, depth - 1)
+			end)
 		end)
 
 		node

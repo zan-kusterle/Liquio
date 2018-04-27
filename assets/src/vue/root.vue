@@ -4,8 +4,8 @@
         <div class="liquio-bar__container" style="bottom: 10px;" v-if="currentNode || !isHidden">
             <div class="liquio-bar__main">
                 <div class="liquio-bar__items">
-                    <div class="liquio-bar__vote">
-                        <inline-node :node="currentNode" size="small"></inline-node>
+                    <div class="liquio-bar__node">
+                        <inline-node :node="currentNode" size="small" @click="viewCurrent"></inline-node>
                     </div>
                 </div>
             </div>
@@ -18,7 +18,7 @@
         </div>
     </template>
 
-    <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" width="60%" custom-class="dialog">
+    <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" width="900px" custom-class="dialog">
         <el-autocomplete
             v-model="searchQuery"
             :fetch-suggestions="querySearchAsync"
@@ -160,6 +160,10 @@ export default {
             this.$store.dispatch('setCurrentReferenceTitle', null)
             this.$store.dispatch('setCurrentTitle', this.$store.state.currentPage + '/' + anchor)
             this.$store.dispatch('disableVoting')
+            this.open()
+        },
+        viewCurrent () {
+            this.$store.dispatch('setCurrentTitle', this.currentNode.title)
             this.open()
         },
         open () {

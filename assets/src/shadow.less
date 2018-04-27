@@ -79,13 +79,14 @@
         height: 100%;
     }
 
-    &__vote {
+    &__node {
         display: flex;
         align-items: center;
         height: 100%;
         background-color: white;
         padding-left: 30px;
         padding-right: 15px;
+        cursor: pointer;
     }
 
     &__buttons {
@@ -257,7 +258,7 @@ a {
 }
 
 .liquio-node {
-    padding: 30px 10px;
+    padding: 30px 0px;
 
     &__references {
         margin-top: 50px;
@@ -269,6 +270,18 @@ a {
         &:last-child {
             margin-bottom: 0px;
         }
+
+        .inline-node {
+            vertical-align: middle;
+        }
+    }
+
+    &__view-reference-icon {
+        cursor: pointer;
+        vertical-align: middle;
+        margin-right: 5px;
+        color: #bbb;
+        font-size: 18px;
     }
 
     &__reference-title {
@@ -339,7 +352,7 @@ a {
 
     p {
         font-size: 15px;
-        line-height: 20px;
+        line-height: 25px;
         display: inline;
         vertical-align: middle;
         word-break: break-all;

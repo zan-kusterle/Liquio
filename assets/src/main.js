@@ -99,7 +99,7 @@ store.subscribe((mutation, state, dispatch) => {
         let getNodesByText = (node, key) => {
             var result = {}
             node.references.forEach(function (reference) {
-                if (reference.referenced_by_title.startsWith(key + '/')) {
+                if (reference.referenced_by_title.toLowerCase().startsWith(key.toLowerCase() + '/')) {
                     let text = reference.referenced_by_title.substring(key.length + 1)
                     
                     if (!(text in result))
@@ -136,8 +136,15 @@ store.subscribe((mutation, state, dispatch) => {
         }
         transformWithTimeouts()
     } else if (mutation.type === 'SET_IS_SIGN_WINDOW_OPEN' && mutation.payload === false) {
+        // TODO get refresh titles from store
+        let currentTitle = state.currentTitle
+        let currentReferenceTitle = state.currentReferenceTitle
         setTimeout(() => {
             store.dispatch('loadNode', { key: state.currentPage })
+            if (currentTitle)
+                store.dispatch('loadNode', { key: currentTitle })
+            if (currentReferenceTitle)
+                store.dispatch('loadNode', { key: currentReferenceTitle })
         }, 500)
     }
 })
@@ -203,6 +210,12 @@ while (walker.nextNode()) {
 window.addEventListener("hashchange", () => onUrlChange(document.location.href), false)
 onUrlChange(document.location.href)
 
+document.addEventListener('keyup', e => {
+    if (e.keyCode === 8) {
+        store.dispatch('navigateBack')
+    }
+})
+
 let getValidSelection = () => {
     let selection = window.getSelection()
     if (selection.anchorNode) {
@@ -237,7 +250,7 @@ let isCurrentVideoNode = false
 
 let intervalId = setInterval(() => {
     let videos = document.getElementsByTagName('video')
-    if (videos.length > 0) {
+    if (videos.length === 1) {
         clearInterval(intervalId)
 
         let video = videos[0]

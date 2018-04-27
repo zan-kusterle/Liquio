@@ -3,7 +3,7 @@ export default function (x) {
     let canAddMinus = false
     for (var i = 0; i < x.length; i++) {
         let c = x[i]
-        if (/[a-zA-Z0-9]/.test(c)) {
+        if (/[a-zA-Z0-9:]/.test(c)) {
             mappings.push({
                 char: c,
                 index: i

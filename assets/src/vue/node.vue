@@ -19,12 +19,12 @@
 
         <div class="liquio-node__references" v-if="node.references.length > 0 || node.inverse_references.length > 0">
             <div v-for="reference in node.references" :key="reference.title" class="liquio-node__reference">
+                <i @click="viewReference(reference)" class="el-icon-caret-right liquio-node__view-reference-icon"></i>
                 <inline-node :node="reference" @click="viewNode(reference)" size="small"></inline-node>
-                <i @click="viewReference(reference)" class="el-icon-caret-right" style="cursor: pointer; vertical-align: middle;"></i>
             </div>
             <div v-for="reference in node.inverse_references" :key="reference.title" class="liquio-node__reference">
+                <i @click="viewInverseReference(reference)" class="el-icon-caret-left liquio-node__view-reference-icon"></i>
                 <inline-node :node="reference" @click="viewNode(reference)" size="small"></inline-node>
-                <i @click="viewInverseReference(reference)" class="el-icon-caret-left" style="cursor: pointer; vertical-align: middle;"></i>
             </div>
         </div>
     </div>
