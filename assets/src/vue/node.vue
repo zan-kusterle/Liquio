@@ -112,8 +112,7 @@ export default {
             if (!unitResults)
                 return null
 
-            let usernames = this.$store.state.whitelist.username.split(',')
-            return unitResults.contributions.find(c => usernames.includes(c.username))
+            return unitResults.contributions.find(c => this.$store.getters.usernames.includes(c.username))
         },
         references () {
             let byTitle = {}

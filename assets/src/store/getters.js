@@ -1,4 +1,7 @@
 export default {
+    usernames (state) {
+        return state.whitelist.username.split(',')
+    },
     currentTitle (state) {
         return state.currentTitle || state.currentPage
     },

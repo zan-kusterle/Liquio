@@ -12,6 +12,7 @@
             </div>
             <div>
                 <el-button type="success" @click="vote" class="vote-button">Vote</el-button>
+                <el-button v-if="currentVote" type="danger" @click="unsetVote" class="vote-button">Delete vote</el-button>
             </div>
         </div>
     </div>
@@ -59,6 +60,9 @@ export default {
                 }
             }
         },
+        currentVote () {
+            return this.referenceResults && this.referenceResults.contributions.find(c => this.$store.getters.usernames.includes(c.username))
+        },
         resultsNode () {
             return {
                 title: 'Relevance results',
@@ -73,12 +77,27 @@ export default {
             this.$store.dispatch('vote', {
                 messages: [{
                     name: 'reference_vote',
-                    key: ['title', 'reference_title', 'relevance'],
+                    key: ['title', 'reference_title'],
                     title: this.title.trim(' '),
                     reference_title: this.referenceTitle.trim(' '),
                     relevance: this.currentRelevance / 100
                 }],
-                messageKeys: ['title', 'unit', 'choice']
+                messageKeys: ['title', 'reference_title', 'relevance']
+            }).then(() => {
+                this.$store.dispatch('loadNode', { key: this.title })
+                this.$store.dispatch('loadNode', { key: this.referenceTitle })
+            })
+        },
+        unsetVote () {
+            this.$store.dispatch('vote', {
+                messages: [{
+                    name: 'reference_vote',
+                    key: ['title', 'reference_title'],
+                    title: this.title.trim(' '),
+                    reference_title: this.referenceTitle.trim(' '),
+                    relevance: null
+                }],
+                messageKeys: ['title', 'reference_title', 'relevance']
             }).then(() => {
                 this.$store.dispatch('loadNode', { key: this.title })
                 this.$store.dispatch('loadNode', { key: this.referenceTitle })

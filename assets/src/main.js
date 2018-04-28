@@ -85,6 +85,7 @@ let transformDomNode = (domNode) => {
             vm.currentNode = activeNode
 
             if (isClicked) {
+                store.dispatch('setCurrentReferenceTitle', null)
                 store.dispatch('setCurrentTitle', activeNode.title)
                 vm.toggle()
             }
@@ -156,6 +157,7 @@ if (IS_EXTENSION) {
         if (message.name === 'update') {
             onUrlChange(document.location.href)
         } else if (message.name === 'open') {
+            store.dispatch('setCurrentReferenceTitle', null)
             store.dispatch('setCurrentTitle', store.state.currentPage)
             vm.toggle()
         }

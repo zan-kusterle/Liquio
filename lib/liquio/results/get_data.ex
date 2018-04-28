@@ -47,7 +47,16 @@ defmodule Liquio.GetData do
 	end
 
 	defp get_votes(messages) do
-		Enum.map(messages, fn(message) ->
+		messages
+		|> Enum.filter(fn(message) ->
+			data = message["data"]
+
+			String.length(data["title"]) >= 3 and
+			String.length(data["unit"]) >= 2 and
+			(is_integer(data["choice"]) or is_float(data["choice"])) and
+			data["key"] == ["vote", "title", "unit"]
+		end)
+		|> Enum.map(fn(message) ->
 			data = message["data"]
 			%{
 				:username => message["username"],
@@ -61,7 +70,16 @@ defmodule Liquio.GetData do
 	end
 
 	defp get_reference_votes(messages) do
-		Enum.map(messages, fn(message) ->
+		messages
+		|> Enum.filter(fn(message) ->
+			data = message["data"]
+
+			String.length(data["title"]) >= 3 and
+			String.length(data["reference_title"]) >= 3 and
+			is_float(data["relevance"]) and data["relevance"] >= 0 and data["relevance"] <= 1 and
+			data["key"] == ["reference_vote", "title", "reference_title"]
+		end)
+		|> Enum.map(fn(message) ->
 			data = message["data"]
 			%{
 				:username => message["username"],

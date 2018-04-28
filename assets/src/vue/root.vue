@@ -35,6 +35,7 @@
         <node v-else :title="currentTitle"></node>
 
         <el-autocomplete
+            ref="viewReference"
             v-if="!currentReferenceTitle"
             v-model="referenceQuery"
             :fetch-suggestions="querySearchAsync"
@@ -129,6 +130,16 @@ export default {
         setTimeout(() => this.isLoading = false, 50)
 
         this.results = this.loadResults()
+    },
+    watch: {
+        currentTitle () {
+            if (this.$store.state.isVotingDisabled) {
+                this.$nextTick(() => {
+                    if (this.$refs.viewReference)
+                        this.$refs.viewReference.focus()
+                })
+            }
+        }
     },
     computed: {
         ...mapState(['currentReferenceTitle']),
