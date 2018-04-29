@@ -2,8 +2,8 @@ APP="liquio"
 
 BUILD_HOST="104.155.115.235"
 BUILD_USER="zan"
-BUILD_AT="/home/zan/builds"
-RELEASE_DIR="/home/zan/builds/_build/prod/rel/liquio"
+BUILD_AT="/home/zan/liquio-builds"
+RELEASE_DIR="/home/zan/liquio-builds/_build/prod/rel/liquio"
 
 STAGING_HOSTS="104.155.115.235"
 STAGING_USER="zan"
