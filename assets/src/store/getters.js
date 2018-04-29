@@ -1,7 +1,7 @@
 export default {
     nodeByTitle (state) {
         return (title) => {
-            return state.nodesByKey[title] || { title: title, results: {} }
+            return state.nodesByKey[title] || { title: title, results: {}, mock: true }
         }
     },
     usernames (state) {

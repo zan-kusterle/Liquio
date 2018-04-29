@@ -1,7 +1,7 @@
 <template>
 <div class="liquio-bar" :style="isLoading ? { visibility: 'hidden' } : {}">
     <template v-if="!isUnavailable">
-        <div v-if="activeNode" ref="barContainer" class="liquio-bar__container liquio-bar__container--node" :class="{ 'liquio-bar__container--shown': isBarShown }">
+        <div v-if="activeNode && !activeNode.mock" ref="barContainer" class="liquio-bar__container liquio-bar__container--node" :class="{ 'liquio-bar__container--shown': isBarShown }">
             <inline-node :node="activeNode" size="small" @click="viewActive"></inline-node>
         </div>
         <div v-else ref="barContainer" class="liquio-bar__container" :class="{ 'liquio-bar__container--shown': isBarShown }">
