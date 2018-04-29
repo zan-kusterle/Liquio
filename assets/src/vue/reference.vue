@@ -43,10 +43,10 @@ export default {
     },
     computed: {
         node () {
-            return this.$store.state.nodesByKey[this.title]
+            return this.$store.getters.nodeByTitle(this.title)
         },
         referenceNode () {
-            return this.$store.state.nodesByKey[this.referenceTitle]
+            return this.$store.getters.nodeByTitle(this.referenceTitle)
         },
         referenceResults () {
             if (!this.node)

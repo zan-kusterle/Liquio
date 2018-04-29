@@ -1,4 +1,9 @@
 export default {
+    nodeByTitle (state) {
+        return (title) => {
+            return state.nodesByKey[title] || { title: title, results: {} }
+        }
+    },
     usernames (state) {
         return state.whitelist.username.split(',')
     },

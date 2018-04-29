@@ -113,7 +113,7 @@ export default {
     computed: {
         ...mapState(['isVotingDisabled']),
         node () {
-            return this.$store.state.nodesByKey[this.title]
+            return this.$store.getters.nodeByTitle(this.title)
         },
         currentUnitValue: {
             get () {
@@ -139,14 +139,14 @@ export default {
         references () {
             let byTitle = {}
             for (let reference of this.node.references) {
-                byTitle[reference.title] = this.$store.state.nodesByKey[reference.title]
+                byTitle[reference.title] = this.$store.getters.nodeByTitle(reference.title)
             }
             return Object.values(byTitle)
         },
         inverseReferences () {
             let byTitle = {}
             for (let reference of this.node.inverseReferences) {
-                byTitle[reference.title] = this.$store.state.nodesByKey[reference.title]
+                byTitle[reference.title] = this.$store.getters.nodeByTitle(reference.title)
             }
             return Object.values(byTitle)
         }

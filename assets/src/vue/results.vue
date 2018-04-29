@@ -36,7 +36,7 @@ export default {
         },
         text () {
             if (!this.hasData)
-                return '?'
+                return '/'
             if (this.unit.type === 'spectrum') {
                 return Math.round(this.unitResults.mean * 100) + '%'
             } else {

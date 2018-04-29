@@ -1,16 +1,14 @@
 <template>
 <div class="liquio-bar" :style="isLoading ? { visibility: 'hidden' } : {}">
-    <div v-if="!isUnavailable" ref="barContainer" class="liquio-bar__container" :class="{ 'liquio-bar__container--shown': isBarShown, 'liquio-bar__container--no-transition': activeTitle }">
-        <div v-if="activeTitle" class="liquio-bar__main">
-            <div class="liquio-bar__items">
-                <div class="liquio-bar__node">
-                    <inline-node :node="activeNode" size="small" @click="viewActive"></inline-node>
-                </div>
-            </div>
+    <template v-if="!isUnavailable">
+        <div v-if="activeNode" ref="barContainer" class="liquio-bar__container liquio-bar__container--node" :class="{ 'liquio-bar__container--shown': isBarShown }">
+            <inline-node :node="activeNode" size="small" @click="viewActive"></inline-node>
         </div>
-        <el-button v-else-if="currentSelection && currentSelection.length >= 10" size="small" type="primary" @click="startVoting">Vote on selection with Liquio</el-button>
-        <el-button v-else-if="currentVideoTime" size="small" @click="startVoting">Vote on video with Liquio at {{ currentVideoTimeText }}</el-button>
-    </div>
+        <div v-else ref="barContainer" class="liquio-bar__container" :class="{ 'liquio-bar__container--shown': isBarShown }">
+            <el-button v-if="currentSelection && currentSelection.length >= 10" size="small" type="primary" @click="startVoting">Vote on selection with Liquio</el-button>
+            <el-button v-else-if="currentVideoTime" size="small" @click="startVoting">Vote on video with Liquio at {{ currentVideoTimeText }}</el-button>
+        </div>
+    </template>
 
     <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" width="900px" custom-class="dialog">
         <el-autocomplete
@@ -138,7 +136,7 @@ export default {
         ...mapState(['currentReferenceTitle']),
         ...mapGetters(['currentTitle', 'canNavigateBack']),
         activeNode () {
-            return this.$store.state.nodesByKey[this.activeTitle] || { title: this.activeTitle, results: {} }
+            return this.$store.getters.nodeByTitle(this.activeTitle)
         },
         isSignWindowOpen: {
             get () {
@@ -149,7 +147,7 @@ export default {
             }
         },
         node () {
-            return this.$store.state.nodesByKey[this.currentTitle]
+            return this.$store.getters.nodeByTitle(this.currentTitle)
         },
         activeAnchor () {
             return this.currentSelection || this.currentVideoTime
