@@ -1,6 +1,13 @@
 {
-    "repository": {},
+    "name": "liquo",
+    "version": "0.0.1",
     "license": "MIT",
+    "private": false,
+    "scripts": {
+        "lint": "eslint --ext .js,.vue src",
+        "dev": "webpack --watch-stdin --progress --color",
+        "build": "webpack -p"
+    },
     "dependencies": {
         "axios": "^0.18.0",
         "bip39": "^2.5.0",
@@ -44,9 +51,5 @@
         "webpack-bundle-analyzer": "^2.11.1",
         "webpack-cli": "^2.0.15",
         "yarn": "^1.6.0"
-    },
-    "scripts": {
-        "start": "webpack --watch-stdin --progress --color",
-        "deploy": "webpack -p"
     }
 }
