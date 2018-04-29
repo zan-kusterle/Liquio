@@ -1,22 +1,16 @@
 <template>
 <div class="liquio-bar" :style="isLoading ? { visibility: 'hidden' } : {}">
-    <template v-if="!isUnavailable">
-        <div class="liquio-bar__container" style="bottom: 10px;" v-if="currentNode || !isHidden">
-            <div class="liquio-bar__main">
-                <div class="liquio-bar__items">
-                    <div class="liquio-bar__node">
-                        <inline-node :node="currentNode" size="small" @click="viewCurrent"></inline-node>
-                    </div>
+    <div v-if="!isUnavailable" ref="barContainer" class="liquio-bar__container">
+        <div v-if="activeTitle" class="liquio-bar__main">
+            <div class="liquio-bar__items">
+                <div class="liquio-bar__node">
+                    <inline-node :node="activeNode" size="small" @click="viewActive"></inline-node>
                 </div>
             </div>
         </div>
-        <div class="liquio-bar__container liquio-bar__button-container" v-else-if="currentSelection && currentSelection.length >= 10">
-            <el-button size="small" type="primary" @click="startVoting">Vote on selection with Liquio</el-button>
-        </div>
-        <div class="liquio-bar__container liquio-bar__button-container" v-else-if="currentVideoTime">
-            <el-button size="small" @click="startVoting">Vote on video with Liquio at {{ currentVideoTimeText }}</el-button>
-        </div>
-    </template>
+        <el-button v-else-if="currentSelection && currentSelection.length >= 10" size="small" type="primary" @click="startVoting">Vote on selection with Liquio</el-button>
+        <el-button v-else-if="currentVideoTime" size="small" @click="startVoting">Vote on video with Liquio at {{ currentVideoTimeText }}</el-button>
+    </div>
 
     <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" width="900px" custom-class="dialog">
         <el-autocomplete
@@ -108,9 +102,8 @@ export default {
         reference: Reference
     },
     props: {
-        isHidden: { type: Boolean },
         isUnavailable: { type: Boolean },
-        currentNode: { type: Object },
+        activeTitle: { type: String },
         currentSelection: { type: String },
         currentVideoTime: { type: Number }
     },
@@ -139,11 +132,24 @@ export default {
                         this.$refs.viewReference.focus()
                 })
             }
+        },
+        isBarShown (v) {
+            if (!this.isUnavailable) {
+                let div = this.$refs.barContainer
+                if (v) {
+                    div.setAttribute('style', 'transform: translateX(0px);')
+                } else {
+                    div.removeAttribute('style')
+                }
+            }
         }
     },
     computed: {
         ...mapState(['currentReferenceTitle']),
         ...mapGetters(['currentTitle', 'canNavigateBack']),
+        activeNode () {
+            return this.$store.state.nodesByKey[this.activeTitle] || { title: this.activeTitle, results: {} }
+        },
         isSignWindowOpen: {
             get () {
                 return this.$store.state.isSignWindowOpen
@@ -162,6 +168,9 @@ export default {
             let minutes = Math.floor(this.currentVideoTime / 60)
             let seconds = Math.floor(this.currentVideoTime - minutes * 60)
             return `${('00' + minutes).slice(-2)}:${('00' + seconds).slice(-2)}`
+        },
+        isBarShown () {
+            return this.activeTitle || (this.currentSelection && this.currentSelection.length >= 10) || this.currentVideoTime
         }
     },
     methods: {
@@ -173,8 +182,8 @@ export default {
             this.$store.dispatch('disableVoting')
             this.open()
         },
-        viewCurrent () {
-            this.$store.dispatch('setCurrentTitle', this.currentNode.title)
+        viewActive () {
+            this.$store.dispatch('setCurrentTitle', this.activeTitle)
             this.open()
         },
         open () {
@@ -205,13 +214,17 @@ export default {
                 return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
             };
         },
-        viewSearch () {
-            this.$store.dispatch('setCurrentTitle', this.searchQuery)
-            this.searchQuery = ''
+        viewSearch (e) {
+            if (this.searchQuery.length > 0) {
+                this.$store.dispatch('setCurrentTitle', e.value || this.searchQuery)
+                this.searchQuery = ''
+            }
         },
         viewReference (e) {
-            this.$store.dispatch('setCurrentReferenceTitle', this.referenceQuery)
-            this.referenceQuery = ''
+            if (this.referenceQuery.length > 0) {
+                this.$store.dispatch('setCurrentReferenceTitle', e.value || this.referenceQuery)
+                this.referenceQuery = ''
+            }
         }
     }
 }

@@ -21,15 +21,12 @@
 
     &__container {
         position: fixed;
-        left: 0;
+        transform: translateX(-300px);
         bottom: 0;
         user-select: none;
         z-index: 1000;
-    }
-
-    &__button-container {
+        transition: all ease 250ms;
         padding: 8px 10px;
-        border: none;
     }
 
     &__wrap {
@@ -255,10 +252,13 @@ a {
         margin-top: 10px;
     }
 
-    .vote-button {
-        width: 100%;
-        margin: 0;
+    .vote-buttons {
         margin-top: 10px;
+        display: flex;
+
+        .el-button {
+            flex: 1 0 0;
+        }
     }
 }
 
@@ -319,6 +319,16 @@ a {
     }
 }
 
+.inline-node {
+    p {
+        color: #333;
+    }
+
+    .results {
+        color: #333;
+    }
+}
+
 .inline-node[size="large"] {
     text-align: center;
     
@@ -327,34 +337,46 @@ a {
         margin: -10px 0px 10px 0px;
         line-height: 42px;
     }
+
+    .results {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 20px 30px;
+        font-size: 32px;
+        min-width: 100px;
+        text-align: center;
+
+        .unit {
+            font-size: 22px;
+        }
+    }
 }
 
 .inline-node[size="medium"] {
-    svg {
-        width: 100px;
-        display: inline-block;
-        vertical-align: middle;
-        margin-right: 10px;
-    }
-
     p {
         font-size: 22px;
         line-height: 32px;
         display: inline;
         vertical-align: middle;
         word-break: break-all;
+        margin-left: 20px;
+    }
+
+    .results {
+        display: inline-block;
+        padding: 14px 20px;
+        font-size: 24px;
+        min-width: 100px;
+        text-align: center;
+
+        .unit {
+            font-size: 16px;
+        }
     }
 }
 
 .inline-node[size="small"] {
     display: inline;
-
-    svg {
-        width: 100px;
-        display: inline-block;
-        vertical-align: middle;
-        margin-right: 10px;
-    }
 
     p {
         font-size: 15px;
@@ -362,6 +384,20 @@ a {
         display: inline;
         vertical-align: middle;
         word-break: break-all;
+        margin-left: 15px;
+    }
+
+    .results {
+        display: inline-block;
+        padding: 6px 10px;
+        font-size: 18px;
+        min-width: 60px;
+        text-align: center;
+        vertical-align: middle;
+
+        .unit {
+            font-size: 14px;
+        }
     }
 }
 
@@ -371,5 +407,13 @@ a {
 
     i {
         font-size: 72px;
+    }
+}
+
+.el-input-number {
+    width: 100%;
+
+    i {
+        line-height: 38px;
     }
 }

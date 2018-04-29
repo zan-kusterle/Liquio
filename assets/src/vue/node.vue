@@ -8,14 +8,14 @@
             </el-select>
 
             <div class="choice">
-                <el-slider v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum" class="spectrum"></el-slider>
-                <el-input v-else v-model="currentChoice.quantity" type="number" class="quantity" />
+                <el-slider v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum"></el-slider>
+                <el-input-number v-else v-model="currentChoice.quantity"></el-input-number>
             </div>
 
-            <div>
+            <el-button-group class="vote-buttons">
                 <el-button type="success" @click="vote" class="vote-button">Vote</el-button>
                 <el-button v-if="currentVote" type="danger" @click="unsetVote" class="vote-button">Delete vote</el-button>
-            </div>
+            </el-button-group>
         </div>
 
         <div class="liquio-node__references" v-if="references.length > 0 || inverseReferences.length > 0">
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { Slider, Button, Select, Option, Input, Dialog } from 'element-ui'
+import { Slider, Button, ButtonGroup, Select, Option, InputNumber, Dialog } from 'element-ui'
 import InlineNode from 'vue/inline_node.vue'
 import { allUnits } from 'store/constants'
 import { mapState, mapGetters, mapActions } from 'vuex'
@@ -44,9 +44,10 @@ export default {
     components: {
         elSlider: Slider,
         elButton: Button,
+        elButtonGroup: ButtonGroup,
         elSelect: Select,
         elOption: Option,
-        elInput: Input,
+        elInputNumber: InputNumber,
         elDialog: Dialog,
         inlineNode: InlineNode
     },
@@ -84,6 +85,27 @@ export default {
                 this.currentChoice = {
                     spectrum: 50,
                     quantity: 0
+                }
+            }
+        },
+        node (v) {
+            if (!v)
+                return
+
+            let maxVotingPower = 0
+            let bestUnitText = null
+
+            for (let unit in v.results) {
+                let unitResults = v.results[unit]
+                if (unitResults.voting_power >= maxVotingPower) {
+                    bestUnitText = unit
+                }
+            }
+
+            if (bestUnitText) {
+                let unit = allUnits.find(u => u.text === bestUnitText)
+                if (unit) {
+                    this.currentUnitValueData = unit.value
                 }
             }
         }

@@ -50,9 +50,8 @@ const vm = new Vue({
     el: getElement(),
     data () {
         return {
-            isHidden: true,
             isUnavailable: false,
-            currentNode: null,
+            activeTitle: null,
             currentSelection: null,
             currentVideoTime: null,
         }
@@ -66,9 +65,8 @@ const vm = new Vue({
     render (createElement) {
         return createElement(Root, {
             props: {
-                isHidden: this.isHidden,
                 isUnavailable: this.isUnavailable,
-                currentNode: this.currentNode,
+                activeTitle: this.activeTitle,
                 currentSelection: this.currentSelection,
                 currentVideoTime: this.currentVideoTime
             }
@@ -76,21 +74,21 @@ const vm = new Vue({
     }
 })
 
-let nodesByText = {}
+let titlesByText = {}
 let textNodes = []
 
 let transformDomNode = (domNode) => {
-    transformContent.transformNode(nodesByText, domNode, (activeNode, isClicked) => {
-        if (activeNode) {
-            vm.currentNode = activeNode
+    transformContent.transformNode(titlesByText, domNode, (activeTitle, isClicked) => {
+        if (activeTitle) {
+            vm.activeTitle = activeTitle
 
             if (isClicked) {
                 store.dispatch('setCurrentReferenceTitle', null)
-                store.dispatch('setCurrentTitle', activeNode.title)
+                store.dispatch('setCurrentTitle', activeTitle)
                 vm.toggle()
             }
         } else {
-            vm.currentNode = null
+            vm.activeTitle = null
         }
     })
 }
@@ -98,7 +96,7 @@ let transformDomNode = (domNode) => {
 store.subscribe((mutation, state, dispatch) => {
     if (mutation.type === 'SET_NODE' && mutation.payload.title === state.currentPage) {
         let node = mutation.payload
-        let getNodesByText = (node, key) => {
+        let getTitlesByText = (node, key) => {
             var result = {}
             node.references.forEach(function (reference) {
                 if (reference.referenced_by_title.toLowerCase().startsWith(key.toLowerCase() + '/')) {
@@ -106,7 +104,7 @@ store.subscribe((mutation, state, dispatch) => {
                     
                     if (!(text in result))
                         result[text] = []
-                    result[text].push(reference)
+                    result[text].push(reference.title)
                 }
             })
             return result
@@ -120,7 +118,7 @@ store.subscribe((mutation, state, dispatch) => {
             }
         }
 
-        nodesByText = getNodesByText(node, store.state.currentPage)
+        titlesByText = getTitlesByText(node, store.state.currentPage)
 
         transformContent.resetTransforms()
         for (let domNode of textNodes) {
@@ -260,8 +258,8 @@ let intervalId = setInterval(() => {
 
         setInterval(() => {
             let closestTime = null
-            let closestNode = null
-            for (let text in nodesByText) {
+            let closestTitle = null
+            for (let text in titlesByText) {
                 let parts = text.split(':')
                 if (parts.length === 2) {
                     let minutes = parseInt(parts[0])
@@ -271,17 +269,17 @@ let intervalId = setInterval(() => {
                     let delta = video.currentTime - time
                     if (delta >= 0 && delta < VIDEO_NODE_SHOW_DURATION && (closestTime === null || delta < closestTime)) {
                         closestTime = delta
-                        closestNode = nodesByText[text][0]
+                        closestTitle = titlesByText[text][0]
                     }
                 }
             }
 
             vm.currentVideoTime = video.currentTime
-            if (closestNode) {
-                vm.currentNode = closestNode
+            if (closestTitle) {
+                vm.activeTitle = closestTitle
                 isCurrentVideoNode = true
             } else if (isCurrentVideoNode) {
-                vm.currentNode = null
+                vm.activeTitle = null
             }
         }, 100)
     }

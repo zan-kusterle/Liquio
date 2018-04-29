@@ -65,7 +65,7 @@ export default {
         },
         resultsNode () {
             return {
-                title: 'Relevance results',
+                title: 'Link relevance',
                 results: {
                     "Relevant-Irrelevant": this.referenceResults
                 }
