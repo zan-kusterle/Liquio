@@ -10,10 +10,10 @@
             <div class="choice">
                 <el-slider v-model="currentRelevance" class="spectrum"></el-slider>
             </div>
-            <div>
+            <el-button-group class="vote-buttons">
                 <el-button type="success" @click="vote" class="vote-button">Vote</el-button>
                 <el-button v-if="currentVote" type="danger" @click="unsetVote" class="vote-button">Delete vote</el-button>
-            </div>
+            </el-button-group>
         </div>
     </div>
     <div v-else class="liquio-loading">
@@ -22,12 +22,13 @@
 </template>
 
 <script>
-import { Slider, Button } from 'element-ui'
+import { Slider, Button, ButtonGroup } from 'element-ui'
 import InlineNode from 'vue/inline_node.vue'
 
 export default {
     components: {
         elSlider: Slider,
+        elButtonGroup: ButtonGroup,
         elButton: Button,
         inlineNode: InlineNode
     },
@@ -54,7 +55,7 @@ export default {
             if (!reference)
                 return null
             return {
-                ...reference.reference_results,
+                ...reference.referenceResults,
                 unit: {
                     type: 'spectrum'
                 }

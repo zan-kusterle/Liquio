@@ -139,14 +139,14 @@ export default {
         references () {
             let byTitle = {}
             for (let reference of this.node.references) {
-                byTitle[reference.title] = reference
+                byTitle[reference.title] = this.$store.state.nodesByKey[reference.title]
             }
             return Object.values(byTitle)
         },
         inverseReferences () {
             let byTitle = {}
-            for (let reference of this.node.inverse_references) {
-                byTitle[reference.title] = reference
+            for (let reference of this.node.inverseReferences) {
+                byTitle[reference.title] = this.$store.state.nodesByKey[reference.title]
             }
             return Object.values(byTitle)
         }

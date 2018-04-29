@@ -66,8 +66,8 @@ export default {
         commit('SET_CURRENT_REFERENCE_TITLE', payload)
         if (payload) {
             commit('ADD_TO_HISTORY')
+            dispatch('loadNode', { key: payload, refresh: true })
         }
-        dispatch('loadNode', { key: payload, refresh: true })
     },
     disableVoting ({ state, commit }) {
         commit('SET_IS_VOTING_DISABLED', true)
@@ -100,12 +100,42 @@ export default {
         window.dispatchEvent(event)
     },
     loadNode ({ state, commit }, { key, refresh }) {
+        let transformReference = (reference) => {
+            return {
+                title: reference.title,
+                referenceResults: reference.reference_results,
+                byTitle: reference.referencing_title
+            }
+        }
+
+        let flattenNode = (node) => {
+            let nodes = []
+            let existingNode = state.nodesByKey[node.title] || {}
+            nodes.push({
+                title: node.title,
+                results: node.results,
+                references: node.references === null ? existingNode.references : node.references.map(transformReference),
+                inverseReferences: node.inverse_references === null ? existingNode.inverseReferences : node.inverse_references.map(transformReference)
+            })
+
+            if (node.references)
+                for (let reference of node.references)
+                    nodes = nodes.concat(flattenNode(reference))
+
+            if (node.inverse_references)
+                for (let inverseReference of node.inverse_references)
+                    nodes = nodes.concat(flattenNode(inverseReference))
+
+            return nodes
+        }
+
         return new Promise((resolve, reject) => {
             if (refresh) {
                 commit('ADD_REFRESH_KEY', key)
             }
             fetchNode(key, state.whitelist, 2).then(node => {
-                commit('SET_NODE', node)
+                for (let flatNode of flattenNode(node))
+                    commit('SET_NODE', flatNode)
                 resolve(node)
             }).catch(() => {})
         })

@@ -99,8 +99,8 @@ store.subscribe((mutation, state, dispatch) => {
         let getTitlesByText = (node, key) => {
             var result = {}
             node.references.forEach(function (reference) {
-                if (reference.referenced_by_title.toLowerCase().startsWith(key.toLowerCase() + '/')) {
-                    let text = reference.referenced_by_title.substring(key.length + 1)
+                if (reference.byTitle.toLowerCase().startsWith(key.toLowerCase() + '/')) {
+                    let text = reference.byTitle.substring(key.length + 1)
                     
                     if (!(text in result))
                         result[text] = []

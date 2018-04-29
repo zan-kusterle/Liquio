@@ -34,7 +34,7 @@ export default {
                         let span = document.createElement('span')
                         range.surroundContents(span)
                         span.className = 'liquio-highlight'
-                        span.style.backgroundColor = 'rgba(57, 164, 255, 0.25)'
+                        span.style.backgroundColor = 'rgba(255, 255, 0, 0.5)'
                         span.style.cursor = 'pointer'
                         span.addEventListener('mouseover', (e) => {
                             setActive(node, false)
