@@ -1,6 +1,6 @@
 <template>
 <div class="liquio-bar" :style="isLoading ? { visibility: 'hidden' } : {}">
-    <div v-if="!isUnavailable" ref="barContainer" class="liquio-bar__container">
+    <div v-if="!isUnavailable" ref="barContainer" class="liquio-bar__container" :class="{ 'liquio-bar__container--shown': isBarShown, 'liquio-bar__container--no-transition': activeTitle }">
         <div v-if="activeTitle" class="liquio-bar__main">
             <div class="liquio-bar__items">
                 <div class="liquio-bar__node">
@@ -131,16 +131,6 @@ export default {
                     if (this.$refs.viewReference)
                         this.$refs.viewReference.focus()
                 })
-            }
-        },
-        isBarShown (v) {
-            if (!this.isUnavailable) {
-                let div = this.$refs.barContainer
-                if (v) {
-                    div.setAttribute('style', 'transform: translateX(0px);')
-                } else {
-                    div.removeAttribute('style')
-                }
             }
         }
     },

@@ -8,7 +8,7 @@ config :liquio, Liquio.Web.Endpoint,
 
 config :logger, level: :info
 
-config :liquio, results_cache_seconds: 10
+config :liquio, results_cache_seconds: nil
 config :liquio, messages_url: "https://sign.liqu.io/messages"
 
 import_config "prod.secret.exs"
