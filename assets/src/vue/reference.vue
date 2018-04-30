@@ -41,6 +41,15 @@ export default {
             currentRelevance: 50
         }
     },
+    watch: {
+        currentVote (v) {
+             if (v) {
+                this.currentRelevance = v.choice * 100
+            } else {
+                this.currentRelevance = 50
+            }
+        }
+    },
     computed: {
         node () {
             return this.$store.getters.nodeByTitle(this.title)
@@ -66,7 +75,7 @@ export default {
         },
         resultsNode () {
             return {
-                title: 'Link relevance',
+                title: 'Reference relevance',
                 results: {
                     "Relevant-Irrelevant": this.referenceResults
                 }

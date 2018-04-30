@@ -15,6 +15,7 @@
             v-model="searchQuery"
             :fetch-suggestions="querySearchAsync"
             @keyup.enter.native="viewSearch"
+            @keyup.delete.stop.native="() => {}"
             @select="viewSearch"
             placeholder="Vote on anything"
             class="search">
@@ -32,6 +33,7 @@
             v-model="referenceQuery"
             :fetch-suggestions="querySearchAsync"
             @keyup.enter.native="viewReference"
+            @keyup.delete.stop.native="() => {}"
             @select="viewReference"
             placement="top-start"
             placeholder="Add reference"
@@ -175,6 +177,7 @@ export default {
             this.open()
         },
         open () {
+            this.resetState()
             this.dialogVisible = true
         },
         close () {
@@ -205,14 +208,19 @@ export default {
         viewSearch (e) {
             if (this.searchQuery.length > 0) {
                 this.$store.dispatch('setCurrentTitle', e.value || this.searchQuery)
-                this.searchQuery = ''
+                this.resetState()
             }
         },
         viewReference (e) {
             if (this.referenceQuery.length > 0) {
                 this.$store.dispatch('setCurrentReferenceTitle', e.value || this.referenceQuery)
-                this.referenceQuery = ''
+                this.resetState()
             }
+        },
+        resetState () {
+            this.results = []
+            this.searchQuery = '',
+            this.referenceQuery = ''
         }
     }
 }

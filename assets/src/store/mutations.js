@@ -26,12 +26,15 @@ export default {
         state.isVotingDisabled = value
     },
     ADD_TO_HISTORY (state) {
-        state.history.splice(state.historyIndex + 1, state.history.length - state.historyIndex)
-        state.history.push({
-            title: state.currentTitle,
-            referenceTitle: state.currentReferenceTitle
-        })
-        state.historyIndex = state.history.length - 1
+        let currentHistory = state.history[state.historyIndex]
+        if (state.historyIndex < 0 || state.currentTitle !== currentHistory.title || state.currentReferenceTitle !== currentHistory.referenceTitle) {
+            state.history.splice(state.historyIndex + 1, state.history.length - state.historyIndex)
+            state.history.push({
+                title: state.currentTitle,
+                referenceTitle: state.currentReferenceTitle
+            })
+            state.historyIndex = state.history.length - 1
+        }
     },
     GO_TO_HISTORY_INDEX (state, index) {
         let item = state.history[index]

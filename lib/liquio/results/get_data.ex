@@ -76,7 +76,8 @@ defmodule Liquio.GetData do
 
 			String.length(data["title"]) >= 3 and
 			String.length(data["reference_title"]) >= 3 and
-			is_float(data["relevance"]) and data["relevance"] >= 0 and data["relevance"] <= 1 and
+			(is_integer(data["relevance"]) or is_float(data["relevance"])) and
+			data["relevance"] >= 0 and data["relevance"] <= 1 and
 			data["key"] == ["reference_vote", "title", "reference_title"]
 		end)
 		|> Enum.map(fn(message) ->

@@ -9,7 +9,7 @@
 
             <div class="choice">
                 <el-slider v-if="currentUnit.type === 'spectrum'" v-model="currentChoice.spectrum"></el-slider>
-                <el-input-number v-else v-model="currentChoice.quantity"></el-input-number>
+                <el-input-number v-else v-model="currentChoice.quantity" @keyup.delete.stop.native="() => {}"></el-input-number>
             </div>
 
             <el-button-group class="vote-buttons">

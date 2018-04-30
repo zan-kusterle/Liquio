@@ -68,13 +68,6 @@ export let allUnits = [{
         type: 'quantity'
     },
     {
-        key: 'approve',
-        text: 'Approve-Disapprove',
-        short: 'approval',
-        value: 'approve',
-        type: 'spectrum'
-    },
-    {
         key: 'agree',
         text: 'Agree-Disagree',
         short: 'aggre',

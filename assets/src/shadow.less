@@ -36,12 +36,14 @@
         }
 
         &--node {
-            border: 1px solid rgba(200, 200, 200, 0.6);
-            border-radius: 4px;
             transition: none;
-            background-color: white;
+            background-color: rgba(0, 0, 0, 0.75);
             padding-right: 20px;
             cursor: pointer;
+
+            .inline-node > p {
+                color: white;
+            }
         }
     }
 
@@ -285,6 +287,9 @@ a {
 
     .inline-node[size="small"] {
         cursor: pointer;
+        .results {
+            min-width: 130px;
+        }
     }
 }
 
@@ -293,14 +298,14 @@ a {
 
     .inline-node[size="medium"] {
         background-color: #eee;
-        padding: 10px 20px;
+        padding: 15px 20px;
         cursor: pointer;
     }
 
     > i {
         display: block;
         font-size: 72px;
-        line-height: 50px;
+        line-height: 80px;
         text-align: center;
     }
 }
@@ -376,8 +381,7 @@ a {
     .results {
         display: inline-block;
         padding: 6px 10px;
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 20px;
         min-width: 60px;
         text-align: center;
         vertical-align: middle;
