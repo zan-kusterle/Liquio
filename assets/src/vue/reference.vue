@@ -44,7 +44,7 @@ export default {
     watch: {
         currentVote (v) {
              if (v) {
-                this.currentRelevance = v.choice * 100
+                this.currentRelevance = Math.round(v.choice * 100)
             } else {
                 this.currentRelevance = 50
             }

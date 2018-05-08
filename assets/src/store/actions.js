@@ -36,7 +36,7 @@ let fetchSearch = (query, whitelist) => {
 }
 
 export default {
-    initialize ({ commit, dispatch }) {
+    initialize ({ commit, dispatch, state }) {
         window.addEventListener('sign-anything-response', (e) => {
             let data = e.detail
             if (data.request_name === 'whitelist') {
@@ -48,7 +48,16 @@ export default {
                 })
                 dispatch('updateNodes')
             } else if (data.request_name === 'sign') {
-                commit('SET_IS_SIGN_WINDOW_OPEN', false)
+                 // TODO get refresh titles from store
+                let currentTitle = state.currentTitle
+                let currentReferenceTitle = state.currentReferenceTitle
+                setTimeout(() => {
+                    dispatch('loadNode', { key: state.currentPage })
+                    if (currentTitle)
+                        dispatch('loadNode', { key: currentTitle })
+                    if (currentReferenceTitle)
+                        dispatch('loadNode', { key: currentReferenceTitle })
+                }, 500)
             }
         })
     },
@@ -89,8 +98,6 @@ export default {
         return fetchSearch(query, state.whitelist)
     },
     vote ({ commit }, { messages, messageKeys }) {
-        commit('SET_IS_SIGN_WINDOW_OPEN', true)
-
         let data = {
             name: 'sign',
             messages: messages,

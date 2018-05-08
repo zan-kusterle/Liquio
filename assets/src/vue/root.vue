@@ -42,23 +42,6 @@
             <i @click="viewReference" slot="suffix" class="el-input__icon el-icon-arrow-right"></i>
         </el-autocomplete>
     </el-dialog>
-
-    <el-dialog
-        width="500px"
-        style="margin-top: 10vh;"
-        title="Sign your data"
-        :visible.sync="isSignWindowOpen"
-        append-to-body>
-
-        <div class="sign-alert">
-            <p>Click the lock icon next to your address bar to finalize your vote.</p>
-
-            <div class="sign-alert__images">
-                <img class="sign-alert__sign-icon" :src="LIQUIO_URL + '/icons/sign-icon.png'" />
-                <div class="sign-alert__toolbar-image" :style="{ backgroundImage: `url(${LIQUIO_URL}/icons/toolbar.png)` }"></div>
-            </div>
-        </div>
-    </el-dialog>
 </div>
 </template>
 
@@ -139,14 +122,6 @@ export default {
         ...mapGetters(['currentTitle', 'canNavigateBack']),
         activeNode () {
             return this.$store.getters.nodeByTitle(this.activeTitle)
-        },
-        isSignWindowOpen: {
-            get () {
-                return this.$store.state.isSignWindowOpen
-            },
-            set (v) {
-                this.$store.commit('SET_IS_SIGN_WINDOW_OPEN', v)
-            }
         },
         node () {
             return this.$store.getters.nodeByTitle(this.currentTitle)

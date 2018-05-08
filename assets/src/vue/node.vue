@@ -3,8 +3,14 @@
         <inline-node :node="node" :force-unit="currentUnitValueData" size="large" class="liquio-node__main"></inline-node>
 
         <div class="vote" v-if="!isVotingDisabled">
+
             <el-select v-model="currentUnitValue" class="unit">
-                <el-option v-for="unit in allUnits" :key="unit.key" :label="unit.text" :value="unit.value" />
+                <el-option-group
+                    v-for="group in unitsByType"
+                    :key="group.label"
+                    :label="group.label">
+                    <el-option v-for="unit in group.items" :key="unit.key" :label="unit.text" :value="unit.value" />
+                </el-option-group>
             </el-select>
 
             <div class="choice">
@@ -35,7 +41,7 @@
 </template>
 
 <script>
-import { Slider, Button, ButtonGroup, Select, Option, InputNumber, Dialog } from 'element-ui'
+import { Slider, Button, ButtonGroup, Select, OptionGroup, Option, InputNumber, Dialog } from 'element-ui'
 import InlineNode from 'vue/inline_node.vue'
 import { allUnits } from 'store/constants'
 import { mapState, mapGetters, mapActions } from 'vuex'
@@ -46,6 +52,7 @@ export default {
         elButton: Button,
         elButtonGroup: ButtonGroup,
         elSelect: Select,
+        elOptionGroup: OptionGroup,
         elOption: Option,
         elInputNumber: InputNumber,
         elDialog: Dialog,
@@ -63,9 +70,6 @@ export default {
             }
         }
     },
-    created () {
-        this.allUnits = allUnits
-    },
     watch: {
         title () {
             this.currentUnitValue = null
@@ -77,7 +81,7 @@ export default {
         currentVote (v) {
             if (v) {
                 if (this.currentUnit.type === 'spectrum') {
-                    this.currentChoice.spectrum = v.choice * 100
+                    this.currentChoice.spectrum = Math.round(v.choice * 100)
                 } else {
                     this.currentChoice.quantity = v.choice
                 }
@@ -112,6 +116,26 @@ export default {
     },
     computed: {
         ...mapState(['isVotingDisabled']),
+        unitsByType () {
+            let byType = {}
+            allUnits.forEach(unit => {
+                if (!byType[unit.type])
+                    byType[unit.type] = []
+                byType[unit.type].push(unit)
+            })
+
+            let types = [
+                { key: 'spectrum', label: 'Spectrum' },
+                { key: 'quantity', label: 'Quantity' }
+            ]
+
+            return types.map(type => {
+                return {
+                    label: type.label,
+                    items: byType[type.key]
+                }
+            })
+        },
         node () {
             return this.$store.getters.nodeByTitle(this.title)
         },
@@ -137,6 +161,8 @@ export default {
             return unitResults.contributions.find(c => this.$store.getters.usernames.includes(c.username))
         },
         references () {
+            if (!this.node.references)
+                return []
             let byTitle = {}
             for (let reference of this.node.references) {
                 byTitle[reference.title] = this.$store.getters.nodeByTitle(reference.title)
@@ -144,6 +170,8 @@ export default {
             return Object.values(byTitle)
         },
         inverseReferences () {
+            if (!this.node.inverseReferences)
+                return []
             let byTitle = {}
             for (let reference of this.node.inverseReferences) {
                 byTitle[reference.title] = this.$store.getters.nodeByTitle(reference.title)

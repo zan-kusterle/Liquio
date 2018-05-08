@@ -41,8 +41,5 @@ export default {
         state.currentTitle = item.title
         state.currentReferenceTitle = item.referenceTitle
         state.historyIndex = index
-    },
-    SET_IS_SIGN_WINDOW_OPEN (state, isOpen) {
-        state.isSignWindowOpen = isOpen
     }
 }

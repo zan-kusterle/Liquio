@@ -135,20 +135,8 @@ store.subscribe((mutation, state, dispatch) => {
             index --
         }
         transformWithTimeouts()
-    } else if (mutation.type === 'SET_IS_SIGN_WINDOW_OPEN' && mutation.payload === false) {
-        // TODO get refresh titles from store
-        let currentTitle = state.currentTitle
-        let currentReferenceTitle = state.currentReferenceTitle
-        setTimeout(() => {
-            store.dispatch('loadNode', { key: state.currentPage })
-            if (currentTitle)
-                store.dispatch('loadNode', { key: currentTitle })
-            if (currentReferenceTitle)
-                store.dispatch('loadNode', { key: currentReferenceTitle })
-        }, 500)
     }
 })
-    
 
 if (IS_EXTENSION) {
     browser.runtime.onMessage.addListener(function(message) {

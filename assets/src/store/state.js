@@ -5,7 +5,6 @@ export default {
     isVotingDisabled: false,
     history: [],
     historyIndex: -1,
-    isSignWindowOpen: false,
     whitelist: {
         url: null,
         username: null
