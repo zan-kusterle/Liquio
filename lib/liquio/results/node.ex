@@ -6,7 +6,7 @@ defmodule Liquio.Node do
 		%{
 			:key => slug(title),
 			:title => title,
-			:results => %{},
+			:results => nil,
 			:references => nil,
 			:inverse_references => nil
 		}
