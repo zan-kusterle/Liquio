@@ -94,7 +94,6 @@ export default {
         return {
             isLoading: true,
             dialogVisible: false,
-            results: [],
             searchQuery: '',
             referenceQuery: ''
         }
@@ -104,8 +103,6 @@ export default {
     },
     mounted () {
         setTimeout(() => this.isLoading = false, 50)
-
-        this.results = this.loadResults()
     },
     watch: {
         currentTitle () {
@@ -158,17 +155,6 @@ export default {
         close () {
             this.dialogVisible = false
         },
-        loadResults() {
-            return [
-                { "value": "vue", "link": "https://github.com/vuejs/vue" },
-                { "value": "element", "link": "https://github.com/ElemeFE/element" },
-                { "value": "cooking", "link": "https://github.com/ElemeFE/cooking" },
-                { "value": "mint-ui", "link": "https://github.com/ElemeFE/mint-ui" },
-                { "value": "vuex", "link": "https://github.com/vuejs/vuex" },
-                { "value": "vue-router", "link": "https://github.com/vuejs/vue-router" },
-                { "value": "babel", "link": "https://github.com/babel/babel" }
-            ]
-        },
         querySearchAsync(queryString, cb) {
             this.search(queryString).then(results => {
                 let items = results ? results.map(r => ({ value: r.title })) : []
@@ -193,7 +179,6 @@ export default {
             }
         },
         resetState () {
-            this.results = []
             this.searchQuery = '',
             this.referenceQuery = ''
         }
