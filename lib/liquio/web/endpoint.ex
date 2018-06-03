@@ -40,7 +40,7 @@ defmodule Liquio.Web.Endpoint do
     at: "/",
     from: :liquio,
     gzip: true,
-    only: ~w(robots.txt inject.js liquio.zip fonts images icons)
+    only: ~w(privacy.txt robots.txt inject.js liquio.zip fonts images icons)
   )
 
   plug(

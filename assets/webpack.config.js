@@ -48,7 +48,7 @@ module.exports = {
         }
     },
     optimization: {
-        minimize: process.env.NODE_ENV === 'production'
+        minimize: false
     },
     plugins: [
         new webpack.DefinePlugin({

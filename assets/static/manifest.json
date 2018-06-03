@@ -1,6 +1,6 @@
 {
   "name": "Liquio",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "manifest_version": 2,
   "description": "Vote on anything, anywhere on the web",
   "homepage_url": "https://liqu.io",
@@ -24,7 +24,7 @@
     "tabs",
     "storage"
   ],
-  "content_security_policy": "script-src 'self'; object-src 'self'; img-src http://localhost:4000",
+  "content_security_policy": "script-src 'self'; object-src 'self'; img-src 'self",
   "web_accessible_resources": [
     "icons/toolbar.png"
   ]
