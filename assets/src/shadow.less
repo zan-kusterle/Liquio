@@ -21,17 +21,18 @@
 
     &__container {
         position: fixed;
-        transform: translateX(-300px);
-        opacity: 0;
+        transform: translateX(-600px);
+        opacity: 0.6;
         bottom: 0;
         left: 0;
         user-select: none;
         z-index: 1000;
-        transition: all ease 250ms;
+        transition: all 350ms ease;
         margin: 12px;
+        display: flex;
 
         &--shown {
-            transform: translate(0px);
+            transform: translateX(0px);
             opacity: 1;
         }
 
@@ -45,6 +46,11 @@
                 color: white;
             }
         }
+    }
+
+    &__annotation-input {
+        margin-right: 5px;
+        width: 400px;
     }
 
     &__wrap {
@@ -301,15 +307,15 @@ a {
     padding: 30px 10px;
 
     .inline-node[size="medium"] {
-        background-color: #eee;
+        background-color: #f5f5f5;
         padding: 15px 20px;
         cursor: pointer;
     }
 
     > i {
         display: block;
-        font-size: 72px;
-        line-height: 80px;
+        font-size: 42px;
+        line-height: 36px;
         text-align: center;
     }
 }
@@ -348,13 +354,14 @@ a {
 }
 
 .inline-node[size="medium"] {
+    text-align: center;
+
     p {
-        font-size: 22px;
-        line-height: 32px;
-        display: inline;
+        font-size: 18px;
+        line-height: 26px;
         vertical-align: middle;
         word-break: break-all;
-        margin-left: 20px;
+        margin-top: 10px;
     }
 
     .results {

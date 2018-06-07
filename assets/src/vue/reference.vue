@@ -4,9 +4,9 @@
         <i class="el-icon-arrow-down"></i>
         <inline-node :node="referenceNode" @click="viewNode(referenceNode)" size="medium"></inline-node>
 
-        <inline-node :node="resultsNode" size="large" style="margin-top: 100px;"></inline-node>
+        <inline-node :node="resultsNode" size="large" style="margin-top: 40px;"></inline-node>
 
-        <div class="vote" style="margin-top: 40px;">
+        <div class="vote" style="margin-top: 20px;">
             <div class="choice">
                 <el-slider v-model="currentRelevance" class="spectrum"></el-slider>
             </div>
