@@ -21,23 +21,13 @@
 
     &__container {
         position: fixed;
-        transform: translateX(-600px);
-        opacity: 0.6;
         bottom: 0;
         left: 0;
         user-select: none;
         z-index: 1000;
-        transition: all 350ms ease;
         margin: 12px;
-        display: flex;
-
-        &--shown {
-            transform: translateX(0px);
-            opacity: 1;
-        }
 
         &--node {
-            transition: none;
             background-color: rgba(0, 0, 0, 0.75);
             padding-right: 20px;
             cursor: pointer;
@@ -46,6 +36,17 @@
                 color: white;
             }
         }
+    }
+
+    &__annotation-anchor {
+        color: #555;
+        font-size: 12px;
+        margin-left: 5px;
+        margin-bottom: 5px;
+    }
+
+    &__annotate-text {
+        display: flex;
     }
 
     &__annotation-input {

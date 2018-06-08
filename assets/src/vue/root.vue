@@ -1,15 +1,14 @@
 <template>
 <div class="liquio-bar" :style="isLoading ? { visibility: 'hidden' } : {}">
     <template v-if="!isUnavailable">
-        <div v-if="activeNode && !activeNode.mock" ref="barContainer" class="liquio-bar__container liquio-bar__container--node" :class="{ 'liquio-bar__container--shown': activeTitle }">
+        <div v-if="activeTitle && activeNode && !activeNode.mock" ref="barContainer" class="liquio-bar__container liquio-bar__container--node">
             <inline-node :node="activeNode" size="small" @click="viewActive"></inline-node>
         </div>
-        <div v-else ref="barContainer" class="liquio-bar__container" :class="{ 'liquio-bar__container--shown': isAnnotationBarShown }">
-            <template v-if="lastSelection && lastSelection.length >= 10 || currentVideoTime">
-                <el-input ref="annotationTitle" v-model="annotationTitle" @blur="onAnnotationTitleBlur" placeholder="Annotation title" class="liquio-bar__annotation-input"></el-input>
-                <el-button v-if="lastSelection && lastSelection.length >= 10" size="small" type="primary" @click="startVoting">Vote on selection</el-button>
-                <el-button v-else-if="currentVideoTime" size="small" @click="startVoting">Vote on video at {{ currentVideoTimeText }}</el-button>
-            </template>
+        <div v-else-if="isAnnotationBarShown" ref="barContainer" class="liquio-bar__container">
+            <el-input ref="annotationTitle" v-if="isAnnotationTitleInputShown" v-model="annotationTitle" @blur="onAnnotationTitleBlur" placeholder="Annotation title" class="liquio-bar__annotation-input"></el-input>
+
+            <el-button v-if="lastSelection && lastSelection.length >= 10" size="small" type="primary" @click="startVoting" :disabled="isAnnotationTitleInputShown && !annotationTitle">Vote on selection</el-button>
+            <el-button v-else-if="currentVideoTime" size="small" @click="startVoting" :disabled="isAnnotationTitleInputShown && !annotationTitle">Vote on video at {{ currentVideoTimeText }}</el-button>
         </div>
     </template>
 
@@ -101,7 +100,7 @@ export default {
             referenceQuery: '',
             annotationTitle: '',
             lastSelection: null,
-            isLastSelectionHidden: false
+            isAnnotationTitleInputShown: false
         }
     },
     created () {
@@ -111,24 +110,10 @@ export default {
         setTimeout(() => this.isLoading = false, 50)
     },
     watch: {
-        currentTitle () {
-            if (this.$store.state.isVotingDisabled) {
-                this.$nextTick(() => {
-                    if (this.$refs.viewReference)
-                        this.$refs.viewReference.focus()
-                })
-            }
-        },
-        currentSelection (v) {
-            if (v) {
-                this.isLastSelectionHidden = false
+        currentSelection (v, ov) {
+            if (v && v != ov) {
+                this.isAnnotationTitleInputShown = false
                 this.lastSelection = v
-            }
-        },
-        isAnnotationBarShown (v, ov) {
-            if (!ov && v) {
-                this.annotationTitle = null
-                this.$nextTick(() => this.$refs.annotationTitle.focus())
             }
         }
     },
@@ -147,23 +132,30 @@ export default {
             return `${('00' + minutes).slice(-2)}:${('00' + seconds).slice(-2)}`
         },
         isAnnotationBarShown () {
-            return !this.isLastSelectionHidden && this.lastSelection && this.lastSelection.length >= 10 || this.currentVideoTime
+            return this.lastSelection && this.lastSelection.length >= 10 || this.currentVideoTime
         }
     },
     methods: {
         ...mapActions(['navigateBack', 'search']),
-        onAnnotationTitleBlur () {
+        onAnnotationTitleBlur (e) {
             setTimeout(() => {
-                this.isLastSelectionHidden = true
-            }, 100)
+                this.lastSelection = null
+                this.isAnnotationTitleInputShown = false
+            }, 200)
         },
         startVoting () {
-            let anchor = slug(this.lastSelection || this.currentVideoTimeText).value
-            this.$store.dispatch('setCurrentReferenceTitle', this.annotationTitle)
-            this.$store.dispatch('setCurrentTitle', this.$store.state.currentPage + '/' + anchor)
-            this.$store.dispatch('disableVoting')
-            this.lastSelection = null
-            this.open()
+            if (this.isAnnotationTitleInputShown) {
+                let anchor = slug(this.lastSelection || this.currentVideoTimeText).value
+                this.$store.dispatch('setCurrentReferenceTitle', this.annotationTitle)
+                this.$store.dispatch('setCurrentTitle', this.$store.state.currentPage + '/' + anchor)
+                this.$store.dispatch('disableVoting')
+                this.lastSelection = null
+                this.open()
+            } else {
+                this.isAnnotationTitleInputShown = true
+                this.annotationTitle = null
+                this.$nextTick(() => this.$refs.annotationTitle.focus())
+            }
         },
         viewActive () {
             this.$store.dispatch('setCurrentTitle', this.activeTitle)
