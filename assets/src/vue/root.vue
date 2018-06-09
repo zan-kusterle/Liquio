@@ -5,7 +5,7 @@
             <inline-node :node="activeNode" size="small" @click="viewActive"></inline-node>
         </div>
         <div v-else-if="isAnnotationBarShown" ref="barContainer" class="liquio-bar__container">
-            <el-input ref="annotationTitle" v-if="isAnnotationTitleInputShown" v-model="annotationTitle" @blur="onAnnotationTitleBlur" placeholder="Annotation title" class="liquio-bar__annotation-input"></el-input>
+            <el-input ref="annotationTitle" v-if="isAnnotationTitleInputShown" v-model="annotationTitle" placeholder="Annotation title" class="liquio-bar__annotation-input"></el-input>
 
             <el-button v-if="lastSelection && lastSelection.length >= 10" size="small" type="primary" @click="startVoting" :disabled="isAnnotationTitleInputShown && !annotationTitle">Vote on selection</el-button>
             <el-button v-else-if="currentVideoTime" size="small" @click="startVoting" :disabled="isAnnotationTitleInputShown && !annotationTitle">Vote on video at {{ currentVideoTimeText }}</el-button>
@@ -105,15 +105,21 @@ export default {
     },
     created () {
         this.LIQUIO_URL = LIQUIO_URL
+        this.lastSelectionSetTime = 0
     },
     mounted () {
         setTimeout(() => this.isLoading = false, 50)
+        document.addEventListener('click', this.onClick)
+    },
+    beforeDestroy () {
+        document.removeEventListener('click', this.onClick)
     },
     watch: {
         currentSelection (v, ov) {
             if (v && v != ov) {
                 this.isAnnotationTitleInputShown = false
                 this.lastSelection = v
+                this.lastSelectionSetTime = Date.now()
             }
         }
     },
@@ -137,11 +143,13 @@ export default {
     },
     methods: {
         ...mapActions(['navigateBack', 'search']),
-        onAnnotationTitleBlur (e) {
-            setTimeout(() => {
+        onClick (ev) {
+            let el = document.getElementById(IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar')
+            let isOutside = !(el === event.target || el.contains(event.target))
+            if (isOutside && Date.now() > this.lastSelectionSetTime + 10) {
                 this.lastSelection = null
                 this.isAnnotationTitleInputShown = false
-            }, 200)
+            }
         },
         startVoting () {
             if (this.isAnnotationTitleInputShown) {
@@ -150,10 +158,12 @@ export default {
                 this.$store.dispatch('setCurrentTitle', this.$store.state.currentPage + '/' + anchor)
                 this.$store.dispatch('disableVoting')
                 this.lastSelection = null
+                this.isAnnotationTitleInputShown = false
                 this.open()
             } else {
-                this.isAnnotationTitleInputShown = true
+                this.lastSelectionSetTime = Date.now()
                 this.annotationTitle = null
+                this.isAnnotationTitleInputShown = true
                 this.$nextTick(() => this.$refs.annotationTitle.focus())
             }
         },
