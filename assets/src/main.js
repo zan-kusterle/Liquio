@@ -71,8 +71,20 @@ const vm = new Vue({
                 currentVideoTime: this.currentVideoTime
             }
         })
+    },
+    computed: {
+        captureKeyboard () {
+            let root = this.$children[0]
+            return root.isAnnotationTitleInputShown || root.currentTitle && root.dialogVisible
+        }
     }
 })
+
+window.addEventListener('keydown', (e) => {
+    if (vm.captureKeyboard) {
+        e.stopPropagation()
+    }
+}, true)
 
 let titlesByText = {}
 let textNodes = []
