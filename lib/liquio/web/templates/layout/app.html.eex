@@ -23,11 +23,7 @@
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/gpnnencpnfcpdpdfbaefalokcilkkege">
 
 		<style>
-			html {
-				height: 100%;
-			}
 			body {
-				height: 100%;
 				margin: 0;
 				background-color: #fff;
 				cursor: default;
@@ -35,47 +31,56 @@
 				font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 			}
 
+
 			.container {
 				margin: 0 auto;
 				width: 100%;
 				color: #333;
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 				text-align: center;
-				height: 100%;
 				max-width: none;
 			}
+
 
 			h1 {
 				font-weight: normal;
 				margin-top: 100px;
+				margin-bottom: 20px;
 				font-size: 48px;
+				color: #444;
 			}
 
-			.features {
-				display: flex;
-				width: 70%;
-				margin: 20px auto;
-				flex-flow: row wrap;
+			.get-extension {
+				margin: 0 auto;
+				margin-top: 60px;
 			}
 
-			.feature {
-				flex: 1;
-				flex-basis: 30%;
-				background-color: #3e96bb;
-				color: white;
-				margin: 20px 50px;
-				padding: 10px 20px;
+			.get-extension > img {
+				width: 260px;
 			}
 
-			.demo {
-				width: 700px;
-				margin: 50px auto;
-			}
-
-			img {
+			.get-extension > a {
+				text-decoration: none;
 				display: block;
-				width: 100%;
-				height: auto;
+			}
+
+			.get-extension > a > button {
+				outline: none;
+				border: none;
+				-webkit-border-radius: 0;
+				-moz-border-radius: 0;
+				border-radius: 0px;
+				color: #ffffff;
+				font-size: 32px;
+				background: #00A9E1;
+				padding: 25px 60px;
+				text-decoration: none;
+				cursor: pointer;
+			}
+
+			.get-extension > a > button:hover {
+				background: #27baea;
+				text-decoration: none;
 			}
 		</style>
 	</head>
@@ -84,30 +89,13 @@
 		<div id="app" class="container">
 			<h1>Vote on anything, anywhere on the web.</h1>
 
-			<!--<div class="demo">
-				<img src="/images/annotate.gif" width="100%"></img>
-			</div>-->
+			<iframe width="800" height="502" src="https://www.youtube.com/embed/KBM0jTK6X9I?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
-			<div class="features">
-				<div class="feature">
-					<h3>Delegations</h3>
-					<p>Give your vote to other people you trust. Vote only when you're confident.</p>
-				</div>
-
-				<div class="feature">
-					<h3>Votes</h3>
-					<p>Vote on any text or URL.</p>
-				</div>
-
-				<div class="feature">
-					<h3>Links</h3>
-					<p>Link polls with other polls or to any text on any website.</p>
-				</div>
-
-				<div class="feature">
-					<h3>Robust</h3>
-					<p>Whitelists and signatures make it hard to spam votes.</p>
-				</div>
+			<div class="get-extension">
+				<img src="/images/chrome-web-store-badge.png"></img>
+				<a href="https://chrome.google.com/webstore/detail/liquio/gpnnencpnfcpdpdfbaefalokcilkkege">
+					<button>Get free extension</button>
+				</a>
 			</div>
 		</div>
 	</body>
