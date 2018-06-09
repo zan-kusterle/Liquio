@@ -100,8 +100,9 @@ export default {
     vote ({ commit }, { messages, messageKeys }) {
         let data = {
             name: 'sign',
-            messages: messages,
-            messageKeys: messageKeys
+            messages: messages.map(x => {
+                return { ...x, keys: messageKeys }
+            })
         }
         let event = new CustomEvent('sign-anything', { detail: data })
         window.dispatchEvent(event)
