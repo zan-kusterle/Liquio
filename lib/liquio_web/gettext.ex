@@ -1,4 +1,4 @@
-defmodule Liquio.Web.Gettext do
+defmodule LiquioWeb.Gettext do
   @moduledoc """
   A module providing Internationalization with a gettext-based API.
 

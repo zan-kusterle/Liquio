@@ -1,6 +1,6 @@
 use Mix.Config
 
-config :liquio, Liquio.Web.Endpoint,
+config :liquio, LiquioWeb.Endpoint,
 	http: [port: 4000],
 	url: [host: "liqu.io", port: 443],
 	cache_static_manifest: "priv/static/cache_manifest.json",

@@ -1,5 +1,5 @@
-defmodule Liquio.Web.Router do
-  use Liquio.Web, :router
+defmodule LiquioWeb.Router do
+  use LiquioWeb, :router
 
   pipeline :api do
     plug(:accepts, ["json"])
@@ -9,14 +9,14 @@ defmodule Liquio.Web.Router do
     plug(:accepts, ["html"])
   end
 
-  scope "/api", Liquio.Web do
+  scope "/api", LiquioWeb do
     pipe_through(:api)
 
     get("/nodes/:title", NodeController, :show)
     get("/search/:query", SearchController, :show)
   end
 
-  scope "/", Liquio.Web do
+  scope "/", LiquioWeb do
     pipe_through(:browser)
 
     get("/", IndexController, :index)

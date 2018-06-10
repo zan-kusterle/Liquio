@@ -6,11 +6,11 @@
 use Mix.Config
 
 # Configures the endpoint
-config :liquio, Liquio.Web.Endpoint,
+config :liquio, LiquioWeb.Endpoint,
 	url: [host: "localhost"],
 	root: Path.dirname(__DIR__),
 	secret_key_base: "1EVNeOWHQFUVrqCr8huo/xSeJWEyxUCGGB435YvbMO6qANRb58O1M391KZ25Bbaw",
-	render_errors: [view: Liquio.Web.ErrorView, accepts: ~w(html json)],
+	render_errors: [view: LiquioWeb.ErrorView, accepts: ~w(html json)],
 	pubsub: [
 		name: Liquio.PubSub,
 		adapter: Phoenix.PubSub.PG2

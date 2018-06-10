@@ -1,4 +1,4 @@
-defmodule Liquio.RedirectWwwPlug do
+defmodule LiquioWeb.RedirectWwwPlug do
   import Plug.Conn
 
   def init(opts), do: opts
@@ -32,7 +32,7 @@ defmodule Liquio.RedirectWwwPlug do
   end
 end
 
-defmodule Liquio.Web.Endpoint do
+defmodule LiquioWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :liquio
 
   plug(
@@ -59,7 +59,7 @@ defmodule Liquio.Web.Endpoint do
     plug(Phoenix.CodeReloader)
   end
 
-  plug(Liquio.RedirectWwwPlug)
+  plug(LiquioWeb.RedirectWwwPlug)
 
   plug(Plug.RequestId)
   plug(Plug.Logger)
@@ -76,5 +76,5 @@ defmodule Liquio.Web.Endpoint do
 
   plug(CORSPlug, origin: "*")
 
-  plug(Liquio.Web.Router)
+  plug(LiquioWeb.Router)
 end

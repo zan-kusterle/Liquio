@@ -1,4 +1,4 @@
-defmodule Liquio.Web.ConnCase do
+defmodule LiquioWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -20,10 +20,10 @@ defmodule Liquio.Web.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      import Liquio.Web.Router.Helpers
+      import LiquioWeb.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint Liquio.Web.Endpoint
+      @endpoint LiquioWeb.Endpoint
     end
   end
 

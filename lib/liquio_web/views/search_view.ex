@@ -1,8 +1,8 @@
-defmodule Liquio.Web.SearchView do
-  use Liquio.Web, :view
+defmodule LiquioWeb.SearchView do
+  use LiquioWeb, :view
 
   def render("index.json", %{nodes: nodes}) do
-    %{data: render_many(nodes, Liquio.Web.SearchView, "node.json")}
+    %{data: render_many(nodes, LiquioWeb.SearchView, "node.json")}
   end
 
   def render("node.json", %{search: node}) do

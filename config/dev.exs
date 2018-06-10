@@ -1,6 +1,6 @@
 use Mix.Config
 
-config :liquio, Liquio.Web.Endpoint,
+config :liquio, LiquioWeb.Endpoint,
 	http: [port: 4000],
 	debug_errors: false,
 	code_reloader: true,
@@ -10,7 +10,7 @@ config :liquio, Liquio.Web.Endpoint,
 	]
 
 # Watch static and templates for browser reloading.
-config :liquio, Liquio.Web.Endpoint,
+config :liquio, LiquioWeb.Endpoint,
 	live_reload: [
 		patterns: [
 			~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},

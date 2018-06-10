@@ -1,5 +1,5 @@
-defmodule Liquio.Web.SearchController do
-  use Liquio.Web, :controller
+defmodule LiquioWeb.SearchController do
+  use LiquioWeb, :controller
 
   def show(conn, params = %{"query" => query}) do
     whitelist_url = Map.get(params, "whitelist_url")

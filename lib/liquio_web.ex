@@ -1,12 +1,12 @@
-defmodule Liquio.Web do
+defmodule LiquioWeb do
   @moduledoc """
   A module that keeps using definitions for controllers,
   views and so on.
 
   This can be used in your application as:
 
-  use Liquio.Web, :controller
-  use Liquio.Web, :view
+  use LiquioWeb, :controller
+  use LiquioWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -23,10 +23,10 @@ defmodule Liquio.Web do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: Liquio.Web
+      use Phoenix.Controller, namespace: LiquioWeb
 
-      import Liquio.Web.Router.Helpers
-      import Liquio.Web.Gettext
+      import LiquioWeb.Router.Helpers
+      import LiquioWeb.Gettext
 
       alias Liquio.Identity
       alias Liquio.Delegation
@@ -39,15 +39,15 @@ defmodule Liquio.Web do
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/liquio/web/templates", namespace: Liquio.Web
+      use Phoenix.View, root: "lib/liquio_web/templates", namespace: LiquioWeb
       # Import convenience functions from controllers
       # import Phoenix.Controller, only: [get_csrf_token: 0, get_flash: 2, view_module: 1]
       # Use all HTML functionality (forms, tags, etc)
       # use Phoenix.HTML
 
-      import Liquio.Web.Router.Helpers
-      import Liquio.Web.ErrorHelpers
-      import Liquio.Web.Gettext
+      import LiquioWeb.Router.Helpers
+      import LiquioWeb.ErrorHelpers
+      import LiquioWeb.Gettext
     end
   end
 
@@ -61,7 +61,7 @@ defmodule Liquio.Web do
     quote do
       use Phoenix.Channel
 
-      import Liquio.Web.Gettext
+      import LiquioWeb.Gettext
     end
   end
 

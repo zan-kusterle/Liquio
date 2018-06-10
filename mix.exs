@@ -16,7 +16,7 @@ defmodule Liquio.Mixfile do
 
   def application() do
     [
-      mod: {Liquio, []},
+      mod: {Liquio.Application, []},
       extra_applications: [
         :phoenix,
         :phoenix_html,

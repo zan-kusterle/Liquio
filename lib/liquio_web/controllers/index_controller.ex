@@ -1,9 +1,9 @@
-defmodule Liquio.Web.IndexController do
-  use Liquio.Web, :controller
+defmodule LiquioWeb.IndexController do
+  use LiquioWeb, :controller
 
   def index(conn, _) do
     conn
     |> put_resp_header("Cache-Control", "public, max-age=864000")
-    |> render(Liquio.Web.LayoutView)
+    |> render(LiquioWeb.LayoutView)
   end
 end

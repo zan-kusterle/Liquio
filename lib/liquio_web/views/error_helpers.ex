@@ -1,4 +1,4 @@
-defmodule Liquio.Web.ErrorHelpers do
+defmodule LiquioWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """

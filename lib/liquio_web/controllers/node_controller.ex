@@ -1,5 +1,5 @@
-defmodule Liquio.Web.NodeController do
-  use Liquio.Web, :controller
+defmodule LiquioWeb.NodeController do
+  use LiquioWeb, :controller
 
   alias Liquio.Node
 
