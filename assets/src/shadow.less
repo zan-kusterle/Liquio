@@ -24,7 +24,7 @@
         bottom: 0;
         left: 0;
         user-select: none;
-        z-index: 1000;
+        z-index: 10000;
         margin: 12px;
 
         &--node {
@@ -138,7 +138,7 @@ a {
 }
 
 .el-dialog__wrapper {
-    z-index: 100001 !important;
+    z-index: 100000 !important;
 }
 
 .dialog {
@@ -151,6 +151,59 @@ a {
 
     .el-dialog__body {
         padding: 0px 20px;
+    }
+}
+
+.sign-message-dialog {
+    margin-top: 12vh !important;
+    margin-bottom: 1vh;
+
+    .el-dialog__header {
+        display: none;
+    }
+
+    .el-dialog__body {
+        padding: 30px 20px;
+        background-color: #f4f4f4;
+    }
+}
+
+
+.liquio-bar__sign-extension-message {
+    text-align: center;
+
+    > p {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    > img {
+        width: 200px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    > a {
+        text-decoration: none;
+    }
+
+    > a > button {
+        outline: none;
+        border: none;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0px;
+        color: #ffffff;
+        font-size: 16px;
+        background: #00A9E1;
+        padding: 15px 30px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    > a > button:hover {
+        background: #27baea;
+        text-decoration: none;
     }
 }
 

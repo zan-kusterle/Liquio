@@ -127,9 +127,7 @@ store.subscribe((mutation, state) => {
 		if (IS_EXTENSION) {
 			let reliabilityResults = node.results['Reliable-Unreliable']
 			let score = reliabilityResults ? reliabilityResults.mean : null
-			if (IS_EXTENSION) {
-				(chrome && chrome.runtime).sendMessage({ name: 'score', score: score })
-			}
+			chrome.runtime.sendMessage({ name: 'score', score: score })
 		}
 
 		titlesByText = getTitlesByText(node, store.state.currentPage)

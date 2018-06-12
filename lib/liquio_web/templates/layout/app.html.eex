@@ -57,11 +57,12 @@
 
 			.get-extension > img {
 				width: 260px;
+				display: block;
+				margin: 0 auto;
 			}
 
 			.get-extension > a {
 				text-decoration: none;
-				display: block;
 			}
 
 			.get-extension > a > button {
@@ -82,6 +83,27 @@
 				background: #27baea;
 				text-decoration: none;
 			}
+
+			.view-github {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-decoration: none;
+				color: #333;
+				margin-top: 50px;
+				margin-bottom: 30px;
+			}
+			.view-github:visited {
+				color: #333;
+			}
+			.view-github:hover {
+				opacity: 0.8;
+			}
+
+			.view-github > img {
+				margin-right: 10px;
+				width: 40px;
+			}
 		</style>
 	</head>
 
@@ -97,6 +119,11 @@
 					<button>Get free extension</button>
 				</a>
 			</div>
+
+			<a class="view-github" href="https://github.com/zan-kusterle/Liquio" target="_blank">
+				<img src="/images/github-logo.png"></img>
+				View on GitHub
+			</a>
 		</div>
 	</body>
 </html>

@@ -10,5 +10,6 @@ export default {
 		username: null
 	},
 	nodesByKey: {},
-	refreshKeys: []
+	refreshKeys: [],
+	showSignInstallMessage: false
 }

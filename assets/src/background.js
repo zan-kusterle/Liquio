@@ -1,12 +1,11 @@
-/* eslint-disable */
+/* globals chrome */
 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
 	if (changeInfo.status == 'complete') {
 		chrome.tabs.sendMessage(tabId, { name: 'update'})
 	}
 })
 
-var isHidden = true
 chrome.browserAction.onClicked.addListener(function(tab) {
 	chrome.tabs.sendMessage(tab.id, { name: 'open' })
 })

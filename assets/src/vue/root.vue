@@ -44,6 +44,18 @@
             <i @click="viewReference" slot="suffix" class="el-input__icon el-icon-arrow-right"></i>
         </el-autocomplete>
     </el-dialog>
+
+    <el-dialog :visible.sync="isSignMessageDialogVisible" width="500px" custom-class="sign-message-dialog">
+        <div class="liquio-bar__sign-extension-message">
+            <p>You need another extension to save your vote.</p>
+
+            <img :src="webstoreImageUrl" />
+
+            <a target="_blank" href="https://chrome.google.com/webstore/detail/liquio/ppkmmjfnokhjpmkcancnceolnobphgdk">
+                <button>Install <b>Liquio Sign</b> to vote</button>
+            </a>
+        </div>
+    </el-dialog>
 </div>
 </template>
 
@@ -124,7 +136,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['currentReferenceTitle']),
+        ...mapState(['currentReferenceTitle', 'showSignInstallMessage']),
         ...mapGetters(['currentTitle', 'canNavigateBack']),
         activeNode () {
             return this.$store.getters.nodeByTitle(this.activeTitle)
@@ -139,6 +151,17 @@ export default {
         },
         isAnnotationBarShown () {
             return this.lastSelection && this.lastSelection.length >= 10 || this.currentVideoTime
+        },
+        webstoreImageUrl () {
+            return chrome.extension.getURL('images/chrome-web-store-badge.png')
+        },
+        isSignMessageDialogVisible: {
+            get () {
+                return this.showSignInstallMessage
+            },
+            set () {
+                this.$store.dispatch('hideSignInstallDialog')
+            }
         }
     },
     methods: {
