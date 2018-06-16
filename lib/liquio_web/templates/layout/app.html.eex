@@ -9,7 +9,7 @@
 
 		<title>Liquio</title>
 
-		<meta property="og:image" content="https://liqu.io/images/logo.png" />
+		<meta property="og:image" content="https://liqu.io/icons/android-chrome-512x512.png" />
 		<meta property="og:description" content="A liquid democracy where anyone can vote on anything." />
 		<meta property="og:url" content="https://liqu.io/" />
 		<meta property="og:title" content="Liquio" />
@@ -44,7 +44,7 @@
 
 			h1 {
 				font-weight: normal;
-				margin-top: 100px;
+				margin-top: 30px;
 				margin-bottom: 20px;
 				font-size: 48px;
 				color: #444;
@@ -114,14 +114,14 @@
 			<iframe width="800" height="502" src="https://www.youtube.com/embed/DLD8brn6j6A?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 			<div class="get-extension">
-				<img src="/images/chrome-web-store-badge.png"></img>
+				<img src="/icons/chrome-web-store-badge.png"></img>
 				<a href="https://chrome.google.com/webstore/detail/liquio/gpnnencpnfcpdpdfbaefalokcilkkege">
 					<button>Get free extension</button>
 				</a>
 			</div>
 
 			<a class="view-github" href="https://github.com/zan-kusterle/Liquio" target="_blank">
-				<img src="/images/github-logo.png"></img>
+				<img src="/icons/github-logo.png"></img>
 				View on GitHub
 			</a>
 		</div>

@@ -1,8 +1,0 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="200px" height="30px" viewBox="0 0 200 30">
-	<rect x="0" y="2" width="165" height="26" fill="#111" />
-	<circle cx="185" cy="15" r="15" fill="#c00" />
-	<rect x="5" y="8" width="110" height="14" fill="#fff" />
-	<text x="8" y="16" text-anchor="start" alignment-baseline="middle" font-size="8" font-family="Arial" fill="#000">https://trust-metric.liqu.io</text>
-	<text x="185" y="16" text-anchor="middle" alignment-baseline="middle" font-size="12" font-family="Arial" fill="#fff">2.1</text>
-	<text x="160" y="16" text-anchor="end" alignment-baseline="middle" font-size="6" font-family="Arial" fill="#fff">View on Liquio</text>
-</svg>

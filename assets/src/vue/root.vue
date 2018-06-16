@@ -54,6 +54,8 @@
             <a target="_blank" href="https://chrome.google.com/webstore/detail/liquio/ppkmmjfnokhjpmkcancnceolnobphgdk">
                 <button>Install <b>Liquio Sign</b> to vote</button>
             </a>
+
+            <p class="liquio-bar__reload-warning" @click="reload()">Click here to reload this page after you installed it.</p>
         </div>
     </el-dialog>
 </div>
@@ -153,7 +155,7 @@ export default {
             return this.lastSelection && this.lastSelection.length >= 10 || this.currentVideoTime
         },
         webstoreImageUrl () {
-            return chrome.extension.getURL('images/chrome-web-store-badge.png')
+            return chrome.extension.getURL('icons/chrome-web-store-badge.png')
         },
         isSignMessageDialogVisible: {
             get () {
@@ -227,6 +229,9 @@ export default {
         resetState () {
             this.searchQuery = '',
             this.referenceQuery = ''
+        },
+        reload () {
+            location.reload()
         }
     }
 }
