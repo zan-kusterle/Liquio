@@ -14,7 +14,7 @@
 			<button :style="isDemoOpen ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button" @click="startDemo">Watch Demo</button>
 			<button :style="!canReplayDemo ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button replay-button" @click="startDemo">Replay Demo</button>
 
-			<div class="content-wrap" :style="isDemoOpen ? { height: '420px', marginTop: 0, opacity: isTextDim ? 0.3 : 1 } : { height: '0px' }">
+			<div class="content-wrap" :style="isDemoOpen ? { marginTop: 0, opacity: isTextDim ? 0.3 : 1 } : { height: '0px' }">
 				<div class="content" :style="isHighlighted ? { color: '#888' } : {}">
 					<h3 class="title">Flat Earth</h3>
 
@@ -195,6 +195,7 @@ export default {
 			return new Promise(resolve => {
 				let videoElement = document.getElementById('video')
 				let videoBounds = this.getElementBounds(videoElement)
+				videoElement.load()
 				videoElement.playbackRate = 1 / this.TIME_FACTOR
 				videoElement.parentNode.style.opacity = 1;
 				videoElement.play()
@@ -418,7 +419,8 @@ h1 {
 }
 
 #button {
-	display: inline-block;
+	display: flex;
+    align-items: center;
 	padding: 0px 15px;
     margin: 0;
 	font-size: 13px;
@@ -428,7 +430,7 @@ h1 {
 	color: #fff;
     cursor: pointer;
     text-align: center;
-	line-height: 40px;
+	height: 40px;
 }
 
 #input {
@@ -498,7 +500,12 @@ h1 {
 		font-size: 18px;
 	}
 
+	.demo-wrap {
+		height: 380px;
+	}
+
 	.content {
+		margin: 15px auto;
 		padding: 0px 10px;
 
 		max-width: 395px;
@@ -511,6 +518,10 @@ h1 {
 }
 
 @media only screen and (max-width: 450px) {
+	.demo-wrap {
+		height: 320px;
+	}
+
 	.content {
 		max-width: 300px;
 		font-size: 10px;
