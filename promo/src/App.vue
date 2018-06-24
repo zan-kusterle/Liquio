@@ -1,7 +1,9 @@
 <template>
 	<div id="app">
 		<div class="header">
-			<h1>Vote on anything, anywhere on the web.</h1>
+			<transition name="heading">
+				<h1 :key="headingText" class="heading-text">{{ headingText }}</h1>
+			</transition>
 		</div>
 
 		<div v-if="isDemoOpen && !canReplayDemo" :style="{ left: `${currentCursorX}px`, top: `${currentCursorY}px`, transition: `all ${transitionTime}ms ${transitionEasing || 'ease'}` }" class="cursor">
@@ -69,10 +71,14 @@
 </template>
 
 <script>
+const tagline = 'Vote on anything, anywhere on the web.'
+
 export default {
 	name: 'app',
 	data () {
 		return {
+			headingText: tagline,
+
 			isDemoOpen: false,
 			canReplayDemo: false,
 
@@ -127,6 +133,7 @@ export default {
 							executeStep(index + 1)
 						} else {
 							setTimeout(() => {
+								this.headingText = tagline
 								this.canReplayDemo = true
 							}, 2000)
 						}
@@ -141,6 +148,8 @@ export default {
 			return new Promise((resolve, reject) => {
 				let textElement = document.getElementById('text')
 				let textBounds = this.getElementBounds(textElement)
+
+				this.headingText = 'Select the text you want to annotate'
 
 				this.animateCursor(textBounds.x, textBounds.y).then(() => {
 					let selectionTime = 1000
@@ -169,6 +178,7 @@ export default {
 
 				setTimeout(() => {
 					this.isTextDim = true
+					this.headingText = 'Add fact checked claims to the selection'
 				}, this.TIME_FACTOR * 400)
 
 				this.animateCursor(buttonBounds.x + buttonBounds.width / 2, buttonBounds.y + buttonBounds.height / 2).then(() => {
@@ -210,12 +220,14 @@ export default {
 					this.animateCursor(videoBounds.x + videoBounds.width * 0.67, this.targetY, 200)
 
 					setTimeout(() => {
-						this.animateCursor(videoBounds.x + videoBounds.width / 2, videoBounds.y + videoBounds.height * 0.93)
+						this.animateCursor(videoBounds.x + videoBounds.width * 0.48, videoBounds.y + videoBounds.height * 0.93)
 					}, this.TIME_FACTOR * 400)
 				}, this.TIME_FACTOR * 800)
 			})
 		},
 		demoHighlightStep () {
+			this.headingText = 'Other people will see the annotation'
+
 			return new Promise(resolve => {
 				this.isHighlighted = true
 				setTimeout(() => {
@@ -283,21 +295,54 @@ body {
 	color: #333;
 }
 
+
+.heading-leave-active     { animation: heading-leave-animation 500ms ease; }
+.heading-enter-active     { animation: heading-enter-animation 500ms ease; }
+
+@keyframes heading-leave-animation {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate3d(400px, 0, 0);
+        opacity: 0;
+    }
+}
+
+@keyframes heading-enter-animation {
+    0% {
+        transform: translate3d(-400px, 0, 0);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+}
+
+
 .promo {
 	text-align: center;
 }
 
 .header {
 	text-align: center;
-	padding: 0px 20px;
+	margin-top: 30px;
+	position: relative;
+	height: 120px;
+	overflow: hidden;
 }
 
-h1 {
+.heading-text {
 	font-weight: normal;
-	margin-top: 30px;
-	margin-bottom: 0px;
+	margin: 0;
 	font-size: 48px;
 	color: #444;
+	position: absolute;
+	width: calc(100% - 40px);
+	padding: 0px 20px;
 }
 
 .get-extension {
@@ -480,6 +525,7 @@ h1 {
 .result-unit {
 	font-size: 14px;
 	margin-left: 5px;
+	margin-top: 2px;
 }
 
 .result-title {
@@ -492,12 +538,16 @@ h1 {
 }
 
 @media only screen and (max-width: 600px) {
-	h1 {
+	.header {
+		height: 70px;
+	}
+
+	.heading-text {
 		font-size: 28px;
 	}
 
 	.title {
-		font-size: 18px;
+		font-size: 22px;
 	}
 
 	.demo-wrap {
@@ -512,7 +562,13 @@ h1 {
 		font-size: 13px;
 	}
 
+	#button {
+		height: 30px;
+	}
+
 	#input {
+		height: 30px;
+
 		width: 200px;
 	}
 }
