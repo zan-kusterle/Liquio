@@ -288,6 +288,7 @@ body {
 
 .header {
 	text-align: center;
+	padding: 0px 20px;
 }
 
 h1 {
@@ -401,7 +402,7 @@ h1 {
 .content {
 	margin: 30px auto;
 	display: block;
-	width: 665px;
+	max-width: 665px;
 }
 
 .content > p {
@@ -418,16 +419,16 @@ h1 {
 
 #button {
 	display: inline-block;
-	padding: 9px 15px;
+	padding: 0px 15px;
     margin: 0;
 	font-size: 13px;
-    line-height: 1;
     background-color: #409eff;
     border: 1px solid #409eff;
     border-radius: 3px;
 	color: #fff;
     cursor: pointer;
     text-align: center;
+	line-height: 40px;
 }
 
 #input {
@@ -457,7 +458,8 @@ h1 {
 }
 
 #video {
-	width: 800px;
+	max-width: 800px;
+	width: 96%;
 }
 
 .result {
@@ -485,5 +487,37 @@ h1 {
 	display: inline;
 	font-size: 15px;
     line-height: 44px;
+}
+
+@media only screen and (max-width: 600px) {
+	h1 {
+		font-size: 28px;
+	}
+
+	.title {
+		font-size: 18px;
+	}
+
+	.content {
+		padding: 0px 10px;
+
+		max-width: 395px;
+		font-size: 13px;
+	}
+
+	#input {
+		width: 200px;
+	}
+}
+
+@media only screen and (max-width: 450px) {
+	.content {
+		max-width: 300px;
+		font-size: 10px;
+	}
+
+	#input {
+		width: 130px;
+	}
 }
 </style>
