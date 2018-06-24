@@ -1,6 +1,5 @@
 /* global IS_EXTENSION, chrome */
 
-import 'webextension-polyfill'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Root from 'vue/root.vue'

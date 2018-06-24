@@ -19,6 +19,6 @@ defmodule LiquioWeb.Router do
   scope "/", LiquioWeb do
     pipe_through(:browser)
 
-    get("/", IndexController, :index)
+    forward "/", Plugs.StaticPlug
   end
 end

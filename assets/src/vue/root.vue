@@ -155,7 +155,9 @@ export default {
             return this.lastSelection && this.lastSelection.length >= 10 || this.currentVideoTime
         },
         webstoreImageUrl () {
-            return chrome.extension.getURL('icons/chrome-web-store-badge.png')
+            if (chrome && chrome.extension)
+                return chrome.extension.getURL('icons/chrome-web-store-badge.png')
+            return ''
         },
         isSignMessageDialogVisible: {
             get () {
