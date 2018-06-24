@@ -36,13 +36,13 @@
 		<div class="promo">
 			<div class="get-extension">
 				<a href="https://chrome.google.com/webstore/detail/liquio/gpnnencpnfcpdpdfbaefalokcilkkege" target="_blank">
-					<img src="./assets/chrome-web-store-badge.png"></img>
+					<img src="./assets/chrome-web-store-badge.png" />
 				</a>
 			</div>
 
 			<div class="view-github">
 				<a class="view-github" href="https://github.com/zan-kusterle/Liquio" target="_blank">
-					<img src="./assets/github-logo.png"></img>
+					<img src="./assets/github-logo.png" />
 					View source on GitHub
 				</a>
 			</div>
