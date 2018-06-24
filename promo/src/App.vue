@@ -152,7 +152,7 @@ export default {
 				this.headingText = 'Select the text you want to annotate'
 
 				this.animateCursor(textBounds.x, textBounds.y).then(() => {
-					let selectionTime = 1000
+					let selectionTime = this.TIME_FACTOR * 1000
 
 					this.animateCursor(textBounds.x + textBounds.width, textBounds.y + textBounds.height, selectionTime, 'linear')
 
@@ -164,7 +164,7 @@ export default {
 						range.setEnd(textElement.childNodes[0], index + 1)
 						window.getSelection().removeAllRanges()
 						window.getSelection().addRange(range)
-					}, textLength, this.TIME_FACTOR * selectionTime).then(() => {
+					}, textLength, selectionTime).then(() => {
 						this.isButtonShown = true
 						resolve()
 					})
@@ -206,7 +206,7 @@ export default {
 				let videoElement = document.getElementById('video')
 				let videoBounds = this.getElementBounds(videoElement)
 				videoElement.load()
-				videoElement.playbackRate = 1 / this.TIME_FACTOR
+				//videoElement.playbackRate = 1 / this.TIME_FACTOR
 				videoElement.parentNode.style.opacity = 1;
 				videoElement.play()
 				videoElement.addEventListener('ended', () => {
@@ -214,15 +214,17 @@ export default {
 					resolve()
 				})
 
-				this.animateCursor(videoBounds.x + videoBounds.width / 2, videoBounds.y + videoBounds.height * 0.85, 300)
-
 				setTimeout(() => {
-					this.animateCursor(videoBounds.x + videoBounds.width * 0.67, this.targetY, 200)
-
+					this.animateCursor(videoBounds.x + videoBounds.width / 2, videoBounds.y + videoBounds.height * 0.85)
+	
 					setTimeout(() => {
-						this.animateCursor(videoBounds.x + videoBounds.width * 0.48, videoBounds.y + videoBounds.height * 0.93)
-					}, this.TIME_FACTOR * 400)
-				}, this.TIME_FACTOR * 800)
+						this.animateCursor(videoBounds.x + videoBounds.width * 0.67, this.targetY, 200)
+	
+						setTimeout(() => {
+							this.animateCursor(videoBounds.x + videoBounds.width * 0.48, videoBounds.y + videoBounds.height * 0.93)
+						}, 400)
+					}, 1300)
+				}, 500)
 			})
 		},
 		demoHighlightStep () {
@@ -270,10 +272,10 @@ export default {
 					let dx = this.targetX - x
 					let dy = this.targetY - y
 					let distance = Math.sqrt(dx * dx + dy * dy)
-					duration = 1000 * Math.pow(distance, 0.2)
+					duration = this.TIME_FACTOR * 1000 * Math.pow(distance, 0.2)
 				}
 	
-				this.transitionTime = this.TIME_FACTOR * duration
+				this.transitionTime = duration
 				this.transitionEasing = easing
 				this.targetX = x
 				this.targetY = y
@@ -386,6 +388,7 @@ body {
 	position: absolute;
 	top: calc(50% - 28px);
 	transition: opacity 200ms ease-out;
+	box-shadow: 1px 2px 5px 0 rgba(0, 0, 0, 0.25);
 }
 
 .button:hover {
