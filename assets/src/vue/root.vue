@@ -12,7 +12,7 @@
         </div>
     </template>
 
-    <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" width="900px" custom-class="dialog">
+    <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" :before-close="beforeCloseDialog" width="900px" custom-class="dialog">
         <el-autocomplete
             v-model="searchQuery"
             :fetch-suggestions="querySearchAsync"
@@ -22,7 +22,10 @@
             placeholder="Vote on anything"
             class="search">
 
-            <i v-if="canNavigateBack" @click="navigateBack" slot="prefix" class="el-input__icon el-icon-arrow-left"></i>
+            <div v-if="canNavigateBack" @click="navigateBack" slot="prefix" class="back-button">
+                <i class="el-input__icon el-icon-arrow-left"></i>
+                <span>BACK</span>
+            </div>
             <i @click="viewSearch" slot="suffix" class="el-input__icon el-icon-search"></i>
         </el-autocomplete>
 
@@ -103,7 +106,6 @@ export default {
     props: {
         isUnavailable: { type: Boolean },
         activeTitle: { type: String },
-        currentSelection: { type: String },
         currentVideoTime: { type: Number }
     },
     data () {
@@ -124,18 +126,15 @@ export default {
     mounted () {
         setTimeout(() => this.isLoading = false, 50)
         document.addEventListener('click', this.onClick)
+        document.addEventListener('keyup', this.updateSelection)
+        document.addEventListener('mouseup', this.updateSelection)
+        this.$el.addEventListener('mousemove', this.onMouseMove)
     },
     beforeDestroy () {
         document.removeEventListener('click', this.onClick)
-    },
-    watch: {
-        currentSelection (v, ov) {
-            if (v && v != ov) {
-                this.isAnnotationTitleInputShown = false
-                this.lastSelection = v
-                this.lastSelectionSetTime = Date.now()
-            }
-        }
+        document.removeEventListener('keyup', this.updateSelection)
+        document.removeEventListener('mouseup', this.updateSelection)
+        this.$el.removeEventListener('mousemove', this.onMouseMove)
     },
     computed: {
         ...mapState(['currentReferenceTitle', 'showSignInstallMessage']),
@@ -173,9 +172,13 @@ export default {
         onClick (ev) {
             let el = document.getElementById(IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar')
             let isOutside = !(el === event.target || el.contains(event.target))
-            if (isOutside && Date.now() > this.lastSelectionSetTime + 10) {
-                this.lastSelection = null
-                this.isAnnotationTitleInputShown = false
+            if (isOutside && Date.now() > this.lastSelectionSetTime + 50) {
+                setTimeout(() => {
+                    if (!this.getSelection()) {
+                        this.isAnnotationTitleInputShown = false
+                        this.lastSelection = null
+                    }
+                }, 50)
             }
         },
         startVoting () {
@@ -234,6 +237,52 @@ export default {
         },
         reload () {
             location.reload()
+        },
+        updateSelection (event, canClear) {
+            let selection = this.getSelection()
+
+            if (selection) {
+                if (selection !== this.lastSelection) {
+                    this.isAnnotationTitleInputShown = false
+                    this.lastSelection = selection
+                    this.lastSelectionSetTime = Date.now()
+                }
+            } else 
+
+            if (event) {
+                setTimeout(this.updateSelection, 100)
+            }
+        },
+        getSelection () {
+            let selection = window.getSelection()
+            if (selection.anchorNode) {
+                if (selection.isCollapsed)
+                    return null
+                if (this.$el.contains(selection.anchorNode))
+                    return null
+
+                return selection.toString()
+            } else {
+                return null
+            }
+        },
+        onMouseMove (event) {
+            let dialogElements = this.$el.getElementsByClassName('el-dialog')
+            let isOutside = true
+            for (let dialogElement of dialogElements) {
+                if (dialogElement === event.target || dialogElement.contains(event.target)) {
+                    isOutside = false
+                }
+            }
+
+            if (!isOutside) {
+                this.lastMouseMoveTime = Date.now()
+            }
+        },
+        beforeCloseDialog (done) {
+            if (!this.lastMouseMoveTime || Date.now() > this.lastMouseMoveTime + 500) {
+                done()
+            }
         }
     }
 }

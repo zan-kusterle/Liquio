@@ -88,23 +88,47 @@ window.addEventListener('keydown', (e) => {
 }, true)
 
 let titlesByText = {}
-let textNodes = []
+let canUpdateHighlights = true
+let transformedTexts = []
 
-let transformDomNode = (domNode) => {
-	transformContent.transformNode(titlesByText, domNode, (activeTitle, isClicked) => {
-		if (activeTitle) {
-			vm.activeTitle = activeTitle
+function updateHighlights () {
+	for (let text in titlesByText) {
+		if (!transformedTexts.includes(text)) {
+			let title = titlesByText[text][0]
+			let span = transformContent.transformText(text)
 
-			if (isClicked) {
-				store.dispatch('setCurrentReferenceTitle', null)
-				store.dispatch('setCurrentTitle', activeTitle)
-				vm.toggle()
+			if (span) {
+				transformedTexts.push(text)
+				span.style.backgroundColor = 'rgba(255, 255, 0, 0.7)'
+				span.style.cursor = 'pointer'
+	
+				span.addEventListener('mouseover', () => {
+					vm.activeTitle = title
+				})
+				span.addEventListener('mouseout', () => {
+					vm.activeTitle = null
+				})
+	
+				span.addEventListener('click', () => {
+					vm.activeTitle = title
+	
+					store.dispatch('setCurrentReferenceTitle', null)
+					store.dispatch('setCurrentTitle', title)
+					vm.toggle()
+				})
 			}
-		} else {
-			vm.activeTitle = null
 		}
-	})
+	}
 }
+
+setInterval(() => {
+	if (canUpdateHighlights) {
+		canUpdateHighlights = false		
+		updateHighlights()
+	}
+}, 1000)
+
+updateHighlights()
 
 store.subscribe((mutation, state) => {
 	if (mutation.type === 'SET_NODE' && mutation.payload.title === state.currentPage) {
@@ -131,20 +155,7 @@ store.subscribe((mutation, state) => {
 
 		titlesByText = getTitlesByText(node, store.state.currentPage)
 
-		transformContent.resetTransforms()
-		for (let domNode of textNodes) {
-			transformDomNode(domNode)
-		}
-
-		let index = textNodes.length - 1
-		let transformWithTimeouts = () => {
-			while (index >= 0 && index < textNodes.length) {
-				transformDomNode(textNodes[index])
-				index --
-			}
-			index --
-		}
-		transformWithTimeouts()
+		canUpdateHighlights = true
 	}
 })
 
@@ -152,6 +163,9 @@ if (IS_EXTENSION) {
 	chrome.runtime.onMessage.addListener(function(message) {
 		if (message.name === 'update') {
 			onUrlChange(document.location.href)
+			setTimeout(() => {
+				onUrlChange(document.location.href)
+			}, 1000)
 		} else if (message.name === 'open') {
 			store.dispatch('setCurrentReferenceTitle', null)
 			store.dispatch('setCurrentTitle', store.state.currentPage)
@@ -170,40 +184,17 @@ let MutationObserver = window.MutationObserver || window.WebKitMutationObserver
 let eventListenerSupported = window.addEventListener
 
 if (MutationObserver) {
-	let obs = new MutationObserver((mutations) => {
-		mutations.forEach((mutation) => {
-			mutation.addedNodes.forEach((node) => {
-				if (node.nodeType === Node.TEXT_NODE) {
-					textNodes.push(node)
-					transformDomNode(node)
-				}
-			})
-			mutation.removedNodes.forEach((node) => {
-				let index = textNodes.indexOf(node)
-				if (index >= 0)
-					textNodes.splice(index, 1)
-			})
-		})
+	let obs = new MutationObserver(() => {
+		canUpdateHighlights = true
 	})
 	obs.observe(document, {
 		childList: true,
 		subtree: true
 	})
 } else if (eventListenerSupported) {
-	document.addEventListener('DOMNodeInserted', (e) => {
-		if (e.target.nodeType === Node.TEXT_NODE) {
-			textNodes.push(e.target)
-			transformDomNode(e.target)
-		}
+	document.addEventListener('DOMNodeInserted', () => {
+		canUpdateHighlights = true
 	}, false)
-}
-
-let walker = document.createTreeWalker(document, NodeFilter.SHOW_TEXT, null, false)
-while (walker.nextNode()) {
-	if (walker.currentNode.nodeType === Node.TEXT_NODE) {
-		textNodes.push(walker.currentNode)
-		transformDomNode(walker.currentNode)
-	}
 }
 
 window.addEventListener('hashchange', () => onUrlChange(document.location.href), false)
@@ -214,35 +205,6 @@ document.addEventListener('keyup', e => {
 		store.dispatch('navigateBack')
 	}
 })
-
-let getValidSelection = () => {
-	let selection = window.getSelection()
-	if (selection.anchorNode) {
-		if (selection.isCollapsed)
-			return null
-		if (vm.$el.contains(selection.anchorNode))
-			return null
-
-		return selection
-	} else {
-		return null
-	}
-}
-
-let updateSelection = (e) => {    
-	let selection = getValidSelection()
-	if (selection) {
-		vm.currentSelection = selection.toString()
-	} else {
-		vm.currentSelection = null
-	}
-    
-	if (e) {
-		setTimeout(updateSelection, 100)
-	}
-}
-document.addEventListener('keyup', updateSelection)
-document.addEventListener('mouseup', updateSelection)
 
 const VIDEO_NODE_SHOW_DURATION = 10
 let isCurrentVideoNode = false

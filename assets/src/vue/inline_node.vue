@@ -35,7 +35,7 @@ export default {
             let units = Object.keys(this.node.results)
             if (units.length === 0)
                 return allUnits[0]
-            return allUnits.find(u => u.text === units[0])
+            return allUnits.find(u => u.text === units[0]) || allUnits[0]
         },
         currentUnit () {
             let currentUnit = allUnits.find(u => u.value === this.forceUnit)
@@ -44,7 +44,7 @@ export default {
             return this.bestUnit
         },
         unitResults () {
-            if (!this.node)
+            if (!this.node || Object.keys(this.node.results).length === 0)
                 return null
             return this.node.results[this.currentUnit.text]
         }

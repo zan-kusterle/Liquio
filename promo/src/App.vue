@@ -13,8 +13,8 @@
 		</div>
 
 		<div class="demo-wrap">
-			<button :style="isDemoOpen ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button" @click="startDemo">Watch Demo</button>
-			<button :style="!canReplayDemo ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button replay-button" @click="startDemo">Replay Demo</button>
+			<button :style="isDemoOpen ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button" @click="startDemo">Watch demo</button>
+			<button :style="!canReplayDemo ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button replay-button" @click="startDemo">Watch again</button>
 
 			<div class="content-wrap" :style="isDemoOpen ? { marginTop: 0, opacity: isTextDim ? 0.3 : 1 } : { height: '0px' }">
 				<div class="content" :style="isHighlighted ? { color: '#888' } : {}">
@@ -140,6 +140,10 @@ export default {
 					})
 				})
 			}
+
+			let videoElement = document.getElementById('video')
+			videoElement.load()
+
 			setTimeout(() => {
 				executeStep(0)
 			}, 1000)
@@ -205,7 +209,6 @@ export default {
 			return new Promise(resolve => {
 				let videoElement = document.getElementById('video')
 				let videoBounds = this.getElementBounds(videoElement)
-				videoElement.load()
 				//videoElement.playbackRate = 1 / this.TIME_FACTOR
 				videoElement.parentNode.style.opacity = 1;
 				videoElement.play()
@@ -297,7 +300,6 @@ body {
 	color: #333;
 }
 
-
 .heading-leave-active     { animation: heading-leave-animation 500ms ease; }
 .heading-enter-active     { animation: heading-enter-animation 500ms ease; }
 
@@ -350,8 +352,8 @@ body {
 .get-extension {
 	margin: 0 auto;
 	display: inline-block;
-	background-color: #eee;
-	border: 1px solid #ddd;
+	background-color: #f8f8f8;
+	box-shadow: 1px 2px 5px 0 rgba(0, 0, 0, 0.25);
 }
 
 .get-extension > a > img {

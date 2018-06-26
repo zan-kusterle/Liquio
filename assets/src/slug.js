@@ -27,7 +27,10 @@ export default function (x) {
 	}
 
 	if (mappings.length === 0) {
-		return null
+		return {
+			value: '',
+			mappings: {}
+		}
 	}
 	return {
 		value: mappings.map(m => m.char).join('').toLowerCase(),

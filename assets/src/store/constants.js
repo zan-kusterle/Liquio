@@ -1,6 +1,6 @@
 export let allUnits = [{
 	key: 'true',
-	text: 'True-False',
+	text: 'False-True',
 	short: 'true',
 	value: 'true',
 	type: 'spectrum'
@@ -21,21 +21,21 @@ export let allUnits = [{
 },
 {
 	key: 'fact',
-	text: 'Fact-Lie',
+	text: 'Lie-Fact',
 	short: 'fact',
 	value: 'fact',
 	type: 'spectrum'
 },
 {
 	key: 'reliable',
-	text: 'Reliable-Unreliable',
+	text: 'Unreliable-Reliable',
 	short: 'reliable',
 	value: 'reliable',
 	type: 'spectrum'
 },
 {
 	key: 'relevant',
-	text: 'Relevant-Irrelevant',
+	text: 'Irrelevant-Relevant',
 	short: 'relevant',
 	value: 'relevant',
 	type: 'spectrum'
@@ -69,7 +69,7 @@ export let allUnits = [{
 },
 {
 	key: 'agree',
-	text: 'Agree-Disagree',
+	text: 'Disagree-Agree',
 	short: 'aggre',
 	value: 'agree',
 	type: 'spectrum'
