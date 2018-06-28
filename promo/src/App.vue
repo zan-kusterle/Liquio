@@ -336,7 +336,7 @@ body {
 	text-align: center;
 	margin-top: 30px;
 	position: relative;
-	height: 140px;
+	height: 180px;
 	overflow: hidden;
 }
 
