@@ -88,13 +88,10 @@ export default {
 			commit('GO_TO_HISTORY_INDEX', state.historyIndex - 1)
 		}
 	},
-	updateNodes ({ state, commit }) {
-		let promises = state.refreshKeys.map(key => fetchNode(key, state.whitelist, 2))
-		axios.all(promises).then(response => {
-			for (let node of response) {
-				commit('SET_NODE', node)
-			}
-		}).catch(() => {})
+	updateNodes ({ state, dispatch }) {
+		for (let key of state.refreshKeys) {
+			dispatch('loadNode', { key: key })
+		}
 	},
 	search ({ state }, query) {
 		return fetchSearch(query, state.whitelist)
@@ -138,17 +135,27 @@ export default {
 			})
 
 			if (node.references)
-				for (let reference of node.references)
-					nodes = nodes.concat(flattenNode(reference))
+				for (let reference of node.references) {
+					for (let flatReferenceNode of flattenNode(reference)) {
+						if (!nodes.find(n => n.title === flatReferenceNode.title)) {
+							nodes.push(flatReferenceNode)
+						}
+					}
+				}
 
 			if (node.inverse_references)
-				for (let inverseReference of node.inverse_references)
-					nodes = nodes.concat(flattenNode(inverseReference))
+				for (let inverseReference of node.inverse_references) {
+					for (let flatInverseReferenceNode of flattenNode(inverseReference)) {
+						if (!nodes.find(n => n.title === flatInverseReferenceNode.title)) {
+							nodes.push(flatInverseReferenceNode)
+						}
+					}
+				}
 
 			return nodes
 		}
 
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve) => {
 			if (refresh) {
 				commit('ADD_REFRESH_KEY', key)
 			}

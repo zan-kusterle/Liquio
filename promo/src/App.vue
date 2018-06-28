@@ -6,7 +6,7 @@
 			</transition>
 		</div>
 
-		<div v-if="isDemoOpen && !canReplayDemo" :style="{ left: `${currentCursorX}px`, top: `${currentCursorY}px`, transition: `all ${transitionTime}ms ${transitionEasing || 'ease'}` }" class="cursor">
+		<div v-if="isDemoOpen" :style="{ left: `${currentCursorX}px`, top: `${currentCursorY}px`, transition: `all ${transitionTime}ms ${transitionEasing || 'ease'}` }" class="cursor">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720.711 1079.449" width="15" height="20">
 				<path d="M0 0v1041.422L232.422 809l111.904 270.45 169.764-84.884-114.094-273.855h320.715z" />
 			</svg>
@@ -135,7 +135,7 @@ export default {
 							setTimeout(() => {
 								this.headingText = tagline
 								this.canReplayDemo = true
-							}, 2000)
+							}, 4000)
 						}
 					})
 				})
@@ -153,7 +153,7 @@ export default {
 				let textElement = document.getElementById('text')
 				let textBounds = this.getElementBounds(textElement)
 
-				this.headingText = 'Select the text you want to annotate'
+				this.headingText = 'Select any text on any webpage'
 
 				this.animateCursor(textBounds.x, textBounds.y).then(() => {
 					let selectionTime = this.TIME_FACTOR * 1000
@@ -182,7 +182,6 @@ export default {
 
 				setTimeout(() => {
 					this.isTextDim = true
-					this.headingText = 'Add fact checked claims to the selection'
 				}, this.TIME_FACTOR * 400)
 
 				this.animateCursor(buttonBounds.x + buttonBounds.width / 2, buttonBounds.y + buttonBounds.height / 2).then(() => {
@@ -190,6 +189,8 @@ export default {
 					this.isInputShown = true
 
 					this.$nextTick(() => {
+						this.headingText = 'Annotate it with fact checked data'
+
 						let inputElement = document.getElementById('input')
 						this.repeat(index => {
 							inputElement.value = this.nodeTitle.substring(0, index + 1)

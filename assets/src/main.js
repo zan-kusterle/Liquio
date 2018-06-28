@@ -136,7 +136,7 @@ store.subscribe((mutation, state) => {
 		let getTitlesByText = (node, key) => {
 			var result = {}
 			node.references.forEach(function (reference) {
-				if (reference.byTitle.toLowerCase().startsWith(key.toLowerCase() + '/')) {
+				if (reference.byTitle && reference.byTitle.toLowerCase().startsWith(key.toLowerCase() + '/')) {
 					let text = reference.byTitle.substring(key.length + 1)
                     
 					if (!(text in result))

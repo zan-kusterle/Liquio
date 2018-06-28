@@ -12,7 +12,7 @@
         </div>
     </template>
 
-    <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" :before-close="beforeCloseDialog" width="900px" custom-class="dialog">
+    <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" :before-close="beforeCloseDialog" custom-class="dialog">
         <el-autocomplete
             v-model="searchQuery"
             :fetch-suggestions="querySearchAsync"
@@ -48,7 +48,7 @@
         </el-autocomplete>
     </el-dialog>
 
-    <el-dialog :visible.sync="isSignMessageDialogVisible" width="500px" custom-class="sign-message-dialog">
+    <el-dialog :visible.sync="isSignMessageDialogVisible" custom-class="sign-message-dialog">
         <div class="liquio-bar__sign-extension-message">
             <p>You need another extension to save your vote.</p>
 
@@ -171,7 +171,7 @@ export default {
         ...mapActions(['navigateBack', 'search']),
         onClick (ev) {
             let el = document.getElementById(IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar')
-            let isOutside = !(el === event.target || el.contains(event.target))
+            let isOutside = el && !(el === event.target || el.contains(event.target))
             if (isOutside && Date.now() > this.lastSelectionSetTime + 50) {
                 setTimeout(() => {
                     if (!this.getSelection()) {
@@ -280,7 +280,7 @@ export default {
             }
         },
         beforeCloseDialog (done) {
-            if (!this.lastMouseMoveTime || Date.now() > this.lastMouseMoveTime + 500) {
+            if (!this.lastMouseMoveTime || Date.now() > this.lastMouseMoveTime + 200) {
                 done()
             }
         }

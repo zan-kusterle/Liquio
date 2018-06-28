@@ -68,6 +68,13 @@ export let allUnits = [{
 	type: 'quantity'
 },
 {
+	key: 'scientific',
+	text: 'Anecdotal-Scientific',
+	short: 'scientific',
+	value: 'scientific',
+	type: 'spectrum'
+},
+{
 	key: 'agree',
 	text: 'Disagree-Agree',
 	short: 'aggre',
