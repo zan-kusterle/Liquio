@@ -336,7 +336,7 @@ body {
 	text-align: center;
 	margin-top: 30px;
 	position: relative;
-	height: 180px;
+	height: 120px;
 	overflow: hidden;
 }
 
@@ -545,7 +545,7 @@ body {
 
 @media only screen and (max-width: 600px) {
 	.header {
-		height: 70px;
+		height: 80px;
 	}
 
 	.heading-text {
