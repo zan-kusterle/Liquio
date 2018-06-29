@@ -65,7 +65,7 @@
 		</div>
 
 		<div class="video-wrap">
-			<video id="video" src="./assets/reference-vote.mp4" muted />
+			<video id="video" src="./assets/reference-vote.mp4" muted="true" />
 		</div>
 	</div>
 </template>
