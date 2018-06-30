@@ -6,7 +6,7 @@
 			</transition>
 		</div>
 
-		<div v-if="isDemoOpen" :style="{ left: `${currentCursorX}px`, top: `${currentCursorY}px`, transition: `all ${transitionTime}ms ${transitionEasing || 'ease'}` }" class="cursor">
+		<div ref="cursor" v-if="isDemoOpen" :style="{ left: `${currentCursorX}px`, top: `${currentCursorY}px`, transition: `all ${transitionTime}ms ${transitionEasing || 'ease'}` }" class="cursor">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720.711 1079.449" width="15" height="20">
 				<path d="M0 0v1041.422L232.422 809l111.904 270.45 169.764-84.884-114.094-273.855h320.715z" />
 			</svg>
@@ -98,6 +98,13 @@ export default {
 		this.TIME_FACTOR = 1.5
 
 		this.nodeTitle = 'Earth is not flat'
+
+		window.addEventListener('scroll', this.onRecalculate)
+		window.addEventListener('resize', this.onRecalculate)
+	},
+	beforeDestroy () {
+		window.removeEventListener('scroll', this.onRecalculate)
+		window.removeEventListener('resize', this.onRecalculate)
 	},
 	computed: {
 		currentCursorX () {
@@ -108,6 +115,28 @@ export default {
 		},
 	},
 	methods: {
+		onRecalculate () {
+			if (this.recalculationFn) {
+				return new Promise((resolve) => {
+					this.recalculationFn(resolve)
+				})
+			}
+		},
+		setRecalculation (fn) {
+			fn()
+			this.recalculationFn = fn
+			return new Promise((resolve) => {
+				let cursorElement = this.$refs.cursor
+				if (cursorElement) {
+					(function x () {
+						cursorElement.addEventListener('transitionend', () => {
+							cursorElement.removeEventListener('transitionend', x)
+							resolve()
+						})
+					})()
+				}
+			})
+		},
 		startDemo () {
 			this.isDemoOpen = true
 			this.canReplayDemo = false
@@ -125,41 +154,24 @@ export default {
 				this.demoHighlightStep,
 			]
 
-			let executeStep = (index) => {
-				let step = steps[index]
-				this.$nextTick(() => {
-					step().then(() => {
-						if (index + 1 < steps.length) {
-							executeStep(index + 1)
-						} else {
-							setTimeout(() => {
-								this.headingText = tagline
-								this.canReplayDemo = true
-							}, 4000)
-						}
-					})
-				})
-			}
-
-			let videoElement = document.getElementById('video')
-			videoElement.load()
-
 			setTimeout(() => {
-				executeStep(0)
-			}, 1000)
+				this.selectTextStep()
+			}, this.TIME_FACTOR * 800)
 		},
 		selectTextStep () {
-			return new Promise((resolve, reject) => {
-				let textElement = document.getElementById('text')
+			let textElement = document.getElementById('text')
+
+			this.headingText = 'Select any text on any webpage'
+			this.setRecalculation(() => {
 				let textBounds = this.getElementBounds(textElement)
+				this.animateCursor(textBounds.x, textBounds.y)
+			}).then(() => {
+				let selectionTime = this.TIME_FACTOR * 1000
 
-				this.headingText = 'Select any text on any webpage'
-
-				this.animateCursor(textBounds.x, textBounds.y).then(() => {
-					let selectionTime = this.TIME_FACTOR * 1000
-
+				this.setRecalculation(() => {
+					let textBounds = this.getElementBounds(textElement)
 					this.animateCursor(textBounds.x + textBounds.width, textBounds.y + textBounds.height, selectionTime, 'linear')
-
+				}).then(() => {
 					let index = 0
 					let textLength = textElement.innerText.length
 					this.repeat(index => {
@@ -170,89 +182,112 @@ export default {
 						window.getSelection().addRange(range)
 					}, textLength, selectionTime).then(() => {
 						this.isButtonShown = true
-						resolve()
-					})
-				})
-			})
-		},
-		openReferenceStep () {
-			return new Promise(resolve => {
-				let buttonElement = document.getElementById('button')
-				let buttonBounds = this.getElementBounds(buttonElement)
-
-				setTimeout(() => {
-					this.isTextDim = true
-				}, this.TIME_FACTOR * 400)
-
-				this.animateCursor(buttonBounds.x + buttonBounds.width / 2, buttonBounds.y + buttonBounds.height / 2).then(() => {
-					window.getSelection().removeAllRanges()
-					this.isInputShown = true
-
-					this.$nextTick(() => {
-						this.headingText = 'Annotate it with fact checked data'
-
-						let inputElement = document.getElementById('input')
-						this.repeat(index => {
-							inputElement.value = this.nodeTitle.substring(0, index + 1)
-						}, this.nodeTitle.length, 1000).then(() => {
-							let buttonBounds = this.getElementBounds(buttonElement)
-							this.animateCursor(buttonBounds.x + buttonBounds.width / 2, this.targetY).then(() => {
-								this.isInputShown = false
-								this.isButtonShown = false
-								resolve()
-							})
+						
+						this.$nextTick(() => {
+							this.openReferenceStep()
 						})
 					})
 				})
 			})
 		},
-		voteVideoStep () {
-			return new Promise(resolve => {
-				let videoElement = document.getElementById('video')
-				let videoBounds = this.getElementBounds(videoElement)
-				//videoElement.playbackRate = 1 / this.TIME_FACTOR
-				videoElement.parentNode.style.opacity = 1;
-				videoElement.play()
-				videoElement.addEventListener('ended', () => {
-					videoElement.parentNode.style.opacity = 0;
-					resolve()
-				})
+		openReferenceStep () {
+			let buttonElement = document.getElementById('button')
 
-				setTimeout(() => {
-					this.animateCursor(videoBounds.x + videoBounds.width / 2, videoBounds.y + videoBounds.height * 0.85)
-	
-					setTimeout(() => {
-						this.animateCursor(videoBounds.x + videoBounds.width * 0.67, this.targetY, 200)
-	
-						setTimeout(() => {
-							this.animateCursor(videoBounds.x + videoBounds.width * 0.48, videoBounds.y + videoBounds.height * 0.93)
-						}, 400)
-					}, 1300)
-				}, 500)
+			setTimeout(() => {
+				this.isTextDim = true
+			}, this.TIME_FACTOR * 400)
+
+			this.setRecalculation((done) => {
+				let buttonBounds = this.getElementBounds(buttonElement)
+				this.animateCursor(buttonBounds.x + buttonBounds.width / 2, buttonBounds.y + buttonBounds.height / 2)
+			}).then(() => {
+				window.getSelection().removeAllRanges()
+				this.isInputShown = true
+
+				this.$nextTick(() => {
+					this.headingText = 'Annotate it with fact checked data'
+
+					let inputElement = document.getElementById('input')
+					this.repeat(index => {
+						inputElement.value = this.nodeTitle.substring(0, index + 1)
+					}, this.nodeTitle.length, 1000).then(() => {
+						this.setRecalculation(() => {
+							let bounds = this.getElementBounds(buttonElement)
+							this.animateCursor(bounds.x + bounds.width / 2, this.targetY).then(() => {
+								this.isInputShown = false
+								this.isButtonShown = false
+							})
+						}).then(this.voteVideoStep)
+					})
+				})
 			})
+		},
+		voteVideoStep () {
+			let videoElement = document.getElementById('video')
+			videoElement.load()
+			//videoElement.playbackRate = 1 / this.TIME_FACTOR
+			let hasEnded = false
+			videoElement.parentNode.style.opacity = 1;
+			videoElement.play()
+			videoElement.addEventListener('ended', () => {
+				videoElement.parentNode.style.opacity = 0;
+				hasEnded = true
+				this.demoHighlightStep()
+			})
+
+			setTimeout(() => {
+				if (!hasEnded) {
+					this.setRecalculation(() => {
+						let videoBounds = this.getElementBounds(videoElement)
+						this.animateCursor(videoBounds.x + videoBounds.width / 2, videoBounds.y + videoBounds.height * 0.85)
+					}).then(() => {
+						setTimeout(() => {
+							if (!hasEnded) {
+								this.setRecalculation(() => {
+									let videoBounds = this.getElementBounds(videoElement)
+									this.animateCursor(videoBounds.x + videoBounds.width * 0.67, this.targetY, 200)
+								}).then(() => {
+									setTimeout(() => {
+										if (!hasEnded) {
+											this.setRecalculation(() => {
+												let videoBounds = this.getElementBounds(videoElement)
+												this.animateCursor(videoBounds.x + videoBounds.width * 0.48, videoBounds.y + videoBounds.height * 0.93)
+											})
+										}
+									}, 200)
+								})
+							}
+						}, 200)
+					})
+				}
+			}, 500)
 		},
 		demoHighlightStep () {
 			this.headingText = 'Other people will see the annotation'
 
-			return new Promise(resolve => {
-				this.isHighlighted = true
-				setTimeout(() => {
-					this.isTextDim = false
-				}, this.TIME_FACTOR * 100)
+			this.isHighlighted = true
+			setTimeout(() => {
+				this.isTextDim = false
+			}, this.TIME_FACTOR * 100)
 
-				let textElement = document.getElementById('text')
+			let textElement = document.getElementById('text')
+
+			this.setRecalculation(() => {
 				let textBounds = this.getElementBounds(textElement)
+				this.animateCursor(textBounds.x + textBounds.width / 2, textBounds.y + textBounds.height / 2)
+			}).then(() => {
+				this.isHighlightActive = true
 
-				this.animateCursor(textBounds.x + textBounds.width / 2, textBounds.y + textBounds.height / 2).then(() => {
-					this.isHighlightActive = true
-					resolve()
-				})
+				setTimeout(() => {
+					this.headingText = tagline
+					this.canReplayDemo = true
+				}, this.time_FACTOR * 3000)
 			})
 		},
 		getElementBounds (element) {
 			let rect = element.getBoundingClientRect()
 			return {
-				x: rect.left / document.documentElement.clientWidth, y: rect.top / document.documentElement.clientHeight,
+				x: rect.left / document.documentElement.clientWidth, y: (rect.top + document.documentElement.scrollTop) / document.documentElement.clientHeight,
 				width: rect.width / document.documentElement.clientWidth, height: rect.height / document.documentElement.clientHeight
 			}
 		},
@@ -283,8 +318,6 @@ export default {
 				this.transitionEasing = easing
 				this.targetX = x
 				this.targetY = y
-
-				setTimeout(resolve, this.transitionTime)
 			})
 		}
 	}

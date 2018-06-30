@@ -176,7 +176,8 @@ if (IS_EXTENSION) {
 }
 
 function onUrlChange (url) {
-	vm.isUnavailable = !IS_EXTENSION && document.getElementById('liquio-bar-extension')
+	let liquioMeta = document.head.querySelector('[name=liquio]')
+	vm.isUnavailable = !IS_EXTENSION && document.getElementById('liquio-bar-extension') || liquioMeta && liquioMeta.content === 'disable'
 	store.dispatch('setCurrentPage', decodeURIComponent(url).replace(/\/$/, ''))
 }
 
