@@ -1,6 +1,7 @@
 <template>
     <div :style="{ backgroundColor: color }">
-        <span style="vertical-align: middle;">{{ text }}</span>
+        <span v-if="hasData" style="vertical-align: middle;">{{ text }}</span>
+        <span v-else style="vertical-align: middle; font-size: 70%;">0 votes</span>
         <span v-if="hasData && unit" class="unit" style="vertical-align: middle;">{{ unit.short }}</span>
     </div>
 </template>
@@ -35,8 +36,6 @@ export default {
                 return "rgb(140, 232, 140)"
         },
         text () {
-            if (!this.hasData)
-                return '/'
             if (this.unit.type === 'spectrum') {
                 return Math.round(this.unitResults.mean * 100) + '%'
             } else {

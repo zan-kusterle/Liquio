@@ -21,15 +21,15 @@
 					<h3 class="title">Flat Earth</h3>
 
 					<p>
-						The flat Earth model is an archaic conception of Earth's shape as a plane or disk. Many ancient cultures subscribed to a flat Earth cosmography, including Greece until the classical period, the Bronze Age and Iron Age civilizations of the Near East until the Hellenistic period, India until the Gupta period (early centuries AD), and China until the 17th century.
+						The flat Earth model is an archaic conception of Earth's shape as a plane or disk. Many ancient cultures subscribed to a flat Earth cosmography. 
 					</p>
 					<p>
-						The idea of a spherical Earth appeared in Greek philosophy with Pythagoras (6th century BC), although most pre-Socratics (6th–5th century BC) retained the flat Earth model. Aristotle provided
+						The idea of a spherical Earth appeared with Pythagoras, although most pre-Socratics retained the flat Earth model.
+						Aristotle provided
 						<span id="text" :style="isHighlighted ? { backgroundColor: 'yellow', color: '#333' } : {}">evidence for the spherical shape of the Earth on empirical grounds</span>
-						by around 330 BC. Knowledge of the spherical Earth gradually began to spread beyond the Hellenistic world from then on.
-					</p>
-					<p>
-						In the modern era, pseudoscientific flat Earth theories have been espoused by modern flat Earth societies and, increasingly, by unaffiliated individuals using social media.
+						by around 330 BC. Knowledge of the spherical Earth gradually began to spread from then on.
+						In the modern era, pseudoscientific flat Earth theories have been espoused by modern flat Earth societies and,
+						increasingly, by unaffiliated individuals using social media.
 					</p>
 				</div>
 			</div>
@@ -147,13 +147,6 @@ export default {
 			this.isHighlighted = false
 			this.isHighlightActive = false
 
-			let steps = [
-				this.selectTextStep,
-				this.openReferenceStep,
-				this.voteVideoStep,
-				this.demoHighlightStep,
-			]
-
 			setTimeout(() => {
 				this.selectTextStep()
 			}, this.TIME_FACTOR * 800)
@@ -213,11 +206,12 @@ export default {
 					}, this.nodeTitle.length, 1000).then(() => {
 						this.setRecalculation(() => {
 							let bounds = this.getElementBounds(buttonElement)
-							this.animateCursor(bounds.x + bounds.width / 2, this.targetY).then(() => {
-								this.isInputShown = false
-								this.isButtonShown = false
-							})
-						}).then(this.voteVideoStep)
+							this.animateCursor(bounds.x + bounds.width / 2, this.targetY)
+						}).then(() => {
+							this.isInputShown = false
+							this.isButtonShown = false
+							this.voteVideoStep()
+						})
 					})
 				})
 			})
@@ -402,7 +396,7 @@ body {
 
 .demo-wrap {
 	position: relative;
-	height: 420px;
+	height: 310px;
 	display: flex;
 	justify-content: center;
 	margin: 40px 0;
@@ -487,7 +481,7 @@ body {
 .content {
 	margin: 30px auto;
 	display: block;
-	max-width: 665px;
+	max-width: 730px;
 }
 
 .content > p {
@@ -576,7 +570,7 @@ body {
     line-height: 44px;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 800px) {
 	.header {
 		height: 80px;
 	}
@@ -590,7 +584,7 @@ body {
 	}
 
 	.demo-wrap {
-		height: 380px;
+		height: 300px;
 	}
 
 	.content {
@@ -614,7 +608,7 @@ body {
 
 @media only screen and (max-width: 450px) {
 	.demo-wrap {
-		height: 320px;
+		height: 260px;
 	}
 
 	.content {
