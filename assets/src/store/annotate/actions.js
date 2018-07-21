@@ -96,24 +96,12 @@ export default {
 	search ({ state }, query) {
 		return fetchSearch(query, state.whitelist)
 	},
-	vote ({ commit }, { messages, messageKeys }) {
-		let canSign = !!document.getElementById('liquio-sign-extension-presence')
-
-		let data = {
-			name: 'sign',
-			messages: messages.map(x => {
-				return { ...x, keys: messageKeys }
-			})
-		}
+	vote (_, { messages, messageKeys }) {
+		let data = messages.map(x => {
+			return { ...x, keys: messageKeys }
+		})
 		let event = new CustomEvent('sign-anything', { detail: data })
 		window.dispatchEvent(event)
-
-		if (!canSign) {
-			commit('SET_SHOW_SIGN_INSTALL_MESSAGE', true)
-		}
-	},
-	hideSignInstallDialog ({ commit }) {
-		commit('SET_SHOW_SIGN_INSTALL_MESSAGE', false)
 	},
 	loadNode ({ state, commit }, { key, refresh }) {
 		let transformReference = (reference) => {

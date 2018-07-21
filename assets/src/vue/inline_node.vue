@@ -17,7 +17,7 @@
 
 <script>
 import Results from 'vue/results.vue'
-import { allUnits } from 'store/constants'
+import { mapGetters } from 'vuex';
 
 export default {
     components: {
@@ -29,16 +29,17 @@ export default {
         forceUnit: { type: String }
     },
     computed: {
+        ...mapGetters('annotate', ['allUnits']),
         bestUnit () {
             if (Object.keys(this.node.results) === 0)
-                return allUnits[0]
+                return this.allUnits[0]
             let units = Object.keys(this.node.results)
             if (units.length === 0)
-                return allUnits[0]
-            return allUnits.find(u => u.text === units[0]) || allUnits[0]
+                return this.allUnits[0]
+            return this.allUnits.find(u => u.text === units[0]) || this.allUnits[0]
         },
         currentUnit () {
-            let currentUnit = allUnits.find(u => u.value === this.forceUnit)
+            let currentUnit = this.allUnits.find(u => u.value === this.forceUnit)
             if (currentUnit)
                 return currentUnit
             return this.bestUnit

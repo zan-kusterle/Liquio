@@ -24,6 +24,7 @@
 <script>
 import { Slider, Button, ButtonGroup } from 'element-ui'
 import InlineNode from 'vue/inline_node.vue'
+import { mapGetters } from 'vuex'
 
 export default {
     components: {
@@ -51,11 +52,12 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('annotate', 'nodeByTitle', 'usernames'),
         node () {
-            return this.$store.getters.nodeByTitle(this.title)
+            return this.nodeByTitle(this.title)
         },
         referenceNode () {
-            return this.$store.getters.nodeByTitle(this.referenceTitle)
+            return this.nodeByTitle(this.referenceTitle)
         },
         referenceResults () {
             if (!this.node)
@@ -71,7 +73,7 @@ export default {
             }
         },
         currentVote () {
-            return this.referenceResults && this.referenceResults.contributions.find(c => this.$store.getters.usernames.includes(c.username))
+            return this.referenceResults && this.referenceResults.contributions.find(c => this.usernames.includes(c.username))
         },
         resultsNode () {
             return {
@@ -84,7 +86,7 @@ export default {
     },
     methods: {
         vote () {
-            this.$store.dispatch('vote', {
+            this.$store.dispatch('annotate/vote', {
                 messages: [{
                     name: 'reference_vote',
                     key: ['title', 'reference_title'],
@@ -99,7 +101,7 @@ export default {
             })
         },
         unsetVote () {
-            this.$store.dispatch('vote', {
+            this.$store.dispatch('annotate/vote', {
                 messages: [{
                     name: 'reference_vote',
                     key: ['title', 'reference_title'],

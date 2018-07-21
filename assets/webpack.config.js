@@ -10,7 +10,7 @@ module.exports = {
 	mode: 'development',
 	entry: {
 		background: './src/background.js',
-		content: './src/main.js'
+		content: './src/content.js'
 	},
 	output: {
 		path: path.resolve(__dirname, '../priv/static'),
@@ -57,7 +57,9 @@ module.exports = {
 			},
 			BUILD_TIMESTAMP: Math.floor(Date.now() / 1000),
 			LIQUIO_URL: JSON.stringify(publicUrl),
-			IS_EXTENSION: JSON.stringify(true)
+			PUBLIC_URL: JSON.stringify(process.env.NODE_ENV === 'production' ? 'https://sign.liqu.io' : 'http://localhost:5000'),
+			IS_EXTENSION: JSON.stringify(true),
+			DEFAULT_WHITELIST_URL: JSON.stringify(process.env.NODE_ENV === 'production' ? 'https://sign.liqu.io/whitelist.html' : 'http://localhost:5000/whitelist.html'),
 		}),
 		new CopyWebpackPlugin([{ from: './static' }]),
 		//new BundleAnalyzerPlugin()

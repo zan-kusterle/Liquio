@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { allUnits } from 'store/constants'
+import { mapGetters } from 'vuex'
 
 export default {
     props: {
@@ -15,10 +15,11 @@ export default {
         unitKey: { type: String }
     },
     computed: {
+        ...mapGetters('annotate', ['allUnits']),
         unit () {
             if (!this.unitKey)
                 return null
-            return allUnits.find(u => u.key === this.unitKey)
+            return this.allUnits.find(u => u.key === this.unitKey)
         },
         hasData () {
             return this.unitResults && this.unitResults.mean

@@ -42,7 +42,4 @@ export default {
 		state.currentReferenceTitle = item.referenceTitle
 		state.historyIndex = index
 	},
-	SET_SHOW_SIGN_INSTALL_MESSAGE (state, isShown) {
-		state.showSignInstallMessage = isShown
-	}
 }

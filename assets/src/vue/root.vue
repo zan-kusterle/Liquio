@@ -12,6 +12,10 @@
         </div>
     </template>
 
+    <el-dialog v-if="true || $store.state.messagesToSign.length > 0" :visible.sync="signDialogVisible">
+        <Sign />
+    </el-dialog>
+
     <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" :before-close="beforeCloseDialog" custom-class="dialog">
         <el-autocomplete
             v-model="searchQuery"
@@ -47,20 +51,6 @@
             <i @click="viewReference" slot="suffix" class="el-input__icon el-icon-arrow-right"></i>
         </el-autocomplete>
     </el-dialog>
-
-    <el-dialog :visible.sync="isSignMessageDialogVisible" custom-class="sign-message-dialog">
-        <div class="liquio-bar__sign-extension-message">
-            <p>You need another extension to save your vote.</p>
-
-            <img :src="webstoreImageUrl" />
-
-            <a target="_blank" href="https://chrome.google.com/webstore/detail/liquio/ppkmmjfnokhjpmkcancnceolnobphgdk">
-                <button>Install <b>Liquio Sign</b> to vote</button>
-            </a>
-
-            <p class="liquio-bar__reload-warning" @click="reload()">Click here to reload this page after you installed it.</p>
-        </div>
-    </el-dialog>
 </div>
 </template>
 
@@ -68,9 +58,9 @@
 import { Slider, Button, Select, Option, Input, Autocomplete, Dialog } from 'element-ui'
 import slug from 'slug'
 import InlineNode from 'vue/inline_node.vue'
-import { allUnits } from 'store/constants'
 import NodeElement from 'vue/node.vue'
 import Reference from 'vue/reference.vue'
+import Sign from 'vue/sign.vue'
 import { mapState, mapGetters, mapActions } from 'vuex'
 
 // Hack to make autocomplete work with shadow DOM
@@ -101,7 +91,8 @@ export default {
         elDialog: Dialog,
         inlineNode: InlineNode,
         node: NodeElement,
-        reference: Reference
+        reference: Reference,
+        Sign
     },
     props: {
         isUnavailable: { type: Boolean },
@@ -112,6 +103,7 @@ export default {
         return {
             isLoading: true,
             dialogVisible: false,
+            signDialogVisible: true,
             searchQuery: '',
             referenceQuery: '',
             annotationTitle: '',
@@ -137,13 +129,13 @@ export default {
         this.$el.removeEventListener('mousemove', this.onMouseMove)
     },
     computed: {
-        ...mapState(['currentReferenceTitle', 'showSignInstallMessage']),
-        ...mapGetters(['currentTitle', 'canNavigateBack']),
+        ...mapState('annotate', ['currentPage', 'currentReferenceTitle']),
+        ...mapGetters('annotate', ['currentTitle', 'canNavigateBack', 'nodeByTitle']),
         activeNode () {
-            return this.$store.getters.nodeByTitle(this.activeTitle)
+            return thi.nodeByTitle(this.activeTitle)
         },
         node () {
-            return this.$store.getters.nodeByTitle(this.currentTitle)
+            return this.nodeByTitle(this.currentTitle)
         },
         currentVideoTimeText () {
             let minutes = Math.floor(this.currentVideoTime / 60)
@@ -158,17 +150,9 @@ export default {
                 return chrome.extension.getURL('icons/chrome-web-store-badge.png')
             return ''
         },
-        isSignMessageDialogVisible: {
-            get () {
-                return this.showSignInstallMessage
-            },
-            set () {
-                this.$store.dispatch('hideSignInstallDialog')
-            }
-        }
     },
     methods: {
-        ...mapActions(['navigateBack', 'search']),
+        ...mapActions('annotate', ['navigateBack', 'search']),
         onClick (ev) {
             let el = document.getElementById(IS_EXTENSION ? 'liquio-bar-extension' : 'liquio-bar')
             let isOutside = el && !(el === event.target || el.contains(event.target))
@@ -185,7 +169,7 @@ export default {
             if (this.isAnnotationTitleInputShown) {
                 let anchor = slug(this.lastSelection || this.currentVideoTimeText).value
                 this.$store.dispatch('setCurrentReferenceTitle', this.annotationTitle)
-                this.$store.dispatch('setCurrentTitle', this.$store.state.currentPage + '/' + anchor)
+                this.$store.dispatch('setCurrentTitle', this.currentPage + '/' + anchor)
                 this.$store.dispatch('disableVoting')
                 this.lastSelection = null
                 this.isAnnotationTitleInputShown = false

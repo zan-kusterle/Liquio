@@ -43,7 +43,6 @@
 <script>
 import { Slider, Button, ButtonGroup, Select, OptionGroup, Option, InputNumber, Dialog } from 'element-ui'
 import InlineNode from 'vue/inline_node.vue'
-import { allUnits } from 'store/constants'
 import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -107,7 +106,7 @@ export default {
             }
 
             if (bestUnitText) {
-                let unit = allUnits.find(u => u.text === bestUnitText)
+                let unit = this.allUnits.find(u => u.text === bestUnitText)
                 if (unit) {
                     this.currentUnitValueData = unit.value
                 }
@@ -115,10 +114,11 @@ export default {
         }
     },
     computed: {
-        ...mapState(['isVotingDisabled']),
+        ...mapState('annotate', ['isVotingDisabled']),
+        ...mapGetters('annotate', ['allUnits', 'nodeByTitle', 'usernames']),
         unitsByType () {
             let byType = {}
-            allUnits.forEach(unit => {
+            this.allUnits.forEach(unit => {
                 if (!byType[unit.type])
                     byType[unit.type] = []
                 byType[unit.type].push(unit)
@@ -137,7 +137,7 @@ export default {
             })
         },
         node () {
-            return this.$store.getters.nodeByTitle(this.title)
+            return this.nodeByTitle(this.title)
         },
         currentUnitValue: {
             get () {
@@ -148,7 +148,7 @@ export default {
             }
         },
         currentUnit () {
-            return allUnits.find(u => u.value === this.currentUnitValue)
+            return this.allUnits.find(u => u.value === this.currentUnitValue)
         },
         currentVote () {
             if (!this.node || !this.currentUnit)
@@ -158,14 +158,14 @@ export default {
             if (!unitResults)
                 return null
 
-            return unitResults.contributions.find(c => this.$store.getters.usernames.includes(c.username))
+            return unitResults.contributions.find(c => this.usernames.includes(c.username))
         },
         references () {
             if (!this.node.references)
                 return []
             let byTitle = {}
             for (let reference of this.node.references) {
-                byTitle[reference.title] = this.$store.getters.nodeByTitle(reference.title)
+                byTitle[reference.title] = this.nodeByTitle(reference.title)
             }
             return Object.values(byTitle)
         },
@@ -174,7 +174,7 @@ export default {
                 return []
             let byTitle = {}
             for (let reference of this.node.inverseReferences) {
-                byTitle[reference.title] = this.$store.getters.nodeByTitle(reference.title)
+                byTitle[reference.title] = this.nodeByTitle(reference.title)
             }
             return Object.values(byTitle)
         }
@@ -182,7 +182,7 @@ export default {
     methods: {
         vote () {
             if (this.node.title) {
-                this.$store.dispatch('vote', {
+                this.$store.dispatch('annotate/vote', {
                     messages: [{
                         name: 'vote',
                         key: ['title', 'unit'],
@@ -196,7 +196,7 @@ export default {
         },
         unsetVote () {
             if (this.node.title) {
-                this.$store.dispatch('vote', {
+                this.$store.dispatch('annotate/vote', {
                     messages: [{
                         name: 'vote',
                         key: ['title', 'unit'],

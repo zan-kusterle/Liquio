@@ -11,5 +11,4 @@ export default {
 	},
 	nodesByKey: {},
 	refreshKeys: [],
-	showSignInstallMessage: false
 }

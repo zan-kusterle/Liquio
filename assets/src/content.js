@@ -1,7 +1,7 @@
 /* global IS_EXTENSION, chrome */
 
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex, { mapActions } from 'vuex'
 import Root from 'vue/root.vue'
 import transformContent from 'transform_content'
 import mainCss from 'main.less'
@@ -58,6 +58,7 @@ const vm = new Vue({
 		}
 	},
 	methods: {
+		...mapActions('annotate', ['setCurrentTitle', 'setCurrentPage', 'setCurrentReferenceTitle', 'navigateBack']),
 		toggle () {
 			let root = this.$children[0]
 			root.dialogVisible ? root.close () : root.open()
@@ -112,8 +113,8 @@ function updateHighlights () {
 				span.addEventListener('click', () => {
 					vm.activeTitle = title
 	
-					store.dispatch('setCurrentReferenceTitle', null)
-					store.dispatch('setCurrentTitle', title)
+					vm.setCurrentReferenceTitle(null)
+					vm.setCurrentTitle(title)
 					vm.toggle()
 				})
 			}
@@ -167,8 +168,8 @@ if (IS_EXTENSION) {
 				onUrlChange(document.location.href)
 			}, 1000)
 		} else if (message.name === 'open') {
-			store.dispatch('setCurrentReferenceTitle', null)
-			store.dispatch('setCurrentTitle', store.state.currentPage)
+			vm.setCurrentReferenceTitle(null)
+			vm.setCurrentTitle(store.state.currentPage)
 			vm.toggle()
 		}
 		return false
@@ -178,7 +179,7 @@ if (IS_EXTENSION) {
 function onUrlChange (url) {
 	let liquioMeta = document.head.querySelector('[name=liquio]')
 	vm.isUnavailable = !IS_EXTENSION && document.getElementById('liquio-bar-extension') || liquioMeta && liquioMeta.content === 'disable'
-	store.dispatch('setCurrentPage', decodeURIComponent(url).replace(/\/$/, ''))
+	vm.setCurrentPage(decodeURIComponent(url).replace(/\/$/, ''))
 }
 
 let MutationObserver = window.MutationObserver || window.WebKitMutationObserver
@@ -203,7 +204,7 @@ onUrlChange(document.location.href)
 
 document.addEventListener('keyup', e => {
 	if (e.keyCode === 8) {
-		store.dispatch('navigateBack')
+		vm.navigateBack()
 	}
 })
 
@@ -245,3 +246,11 @@ let intervalId = setInterval(() => {
 		}, 100)
 	}
 }, 100)
+
+window.addEventListener('sign-anything', (e) => {
+	console.log(e.detail)
+	let messages = e.detail
+	for (let message of messages) {
+		store.commit('ADD_MESSAGE_TO_SIGN', message)
+	}
+})
