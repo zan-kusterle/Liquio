@@ -14,7 +14,7 @@
 
 		<div class="demo-wrap">
 			<button :style="isDemoOpen ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button" @click="startDemo">Watch demo</button>
-			<button :style="!canReplayDemo ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button replay-button" @click="startDemo">Watch again</button>
+			<button :style="!canReplayDemo ? { opacity: 0, pointerEvents: 'none' } : { opacity: 1 }" class="button" @click="startDemo">Watch again</button>
 
 			<div class="content-wrap" :style="isDemoOpen ? { marginTop: 0, opacity: isTextDim ? 0.3 : 1 } : { height: '0px' }">
 				<div class="content" :style="isHighlighted ? { color: '#888' } : {}">
@@ -48,6 +48,8 @@
 					View source on GitHub
 				</a>
 			</div>
+
+			<Features />
 		</div>
 
 		<div v-if="isHighlightActive" class="vote">
@@ -71,10 +73,13 @@
 </template>
 
 <script>
+import Features from './Features.vue'
+
 const tagline = 'Vote on anything, anywhere on the web.'
 
 export default {
 	name: 'app',
+	components: { Features },
 	data () {
 		return {
 			headingText: tagline,
@@ -275,7 +280,7 @@ export default {
 				setTimeout(() => {
 					this.headingText = tagline
 					this.canReplayDemo = true
-				}, this.time_FACTOR * 3000)
+				}, this.TIME_FACTOR * 3000)
 			})
 		},
 		getElementBounds (element) {
@@ -361,7 +366,7 @@ body {
 
 .header {
 	text-align: center;
-	margin-top: 30px;
+	margin-top: 100px;
 	position: relative;
 	height: 120px;
 	overflow: hidden;
@@ -419,16 +424,12 @@ body {
 	top: calc(50% - 28px);
 	transition: opacity 200ms ease-out;
 	box-shadow: 1px 2px 5px 0 rgba(0, 0, 0, 0.25);
+	margin-top: -100px;
 }
 
 .button:hover {
 	background: #27baea;
 	text-decoration: none;
-}
-
-.replay-button {
-	transition: opacity 300ms ease;
-	margin-top: -50px;
 }
 
 .view-github {
@@ -569,6 +570,14 @@ body {
 	font-size: 15px;
     line-height: 44px;
 }
+
+.features {
+	background: linear-gradient(white 0%, #94eefd 20%, #b6f3fc 60%, white);
+	padding-top: 70px;
+	padding-bottom: 100px;
+	margin-top: 20px;
+}
+
 
 @media only screen and (max-width: 800px) {
 	.header {

@@ -163,9 +163,7 @@ export default {
 				for (let flatNode of flattenNode(node))
 					commit('SET_NODE', flatNode)
 				resolve(node)
-			}).catch(e => {
-				console.log(e)
-			})
+			}).catch(() => {})
 		})
 	}
 }
