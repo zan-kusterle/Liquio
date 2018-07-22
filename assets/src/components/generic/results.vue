@@ -1,46 +1,49 @@
 <template>
-    <div :style="{ backgroundColor: color }">
-        <span v-if="hasData" style="vertical-align: middle;">{{ text }}</span>
-        <span v-else style="vertical-align: middle; font-size: 70%;">0 votes</span>
-        <span v-if="hasData && unit" class="unit" style="vertical-align: middle;">{{ unit.short }}</span>
+    <div :style="{ backgroundColor: color }" class="results" :size="size">
+        <span v-if="results.voting_power > 0" style="vertical-align: middle;">{{ text }}</span>
+        <span v-else style="vertical-align: middle; font-size: 70%; line-height: 28px;">0 votes</span>
+        <span v-if="results.voting_power > 0 && unitData" class="unit" style="vertical-align: middle;">{{ unitData.short }}</span>
     </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { allUnits } from '../../store/annotate/constants.ts'
 
 export default {
     props: {
-        unitResults: { type: Object },
-        unitKey: { type: String }
+        results: { type: Object },
+        unit: { type: String, required: false },
+        size: { type: String },
     },
     computed: {
-        ...mapGetters('annotate', ['allUnits']),
-        unit () {
-            if (!this.unitKey)
+        unitData () {
+            if (!this.unit)
                 return null
-            return this.allUnits.find(u => u.key === this.unitKey)
+            return allUnits.find(u => u.text === this.unit)
         },
-        hasData () {
-            return this.unitResults && this.unitResults.mean
+        isSpectrum () {
+            return this.unit.indexOf('-') >= 0
         },
         color () {
-            if (!this.hasData || this.unit.type === 'quantity')
+            if (!this.isSpectrum || !this.results.voting_power === 0)
                 return "#ddd"
 
-            let mean = this.unitResults.mean
-            if (mean < 0.25)
+            let mean = this.results.mean
+            const offset = 0.25
+            if (mean < offset)
                 return "rgb(255, 164, 164)"
-            else if (mean < 0.75)
-                return "rgb(249, 226, 110)"
-            else
+            else if (mean > 1 - offset)
                 return "rgb(140, 232, 140)"
+            else
+                return "rgb(249, 226, 110)"
         },
         text () {
-            if (this.unit.type === 'spectrum') {
-                return Math.round(this.unitResults.mean * 100) + '%'
+            if (!this.results.voting_power === 0)
+                return '?'
+            if (this.isSpectrum) {
+                return Math.round(this.results.mean * 100) + '%'
             } else {
-                return this.formatNumber(this.unitResults.median)
+                return this.formatNumber(this.results.median)
             }
         }
     },

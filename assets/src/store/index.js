@@ -1,4 +1,4 @@
-import annotate from './annotate/index.js'
+import annotate from './annotate/index.ts'
 import sign from './sign/index.js'
 
 export default {
@@ -7,9 +7,10 @@ export default {
 		sign
 	},
 	state: {
+		isUnavailable: false,
 	},
 	getters: {
-		colorOnSpectrum() {
+		colorOnSpectrum () {
 			let colorOnGradient = (colorA, colorB, ratio) => {
 				let hex = (x) => {
 					x = x.toString(16)

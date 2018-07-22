@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "target": "es2016",
+        "moduleResolution": "node"
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}

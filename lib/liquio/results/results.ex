@@ -83,7 +83,7 @@ defmodule Liquio.Results do
       :voting_power => Enum.sum(Enum.map(latest_contributions, & &1.voting_power)),
       :mean => Average.mean(latest_contributions),
       :median => Average.median(latest_contributions),
-      :contributions => contributions
+      :contributions => Enum.map(contributions, & Map.take(&1, [:username, :voting_power, :choice, :at_date]))
     }
   end
 

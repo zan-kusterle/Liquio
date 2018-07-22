@@ -101,7 +101,6 @@ export default {
     flex: 3;
     min-width: 600px;
     max-width: 700px;
-    background-color: white;
     padding: 10px;
     border-radius: 3px;
     /* border: 1px solid #ccc; */

@@ -15,6 +15,7 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 		let score = request.score
 
 		var color = [220, 220, 220, 255]
+		var text = '?'
 		if (score !== null) {
 			if (score < 0.25)
 				color = [237, 14, 40, 255]
@@ -22,10 +23,11 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 				color = [252, 185, 17, 255]
 			else
 				color = [38, 188, 28, 255]
+			text = Math.floor(100 * score) + ''
 		}
         
 		chrome.browserAction.setBadgeText({
-			text: score ? Math.floor(100 * score) + '' : '?',
+			text: text,
 			tabId: sender.tab.id
 		})
 		chrome.browserAction.setBadgeBackgroundColor({

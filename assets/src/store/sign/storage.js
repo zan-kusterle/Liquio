@@ -1,4 +1,4 @@
-/* globals chrome */
+/* globals chrome, IS_EXTENSION */
 
 let storage = {
 	get (key, type) {
@@ -9,18 +9,26 @@ let storage = {
 		}
 
 		return new Promise((resolve) => {
-			chrome.storage.local.get(key, (data) => {
-				resolve(decode(data[key]))
-			})
+			if (IS_EXTENSION) {
+				chrome.storage.local.get(key, (data) => {
+					resolve(decode(data[key]))
+				})
+			} else {
+				resolve(decode(localStorage.getItem(key)))
+			}
 		})
 	},
 	set (key, value) {
 		let encoded = value
 		if (Array.isArray(value)) { encoded = value.join(',') }
 
-		let data = {}
-		data[key] = encoded
-		chrome.storage.local.set(data)
+		if (IS_EXTENSION) {
+			let data = {}
+			data[key] = encoded
+			chrome.storage.local.set(data)
+		} else {
+			localStorage.setItem(key, encoded)
+		}
 	}
 }
 

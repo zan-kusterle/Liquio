@@ -87,5 +87,12 @@ export let allUnits = [{
 	short: '',
 	value: 'ratio',
 	type: 'spectrum'
+},
+{
+	key: 'useful',
+	text: 'Useless-Useful',
+	short: 'useful',
+	value: 'useful',
+	type: 'spectrum'
 }
 ]

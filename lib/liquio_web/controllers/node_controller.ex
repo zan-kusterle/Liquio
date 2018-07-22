@@ -3,7 +3,7 @@ defmodule LiquioWeb.NodeController do
 
   alias Liquio.Node
 
-  def show(conn, params = %{"title" => title}) do
+  def index(conn, params = %{"title" => title}) do
     whitelist_url = Map.get(params, "whitelist_url")
 
     whitelist_usernames =
@@ -22,18 +22,16 @@ defmodule LiquioWeb.NodeController do
         1
       end
 
-    node = Node.new(title)
-
-    node =
+      
+      nodes =
       case Liquio.GetData.get_using_cache(whitelist_url, whitelist_usernames) do
         {:ok, data} ->
-          Node.load(node, data, depth)
-
+          Node.list_by_title(title, data, depth)
         {:error, _message} ->
-          node
+          []
       end
 
     conn
-    |> render("show.json", node: node)
+    |> render("index.json", nodes: nodes)
   end
 end

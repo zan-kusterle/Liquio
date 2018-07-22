@@ -63,9 +63,9 @@ defmodule Liquio.GetData do
     |> Enum.filter(fn message ->
       data = message["data"]
 
-      String.length(data["title"]) >= 3 and String.length(data["unit"]) >= 2 and
+      is_bitstring(data["title"]) and String.length(data["title"]) >= 3 and is_bitstring(data["unit"]) and String.length(data["unit"]) >= 2 and
         (is_integer(data["choice"]) or is_float(data["choice"])) and
-        data["key"] == ["vote", "title", "unit"]
+        (data["key"] == ["vote", "title", "unit"] or data["key"] == ["vote", "title", "anchor", "unit"] or data["key"] == ["vote", "title", "unit", "comments"])
     end)
     |> Enum.map(fn message ->
       data = message["data"]
@@ -73,7 +73,9 @@ defmodule Liquio.GetData do
       %{
         :username => message["username"],
         :title => data["title"],
+        :anchor => Map.get(data, "anchor"),
         :unit => data["unit"],
+        :comments => Map.get(data, "comments", []),
         :choice => data["choice"],
         :at_date => Map.get(data, "at_date", message["datetime"])
       }
@@ -96,7 +98,13 @@ defmodule Liquio.GetData do
       %{
         :username => message["username"],
         :title => data["title"],
+        :anchor => Map.get(data, "anchor"),
+        :unit => data["unit"],
+        :comments => Map.get(data, "comments", []),
         :reference_title => data["reference_title"],
+        :reference_anchor => Map.get(data, "reference_anchor"),
+        :reference_unit => data["reference_unit"],
+        :reference_comments => Map.get(data, "reference_comments", []),
         :choice => data["relevance"]
       }
     end)

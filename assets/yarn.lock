@@ -38,6 +38,22 @@
   version "0.7.0"
   resolved "http://npm.celtra.com/@sindresorhus%2fis/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
 
+"@types/chrome@^0.0.71":
+  version "0.0.71"
+  resolved "http://npm.celtra.com/@types%2fchrome/-/chrome-0.0.71.tgz#db895511053befa58decf31d11054b41de15fbee"
+  dependencies:
+    "@types/filesystem" "*"
+
+"@types/filesystem@*":
+  version "0.0.28"
+  resolved "http://npm.celtra.com/@types%2ffilesystem/-/filesystem-0.0.28.tgz#3fd7735830f2c7413cb5ac45780bc45904697b0e"
+  dependencies:
+    "@types/filewriter" "*"
+
+"@types/filewriter@*":
+  version "0.0.28"
+  resolved "http://npm.celtra.com/@types%2ffilewriter/-/filewriter-0.0.28.tgz#c054e8af4d9dd75db4e63abc76f885168714d4b3"
+
 "@webassemblyjs/ast@1.5.12":
   version "1.5.12"
   resolved "http://npm.celtra.com/@webassemblyjs%2fast/-/ast-1.5.12.tgz#a9acbcb3f25333c4edfa1fdf3186b1ccf64e6664"
@@ -390,7 +406,7 @@ async@^1.5.0:
   version "1.5.2"
   resolved "http://npm.celtra.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
-async@^2.4.1, async@^2.6.0:
+async@^2.4.1, async@^2.5.0, async@^2.6.0:
   version "2.6.1"
   resolved "http://npm.celtra.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
   dependencies:
@@ -414,6 +430,19 @@ autoprefixer@^6.3.1:
     num2fraction "^1.2.2"
     postcss "^5.2.16"
     postcss-value-parser "^3.2.3"
+
+awesome-typescript-loader@^5.2.0:
+  version "5.2.0"
+  resolved "http://npm.celtra.com/awesome-typescript-loader/-/awesome-typescript-loader-5.2.0.tgz#d7bccf4823c45096ec24da4c12a1507d276ba15a"
+  dependencies:
+    chalk "^2.4.1"
+    enhanced-resolve "^4.0.0"
+    loader-utils "^1.1.0"
+    lodash "^4.17.5"
+    micromatch "^3.1.9"
+    mkdirp "^0.5.1"
+    source-map-support "^0.5.3"
+    webpack-log "^1.2.0"
 
 aws-sign2@~0.7.0:
   version "0.7.0"
@@ -1858,6 +1887,12 @@ cyclist@~0.2.2:
   version "0.2.2"
   resolved "http://npm.celtra.com/cyclist/-/cyclist-0.2.2.tgz#1b33792e11e914a2fd6d6ed6447464444e5fa640"
 
+d@1:
+  version "1.0.0"
+  resolved "http://npm.celtra.com/d/-/d-1.0.0.tgz#754bb5bfe55451da69a58b94d45f4c5b0462d58f"
+  dependencies:
+    es5-ext "^0.10.9"
+
 dargs@^5.1.0:
   version "5.1.0"
   resolved "http://npm.celtra.com/dargs/-/dargs-5.1.0.tgz#ec7ea50c78564cd36c9d5ec18f66329fade27829"
@@ -1921,6 +1956,13 @@ deep-extend@^0.6.0:
 deepmerge@^1.2.0:
   version "1.5.2"
   resolved "http://npm.celtra.com/deepmerge/-/deepmerge-1.5.2.tgz#10499d868844cdad4fee0842df8c7f6f0c95a753"
+
+define-properties@^1.1.2:
+  version "1.1.2"
+  resolved "http://npm.celtra.com/define-properties/-/define-properties-1.1.2.tgz#83a73f2fea569898fb737193c8f873caf6d45c94"
+  dependencies:
+    foreach "^2.0.5"
+    object-keys "^1.0.8"
 
 define-property@^0.2.5:
   version "0.2.5"
@@ -2119,6 +2161,29 @@ error@^7.0.2:
   dependencies:
     string-template "~0.2.1"
     xtend "~4.0.0"
+
+es5-ext@^0.10.35, es5-ext@^0.10.9, es5-ext@~0.10.14:
+  version "0.10.45"
+  resolved "http://npm.celtra.com/es5-ext/-/es5-ext-0.10.45.tgz#0bfdf7b473da5919d5adf3bd25ceb754fccc3653"
+  dependencies:
+    es6-iterator "~2.0.3"
+    es6-symbol "~3.1.1"
+    next-tick "1"
+
+es6-iterator@~2.0.3:
+  version "2.0.3"
+  resolved "http://npm.celtra.com/es6-iterator/-/es6-iterator-2.0.3.tgz#a7de889141a05a94b0854403b2d0a0fbfa98f3b7"
+  dependencies:
+    d "1"
+    es5-ext "^0.10.35"
+    es6-symbol "^3.1.1"
+
+es6-symbol@^3.1.1, es6-symbol@~3.1.1:
+  version "3.1.1"
+  resolved "http://npm.celtra.com/es6-symbol/-/es6-symbol-3.1.1.tgz#bf00ef4fdab6ba1b46ecb7b629b4c7ed5715cc77"
+  dependencies:
+    d "1"
+    es5-ext "~0.10.14"
 
 escape-html@~1.0.3:
   version "1.0.3"
@@ -2451,6 +2516,10 @@ for-own@^0.1.4:
   dependencies:
     for-in "^1.0.1"
 
+foreach@^2.0.5:
+  version "2.0.5"
+  resolved "http://npm.celtra.com/foreach/-/foreach-2.0.5.tgz#0bee005018aeb260d0a3af3ae658dd0136ec1b99"
+
 forever-agent@~0.6.1:
   version "0.6.1"
   resolved "http://npm.celtra.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
@@ -2739,6 +2808,10 @@ has-flag@^3.0.0:
 has-symbol-support-x@^1.4.1:
   version "1.4.2"
   resolved "http://npm.celtra.com/has-symbol-support-x/-/has-symbol-support-x-1.4.2.tgz#1409f98bc00247da45da67cee0a36f282ff26455"
+
+has-symbols@^1.0.0:
+  version "1.0.0"
+  resolved "http://npm.celtra.com/has-symbols/-/has-symbols-1.0.0.tgz#ba1a8f1af2a0fc39650f5c850367704122063b44"
 
 has-to-string-tag-x@^1.2.0:
   version "1.4.1"
@@ -3498,6 +3571,15 @@ loader-utils@^1.0.2, loader-utils@^1.1.0:
     emojis-list "^2.0.0"
     json5 "^0.5.0"
 
+loader-utils@~0.2.2:
+  version "0.2.17"
+  resolved "http://npm.celtra.com/loader-utils/-/loader-utils-0.2.17.tgz#f86e6374d43205a6e6c60e9196f17c0299bfb348"
+  dependencies:
+    big.js "^3.1.3"
+    emojis-list "^2.0.0"
+    json5 "^0.5.0"
+    object-assign "^4.0.1"
+
 locate-path@^2.0.0:
   version "2.0.0"
   resolved "http://npm.celtra.com/locate-path/-/locate-path-2.0.0.tgz#2b568b265eec944c6d9c0de9c3dbbbca0354cd8e"
@@ -3521,7 +3603,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "http://npm.celtra.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0:
+lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.3.0:
   version "4.17.10"
   resolved "http://npm.celtra.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -3543,6 +3625,13 @@ log-update@^1.0.2:
   dependencies:
     ansi-escapes "^1.0.0"
     cli-cursor "^1.0.2"
+
+loglevelnext@^1.0.1:
+  version "1.0.5"
+  resolved "http://npm.celtra.com/loglevelnext/-/loglevelnext-1.0.5.tgz#36fc4f5996d6640f539ff203ba819641680d75a2"
+  dependencies:
+    es6-symbol "^3.1.1"
+    object.assign "^4.1.0"
 
 long@^3.2.0:
   version "3.2.0"
@@ -3675,7 +3764,7 @@ micromatch@^2.1.5, micromatch@^2.3.7:
     parse-glob "^3.0.4"
     regex-cache "^0.4.2"
 
-micromatch@^3.1.10, micromatch@^3.1.4, micromatch@^3.1.8:
+micromatch@^3.1.10, micromatch@^3.1.4, micromatch@^3.1.8, micromatch@^3.1.9:
   version "3.1.10"
   resolved "http://npm.celtra.com/micromatch/-/micromatch-3.1.10.tgz#70859bc95c9840952f359a068a3fc49f9ecfac23"
   dependencies:
@@ -3866,6 +3955,10 @@ neo-async@^2.5.0:
   version "2.5.1"
   resolved "http://npm.celtra.com/neo-async/-/neo-async-2.5.1.tgz#acb909e327b1e87ec9ef15f41b8a269512ad41ee"
 
+next-tick@1:
+  version "1.0.0"
+  resolved "http://npm.celtra.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
+
 nice-try@^1.0.4:
   version "1.0.4"
   resolved "http://npm.celtra.com/nice-try/-/nice-try-1.0.4.tgz#d93962f6c52f2c1558c0fbda6d512819f1efe1c4"
@@ -4021,11 +4114,24 @@ object-copy@^0.1.0:
     define-property "^0.2.5"
     kind-of "^3.0.3"
 
+object-keys@^1.0.11, object-keys@^1.0.8:
+  version "1.0.12"
+  resolved "http://npm.celtra.com/object-keys/-/object-keys-1.0.12.tgz#09c53855377575310cca62f55bb334abff7b3ed2"
+
 object-visit@^1.0.0:
   version "1.0.1"
   resolved "http://npm.celtra.com/object-visit/-/object-visit-1.0.1.tgz#f79c4493af0c5377b59fe39d395e41042dd045bb"
   dependencies:
     isobject "^3.0.0"
+
+object.assign@^4.1.0:
+  version "4.1.0"
+  resolved "http://npm.celtra.com/object.assign/-/object.assign-4.1.0.tgz#968bf1100d7956bb3ca086f006f846b3bc4008da"
+  dependencies:
+    define-properties "^1.1.2"
+    function-bind "^1.1.1"
+    has-symbols "^1.0.0"
+    object-keys "^1.0.11"
 
 object.omit@^2.0.0:
   version "2.0.1"
@@ -5249,6 +5355,14 @@ source-list-map@^2.0.0:
   version "2.0.0"
   resolved "http://npm.celtra.com/source-list-map/-/source-list-map-2.0.0.tgz#aaa47403f7b245a92fbc97ea08f250d6087ed085"
 
+source-map-loader@^0.2.3:
+  version "0.2.3"
+  resolved "http://npm.celtra.com/source-map-loader/-/source-map-loader-0.2.3.tgz#d4b0c8cd47d54edce3e6bfa0f523f452b5b0e521"
+  dependencies:
+    async "^2.5.0"
+    loader-utils "~0.2.2"
+    source-map "~0.6.1"
+
 source-map-resolve@^0.5.0:
   version "0.5.2"
   resolved "http://npm.celtra.com/source-map-resolve/-/source-map-resolve-0.5.2.tgz#72e2cc34095543e43b2c62b2c4c10d4a9054f259"
@@ -5265,6 +5379,13 @@ source-map-support@^0.4.15:
   dependencies:
     source-map "^0.5.6"
 
+source-map-support@^0.5.3:
+  version "0.5.6"
+  resolved "http://npm.celtra.com/source-map-support/-/source-map-support-0.5.6.tgz#4435cee46b1aab62b8e8610ce60f788091c51c13"
+  dependencies:
+    buffer-from "^1.0.0"
+    source-map "^0.6.0"
+
 source-map-url@^0.4.0:
   version "0.4.0"
   resolved "http://npm.celtra.com/source-map-url/-/source-map-url-0.4.0.tgz#3e935d7ddd73631b97659956d55128e87b5084a3"
@@ -5273,7 +5394,7 @@ source-map@^0.5.3, source-map@^0.5.6, source-map@^0.5.7:
   version "0.5.7"
   resolved "http://npm.celtra.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
 
-source-map@^0.6.1, source-map@~0.6.0, source-map@~0.6.1:
+source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.0, source-map@~0.6.1:
   version "0.6.1"
   resolved "http://npm.celtra.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
@@ -5629,6 +5750,10 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "http://npm.celtra.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
+typescript@^3.0.1:
+  version "3.0.1"
+  resolved "http://npm.celtra.com/typescript/-/typescript-3.0.1.tgz#43738f29585d3a87575520a4b93ab6026ef11fdb"
+
 uglify-es@^3.3.4:
   version "3.3.9"
   resolved "http://npm.celtra.com/uglify-es/-/uglify-es-3.3.9.tgz#0c1c4f0700bed8dbc124cdb304d2592ca203e677"
@@ -5974,6 +6099,15 @@ webpack-cli@^2.0.15:
     yargs "^11.1.0"
     yeoman-environment "^2.1.1"
     yeoman-generator "^2.0.5"
+
+webpack-log@^1.2.0:
+  version "1.2.0"
+  resolved "http://npm.celtra.com/webpack-log/-/webpack-log-1.2.0.tgz#a4b34cda6b22b518dbb0ab32e567962d5c72a43d"
+  dependencies:
+    chalk "^2.1.0"
+    log-symbols "^2.1.0"
+    loglevelnext "^1.0.1"
+    uuid "^3.1.0"
 
 webpack-sources@^1.0.1, webpack-sources@^1.1.0:
   version "1.1.0"

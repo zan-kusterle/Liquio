@@ -24,6 +24,8 @@
         "vuex-router-sync": "^5.0.0"
     },
     "devDependencies": {
+        "@types/chrome": "^0.0.71",
+        "awesome-typescript-loader": "^5.2.0",
         "babel-cli": "^6.26.0",
         "babel-core": "^6.26.0",
         "babel-loader": "^7.1.4",
@@ -42,7 +44,9 @@
         "less": "^3.0.2",
         "less-loader": "^4.0.6",
         "serviceworker-webpack-plugin": "^0.2.3",
+        "source-map-loader": "^0.2.3",
         "style-loader": "^0.21.0",
+        "typescript": "^3.0.1",
         "url-loader": "^1.0.1",
         "vue-loader": "^14.2.2",
         "vue-template-compiler": "^2.5.13",
