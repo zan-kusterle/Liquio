@@ -7,7 +7,6 @@ export default {
 		sign
 	},
 	state: {
-		messagesToSign: []
 	},
 	getters: {
 		colorOnSpectrum() {
@@ -42,12 +41,4 @@ export default {
 			dispatch('sign/initialize')
 		}
 	},
-	mutations: {
-		ADD_MESSAGE_TO_SIGN (state, message) {
-			state.messagesToSign.push(message)
-		},
-		CLEAR_MESSAGES_TO_SIGN (state) {
-			state.messagesToSign = []
-		}
-	}
 }

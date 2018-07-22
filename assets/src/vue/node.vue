@@ -115,7 +115,8 @@ export default {
     },
     computed: {
         ...mapState('annotate', ['isVotingDisabled']),
-        ...mapGetters('annotate', ['allUnits', 'nodeByTitle', 'usernames']),
+        ...mapGetters('annotate', ['allUnits', 'nodeByTitle']),
+        ...mapGetters('sign', ['usernames']),
         unitsByType () {
             let byType = {}
             this.allUnits.forEach(unit => {

@@ -9,9 +9,6 @@ export default {
 			return state.nodesByKey[title] || { title: title, results: {}, references: [], inverse_references: [], mock: true }
 		}
 	},
-	usernames (state) {
-		return state.whitelist.username.split(',')
-	},
 	currentTitle (state) {
 		return state.currentTitle || state.currentPage
 	},

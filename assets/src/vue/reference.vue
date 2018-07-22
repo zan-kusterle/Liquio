@@ -52,7 +52,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('annotate', 'nodeByTitle', 'usernames'),
+        ...mapGetters('annotate', 'nodeByTitle'),
+        ...mapGetters('sign', ['usernames']),
         node () {
             return this.nodeByTitle(this.title)
         },

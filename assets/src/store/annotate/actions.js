@@ -1,66 +1,20 @@
 /* global LIQUIO_URL */
 
-import axios from 'axios'
-
-let fetchNode = (key, whitelist, depth) => {
-	return new Promise((resolve, reject) => {
-		let params = {}
-		if (depth) {
-			params.depth = depth
-		}
-		if (whitelist.url) {
-			params.whitelist_url = whitelist.url
-		}
-		if (whitelist.username) {
-			params.whitelist_usernames = whitelist.username
-		}
-
-		axios.get(LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), { params: params }).then((response) => {
-			resolve(response.data.data)
-		}).catch(e => reject(e))
-	})
-}
-
-let fetchSearch = (query, whitelist) => {
-	return new Promise((resolve, reject) => {
-		let params = {}
-		if (whitelist.url) {
-			params.whitelist_url = whitelist.url
-		}
-		if (whitelist.username) {
-			params.whitelist_usernames = whitelist.username
-		}
-
-		axios.get(LIQUIO_URL + '/api/search/' + encodeURIComponent(query), { params: params }).then((response) => {
-			resolve(response.data.data)
-		}).catch(e => reject(e))
-	})
-}
+import { makeRequest } from '../sign/api'
 
 export default {
-	initialize ({ commit, dispatch, state }) {
-		window.addEventListener('sign-anything-response', (e) => {
-			let data = e.detail
-			if (data.request_name === 'whitelist') {
-				this.username = data.username
-				this.whitelistUrl = data.url
-				commit('SET_WHITELIST', {
-					username: data.username,
-					url: data.url
-				})
-				dispatch('updateNodes')
-			} else if (data.request_name === 'sign') {
-				// TODO get refresh titles from store
-				let currentTitle = state.currentTitle
-				let currentReferenceTitle = state.currentReferenceTitle
-				setTimeout(() => {
-					dispatch('loadNode', { key: state.currentPage })
-					if (currentTitle)
-						dispatch('loadNode', { key: currentTitle })
-					if (currentReferenceTitle)
-						dispatch('loadNode', { key: currentReferenceTitle })
-				}, 500)
-			}
+	initialize ({ dispatch, state }) {
+		window.addEventListener('liquio-sign-done', (e) => {
+			// TODO get refresh titles from store
+			let currentTitle = state.currentTitle
+			let currentReferenceTitle = state.currentReferenceTitle
+			setTimeout(() => {
+				dispatch('loadNode', { key: state.currentPage })
+				if (currentTitle)
+					dispatch('loadNode', { key: currentTitle })
+				if (currentReferenceTitle)
+					dispatch('loadNode', { key: currentReferenceTitle })
+			}, 500)
 		})
 	},
 	setCurrentPage ({ commit, dispatch }, payload) {
@@ -93,8 +47,8 @@ export default {
 			dispatch('loadNode', { key: key })
 		}
 	},
-	search ({ state }, query) {
-		return fetchSearch(query, state.whitelist)
+	search (_, query) {
+		return makeRequest('GET', LIQUIO_URL + '/api/search/' + encodeURIComponent(query), {})
 	},
 	vote (_, { messages, messageKeys }) {
 		let data = messages.map(x => {
@@ -147,7 +101,10 @@ export default {
 			if (refresh) {
 				commit('ADD_REFRESH_KEY', key)
 			}
-			fetchNode(key, state.whitelist, 2).then(node => {
+			
+			makeRequest('GET', LIQUIO_URL + '/api/nodes/' + encodeURIComponent(key), {
+				depth: 2
+			}).then(node => {
 				for (let flatNode of flattenNode(node))
 					commit('SET_NODE', flatNode)
 				resolve(node)

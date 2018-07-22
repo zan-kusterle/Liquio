@@ -248,9 +248,8 @@ let intervalId = setInterval(() => {
 }, 100)
 
 window.addEventListener('sign-anything', (e) => {
-	console.log(e.detail)
 	let messages = e.detail
 	for (let message of messages) {
-		store.commit('ADD_MESSAGE_TO_SIGN', message)
+		store.commit('sign/ADD_MESSAGE_TO_SIGN', message)
 	}
 })

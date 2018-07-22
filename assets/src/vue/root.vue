@@ -12,10 +12,6 @@
         </div>
     </template>
 
-    <el-dialog v-if="true || $store.state.messagesToSign.length > 0" :visible.sync="signDialogVisible">
-        <Sign />
-    </el-dialog>
-
     <el-dialog v-if="currentTitle" :visible.sync="dialogVisible" :before-close="beforeCloseDialog" custom-class="dialog">
         <el-autocomplete
             v-model="searchQuery"
@@ -50,6 +46,10 @@
 
             <i @click="viewReference" slot="suffix" class="el-input__icon el-icon-arrow-right"></i>
         </el-autocomplete>
+    </el-dialog>
+
+    <el-dialog v-if="messagesToSign.length > 0" :visible.sync="signDialogVisible">
+        <Sign />
     </el-dialog>
 </div>
 </template>
@@ -128,7 +128,16 @@ export default {
         document.removeEventListener('mouseup', this.updateSelection)
         this.$el.removeEventListener('mousemove', this.onMouseMove)
     },
+    watch: {
+        messagesToSign (v, ov) {
+            console.log(v, ov)
+            if (v.length > 0 && v.length !== ov.length) {
+                this.signDialogVisible = true
+            }
+        }
+    },
     computed: {
+        ...mapState('sign', ['messagesToSign']),
         ...mapState('annotate', ['currentPage', 'currentReferenceTitle']),
         ...mapGetters('annotate', ['currentTitle', 'canNavigateBack', 'nodeByTitle']),
         activeNode () {

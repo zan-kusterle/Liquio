@@ -79,11 +79,15 @@ export default {
 		randomWords: null,
 		username: null,
 		whitelistUsernames: [],
-		userMessages: []
+		userMessages: [],
+		messagesToSign: [],
 	},
 	getters: {
 		keys (state) {
 			return state.seeds.map(keypairFromSeed).filter(k => k)
+		},
+		usernames (getters) {
+			return getters.keys.map(k => k.username)
 		},
 		currentKey (state, getters) {
 			return getters.keys.find(k => k.username === state.username)
@@ -128,7 +132,13 @@ export default {
 		},
 		setRandomWords (state, payload) {
 			state.randomWords = payload
-		}
+		},
+		ADD_MESSAGE_TO_SIGN (state, message) {
+			state.messagesToSign.push(message)
+		},
+		CLEAR_MESSAGES_TO_SIGN (state) {
+			state.messagesToSign = []
+		},
 	},
 	actions: {
 		initialize ({ state }) {
