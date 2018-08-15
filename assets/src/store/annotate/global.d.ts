@@ -15,6 +15,7 @@ interface Contribution {
 interface Results {
     mean: number,
     median: number,
+    votingPower: number,
     contributions: Contribution[]
 }
 

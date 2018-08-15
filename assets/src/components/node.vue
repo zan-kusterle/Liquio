@@ -15,13 +15,13 @@
                 <div v-for="(item, index) in listItems" :key="index" class="liquio-node__reference">
                     <template v-if="item.type === 'reference'">
                         <div class="liquio-node__progress-container" @click="openReference(item)">
-                            <progress min="0" max="1" :value="item.referenceResults.mean" style="width: 100px;" />
+                            <progress min="0" max="1" :value="item.weight" style="width: 100px;" />
                         </div>
                         <inline-node :node="item.definition" :results="item.data.results" @click="setDefinition(item.definition)" size="small"></inline-node>
                     </template>
                     <template v-else-if="item.type === 'comment'">
                         <div class="liquio-node__progress-container"  @click="openComment(item)">
-                            <progress min="0" max="1" :value="item.results.mean" style="width: 100px;" />
+                            <progress min="0" max="1" :value="item.weight" style="width: 100px;" />
                         </div>
                         <span style="font-size: 18px;" @click="setCommentDefinition(item)">{{ item.text }}</span>
                     </template>
@@ -150,8 +150,9 @@ export default {
             let comments = this.currentNode.data.comments.map(comment => {
                 return {
                     type: 'comment',
-                    weight: comment.results.mean,
-                    ...comment,
+                    weight: comment.data.results.mean,
+                    text: comment.definition.comments[0],
+                    ...comment.definition,
                 }
             })
 
@@ -159,7 +160,7 @@ export default {
                 return {
                     type: 'reference',
                     weight: reference.referenceResults.mean,
-                    ...reference,
+                    ...reference.definition,
                 }
             })
 

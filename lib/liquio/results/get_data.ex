@@ -60,13 +60,17 @@ defmodule Liquio.GetData do
 
   defp get_votes(messages) do
     messages
-    |> Enum.filter(fn message ->
-      data = message["data"]
-
-      is_bitstring(data["title"]) and String.length(data["title"]) >= 3 and is_bitstring(data["unit"]) and String.length(data["unit"]) >= 2 and
-        (is_integer(data["choice"]) or is_float(data["choice"])) and
-        (data["key"] == ["vote", "title", "unit"] or data["key"] == ["vote", "title", "anchor", "unit"] or data["key"] == ["vote", "title", "unit", "comments"])
-    end)
+    |> filter_messages_with_formats(%{
+      "title" => %{ type: "string", min_length: 3 },
+      "unit" => %{ type: "string", min_length: 2 },
+      "choice" => %{ type: "number" },
+      "key" => %{ type: "list", in: [
+        ["vote", "title", "unit"],
+        ["vote", "title", "unit", "comments"],
+        ["vote", "title", "anchor", "unit"],
+        ["vote", "title", "anchor", "unit", "comments"],
+      ]}
+    })
     |> Enum.map(fn message ->
       data = message["data"]
 
@@ -109,5 +113,23 @@ defmodule Liquio.GetData do
       }
     end)
     |> Enum.filter(&(&1.choice != nil))
+  end
+
+  defp filter_messages_with_formats(messages, formats_by_fields) do
+    Enum.filter(messages, fn message ->
+      data = message["data"]
+
+      Enum.map(formats_by_fields, fn { key, options } ->
+        value = Map.get(data, key)
+        case options.type do
+          "string" ->
+            is_bitstring(value) and String.length(value) > Map.get(options, :min_length, 0)
+          "number" ->
+            is_float(value)
+          "list" ->
+            is_list(value) and Enum.all?(value, & Enum.member?(options.in, &1))
+        end        
+      end)
+    end)
   end
 end

@@ -1,8 +1,8 @@
 <template>
     <div :style="{ backgroundColor: color }" class="results" :size="size">
-        <span v-if="results.voting_power > 0" style="vertical-align: middle;">{{ text }}</span>
+        <span v-if="results.votingPower > 0" style="vertical-align: middle;">{{ text }}</span>
         <span v-else style="vertical-align: middle; font-size: 70%; line-height: 28px;">0 votes</span>
-        <span v-if="results.voting_power > 0 && unitData" class="unit" style="vertical-align: middle;">{{ unitData.short }}</span>
+        <span v-if="results.votingPower > 0 && unitData" class="unit" style="vertical-align: middle;">{{ unitData.short }}</span>
     </div>
 </template>
 
@@ -25,7 +25,7 @@ export default {
             return this.unit.indexOf('-') >= 0
         },
         color () {
-            if (!this.isSpectrum || !this.results.voting_power === 0)
+            if (!this.isSpectrum || this.results.votingPower === 0)
                 return "#ddd"
 
             let mean = this.results.mean
@@ -38,7 +38,7 @@ export default {
                 return "rgb(249, 226, 110)"
         },
         text () {
-            if (!this.results.voting_power === 0)
+            if (this.results.votingPower === 0)
                 return '?'
             if (this.isSpectrum) {
                 return Math.round(this.results.mean * 100) + '%'

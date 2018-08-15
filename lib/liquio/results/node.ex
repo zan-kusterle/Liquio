@@ -2,6 +2,9 @@ defmodule Liquio.Node do
 	alias Liquio.Node
 	alias Liquio.Average
 
+	def new(definition) do
+		new(definition.title, definition.anchor, definition.unit, definition.comments)
+	end
 	def new(title, unit) do
 		new(title, nil, unit)
 	end
@@ -26,8 +29,10 @@ defmodule Liquio.Node do
 	end
 
 	def add_comment(node, text) do
-		Node.new(node.title, node.anchor, node.unit)
-		|> Map.put(:definition, Map.put(node.definition, :comments, node.definition.comments ++ [text]))
+		definition = node.definition
+		|> Map.put(:comments, node.definition.comments ++ [text])
+
+		Node.new(definition)
 	end
 
 	def add_data(node, data) do
@@ -51,8 +56,8 @@ defmodule Liquio.Node do
 		node = if depth == 0 do
 			node
 		else
-			votes = Enum.filter(votes, & compare_definition(&1, node.definition))
-
+			votes = Enum.filter(votes, & compare_definition(&1, node.definition, ["comments"]))
+			
 			results_votes = votes
 			|> Enum.filter(& Enum.empty?(&1.comments))
 			results_votes = if is_unit_spectrum(node.definition.unit) do
@@ -60,15 +65,15 @@ defmodule Liquio.Node do
 			else
 				results_votes
 			end
-
+			
 			results = Liquio.Results.from_votes(results_votes, inverse_delegations)
-
+			
 			comments = votes
 				|> Enum.filter(& Enum.count(&1.comments) == 1) # check if 1 more comment than node.definition.comments
 				|> Enum.group_by(& Enum.at(&1.comments, 0))
 				|> Enum.map(fn {comment, votes_for_comment} ->
 					Node.add_comment(node, comment)
-					|> Node.load(data, depth)
+					|> Node.load(data, depth - 1)
 				end)
 
 			Node.add_data(node, %{
@@ -139,7 +144,15 @@ defmodule Liquio.Node do
 	end
 
 	defp compare_definition(a, b) do
-		slug(a.title) == slug(b.title) and a.anchor == b.anchor and a.unit == b.unit and Enum.count(a.comments) == Enum.count(b.comments)
+		compare_definition(a, b, [])
+	end
+	defp compare_definition(a, b, ignore_keys) do
+		comments_equal? = if Enum.member?(ignore_keys, "comments") do
+			true
+		else
+			Enum.count(a.comments) == Enum.count(b.comments)
+		end
+		slug(a.title) == slug(b.title) and a.anchor == b.anchor and a.unit == b.unit and comments_equal?
 	end
 
 	defp slug(x) do

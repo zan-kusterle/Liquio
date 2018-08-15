@@ -233,7 +233,9 @@ export default {
 					definition: node.definition,
 					data: {
 						results: {
-							...node.results,
+							mean: node.results.mean,
+							median: node.results.median,
+							votingPower: node.results.voting_power,
 							contributions: node.results.contributions.map(contribution => {
 								return {
 									username: contribution.username,
