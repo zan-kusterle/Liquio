@@ -228,15 +228,15 @@ export default {
 			let nodes: NodeWithData[] = []
 			let existingNode = state.nodes.find(n => utils.compareDefinition(n.definition, node.definition))
 
-			if (node.results) {
+			if (node.data) {
 				nodes.push({
 					definition: node.definition,
 					data: {
 						results: {
-							mean: node.results.mean,
-							median: node.results.median,
-							votingPower: node.results.voting_power,
-							contributions: node.results.contributions.map(contribution => {
+							mean: node.data.results.mean,
+							median: node.data.results.median,
+							votingPower: node.data.results.voting_power,
+							contributions: node.data.results.contributions.map(contribution => {
 								return {
 									username: contribution.username,
 									votingPower: contribution.voting_power,
@@ -245,30 +245,33 @@ export default {
 								}
 							})
 						},
-						comments: node.comments,
-						references: node.references !== null ? node.references.map(transformReference) : existingNode ? existingNode.data.references : [],
-						inverseReferences: node.inverse_references !== null ? node.inverse_references.map(transformReference): existingNode ? existingNode.data.inverseReferences: []
+						comments: node.data.comments,
+						references: node.data.references !== null ? node.data.references.map(transformReference) : existingNode ? existingNode.data.references : [],
+						inverseReferences: node.data.inverse_references !== null ? node.data.inverse_references.map(transformReference): existingNode ? existingNode.data.inverseReferences: []
 					}
 				})
+
+				if (node.data.references) {
+					for (let reference of node.data.references) {
+						if (!reference.data.results) continue
+						for (let flatReferenceNode of flattenNode(reference)) {
+							if (!nodes.find(n => utils.compareDefinition(n.definition, flatReferenceNode.definition))) {
+								nodes.push(flatReferenceNode)
+							}
+						}
+					}
+				}
+	
+				if (node.data.inverse_references) {
+					for (let inverseReference of node.data.inverse_references) {
+						for (let flatInverseReferenceNode of flattenNode(inverseReference)) {
+							if (!nodes.find(n => utils.compareDefinition(n.definition, flatInverseReferenceNode.definition))) {
+								nodes.push(flatInverseReferenceNode)
+							}
+						}
+					}
+				}
 			}
-
-			if (node.references)
-				for (let reference of node.references) {
-					for (let flatReferenceNode of flattenNode(reference)) {
-						if (!nodes.find(n => utils.compareDefinition(n.definition, flatReferenceNode.definition))) {
-							nodes.push(flatReferenceNode)
-						}
-					}
-				}
-
-			if (node.inverse_references)
-				for (let inverseReference of node.inverse_references) {
-					for (let flatInverseReferenceNode of flattenNode(inverseReference)) {
-						if (!nodes.find(n => utils.compareDefinition(n.definition, flatInverseReferenceNode.definition))) {
-							nodes.push(flatInverseReferenceNode)
-						}
-					}
-				}
 
 			return nodes
 		}

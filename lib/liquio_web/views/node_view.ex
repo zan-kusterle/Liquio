@@ -10,12 +10,6 @@ defmodule LiquioWeb.NodeView do
   end
 
   def render("node.json", %{node: node}) do
-    %{
-      :definition => node.definition,
-      :results => node.data.results || %{},
-      :comments => node.data.comments || [],
-      :references => node.data.references || [],
-      :inverse_references => node.data.inverse_references || []
-    }
+    node
   end
 end

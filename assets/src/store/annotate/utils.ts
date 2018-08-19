@@ -1,14 +1,12 @@
+export function compareComments (a: string[], b: string[]): boolean {
+    if (a.length !== b.length)
+        return false
+    for (var i = 0; i < a.length; i++)
+        if (a[i] !== b[i])
+            return false
+    return true
+}
+
 export function compareDefinition (a: NodeDefinition, b: NodeDefinition, excludeKeys?: string[]): boolean {
-    let commentsEqual = true
-    if (!(excludeKeys || []).includes('comments')) {
-        commentsEqual = a.comments.length === b.comments.length
-        if (commentsEqual) {
-            for (var i = 0; i < a.comments.length; i++) {
-                if (a.comments[i] !== b.comments[i]) {
-                    commentsEqual = false
-                }
-            }
-        }
-    }
-    return a.title === b.title && a.anchor === b.anchor && a.unit === b.unit && commentsEqual
+    return a.title === b.title && a.anchor === b.anchor && a.unit === b.unit && ((excludeKeys || []).includes('comments') || compareComments(a.comments, b.comments))
 }

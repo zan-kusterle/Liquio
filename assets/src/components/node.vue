@@ -17,7 +17,7 @@
                         <div class="liquio-node__progress-container" @click="openReference(item)">
                             <progress min="0" max="1" :value="item.weight" style="width: 100px;" />
                         </div>
-                        <inline-node :node="item.definition" :results="item.data.results" @click="setDefinition(item.definition)" size="small"></inline-node>
+                        <inline-node :node="item.definition" :results="item.results" @click="setDefinition(item.definition)" size="small"></inline-node>
                     </template>
                     <template v-else-if="item.type === 'comment'">
                         <div class="liquio-node__progress-container"  @click="openComment(item)">
@@ -93,7 +93,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { Button, Input, Dialog } from 'element-ui'
-import { compareDefinition } from '../store/annotate/utils'
+import { compareDefinition, compareComments } from '../store/annotate/utils'
 import InlineNode from './generic/inline_node.vue'
 import Results from './generic/results.vue'
 import Vote from './generic/vote.vue'
@@ -132,16 +132,9 @@ export default {
             return this.currentReference && this.currentReference.referenceResults.contributions.find(c => this.usernames.includes(c.username))
         },
         currentComment () {
-            let commentData = this.currentCommentText && this.currentNode.data && this.currentNode.data.comments.find(c => c.text === this.currentCommentText)
-            if (!commentData)
-                return null
-            return {
-                data: commentData,
-                definition: {
-                    ...this.currentNode.definition,
-                    comments: this.currentNode.definition.comments.concat([commentData.text])
-                }
-            }
+            return this.currentCommentText && this.currentNode.data && this.currentNode.data.comments.find(c => {
+                return compareComments(c.definition.comments, this.currentNode.definition.comments.concat([this.currentCommentText]))
+            })
         },
         currentCommentVote () {
             return this.currentComment && this.currentComment.data.results.contributions.find(c => this.usernames.includes(c.username))
@@ -152,7 +145,7 @@ export default {
                     type: 'comment',
                     weight: comment.data.results.mean,
                     text: comment.definition.comments[0],
-                    ...comment.definition,
+                    definition: comment.definition,
                 }
             })
 
@@ -160,7 +153,8 @@ export default {
                 return {
                     type: 'reference',
                     weight: reference.referenceResults.mean,
-                    ...reference.definition,
+                    definition: reference.definition,
+                    results: reference.data.results,
                 }
             })
 
