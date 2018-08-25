@@ -12,7 +12,7 @@
 
     <div v-else-if="size === 'medium'" @click="$emit('click')" size="medium" class="inline-node">
         <results v-if="results" :results="results" :unit="node.comments.length > 0 ? 'Useless-Useful' : node.unit" :size="size" />
-        <p>{{ node.title }}</p>
+        <p>{{ node.title }} <template v-if="showUnit">({{ node.unit }})</template></p>
 
         <div v-for="(comment, index) in node.comments" :key="index">
             {{ comment }}
